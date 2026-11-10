@@ -201,7 +201,7 @@ url = "2"
 enigo = "0.6.1"
 # Idioma da mensagem do usuário (`brain::reply_language`): trigramas offline, sem modelo nem rede.
 # MIT, cobre os 10 idiomas da interface.
-whatlang = "0.16"
+whatlang = "0.18"
 
 # Guarda de permissão do webview (permissions.rs). Via `wry` ele é só TRANSITIVO, e um caminho
 # de crate transitivo não é nomeável — sem isto, `ICoreWebView2PermissionRequestedEventHandler`
