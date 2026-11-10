@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Mika Desktop: Dev (tauri dev)",
+      "type": "shell",
+      "command": "pnpm dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Mika Desktop: Build",
+      "type": "shell",
+      "command": "pnpm --filter @mika/desktop build",
+      "problemMatcher": [
+        "$tsc"
+      ]
+    }
+  ]
+}

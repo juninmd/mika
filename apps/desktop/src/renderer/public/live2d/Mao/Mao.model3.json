@@ -1,0 +1,189 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "Mao.moc3",
+		"Textures": [
+			"Mao.2048/texture_00.png"
+		],
+		"Physics": "Mao.physics3.json",
+		"Pose": "Mao.pose3.json",
+		"DisplayInfo": "Mao.cdi3.json",
+		"Expressions": [
+			{
+				"Name": "exp_01",
+				"File": "expressions/exp_01.exp3.json"
+			},
+			{
+				"Name": "exp_02",
+				"File": "expressions/exp_02.exp3.json"
+			},
+			{
+				"Name": "exp_03",
+				"File": "expressions/exp_03.exp3.json"
+			},
+			{
+				"Name": "exp_04",
+				"File": "expressions/exp_04.exp3.json"
+			},
+			{
+				"Name": "exp_05",
+				"File": "expressions/exp_05.exp3.json"
+			},
+			{
+				"Name": "exp_06",
+				"File": "expressions/exp_06.exp3.json"
+			},
+			{
+				"Name": "exp_07",
+				"File": "expressions/exp_07.exp3.json"
+			},
+			{
+				"Name": "exp_08",
+				"File": "expressions/exp_08.exp3.json"
+			}
+		],
+		"Motions": {
+			"Idle": [
+				{
+					"File": "motions/mtn_01.motion3.json"
+				},
+				{
+					"File": "motions/sample_01.motion3.json"
+				}
+			],
+			"TapBody": [
+				{
+					"File": "motions/mtn_02.motion3.json"
+				},
+				{
+					"File": "motions/mtn_03.motion3.json"
+				},
+				{
+					"File": "motions/mtn_04.motion3.json"
+				},
+				{
+					"File": "motions/special_01.motion3.json"
+				},
+				{
+					"File": "motions/special_02.motion3.json"
+				},
+				{
+					"File": "motions/special_03.motion3.json"
+				}
+			],
+			"Action": [
+				{
+					"File": "motion/mika_happy.motion3.json",
+					"Name": "Feliz",
+					"FadeInTime": 0.5,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_wink.motion3.json",
+					"Name": "Piscadinha",
+					"FadeInTime": 0.5,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_nod.motion3.json",
+					"Name": "Concordar",
+					"FadeInTime": 0.4,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_shakehead.motion3.json",
+					"Name": "Discordar",
+					"FadeInTime": 0.4,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_thinking.motion3.json",
+					"Name": "Pensando",
+					"FadeInTime": 0.5,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_surprised.motion3.json",
+					"Name": "Surpresa",
+					"FadeInTime": 0.2,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_shy.motion3.json",
+					"Name": "Envergonhada",
+					"FadeInTime": 0.5,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_angry.motion3.json",
+					"Name": "Irritada",
+					"FadeInTime": 0.3,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_sad.motion3.json",
+					"Name": "Triste",
+					"FadeInTime": 0.5,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_wave.motion3.json",
+					"Name": "Acenar",
+					"FadeInTime": 0.3,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_shrug.motion3.json",
+					"Name": "Dar de ombros",
+					"FadeInTime": 0.3,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_cheer.motion3.json",
+					"Name": "Comemorar",
+					"FadeInTime": 0.2,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_laugh.motion3.json",
+					"Name": "Gargalhada",
+					"FadeInTime": 0.3,
+					"FadeOutTime": 0.5
+				},
+				{
+					"File": "motion/mika_sleepy.motion3.json",
+					"Name": "Sono",
+					"FadeInTime": 0.6,
+					"FadeOutTime": 0.8
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": [
+				"ParamA"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamEyeLOpen",
+				"ParamEyeROpen"
+			]
+		}
+	],
+	"HitAreas": [
+		{
+			"Id": "HitAreaHead",
+			"Name": "Head"
+		},
+		{
+			"Id": "HitAreaBody",
+			"Name": "Body"
+		}
+	]
+}

@@ -1,0 +1,76 @@
+# Dependencies
+node_modules/
+.pnpm/
+
+# Build outputs
+dist/
+out/
+build/
+*.tsbuildinfo
+release/
+
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+bun.lockb
+
+# Coverage
+coverage/
+*.lcov
+
+# Environment
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Turbo
+.turbo/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Test
+__snapshots__/
+*.test.ts
+*.spec.ts
+*.test.tsx
+*.spec.tsx
+
+# Live2D model assets (generated, ~20% of repo tokens — useless for LLM)
+**/public/live2d/
+*.motion3.json
+*.physics3.json
+*.cdi3.json
+*.model3.json
+*.pose3.json
+*.exp3.json
+
+# Rust
+target/
+**/config.db*
+
+# Electron
+apps/desktop/.rebuild-stamp
+
+# Git
+.git/
+.gitignore
+.worktrees/
+
+# Misc
+Handle.zip
+handle_tmp/

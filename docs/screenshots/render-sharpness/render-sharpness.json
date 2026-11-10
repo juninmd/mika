@@ -1,0 +1,25 @@
+{
+  "measured": {
+    "auto1x": {
+      "density": 1,
+      "width": 400,
+      "height": 640
+    },
+    "auto2x": {
+      "density": 2,
+      "width": 800,
+      "height": 1280
+    },
+    "performance2x": {
+      "density": 1,
+      "width": 400,
+      "height": 640
+    },
+    "sharp1x": {
+      "density": 1.5,
+      "width": 600,
+      "height": 960
+    }
+  },
+  "saved": "sharp"
+}

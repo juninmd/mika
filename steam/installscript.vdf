@@ -1,0 +1,20 @@
+"InstallScript"
+{
+	"Run Process"
+	{
+		"VC++ 2015-2022 x64 redistributable"
+		{
+			"HasRunKey" "HKEY_LOCAL_MACHINE\\Software\\Valve\\Steam\\Apps\\CommonRedist\\vcredist\\2015-2022-x64"
+			"process 1" "%INSTALLDIR%\\_CommonRedist\\vcredist\\vc_redist.x64.exe"
+			"command 1" "/install /quiet /norestart"
+			"NoCleanUp" "1"
+		}
+		"WebView2 runtime"
+		{
+			"HasRunKey" "HKEY_LOCAL_MACHINE\\Software\\Valve\\Steam\\Apps\\CommonRedist\\webview2\\Evergreen"
+			"process 1" "%INSTALLDIR%\\_CommonRedist\\webview2\\MicrosoftEdgeWebview2Setup.exe"
+			"command 1" "/silent /install"
+			"NoCleanUp" "1"
+		}
+	}
+}

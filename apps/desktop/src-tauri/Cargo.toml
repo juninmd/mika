@@ -1,0 +1,259 @@
+[package]
+name = "mika-desktop"
+version = "0.6.0"
+description = "Mika — VTuber AI companion"
+license-file = "../../../LICENSE"
+publish = false
+edition = "2021"
+rust-version = "1.95"
+
+[lib]
+name = "mika_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+# NÃO REMOVER. `tauri::is_dev()` é literalmente `!cfg!(feature = "custom-protocol")`
+# (tauri-2.11.6/src/lib.rs:309). Sem esta feature o app SEMPRE se considera em desenvolvimento e
+# carrega o `devUrl` da tauri.conf.json em vez do bundle embarcado — inclusive num binário
+# `--release`. Foi assim que o primeiro boot real abriu as duas janelas em BRANCO: o exe apontava
+# para `http://localhost:5273`. Quem liga a feature é o CLI (`tauri build`), nunca `cargo build`.
+# É `check:tauri-custom-protocol` que impede a regressão.
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+# Build Steam: a atualização vem do cliente Steam (SteamPipe); o updater do Tauri não é registrado
+# e `updater::check` recusa. Build padrão ("direct": site/itch) mantém o updater. Compilar com
+# `tauri build --features steam`. Liga também o Steamworks (`src/steam.rs`): Rich Presence,
+# conquistas e o relançamento via Steam (`restart_app_if_necessary`). Sem a feature, nenhum código
+# nem DLL da Steamworks entra no binário.
+steam = ["dep:steamworks"]
+# Ganchos do E2E (`modules/e2e_hooks.rs`, `guarded_fetch::e2e_wiki_override`, o gate de fala do
+# proativo): efeitos que a UI sozinha não aciona e que, num binário distribuído, seriam superfície de
+# ataque (publicar evento no barramento, redirecionar a Wikipedia para um host local). Sem esta feature
+# o código NÃO É COMPILADO (`#[cfg(any(test, feature = "e2e"))]`) — a variável `MIKA_E2E=1` sozinha não
+# liga mais nada. O E2E builda com `pnpm --filter @mika/desktop build:e2e`
+# (`tauri build --no-bundle --features e2e`); NUNCA distribua esse binário. `check:tauri-custom-protocol`
+# recusa `--features ...e2e` em workflow de release/Steam.
+e2e = ["dep:hyper", "dep:hyper-util", "dep:http-body-util", "dep:bytes"]
+# GPU opcional para os modelos ONNX (`modules/inference/session.rs`, política em `accel.rs`).
+# Windows (DirectML) e macOS (CoreML) já vêm ligados por alvo, lá embaixo — estas são extras e
+# TROCAM o binário do ORT que o `ort` baixa, por isso nunca entram por padrão:
+# - `gpu-cuda`/`gpu-tensorrt`: build CUDA 13 do ORT (Linux x86_64 e Windows; no Windows o mesmo
+#   pacote mantém o DirectML como última tentativa). Exige CUDA 13 + cuDNN no PC — sem eles o EP
+#   falha ao registrar e a sessão cai para CPU (ou DirectML), nunca erro.
+# - `gpu-webgpu`: build WebGPU (Vulkan via Dawn) — SÓ Linux x86_64; no Windows o ORT não publica
+#   WebGPU junto do DirectML e o download falha.
+gpu-cuda = ["ort/cuda"]
+gpu-tensorrt = ["ort/tensorrt", "gpu-cuda"]
+gpu-webgpu = ["ort/webgpu"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# Só com `--features e2e`: o host HTTP em loopback do E2E fora do Windows (`src/e2e_host.rs`).
+# Todas já estão no grafo (reqwest/tauri); aqui só ganham a face de servidor.
+hyper = { version = "1", features = ["server", "http1"], optional = true }
+hyper-util = { version = "0.1", features = ["tokio"], optional = true }
+http-body-util = { version = "0.1", optional = true }
+bytes = { version = "1", optional = true }
+# `macos-private-api`: transparência da janela do avatar no macOS.
+# `protocol-asset`: o renderer carrega modelos Live2D/VRM do disco; em file:// o fetch de blob é bloqueado.
+tauri = { version = "2", features = [
+  "tray-icon",
+  "image-png",
+  "macos-private-api",
+  "protocol-asset",
+] }
+tauri-plugin-shell = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-updater = "2"
+# Só com `--features steam`. Liga dinamicamente `steam_api64.dll`/`libsteam_api.so` (o build do
+# `steamworks-sys` copia a redistribuível do SDK para o OUT_DIR; o CI a leva ao depot). MIT/Apache-2.0,
+# 0.13.1 conferida em crates.io em 2026-10-06.
+steamworks = { version = "0.13", optional = true }
+tauri-plugin-single-instance = "2"
+tauri-plugin-notification = "2"
+# Sem um logger REGISTRADO, o crate `log` descarta tudo em silêncio — as 21 chamadas
+# `log::error!`/`warn!` deste shell não iam a lugar nenhum, inclusive "backend não subiu".
+tauri-plugin-log = "2"
+# O registro de módulos nativos (`native/mod.rs`) guarda `Box<dyn NativeModule>` e o trait tem
+# método async — sem isto não há trait object assíncrono em Rust estável.
+async-trait = "0.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# `rt`/`rt-multi-thread`: o código usa `spawn_blocking` e `select!`; antes só chegavam por unificação
+# de features via tauri/reqwest/rmcp, e sumiriam em silêncio se uma dependência mudasse.
+tokio = { version = "1", features = ["sync", "time", "macros", "rt", "rt-multi-thread"] }
+anyhow = "1"
+log = "0.4"
+# Cripto do config. Os parâmetros NÃO são escolha nossa: têm de reproduzir o que o
+# `node:crypto` já gravou no disco dos usuários (AES-256-GCM com IV de 16 bytes e scrypt
+# N=16384/r=8/p=1), senão quem atualiza perde as chaves de API em silêncio. Ver config/crypto.rs.
+aes-gcm = "0.11"
+scrypt = { version = "0.12", default-features = false }
+typenum = "1"
+hex = "0.4"
+rand = "0.10"
+zeroize = "1"
+# Imagem do clipboard chega em RGBA cru; a visão espera um data URL de PNG.
+png = "0.18"
+base64 = "0.23"
+image = { version = "0.25.6", default-features = false, features = ["jpeg", "png"] }
+# Redimensionamento da captura de tela e dos bitmaps de hash/densidade (`images.rs`, `capture.rs`)
+# com SIMD (SSE4.1/AVX2 no x86, NEON no ARM, escolhido em runtime) — o `image` é escalar.
+# MIT/Apache-2.0, conferido em crates.io em 2026-09-28 (6.1.0). `image`: conversões para/de
+# `DynamicImage`/`RgbaImage` sem cópia extra.
+fast_image_resize = { version = "6.1", features = ["image"] }
+xcap = "0.9.8"
+starship-battery = { version = "0.12", default-features = false }
+# Hora LOCAL para `character.quietHoursStart`/`End` (`modules/brain/awareness`) — já resolvia
+# transitivamente na mesma versão (via `rmcp`/`schemars`/`serde_with`, ver Cargo.lock); entra como
+# dependência DIRETA para deixar de depender de acaso de outra árvore trazê-la. `clock` (não
+# default) é a única feature usada (`chrono::Local::now`); sem `default-features`, evita puxar
+# `wasmbind`/`unstable-locales` que este alvo nunca usa.
+chrono = { version = "0.4.45", default-features = false, features = ["clock"] }
+# Fuso IANA de `user.timezone` (`brain/persona/user_clock.rs`) — `chrono` sem `tz` não valida
+# "America/Sao_Paulo". Já resolvia transitivamente na mesma versão (ver Cargo.lock), mais o banco do
+# SO no Linux/macOS e o embutido (`jiff-tzdb`) no Windows; entra direta para deixar de ser acaso.
+jiff = "0.2.37"
+
+# --- Migração do backend para Rust (docs/tauri-rust-migration.md) --------------------------------
+# Declarados de uma vez, e não conforme o uso, porque oito frentes migram em paralelo e cada
+# uma editando este arquivo viraria conflito em série. O que sobrar sem uso ao fim da migração sai —
+# `check:dead-deps` cobra isso.
+#
+# `rig-core` substitui `ai` + `@ai-sdk/*`: tem streaming, ToolCallDelta e laço multi-turn, que é o
+# que `brain` usa. `rmcp` é o SDK oficial de MCP. `ort` é a ÚNICA opção de ONNX aqui — `tract-onnx`
+# foi reprovado por não rodar nem o Silero VAD.
+# Desde a 0.43 o motor é `Model<Wire, Transport>`/`DynModel<Completion>` (não há mais `CompletionClient`
+# nem `Client` por provedor): o cliente HTTP entra por `rig-reqwest`, que embrulha o `reqwest::Client`
+# compartilhado do app (`modules/llm::http_client`) — o transporte embutido (feature `reqwest` do
+# `rig-core`) usaria o pool dele, sem os timeouts daqui.
+rig-core = "0.45"
+rig-reqwest = "0.45"
+# `client`: papel de cliente MCP (`Peer<RoleClient>`, `ServiceExt`) — sem isso o crate só compila o
+# lado servidor (default). `transport-child-process`: spawna o servidor MCP como processo do SO
+# falando stdio, via `TokioChildProcess`. `which-command`: resolve o executável pelo PATH ANTES do
+# spawn (equivalente a `isRunnable`/`where`/`which` do lado TS), inclusive shims `.cmd` do Windows
+# (`npx.cmd`) que `tokio::process::Command` sozinho não acha. Ver `modules/mcp/`.
+rmcp = { version = "3.4", features = ["client", "transport-child-process", "which-command"] }
+ort = "2.0.0-rc.15"
+realfft = "3.5"
+tokenizers = { version = "1.0.0-rc.2", features = ["regex"] }
+rusqlite = { version = "0.40", features = ["bundled"] }
+sysinfo = "0.39"
+# Idioma do SO no primeiro boot (`config/locale.rs`): Windows (GetUserPreferredUILanguages), macOS
+# (CFLocale — app aberto pelo Finder não tem `LANG`) e Linux (`LC_ALL`/`LANG`) numa chamada só.
+# MIT OR Apache-2.0, sem dependências nativas além das do próprio SO.
+sys-locale = "0.3"
+hound = "3.5"
+# Tool `code` (`modules/features/code_runner`) — motor JS puro Rust, sem `bindgen`/toolchain C
+# (mesma classe de problema que barra `espeakng` logo abaixo). Unlicense OR MIT, versões travadas
+# juntas (verificado via `cargo info` em 2026-09-26: as três em 0.22.0). `default-features = false`
+# em `boa_runtime` desliga só as features PRÓPRIAS dela (`fetch` → `reqwest`, `url`) — as defaults
+# de `boa_engine` continuam ligadas pela dependência direta dela logo abaixo; a sandbox só ganha o
+# global `console`, nunca `fetch`/`process`/acesso a arquivo (ver `code_runner/sandbox.rs`).
+# `boa_gc` entra à parte porque `#[derive(Trace, Finalize)]` (`code_runner/logger.rs`) expande para
+# um caminho absoluto `boa_gc::...` — reexportar o TIPO via `boa_engine::{Trace, Finalize}` resolve
+# a importação, mas não a crate que a macro deriva referencia; sem esta linha o derive falha com
+# "cannot find `boa_gc` in the crate root" mesmo com o import de `boa_engine` presente.
+boa_engine = "0.22"
+boa_runtime = { version = "0.22", default-features = false }
+boa_gc = "0.22"
+# `espeakng` NÃO entra ainda: ele passa por `espeakng-sys` → `bindgen` → `clang-sys`, e sem LLVM
+# instalado o build da árvore INTEIRA quebra — o que trava todas as frentes, não só a de voz.
+# Quem for portar o TTS local decide entre exigir LLVM no ambiente de build ou outro caminho.
+zip = "9.0.0-pre3"
+futures = "0.3"
+async-stream = "0.3"
+# Declarados aqui, e não por quem usa, pela mesma razão do bloco acima: várias frentes em paralelo
+# editando este arquivo viram conflito em série. `reqwest` já estava no grafo via `rig-core`, e o
+# módulo `llm` chegou a alcançá-lo pelo reexport `rig_core::http_client::ReqwestClient` — indireção
+# que existia só porque a crate não era declarada. `rustls` evita depender do OpenSSL do SO (desde a
+# 0.13: aws-lc-rs e o repositório de certificados do SO, não mais `webpki-roots`); `query`
+# é feature própria desde a 0.13 (Steam e Google TTS usam `.query()`).
+# `cookies`: só pro pipeline SSRF-guardado de `modules/browser/guarded_fetch.rs` — o Yahoo faz um
+# bounce de verificação same-origin (redirect, seta cookie, redireciona de volta) antes de servir
+# HTML real, confirmado com captura real (ver `modules/browser/mod.rs`).
+reqwest = { version = "0.13", default-features = false, features = ["json", "query", "rustls", "stream", "cookies"] }
+uuid = { version = "1", features = ["v4"] }
+regex = "1"
+unicode-normalization = "0.1"
+# Charset de página web (Shift-JIS, EUC-KR, GBK, Windows-125x) em `modules/browser/decode.rs`; já estava
+# no grafo (0.8.42, via `reqwest`/`scraper`), agora declarada.
+encoding_rs = "0.8"
+# HTML parsing por seletor CSS (sobre `html5ever`) pro pipeline sem-motor-JS de `modules/browser/`
+# (busca e leitura de página — ver a decisão registrada lá e em `docs/tauri-rust-migration.md §5`).
+# Mantida ativamente (29M+ downloads, última versão em 2026-05); nenhuma outra crate de parsing HTML
+# já estava no grafo.
+scraper = "0.29"
+# Verificação de integridade dos downloads do wizard. Declarado depois de uma implementação de
+# SHA-256 escrita à mão reprovar nos vetores do NIST: hash próprio não se depura, se substitui —
+# e um hash errado no caminho de integridade aceita binário adulterado dizendo que conferiu.
+sha2 = "0.11"
+keepawake = { version = "0.6", default-features = false }
+user-idle = "0.6"
+# Origem de permissão de mídia é comparada como URL, nunca por prefixo de string.
+url = "2"
+# WP5 (computer-use tool, `modules/features/computer_use/`): mouse/teclado sintéticos, os três SOs.
+# Versão/licença conferidas em crates.io em 2026-09-26: 0.6.1, MIT, mantida ativamente.
+enigo = "0.6.1"
+# Idioma da mensagem do usuário (`brain::reply_language`): trigramas offline, sem modelo nem rede.
+# MIT, cobre os 10 idiomas da interface.
+whatlang = "0.16"
+
+# Guarda de permissão do webview (permissions.rs). Via `wry` ele é só TRANSITIVO, e um caminho
+# de crate transitivo não é nomeável — sem isto, `ICoreWebView2PermissionRequestedEventHandler`
+# não pode ser referenciado. A versão segue a que o `wry` já travou no Cargo.lock.
+[target.'cfg(target_os = "windows")'.dependencies]
+webview2-com = "0.39"
+# WP5: localização de elemento de UI por nome/role (`action=find`/`click_element`) e a checagem
+# `IsPassword` que barra digitar em campo de senha. Só Windows tem UI Automation; outro SO devolve
+# "unsupported on this platform" nomeado (ver `modules/features/computer_use/ui_automation.rs`).
+# Versão/licença conferidas em crates.io em 2026-09-26: 0.25.1, Apache-2.0.
+uiautomation = "0.25.1"
+# A MESMA série que `webview2-com` usa (0.39 usa windows-core 0.62).
+windows-core = "0.62"
+# Janela ativa em primeiro plano (`GetForegroundWindow`/`GetWindowTextW`/`GetWindowThreadProcessId`,
+# ver `modules/system_signals/active_window.rs`). JÁ resolvida em `Cargo.lock` na 0.62.2 —
+# dependência transitiva de `sysinfo` e `xcap` (ambos diretos, acima) — então esta linha não amplia
+# a árvore de dependências, só declara uma aresta que já existia. Crate oficial da Microsoft, dual
+# MIT/Apache-2.0, sem RUSTSEC aberto (checado em 2026-09-22 contra a advisory-db).
+# `Win32_Foundation`: tipo `HWND`. `Win32_UI_WindowsAndMessaging`: as três funções acima.
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging"] }
+# GPU para STT/TTS (`modules/inference/session.rs`). O binário do ONNX Runtime que o `ort` baixa para
+# Windows JÁ é o build DirectML — a feature só expõe o EP, não troca o download. DirectML roda em
+# NVIDIA, AMD e Intel sem CUDA instalado; CUDA fica de fora por exigir o toolkit no PC do usuário.
+ort = { version = "2.0.0-rc.15", features = ["directml"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+ort = { version = "2.0.0-rc.15", features = ["coreml"] }
+# Janela ativa no macOS (`NSWorkspace.frontmostApplication`, ver
+# `modules/system_signals/active_window.rs`). JÁ resolvida em `Cargo.lock` (0.3.2) — dependência
+# transitiva de `xcap` — então esta linha só nomeia uma aresta que já existia. `libc`: o tipo do
+# `processIdentifier`.
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "libc", "NSWorkspace", "NSRunningApplication"] }
+
+# Janela ativa no X11 (`_NET_ACTIVE_WINDOW` + `_NET_WM_PID`, ver
+# `modules/system_signals/active_window.rs`). JÁ resolvida em `Cargo.lock` (0.13.2) — dependência
+# transitiva de `enigo` e `global-hotkey` — então esta linha não amplia a árvore de dependências, só a nomeia.
+[target.'cfg(target_os = "linux")'.dependencies]
+x11rb = "0.13"
+
+# Só afeta `cargo test`/`cargo bench` — `[dev-dependencies]` nunca entra na árvore de
+# `cargo build --release`/`tauri build`, então isto não muda o binário de produção. `tauri/test`
+# é o `mock_app()`/`mock_builder()` oficial do próprio crate já em `[dependencies]` (mesma versão
+# unificada pelo Cargo, não uma dependência nova) — dá para montar um `App<MockRuntime>` com janela
+# `WebviewWindow` de verdade e provar `app.emit_to(...)` sem precisar de um WebView real.
+[dev-dependencies]
+tauri = { version = "2", features = ["test"] }
+# `test-utils`: o wire `MockScript` e os eventos de stream roteirizados do próprio `rig-core` — base do
+# dublê de modelo dos testes de `brain` (o laço de turno recebe os mesmos `StreamEvent` de um provedor
+# real, sem rede). Só `cargo test`; nunca entra no binário.
+rig-core = { version = "0.45", features = ["test-utils"] }
+# `start_paused`: testes que dependem de tempo (fila do LLM, abort no meio do stream) rodam em relógio
+# virtual — deterministas, sem `sleep` real que vira flaky em CI lento. Só `cargo test`.
+tokio = { version = "1", features = ["test-util"] }
+
+# Perfis de build moram no `Cargo.toml` da raiz do workspace: o Cargo ignora `[profile]` de membro.

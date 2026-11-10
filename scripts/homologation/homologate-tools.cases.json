@@ -1,0 +1,300 @@
+{
+  "_doc": "Casos de homologacao lidos por scripts/homologate-tools.mts. Um objeto ou uma LISTA de objetos por tool — a cobertura e por ACAO, nao por tool. Regra do caso: acao segura e idempotente (leitura, listagem), ou o caminho de RECUSA de uma acao perigosa (alvo invalido, confirmacao ausente, credencial faltando). Nenhum caso pode abrir janela, apagar dado do usuario ou acionar provedor pago — o harness roda com um dataDir temporario e sem credencial, entao chamada de LLM cai no envelope de erro.",
+  "_unsafe": {
+    "desktop:launch(valido)": "abriria um aplicativo real na maquina. O caso coberto e o alvo invalido, que exerce a validacao de nome — o mesmo codigo, sem o efeito.",
+    "vision_capture:screenshot": "captura a TELA do usuario de verdade e manda para o LLM descrever. Dado pessoal, e lento. As outras duas acoes de captura cobrem o mesmo caminho de codigo.",
+    "vision_capture:watch_now": "mesmo motivo do screenshot: captura a tela e reage a ela."
+  },
+  "get_system_info": {},
+  "avatar": [
+    {
+      "action": "inspect_model"
+    },
+    {
+      "action": "expression",
+      "expression": "happy"
+    },
+    {
+      "action": "speak",
+      "text": "homologacao"
+    },
+    {
+      "action": "affinity_delta",
+      "delta": 0
+    },
+    {
+      "action": "expression"
+    }
+  ],
+  "desktop": [
+    {
+      "action": "window"
+    },
+    {
+      "action": "process"
+    },
+    {
+      "action": "launch",
+      "target": "$$alvo-invalido-de-homologacao$$"
+    }
+  ],
+  "game_knowledge": [
+    {
+      "action": "get_location_guide",
+      "game": "Elden Ring"
+    },
+    {
+      "action": "ask",
+      "game": "Elden Ring",
+      "topic": "quem e Melina?"
+    },
+    {
+      "action": "memorize_location",
+      "game": "Elden Ring",
+      "locationName": "Limgrave",
+      "description": "ponto de homologacao"
+    }
+  ],
+  "game_session": [
+    {
+      "action": "playtime"
+    },
+    {
+      "action": "stats"
+    },
+    {
+      "action": "streak"
+    },
+    {
+      "action": "events",
+      "sessionId": "sessao-inexistente-de-homologacao"
+    },
+    {
+      "action": "describe",
+      "sessionId": "sessao-inexistente-de-homologacao"
+    }
+  ],
+  "play_minigame": {
+    "game": "jokenpo"
+  },
+  "recommend_media": {
+    "type": "game",
+    "mood": "relaxed"
+  },
+  "steam": [
+    {
+      "action": "library",
+      "mode": "list"
+    },
+    {
+      "action": "achievements",
+      "appId": "730"
+    }
+  ],
+  "track_gamer_mood": {
+    "recentMessages": [
+      "que jogo bom",
+      "boa partida"
+    ],
+    "gameOutcome": "win"
+  },
+  "mood": [
+    {
+      "action": "get"
+    },
+    {
+      "action": "update",
+      "valence": 0.1,
+      "arousal": 0.1
+    },
+    {
+      "action": "register_interaction"
+    },
+    {
+      "action": "decay"
+    }
+  ],
+  "person_catalog": [
+    {
+      "action": "upsert",
+      "name": "Homologacao"
+    },
+    {
+      "action": "list"
+    },
+    {
+      "action": "get",
+      "identifier": "Homologacao"
+    },
+    {
+      "action": "get",
+      "identifier": "pessoa-inexistente-de-homologacao"
+    },
+    {
+      "action": "search",
+      "query": "Homologacao"
+    },
+    {
+      "action": "add_mention",
+      "identifier": "Homologacao",
+      "text": "citado na homologacao"
+    },
+    {
+      "action": "update_social",
+      "identifier": "Homologacao",
+      "socialLinks": [
+        "https://exemplo.test"
+      ]
+    },
+    {
+      "action": "add_fact",
+      "identifier": "Homologacao",
+      "fact": "existe so para o harness"
+    },
+    {
+      "action": "delete_fact",
+      "id": "id-inexistente-de-homologacao"
+    },
+    {
+      "action": "add_relationship",
+      "name": "Ninguem",
+      "label": "colega"
+    },
+    {
+      "action": "delete_relationship",
+      "id": "id-inexistente-de-homologacao"
+    },
+    {
+      "action": "delete",
+      "identifier": "Homologacao",
+      "confirm": true
+    }
+  ],
+  "clear_history": {
+    "confirm": false
+  },
+  "export_data": {},
+  "reminder": [
+    {
+      "action": "list"
+    },
+    {
+      "action": "schedule",
+      "subject": "homologacao",
+      "amount": 60,
+      "unit": "minutes"
+    },
+    {
+      "action": "cancel",
+      "id": "id-inexistente-de-homologacao"
+    }
+  ],
+  "user_profile": [
+    {
+      "action": "get"
+    },
+    {
+      "action": "query",
+      "query": "quem sou eu?"
+    },
+    {
+      "action": "learn",
+      "fact": "homologacao do harness",
+      "category": "other"
+    },
+    {
+      "action": "learn",
+      "fact": "homologacao"
+    },
+    {
+      "action": "set",
+      "preferredName": "Homologacao"
+    },
+    {
+      "action": "set_personality",
+      "communicationStyle": "casual"
+    },
+    {
+      "action": "forget",
+      "fields": [
+        "preferredName"
+      ]
+    }
+  ],
+  "memory_console": [
+    {
+      "action": "snapshot"
+    },
+    {
+      "action": "add_fact",
+      "fact": "fato de homologacao"
+    },
+    {
+      "action": "search_episodic",
+      "query": "homologacao"
+    },
+    {
+      "action": "delete_episodic",
+      "id": "id-inexistente-de-homologacao"
+    },
+    {
+      "action": "clear_episodic"
+    }
+  ],
+  "content": [
+    {
+      "action": "daily_recap"
+    },
+    {
+      "action": "social_post",
+      "event": "homologacao"
+    }
+  ],
+  "collaboration": [
+    {
+      "action": "stop"
+    },
+    {
+      "action": "start",
+      "topic": "homologacao"
+    }
+  ],
+  "match_effect": {
+    "text": "/matrix"
+  },
+  "vision_capture": [
+    {
+      "action": "frame"
+    }
+  ],
+  "vision_read": [
+    {
+      "action": "describe",
+      "prompt": "o que e isso?"
+    },
+    {
+      "action": "ocr"
+    },
+    {
+      "action": "people"
+    }
+  ],
+  "voice": [
+    {
+      "action": "listen_stop"
+    },
+    {
+      "action": "mute"
+    },
+    {
+      "action": "speak",
+      "text": "homologacao"
+    },
+    {
+      "action": "transcribe"
+    },
+    {
+      "action": "listen_start"
+    }
+  ]
+}

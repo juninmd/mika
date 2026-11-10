@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Mika Desktop (Renderer)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5273",
+      "webRoot": "${workspaceFolder}/apps/desktop/src/renderer",
+      "timeout": 30000
+    },
+    {
+      "name": "Vitest: Current File",
+      "type": "pwa-node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "vitest",
+        "run",
+        "${relativeFile}"
+      ],
+      "autoAttachChildProcesses": true,
+      "smartStep": true,
+      "console": "integratedTerminal"
+    }
+  ]
+}

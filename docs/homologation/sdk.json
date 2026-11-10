@@ -1,0 +1,57 @@
+{
+  "identidade": {
+    "id": "sdk",
+    "titulo": "SDK",
+    "perfil": "contract"
+  },
+  "artefato": {
+    "commit": "ececbeee97c2731b07066babaae6c1cbf2219771+dirty",
+    "tree": "422203b786a4fdc3",
+    "contract": "65d0586d5991ee80",
+    "deps": {
+      "zod": "catalog:"
+    },
+    "lockfile": "4d85bfe4ac1d3048"
+  },
+  "ambiente": {
+    "plataforma": "linux",
+    "node": "v24.22.1",
+    "data": "2026-11-10"
+  },
+  "criterios": [
+    {
+      "id": "fronteira",
+      "status": "ok",
+      "detail": "manifesto × código"
+    },
+    {
+      "id": "vivo",
+      "status": "ok",
+      "detail": "131 arquivo(s) fora do módulo o referenciam"
+    },
+    {
+      "id": "headless",
+      "status": "ok",
+      "detail": "1 arquivo(s) do contrato fora do Electron"
+    },
+    {
+      "id": "import-publico",
+      "status": "ok",
+      "detail": "packages/sdk/src/index.ts exporta 46 símbolo(s)"
+    },
+    {
+      "id": "config-ui",
+      "status": "ok",
+      "detail": "nenhum campo de configuração de usuário declarado"
+    },
+    {
+      "id": "contrato",
+      "status": "ok",
+      "detail": "23 arquivo(s) de teste"
+    }
+  ],
+  "estado": "aprovado",
+  "limites": [
+    "Só contratos e tipos: o comportamento por trás deles é provado no backend Rust e no E2E."
+  ]
+}

@@ -1,0 +1,4 @@
+# O binário do backend é gerado por `pnpm build:sidecar`, com o sufixo do target triple
+# que o Tauri exige (mika-backend-x86_64-pc-windows-msvc.exe). Artefato, não fonte.
+*
+!.gitignore

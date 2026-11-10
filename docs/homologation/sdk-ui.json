@@ -1,0 +1,61 @@
+{
+  "identidade": {
+    "id": "sdk-ui",
+    "titulo": "SDK de interface",
+    "perfil": "library"
+  },
+  "artefato": {
+    "commit": "f4c99093f3d6aba818b27e798d49edc44b32de75+dirty",
+    "tree": "5d9c5dc44133b1fe",
+    "contract": "64a30184b8675597",
+    "deps": {
+      "@mika/sdk": "workspace:*",
+      "clsx": "^2.1.1",
+      "framer-motion": "^14.10.1",
+      "lucide-react": "^1.70.0",
+      "tailwind-merge": "^3.7.0"
+    },
+    "lockfile": "4d85bfe4ac1d3048"
+  },
+  "ambiente": {
+    "plataforma": "win32",
+    "node": "v24.21.0",
+    "data": "2026-11-08"
+  },
+  "criterios": [
+    {
+      "id": "fronteira",
+      "status": "ok",
+      "detail": "manifesto × código"
+    },
+    {
+      "id": "vivo",
+      "status": "ok",
+      "detail": "131 arquivo(s) fora do módulo o referenciam"
+    },
+    {
+      "id": "headless",
+      "status": "ok",
+      "detail": "2 arquivo(s) do contrato fora do Electron"
+    },
+    {
+      "id": "import-publico",
+      "status": "ok",
+      "detail": "packages/sdk-ui/src/index.tsx exporta 13 símbolo(s)"
+    },
+    {
+      "id": "montagem",
+      "status": "ok",
+      "detail": "2 suíte(s) montam e desmontam uma instância"
+    },
+    {
+      "id": "contrato",
+      "status": "ok",
+      "detail": "18 arquivo(s) de teste"
+    }
+  ],
+  "estado": "aprovado",
+  "limites": [
+    "UI, IPC e empacotamento não são cobertos por este perfil — exigem o perfil de integração Desktop."
+  ]
+}

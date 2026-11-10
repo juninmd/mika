@@ -1,0 +1,57 @@
+RASCUNHO — requer revisão jurídica antes da publicação.
+
+LICENÇA DE USO DE SOFTWARE PROPRIETÁRIO — MIKA
+
+Copyright (c) [ANO] [RAZÃO SOCIAL]. Todos os direitos reservados.
+
+Este arquivo é o texto de licença do código-fonte e dos binários do Mika. O contrato com o usuário
+final, em linguagem corrente, está em EULA.md; se houver conflito entre os dois, vale o EULA para o
+usuário final e este arquivo para quem tem acesso ao código-fonte. Componentes de terceiros seguem as
+licenças próprias listadas em THIRD-PARTY-NOTICES.md e LICENSE-ASSETS.md — nada aqui as substitui.
+
+1. LICENÇA. [RAZÃO SOCIAL] ("Licenciante") concede a você ("Licenciado") uma licença pessoal, não
+   exclusiva, intransferível, não sublicenciável e revogável para instalar e usar o Mika em
+   dispositivos que você possui ou controla, para uso pessoal, nos termos deste arquivo. O Mika é
+   licenciado, não vendido: nenhum direito de propriedade é transferido.
+
+2. RESTRIÇÕES. Salvo permissão expressa por escrito do Licenciante ou quando a lei aplicável proibir
+   a restrição, é vedado: (a) copiar, modificar ou criar obras derivadas do Mika; (b) fazer engenharia
+   reversa, descompilar, desmontar ou tentar obter o código-fonte, os prompts, os modelos ou os assets
+   empacotados; (c) redistribuir, sublicenciar, alugar, emprestar, revender ou disponibilizar o Mika
+   como serviço a terceiros; (d) remover ou alterar avisos de direitos autorais, de marca ou de
+   licença; (e) contornar medidas técnicas de proteção, de licenciamento ou de atualização; (f) usar o
+   Mika para violar a lei ou direitos de terceiros.
+
+3. SAÍDA GERADA POR IA. O Mika produz fala, texto e ações com modelos de linguagem em tempo real. A
+   saída é gerada ao vivo, é probabilística, pode estar errada, incompleta, ofensiva ou
+   desatualizada, e não constitui aconselhamento profissional (médico, jurídico, financeiro ou
+   outro). O Licenciado é o único responsável por revisar a saída e pelo uso que dela fizer. O
+   Licenciante não reivindica propriedade sobre a saída gerada para o Licenciado, mas não garante que
+   ela seja original nem livre de direitos de terceiros.
+
+4. RECURSOS OPCIONAIS. Captura de tela, microfone, leitura da área de transferência, controle do
+   computador, execução de código, servidores MCP, busca na web e provedores remotos de IA funcionam
+   somente nos termos descritos em EULA.md e PRIVACY.md, e o Licenciado responde pelo que autorizar.
+
+5. COMPONENTES DE TERCEIROS. O Mika inclui ou baixa, por ação do usuário, componentes de terceiros
+   (bibliotecas, runtimes, modelos de voz, modelos 3D, animações, fontes). Cada um segue a sua
+   licença. Alguns modelos (por exemplo o Supertonic, sob BigScience OpenRAIL-M) impõem restrições de
+   uso que o Licenciado se obriga a cumprir — ver EULA.md, seção "Modelos de terceiros".
+
+6. SEM GARANTIA. NA MÁXIMA EXTENSÃO PERMITIDA PELA LEI, O MIKA É FORNECIDO "NO ESTADO EM QUE SE
+   ENCONTRA" E "CONFORME DISPONÍVEL", SEM GARANTIA DE QUALQUER TIPO, EXPRESSA OU IMPLÍCITA,
+   INCLUINDO ADEQUAÇÃO A UM FIM ESPECÍFICO, NÃO VIOLAÇÃO, DISPONIBILIDADE OU AUSÊNCIA DE ERROS.
+
+7. LIMITAÇÃO DE RESPONSABILIDADE. NA MÁXIMA EXTENSÃO PERMITIDA PELA LEI, O LICENCIANTE NÃO RESPONDE
+   POR DANOS INDIRETOS, INCIDENTAIS, ESPECIAIS, CONSEQUENCIAIS OU PERDA DE DADOS, LUCROS OU USO, NEM
+   POR ATOS DE PROVEDORES DE IA DE TERCEIROS ESCOLHIDOS PELO LICENCIADO. A RESPONSABILIDADE TOTAL DO
+   LICENCIANTE LIMITA-SE AO VALOR PAGO PELO LICENCIADO PELO MIKA. NADA AQUI LIMITA DIREITOS
+   IRRENUNCIÁVEIS DO CONSUMIDOR NEM RESPONSABILIDADE QUE A LEI NÃO PERMITA LIMITAR.
+
+8. RESCISÃO. A licença termina automaticamente se o Licenciado descumprir este arquivo. Ao término,
+   o Licenciado deve parar de usar o Mika e apagar as cópias. As seções 2, 3, 5, 6, 7 e 9 sobrevivem.
+
+9. LEI E FORO. Lei aplicável: [LEI APLICÁVEL]. Foro: [FORO]. Para consumidores, prevalece o foro do
+   domicílio do consumidor quando a lei assim determinar.
+
+10. CONTATO. [RAZÃO SOCIAL], [ENDEREÇO] — [E-MAIL DE SUPORTE].

@@ -1,0 +1,13 @@
+{
+  "providers": {
+    "google": {
+      "model": "gemini-3.8-flash",
+      "wirePath": "/v1beta/models/gemini-3.8-flash:streamGenerateContent"
+    },
+    "openrouter": {
+      "model": "google/gemini-3.8-flash",
+      "wirePath": "/api/v1/chat/completions"
+    }
+  },
+  "realCloudCalled": false
+}

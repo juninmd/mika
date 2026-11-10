@@ -1,0 +1,15 @@
+# Gitleaks allowlist — KNOWN HISTORICAL findings only.
+#
+# These fingerprints point at an OpenRouter API key that was committed in old commits
+# (apr/may 2026) in files that no longer exist in the working tree and are not tracked:
+#   - apps/server/data/config.json  (commit 41051f7b, 2026-04-12) — app removed
+#   - gitleaks-report.json          (commit ffa3b09d, 2026-05-27) — a leaked report, now gitignored
+#
+# The secret cannot be removed from git history without a destructive history rewrite + force-push.
+# ACTION REQUIRED (owner): the exposed OpenRouter API key MUST be rotated in the OpenRouter dashboard
+# if it hasn't been already — it is permanently visible in this repo's history.
+#
+# Allowlisting here stops the full-history scan from re-flagging these known, remediated exposures.
+ffa3b09dfad0f81db94a8b35393e3053c942ed38:gitleaks-report.json:openrouter-api-key:9
+ffa3b09dfad0f81db94a8b35393e3053c942ed38:gitleaks-report.json:openrouter-api-key:10
+41051f7b68300a8173c1be9a9a925900812a73b9:apps/server/data/config.json:openrouter-api-key:10

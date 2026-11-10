@@ -1,0 +1,159 @@
+# Validação de todo pull request: lint, gates, tipos, unidade e `cargo check` nos três sistemas.
+# Mesmas actions (e mesmos SHAs) de release.yml; sem secrets, sem escrita.
+name: CI
+
+on:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CI: true
+  # Dependências nativas do Tauri no Linux (webkit, tray, áudio, captura, X11) — igual a release.yml.
+  LINUX_DEPS: >-
+    libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf libssl-dev libasound2-dev
+    libxss-dev libxdo-dev libxkbcommon-dev libxcb1-dev libxrandr-dev libdbus-1-dev
+    libpipewire-0.3-dev libgbm-dev libegl-dev libwayland-dev libclang-dev
+
+jobs:
+  verify:
+    name: Lint, gates, tipos e unidade
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: ci-verify
+
+      - name: Dependências do sistema (Linux)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS
+
+      - run: pnpm install --frozen-lockfile
+
+      # `pnpm gates` termina em `cargo test --lib`: o `tauri-build` exige `out/prompts` e `out/renderer`.
+      - name: Build do renderer e dos prompts
+        run: pnpm --filter @mika/desktop build
+
+      - run: pnpm -s lint
+
+      - run: pnpm -s gates
+
+      - run: pnpm -s typecheck
+
+      - run: pnpm -s test:unit
+
+  rust:
+    name: cargo check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: ci-check-${{ matrix.os }}
+
+      - name: Dependências do sistema (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build do renderer e dos prompts
+        run: pnpm --filter @mika/desktop build
+
+      - name: cargo check --lib
+        run: cargo check --lib --locked --manifest-path apps/desktop/src-tauri/Cargo.toml
+
+      # Código atrás de `--features steam` (`src/steam.rs`) só compila aqui; sem este passo ele ficava
+      # sem checagem até o job `steam` do release, tarde demais para um PR.
+      - name: cargo check --lib --features steam
+        run: cargo check --lib --locked --features steam --manifest-path apps/desktop/src-tauri/Cargo.toml
+
+  # E2E fora do Windows: não há CDP em WebKitGTK/WKWebView, então o binário `--features e2e` serve o
+  # bundle e o IPC em loopback (`src-tauri/src/e2e_host.rs`) e o Playwright dirige um Chromium nessas
+  # páginas (`apps/desktop/e2e/fixtures/e2e-host.ts`). O backend Rust é o real.
+  e2e:
+    name: E2E (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: ci-e2e-${{ matrix.os }}
+
+      - name: Dependências do sistema (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS xvfb dbus-x11
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Chromium do Playwright
+        run: pnpm --filter @mika/desktop exec playwright install --with-deps chromium
+
+      - name: Build do binário E2E
+        run: pnpm --filter @mika/desktop build:e2e
+
+      # Só os `@smoke`: a suíte inteira tem specs antigas (wizard de 4 etapas, prompts em PT) que
+      # falham em qualquer sistema e ainda esperam reescrita — ver `apps/desktop/e2e/README.md`.
+      - name: Specs @smoke (Linux, display virtual)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a dbus-run-session -- pnpm --filter @mika/desktop exec playwright test -c e2e/playwright.config.ts --grep @smoke
+
+      - name: Specs @smoke (macOS)
+        if: runner.os == 'macOS'
+        run: pnpm --filter @mika/desktop exec playwright test -c e2e/playwright.config.ts --grep @smoke
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: e2e-screenshots-${{ matrix.os }}
+          path: apps/desktop/e2e/screenshots/
+          if-no-files-found: ignore

@@ -1,0 +1,12 @@
+"DepotBuildConfig"
+{
+	"DepotID" "${STEAM_DEPOT_WINDOWS_ID}"
+	"FileMapping"
+	{
+		"LocalPath" "windows/*"
+		"DepotPath" "."
+		"Recursive" "1"
+	}
+	"FileExclusion" "*.pdb"
+	"InstallScript" "installscript.vdf"
+}

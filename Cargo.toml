@@ -1,0 +1,27 @@
+[workspace]
+members = [
+    "apps/desktop/src-tauri",
+]
+resolver = "2"
+
+# Aqui, não no crate: o Cargo só lê `[profile]` da raiz do workspace e ignorava estes em silêncio.
+
+# Dependências otimizadas também no `tauri dev` e `cargo test`: `image` (JPEG da visão),
+# `realfft` e `boa_engine` em opt-level 0 são ordens de grandeza mais lentos, e o crate do
+# app continua compilando rápido.
+[profile.dev.package."*"]
+opt-level = 2
+
+[profile.test.package."*"]
+opt-level = 2
+
+# `opt-level = 3`, não "s": log-mel, reamostragem e JPEG rodam em Rust puro no caminho de cada
+# turno de voz/visão, e "s" corta a vetorização exatamente desses laços.
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+strip = true
+# Explícito: o default já é unwind, e o código assumia abort sem que isso estivesse escrito. Com
+# unwind, um panic em task tokio mata só a task; `lib.rs::run` instala um hook que o registra.
+panic = "unwind"

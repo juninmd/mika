@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Mika",
+  "version": "../package.json",
+  "identifier": "com.mika.desktop",
+  "build": {
+    "frontendDist": "../out/renderer",
+    "devUrl": "http://localhost:5273",
+    "beforeDevCommand": "pnpm --filter @mika/desktop dev:renderer",
+    "beforeBuildCommand": "pnpm --filter @mika/desktop build:prompts && pnpm --filter @mika/desktop build:renderer"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "macOSPrivateApi": true,
+    "windows": [],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: asset: http://asset.localhost http://mika-live2d.localhost mika-live2d:; media-src 'self' data: blob: asset: http://asset.localhost https://storage.googleapis.com; connect-src 'self' ipc: http://ipc.localhost http://mika-live2d.localhost mika-live2d:; font-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'none'",
+      "assetProtocol": {
+        "enable": true,
+        "scope": []
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "dmg", "appimage"],
+    "icon": ["../build/icon.png", "../build/icon.ico"],
+    
+    "resources": {
+      "../out/prompts": "prompts/",
+      "../out/renderer/vrm/": "renderer/vrm/",
+      "../../../LICENSE": "legal/LICENSE",
+      "../../../EULA.md": "legal/EULA.md",
+      "../../../PRIVACY.md": "legal/PRIVACY.md",
+      "../../../THIRD-PARTY-NOTICES.md": "legal/THIRD-PARTY-NOTICES.md",
+      "../../../LICENSE-ASSETS.md": "legal/LICENSE-ASSETS.md"
+    },
+    "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      },
+      "nsis": {
+        "installMode": "perMachine",
+        "installerHooks": "installer-hooks.nsh"
+      }
+    },
+    "macOS": {
+      "minimumSystemVersion": "11.0",
+      "entitlements": "Entitlements.plist"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [],
+      "pubkey": "",
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

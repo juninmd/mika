@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "plugin-view",
+  "description": "Janela de view de plugin: conteúdo de terceiro, sem permissão de shell. O que ela pode fazer é o que passar pela guarda de superfície no bridge.",
+  "windows": ["plugin-view::*"],
+  "permissions": ["core:default"]
+}

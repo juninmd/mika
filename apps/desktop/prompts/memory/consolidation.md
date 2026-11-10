@@ -1,0 +1,1 @@
+Summarize the memories below in 3-5 sentences, written in {{language}}. Keep names, dates, decisions and relevant facts; drop trivial details and small talk. Names and facts about people stay exactly as the user said them — never translate or "correct" a name.

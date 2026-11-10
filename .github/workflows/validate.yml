@@ -1,0 +1,21 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    uses: juninmd/base-actions/.github/workflows/reusable-validate.yml@main
+    with:
+      # `pnpm test` aqui é o E2E (Playwright), que exige o binário `build:e2e` e as libs do Tauri,
+      # coisas que este job genérico não monta; o E2E de verdade roda no ci.yml. A unidade roda aqui.
+      test-script: test:unit

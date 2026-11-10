@@ -1,0 +1,33 @@
+# cargo-deny: bloqueia copyleft forte no binário vendido (Steam).
+# Rodar: `cargo deny --manifest-path apps/desktop/src-tauri/Cargo.toml check licenses`
+# (`manifest-path` não é chave de `[graph]` — o cargo-deny recusa o arquivo inteiro com ela).
+# A mesma política, para npm e Rust, roda em `pnpm check:license-policy` (scripts/lib/license-policy.mts).
+[graph]
+all-features = true
+exclude-dev = true
+
+[licenses]
+confidence-threshold = 0.9
+allow = [
+  "MIT", "Apache-2.0", "Apache-2.0 WITH LLVM-exception", "BSD-2-Clause", "BSD-3-Clause", "ISC",
+  "Zlib", "MPL-2.0", "Unicode-3.0", "Unicode-DFS-2016", "CC0-1.0", "Unlicense", "OpenSSL",
+  "BSL-1.0", "0BSD", "CDLA-Permissive-2.0",
+  # Adição de 2026-10-06 (revisão de licenças para a Steam): `libbz2-rs-sys` (bzip2 → zip, usado pelo
+  # backup/export). É a licença BSD-style do libbzip2 original — permissiva, exige reter o aviso, que
+  # `THIRD-PARTY-NOTICES.md` já carrega. Único achado da rodada; nenhuma outra licença faltava.
+  "bzip2-1.0.6",
+]
+# O crate do app é proprietário (`license-file`) e `publish = false`: não vai a registro nenhum.
+private = { ignore = true }
+
+# Advisories (RUSTSEC): `cargo deny check advisories` roda toda semana em `.github/workflows/audit.yml`.
+# Vulnerabilidade e crate sem manutenção quebram o job; ignorar uma advisory exige `ignore` AQUI,
+# com o ID e o motivo — nunca desligar a checagem.
+[advisories]
+# `yoke-derive 0.8.3` (transitiva de icu/zerovec via boa_engine) está yanked em 2026-10-06: `warn` até
+# um `cargo update -p yoke-derive` — que mexe no Cargo.lock e exige `pnpm notices:gen` junto.
+yanked = "warn"
+unmaintained = "workspace"
+
+[bans]
+multiple-versions = "allow"

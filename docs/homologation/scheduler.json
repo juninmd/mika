@@ -1,0 +1,67 @@
+{
+  "identidade": {
+    "id": "scheduler",
+    "titulo": "scheduler",
+    "perfil": "adapter"
+  },
+  "artefato": {
+    "commit": "f4c99093f3d6aba818b27e798d49edc44b32de75+dirty",
+    "tree": "15f978d4433db366",
+    "contract": "e3b0c44298fc1c14",
+    "deps": {
+      "@fontsource-variable/inter": "^5.3.0",
+      "@fontsource/ibm-plex-mono": "^5.3.0",
+      "@fontsource/space-grotesk": "^5.3.0",
+      "@mika/sdk": "workspace:*",
+      "@mika/sdk-ui": "workspace:*",
+      "@pixi/unsafe-eval": "6.5.10",
+      "@pixiv/three-vrm": "3.5.5",
+      "@pixiv/three-vrm-animation": "3.5.5",
+      "@tauri-apps/api": "^2.12.4",
+      "dompurify": "^3.4.17",
+      "framer-motion": "^14.10.1",
+      "lucide-react": "^1.70.0",
+      "mermaid": "^12.3.0",
+      "pixi-live2d-display": "^0.4.0",
+      "pixi.js": "6.5.10",
+      "react": "catalog:",
+      "react-dom": "catalog:",
+      "smol-toml": "^1.9.1",
+      "three": "0.187.0",
+      "zod": "catalog:",
+      "zustand": "^5.1.0"
+    },
+    "lockfile": "4d85bfe4ac1d3048"
+  },
+  "ambiente": {
+    "plataforma": "win32",
+    "node": "v24.21.0",
+    "data": "2026-11-08"
+  },
+  "criterios": [
+    {
+      "id": "fronteira",
+      "status": "ok",
+      "detail": "manifesto × código"
+    },
+    {
+      "id": "vivo",
+      "status": "ok",
+      "detail": "2 arquivo(s) fora do módulo o referenciam"
+    },
+    {
+      "id": "headless",
+      "status": "ok",
+      "detail": "0 arquivo(s) do contrato fora do Electron"
+    },
+    {
+      "id": "contrato",
+      "status": "ok",
+      "detail": "1 arquivo(s) de teste + 36 teste(s) Rust em modules::features::scheduler"
+    }
+  ],
+  "estado": "aprovado",
+  "limites": [
+    "Sem prova de carga, GPU ou matriz por SO; o E2E cobre montagem, não desempenho."
+  ]
+}

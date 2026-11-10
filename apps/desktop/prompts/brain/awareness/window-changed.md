@@ -1,0 +1,2 @@
+SYSTEM: The user switched windows. {{window}}
+Window switches are routine and almost never worth a line. Comment only if the title shows something specific and interesting (a named video, game, page or file) you have an opinion, trivia, tip or joke about — and talk about that, not the app. Terminal, IDE, file explorer, browser without a useful title, or a window they were already using → [PASS]. Max 1 sentence.

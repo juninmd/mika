@@ -1,0 +1,246 @@
+# ═══════════════════════════════════════════════════════
+# Mika Gitleaks Config — Extended
+# ═══════════════════════════════════════════════════════
+# Herda todas as ~180 regras padrão do gitleaks e adiciona
+# regras customizadas para APIs e serviços específicos do projeto.
+
+title = "Mika Gitleaks Config"
+
+[extend]
+useDefault = true
+# Regras padrão que geram muito ruído para este projeto
+disabledRules = [
+  "generic-api-key",  # muita regex genérica, falso positivo demais
+]
+
+# ═══════════════════════════════════════════════════════
+# REGRAS CUSTOMIZADAS — PROVEDORES LLM / AI
+# ═══════════════════════════════════════════════════════
+
+[[rules]]
+id = "google-gemini-api-key"
+description = "Google Gemini / AI Studio API Key"
+regex = '''AIza[0-9A-Za-z_-]{35,}'''
+keywords = ["AIza"]
+
+[[rules]]
+id = "openrouter-api-key"
+description = "OpenRouter API Key"
+regex = '''sk-or-v1-[A-Za-z0-9_-]{20,}'''
+keywords = ["sk-or-v1-"]
+
+[[rules]]
+id = "openai-project-key"
+description = "OpenAI Project / Service Account Key"
+regex = '''sk-proj-[A-Za-z0-9_-]{20,}|sk-svc-[A-Za-z0-9_-]{20,}'''
+keywords = ["sk-proj-", "sk-svc-"]
+
+[[rules]]
+id = "huggingface-access-token"
+description = "Hugging Face Access Token"
+regex = '''hf_[A-Za-z0-9]{20,}'''
+keywords = ["hf_"]
+
+[[rules]]
+id = "replicate-api-token"
+description = "Replicate API Token"
+regex = '''r8_[A-Za-z0-9]{20,}'''
+keywords = ["r8_"]
+
+[[rules]]
+id = "cohere-api-key"
+description = "Cohere API Key"
+regex = '''cohere[A-Za-z0-9_-]{20,}'''
+keywords = ["cohere"]
+
+[[rules]]
+id = "elevenlabs-api-key"
+description = "ElevenLabs API Key"
+regex = '''(?i)elevenlabs[\s:=]+['"]?[A-Za-z0-9_-]{32,}['"]?'''
+keywords = ["elevenlabs"]
+
+# ═══════════════════════════════════════════════════════
+# REGRAS CUSTOMIZADAS — CREDENCIAIS DO PROJETO
+# ═══════════════════════════════════════════════════════
+
+[[rules]]
+id = "mika-server-api-key"
+description = "Mika Server API Key (deve vir de env var)"
+regex = '''MIKA_API_KEY=['"][A-Za-z0-9_-]{20,}['"]'''
+keywords = ["MIKA_API_KEY"]
+
+[[rules]]
+id = "nvidia-ai-key"
+description = "NVIDIA AI / NGC API Key"
+regex = '''nvapi-[a-zA-Z0-9_-]{40,}'''
+keywords = ["nvapi-"]
+
+# ═══════════════════════════════════════════════════════
+# REGRAS CUSTOMIZADAS — STREAMING / MÚSICA / GAMING
+# ═══════════════════════════════════════════════════════
+
+[[rules]]
+id = "steam-api-key"
+description = "Steam Web API Key"
+regex = '''(?i)[\w.-]{0,50}?(?:steam)(?:[ \t\w.-]{0,20})[\s'"]{0,3}(?:=|>|:{1,3}=|\|\||:|=>|\?=|,)[\x60'"\s=]{0,5}([A-Fa-f0-9]{32})(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["steam"]
+
+[[rules]]
+id = "spotify-client-id"
+description = "Spotify Client ID"
+regex = '''\b([0-9a-f]{32})(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["spotify"]
+[[rules.allowlists]]
+regexTarget = "match"
+regexes = ['''^[0-9a-f]{32}$''']
+
+[[rules]]
+id = "openweather-api-key"
+description = "OpenWeather API Key"
+regex = '''(?i)[\w.-]{0,50}?(?:openweather|owm)(?:[ \t\w.-]{0,20})[\s'"]{0,3}(?:=|>|:{1,3}=|\|\||:|=>|\?=|,)[\x60'"\s=]{0,5}([a-f0-9]{32})(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["openweather", "owm"]
+
+[[rules]]
+id = "obs-websocket-password"
+description = "OBS WebSocket Server Password"
+regex = '''(?i)[\w.-]{0,50}?(?:obspassword|obswebsocket|obs_?secret|obs_?pass)(?:[ \t\w.-]{0,10})[\s'"]{0,3}(?:=|>|:{1,3}=|\|\||:|=>|\?=|,)[\x60'"\s=]{0,5}([a-zA-Z0-9_-]{8,})(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["obspassword", "obswebsocket", "obs_secret", "obs_pass"]
+
+# ═══════════════════════════════════════════════════════
+# REGRAS CUSTOMIZADAS — TTS / STT / SPEECH
+# ═══════════════════════════════════════════════════════
+
+[[rules]]
+id = "azure-tts-subscription-key"
+description = "Azure Speech/TTS Subscription Key"
+regex = '''(?i)[\w.-]{0,50}?(?:azure|speech|tts|cognitive)(?:[ \t\w.-]{0,20})[\s'"]{0,3}(?:=|>|:{1,3}=|\|\||:|=>|\?=|,)[\x60'"\s=]{0,5}([a-f0-9]{32})(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["azure", "speech", "tts", "cognitive"]
+
+[[rules]]
+id = "deepgram-api-key"
+description = "Deepgram API Key (STT)"
+regex = '''\b([a-f0-9]{40,})(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 4
+keywords = ["deepgram"]
+
+[[rules]]
+id = "assemblyai-api-key"
+description = "AssemblyAI API Key (STT)"
+regex = '''(?i)(?:assemblyai|assembly)[\s:=]+['"]?([a-f0-9]{32})['"]?'''
+entropy = 3
+keywords = ["assembly"]
+
+# ═══════════════════════════════════════════════════════
+# REGRAS CUSTOMIZADAS — SMART HOME / AUTOMAÇÃO
+# ═══════════════════════════════════════════════════════
+
+[[rules]]
+id = "home-assistant-long-lived-token"
+description = "Home Assistant Long-Lived Access Token"
+regex = '''\b(eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"]
+
+[[rules]]
+id = "brapi-token"
+description = "Brapi (Brazilian Market) API Token"
+regex = '''(?i)[\w.-]{0,50}?(?:brapi)(?:[ \t\w.-]{0,20})[\s'"]{0,3}(?:=|>|:{1,3}=|\|\||:|=>|\?=|,)[\x60'"\s=]{0,5}([A-Za-z0-9_-]{20,64})(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["brapi"]
+
+# ═══════════════════════════════════════════════════════
+# REGRAS CUSTOMIZADAS — TRADUÇÃO / UTILITIES
+# ═══════════════════════════════════════════════════════
+
+[[rules]]
+id = "libretranslate-api-key"
+description = "LibreTranslate API Key"
+regex = '''(?i)[\w.-]{0,50}?(?:libre)(?:[ \t\w.-]{0,20})[\s'"]{0,3}(?:=|>|:{1,3}=|\|\||:|=>|\?=|,)[\x60'"\s=]{0,5}([a-f0-9]{32,64})(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["libre"]
+
+# ═══════════════════════════════════════════════════════
+# REGRAS CUSTOMIZADAS — STREAMER DONATION / MEMBERSHIP
+# ═══════════════════════════════════════════════════════
+
+[[rules]]
+id = "patreon-api-key"
+description = "Patreon API Key / Access Token"
+regex = '''(?i)[\w.-]{0,50}?(?:patreon)(?:[ \t\w.-]{0,20})[\s'"]{0,3}(?:=|>|:{1,3}=|\|\||:|=>|\?=|,)[\x60'"\s=]{0,5}([A-Za-z0-9_-]{20,64})(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["patreon"]
+
+[[rules]]
+id = "streamelements-jwt"
+description = "StreamElements JWT Token"
+regex = '''(?i)[\w.-]{0,50}?(?:streamelements)(?:[ \t\w.-]{0,20})[\s'"]{0,3}(?:=|>|:{1,3}=|\|\||:|=>|\?=|,)[\x60'"\s=]{0,5}([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["streamelements"]
+
+[[rules]]
+id = "ko-fi-api-key"
+description = "Ko-fi API Key / Webhook Verification"
+regex = '''(?i)[\w.-]{0,50}?(?:ko-fi|kofi)(?:[ \t\w.-]{0,20})[\s'"]{0,3}(?:=|>|:{1,3}=|\|\||:|=>|\?=|,)[\x60'"\s=]{0,5}([A-Za-z0-9_-]{20,})(?:[\x60'"\s;]|\\[nr]|$)'''
+entropy = 3
+keywords = ["ko-fi", "kofi"]
+
+# ═══════════════════════════════════════════════════════
+# REGRAS CUSTOMIZADAS — AUTHORIZATION BEARER
+# ═══════════════════════════════════════════════════════
+
+[[rules]]
+id = "authorization-bearer-token"
+description = "Authorization Bearer token hardcoded"
+regex = '''(?i)Authorization[\s:=]+\w+\s+\S{20,}'''
+keywords = ["authorization", "bearer"]
+
+# ═══════════════════════════════════════════════════════
+# ALLOWLISTS GLOBAIS
+# ═══════════════════════════════════════════════════════
+# Nota: gitleaks v8.25+ usa [[allowlists]] (plural).
+# Allowlists têm precedência maior que allowlists de regra.
+
+[[allowlists]]
+description = "Artefatos do projeto que geram falso positivo"
+paths = [
+  '''\.gitignore''',
+  '''\.gitleaks\.toml''',
+  '''\.gitleaksignore''',
+  '''\.env\.example''',
+  '''test-results/''',
+  '''__tests__/''',
+  '''node_modules/''',
+  '''\.pnpm/''',
+  '''tmp-homologation/''',
+  '''\.github/instructions/''',
+  '''packages/sdk/src/llm/llm-catalog-data\.ts''',
+  '''packages/sdk/src/contracts/desktop-ipc\.ts''',
+  '''packages/contracts/src/desktop-ipc\.ts''',
+  '''.*desktop-ipc\.ts\.orig''',
+]
+commits = [
+  # NVIDIA key em .temp-nvidia-request.ps1 — arquivo temporário
+  "cbb7880bdf7d21cb5c5add78ef3c40cd1a119a7d",
+  "8f81299e08e064721308652643686057bfe576be",
+  # Blobs DPAPI em tmp-homologation/ — debug artifacts
+  "6729b26f27e98d3e2662234214987da742c5a8b2",
+  # Placeholders em env-secrets.instructions.md
+  "44ea0c70b0139676fb0e50f6ceeb53d9e6c4e1ee",
+]
+
+# Falsos positivos de conteúdo (em qualquer arquivo/commit), conferidos um a um em 2026-10-06:
+#  - o JWT de exemplo do jwt.io (`{"alg":"HS256"}` + `sub: 1234567890`, qualquer assinatura) que os testes
+#    de redação de PII/log usam como entrada (`pii.rs`, `log_redact.rs`, `fact_store.rs`);
+#  - "ElevenLabs -----…": linha de moldura de um comentário de `llm.rs`, não uma chave.
+[[allowlists]]
+description = "Fixtures de teste e comentários que imitam credenciais"
+regexTarget = "match"
+regexes = [
+  '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0NTY3ODkwIn0\.[\w-]+''',
+  '''(?i)elevenlabs\s+-{10,}''',
+]

@@ -1,0 +1,603 @@
+@import "tailwindcss";
+
+/*
+  TIPOGRAFIA AUTO-HOSPEDADA — não voltar para o CDN.
+
+  `index.html` carregava as três famílias de `fonts.googleapis.com`. Isto é um app de desktop que
+  "roda local no PC do usuário": sem rede (ou no primeiro boot antes de a folha chegar) nenhuma das
+  três resolvia, e `--font-display: "Space Grotesk", serif` caía no `serif` do sistema — todo título
+  do wizard e das Configurações renderizava em Times New Roman. Além disso o app tem uma etapa de
+  privacidade no onboarding e pingava o Google a cada janela aberta.
+
+  Os arquivos vêm do pacote e entram no bundle. Só os pesos e subsets que a UI usa.
+*/
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource/space-grotesk/latin-500.css";
+@import "@fontsource/space-grotesk/latin-600.css";
+@import "@fontsource/space-grotesk/latin-700.css";
+@import "@fontsource/space-grotesk/latin-ext-500.css";
+@import "@fontsource/space-grotesk/latin-ext-600.css";
+@import "@fontsource/space-grotesk/latin-ext-700.css";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+@import "@fontsource/ibm-plex-mono/latin-ext-400.css";
+@import "@fontsource/ibm-plex-mono/cyrillic-400.css";
+@import "@fontsource/ibm-plex-mono/cyrillic-500.css";
+
+/*
+  O Tailwind 4 descobre as fontes a partir da pasta DESTE arquivo, ou seja, só `src/renderer`. Toda
+  classe que existe apenas na UI das features (`src/features/<ctx>/renderer`) ou nos componentes
+  compartilhados do `sdk-ui` nunca era gerada — e sem erro nenhum: o `className` está no DOM, a regra
+  não existe no CSS, e o layout simplesmente ignora. Foi assim que `aspect-[4/3]` no card do catálogo
+  virou `aspect-ratio: auto`. Declarar as fontes é o que fecha esse buraco silencioso.
+*/
+@source "../../features";
+@source "../../../../../packages/sdk-ui/src";
+
+/*
+  Fallback CJK (ja/ko/zh): as fontes empacotadas são latin + cirílico (Inter Variable e IBM Plex
+  Mono trazem o subconjunto `cyrillic`). Han/Kana/Hangul caem em fonte DO SISTEMA, na ordem de
+  cada SO — Yu Gothic/Microsoft YaHei/Malgun Gothic (Windows), Hiragino/PingFang/Apple SD Gothic
+  Neo (macOS), Noto Sans CJK (Linux). Empacotar `@fontsource/noto-sans-{jp,kr,sc}` custaria
+  ~4 MB de woff2 por família no instalador (~12 MB nas três) para um app que já roda sobre o
+  WebView do SO. A ordem muda com o `lang` do <html> (definido por `locale-sync`): o mesmo
+  ideograma Han tem desenho diferente em ja/ko/zh, e a primeira fonte que o cobre decide qual sai.
+*/
+:root {
+  --font-cjk: "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Yu Gothic", "Hiragino Sans",
+    "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans CJK JP", "Noto Sans CJK KR";
+}
+:root:lang(ja) {
+  --font-cjk: "Noto Sans CJK JP", "Noto Sans JP", "Yu Gothic", "Hiragino Sans", "Meiryo", "Microsoft YaHei",
+    "PingFang SC", "Malgun Gothic", "Noto Sans CJK SC", "Noto Sans CJK KR";
+}
+:root:lang(ko) {
+  --font-cjk: "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", "Yu Gothic",
+    "Hiragino Sans", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", "Noto Sans CJK JP";
+}
+
+@theme {
+  /*
+    "Inter Variable" é o nome de família que o @fontsource-variable registra — sem ele na frente, a
+    pilha caía direto no `system-ui`. O display NÃO termina em `serif`: quando o Space Grotesk não
+    resolvia, todo h1/h2/h3 do app virava Times New Roman (`@layer base` aplica `font-display` em
+    todos eles).
+  */
+  --font-sans: "Inter Variable", "Inter", var(--font-cjk), system-ui, sans-serif;
+  --font-display: "Space Grotesk", "Inter Variable", var(--font-cjk), system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "JetBrains Mono", var(--font-cjk), monospace;
+  /* Legibility floor: `micro` only for uppercase tracked labels; running text starts at `caption`. */
+  --text-micro: 10px;
+  --text-caption: 11px;
+
+  /* ── Material do tema (valores crus vêm de `themes.ts` via `useTheme`) ── */
+  --color-primary: var(--primary);
+  --color-bg-deep: var(--bg);
+  --color-bg-surface: var(--surface);
+  /* Popover opaco: `--surface` tem 55% de alfa e sobre papel de parede claro o menu/tooltip virava cinza lavado. */
+  --color-popover: color-mix(in srgb, var(--bg) 94%, var(--primary) 6%);
+  --color-glass: var(--glass-layer);
+
+  /* ── Rampa de texto: três degraus, e só três ── */
+  --color-text-main: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+
+  /* ── Superfícies de realce. Polaridade automática: derivam de `--text`, que é claro no
+       tema escuro e escuro no tema claro. `bg-white/[0.04]` fazia o oposto — sumia no claro. ── */
+  --color-surface-raise: var(--surface-raise);
+  --color-surface-raise-strong: var(--surface-raise-strong);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+
+  /* ── Acento: UM sistema. Tudo deriva de `--accent-h/s/l`; ver `accentVars()` no sdk-ui. ── */
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-rim: var(--accent-rim);
+  --color-accent-text: var(--accent-text);
+  --color-accent-warm: var(--mika-accent-warm, #d3a3ff);
+  /* 122 `ring-focus` usos sem este token caíam no currentColor: anel sólido da cor do texto. */
+  --color-focus: color-mix(in srgb, var(--accent) 60%, transparent);
+
+  /* ── Semântica. Uma família por significado, e NENHUMA outra cor pode significar estado. ── */
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-ok-rim: var(--ok-rim);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-warn-rim: var(--warn-rim);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-rim: var(--danger-rim);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-rim: var(--info-rim);
+}
+
+:root {
+  /*
+    PISO DE TOKENS — não remover.
+
+    `useTheme()` (hooks/useTheme.ts) era o ÚNICO lugar que gravava estes tokens, e só roda em
+    SettingsApp e WizardApp. Na janela do avatar e na de feature nenhum deles existia, e var()
+    indefinida invalida a declaração inteira (vira `unset`), não cai para um padrão:
+      - `bg-[var(--neural-cyan)]/15` (ChatComposer.tsx) → botão Enviar sem cor e sem glow;
+      - `border-[var(--border)]` (ChatHistoryPanel.tsx) → `currentcolor`, divisor branco;
+      - gradiente + `-webkit-text-fill-color: transparent` (SpeechBubble.tsx, ThinkingHUD.tsx)
+        → texto literalmente invisível.
+
+    Valores copiados de THEMES[0] ('neural-glass') em `renderer/src/themes.ts`. `useTheme()` segue
+    sobrescrevendo por inline style onde roda — o piso é o que sobra antes do primeiro paint e nas
+    superfícies que não montam o hook. Guardado por `__tests__/renderer/theme-token-floor.test.ts`.
+  */
+  --bg: #030406;
+  --surface: rgba(8, 10, 16, 0.55);
+  --glass-layer: rgba(8, 10, 16, 0.55);
+  --primary: #a855f7;
+  --text: #ffffff;
+  --text-muted: #94a3b8;
+  --border: rgba(168, 85, 247, 0.15);
+  --neon-primary: #a855f7;
+  --neon-secondary: #20d8ff;
+  --neural-purple: #a855f7;
+  --neural-cyan: #20d8ff;
+  --neural-mint: #31f6a1;
+  --neural-coral: #ff6b9d;
+  --mika-text: #ffffff;
+  --mika-accent: #bc77ff;
+  --mika-accent-warm: rgba(188, 119, 255, 0.72);
+  --mika-border-strong: rgba(188, 119, 255, 0.3);
+  /*
+    `--neon-success` é lido por SettingsFieldInput.tsx (feedback de "copiado") e nunca foi
+    declarado em lugar nenhum — nem no CSS, nem no `useTheme`. O verde do tema é `neuralMint`.
+  */
+  --neon-success: var(--neural-mint);
+
+  /*
+    AÇÃO PRIMÁRIA tem cor própria.
+
+    Verde/âmbar/vermelho ficam RESERVADOS para semântica (sucesso/atenção/destrutivo): botão de ação
+    pintado com o verde de "sucesso" ensina o usuário a ler cor errado, e aí o verde não significa
+    mais nada. Todo botão de ação primária usa `--action` / `--action-contrast`.
+  */
+  --action: var(--primary, #a855f7);
+  --action-contrast: #ffffff;
+
+  /*
+    TERCEIRO DEGRAU DA RAMPA DE TEXTO.
+
+    O código tinha 94 usos de `text-slate-600`/`text-slate-700` para "texto ainda mais apagado" —
+    literais fixos que davam 2,7:1 e 2,0:1 sobre o fundo padrão e não acompanhavam tema nenhum.
+    Este token nasce do `--text-muted` do próprio tema, puxado 15% na direção do fundo: mantém a
+    hierarquia sem sair do AA e inverte sozinho no tema claro. Com 28% ele passava no fundo puro mas
+    caía para 3,7:1 sobre `--surface-raise-strong`, onde a maior parte dele é lida.
+  */
+  --text-subtle: color-mix(in srgb, var(--text-muted) 85%, var(--bg));
+
+  /*
+    SUPERFÍCIES DE REALCE COM POLARIDADE AUTOMÁTICA.
+
+    `bg-white/[0.04]` aparecia 200+ vezes como "um degrau acima do fundo". Nos temas Light e Sakura
+    isso é branco sobre branco: o campo, o chip e o botão perdiam a superfície e viravam texto solto.
+    Derivar de `--text` resolve sem condicional — no escuro `--text` é branco, no claro é quase preto.
+  */
+  --surface-raise: color-mix(in srgb, var(--text) 5%, transparent);
+  --surface-raise-strong: color-mix(in srgb, var(--text) 9%, transparent);
+  --surface-sunken: color-mix(in srgb, var(--bg) 55%, transparent);
+  --border-subtle: color-mix(in srgb, var(--text) 10%, transparent);
+  --border-strong: color-mix(in srgb, var(--text) 18%, transparent);
+
+  /*
+    ACENTO — UM sistema só.
+
+    Havia TRÊS concorrendo na mesma tela: (1) `--accent` do tema, gravado inline no <html> por
+    `useTheme`; (2) `--accent-h` por seção, escrito por `SettingsApp` num <div> descendente;
+    (3) `accentHue={n}` cravado à mão em cada painel. E os três não se combinavam: como propriedade
+    customizada é substituída no computed value, `--accent` e `--accent-glow` congelavam no <html> e
+    NENHUM `--accent-h` de subárvore os movia. O resultado visível era o `GlassCard`, que pintava a
+    barra da esquerda com `var(--accent)` (roxo do tema) e o gradiente que sai dela com
+    `hsl(accentHue …)` (ciano da seção) — duas cores no mesmo card.
+
+    Agora existe uma tripla `--accent-h/s/l` e TODO derivado sai dela. Quem quiser trocar o acento
+    de uma subárvore aplica `accentVars(hue)` (packages/sdk-ui) no elemento, que reescreve a tripla
+    E os derivados juntos. `useTheme` grava a tripla do tema na raiz.
+  */
+  --accent-h: 275;
+  --accent-s: 90%;
+  --accent-l: 65%;
+  --accent: hsl(var(--accent-h) var(--accent-s) var(--accent-l));
+  --accent-text: hsl(var(--accent-h) var(--accent-s) 78%);
+  --accent-soft: hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.14);
+  --accent-rim: hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.32);
+  --accent-glow: hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.2);
+
+  /*
+    SEMÂNTICA DE ESTADO.
+
+    Não vem do tema: "erro" não deve mudar de família porque alguém escolheu Sakura. O que muda é a
+    POLARIDADE — `data-scheme='light'` no <html> troca para as versões escuras logo abaixo, porque
+    `text-emerald-400` sobre fundo branco dava 1,9:1 e o status ficava ilegível.
+  */
+  --ok: hsl(160 84% 55%);
+  --ok-soft: hsl(160 84% 55% / 0.12);
+  --ok-rim: hsl(160 84% 55% / 0.28);
+  --warn: hsl(38 95% 62%);
+  --warn-soft: hsl(38 95% 62% / 0.12);
+  --warn-rim: hsl(38 95% 62% / 0.28);
+  --danger: hsl(352 90% 70%);
+  --danger-soft: hsl(352 90% 70% / 0.12);
+  --danger-rim: hsl(352 90% 70% / 0.3);
+  --info: hsl(196 92% 65%);
+  --info-soft: hsl(196 92% 65% / 0.12);
+  --info-rim: hsl(196 92% 65% / 0.28);
+
+  /*
+   * Layer System.
+   *
+   * Quase todos são consumidos em RUNTIME por `layerStyle(nome)` (`lib/layer-styles.ts`), que monta
+   * `var(--layer-${nome})` — então um grep por `--layer-chat` não acha consumidor e o token parece
+   * morto numa varredura de código morto. Não é: procure por `layerStyle('chat')`.
+   *
+   * A escala terminava em `--layer-dropdown: 100`, e cinco overlays furavam o teto com número
+   * mágico (`z-[200]`, `z-[300]`, `z-[1000]`, `z-[2000]`, `z-[9999]`) — ou seja, a ordem entre eles
+   * era decidida por quem escreveu por último, não pelo sistema. Os dois níveis abaixo dão nome ao
+   * que já existia de fato.
+   */
+  --layer-ambient: -1;
+  --layer-avatar: 1;
+  --layer-hud: 10;
+  --layer-dock: 20;
+  --layer-panels: 30;
+  --layer-chat: 40;
+  --layer-toasts: 50;
+  --layer-menu: 60;
+  --layer-effects: 70;
+  --layer-modal: 80;
+  --layer-dropdown: 100;
+  /* Acima do dropdown: paleta de comandos, balão proativo, modais de tela cheia. */
+  --layer-overlay: 200;
+  /* Acima de tudo: consentimento e telemetria — o usuário precisa poder responder. */
+  --layer-critical: 300;
+}
+
+/*
+  Polaridade clara. `useTheme` grava `data-scheme` a partir de `Theme.scheme` (`themes.ts`).
+  Só a rampa semântica e a força das superfícies mudam aqui — o material continua vindo do tema.
+*/
+:root[data-scheme='light'] {
+  --ok: hsl(160 88% 26%);
+  --ok-soft: hsl(160 88% 26% / 0.1);
+  --ok-rim: hsl(160 88% 26% / 0.26);
+  --warn: hsl(30 92% 33%);
+  --warn-soft: hsl(30 92% 33% / 0.1);
+  --warn-rim: hsl(30 92% 33% / 0.26);
+  --danger: hsl(352 78% 42%);
+  --danger-soft: hsl(352 78% 42% / 0.1);
+  --danger-rim: hsl(352 78% 42% / 0.28);
+  --info: hsl(200 90% 30%);
+  --info-soft: hsl(200 90% 30% / 0.1);
+  --info-rim: hsl(200 90% 30% / 0.26);
+
+  /* Tinta escura sobre fundo claro precisa de menos alfa para o mesmo degrau perceptual. */
+  --surface-raise: color-mix(in srgb, var(--text) 4%, transparent);
+  --surface-raise-strong: color-mix(in srgb, var(--text) 8%, transparent);
+  --border-subtle: color-mix(in srgb, var(--text) 12%, transparent);
+  --border-strong: color-mix(in srgb, var(--text) 22%, transparent);
+
+  --accent-l: 45%;
+  --accent-text: hsl(var(--accent-h) var(--accent-s) 34%);
+  --action-contrast: #ffffff;
+}
+
+@layer base {
+  html, body {
+    background: transparent !important;
+    background-color: transparent !important;
+    @apply m-0 overflow-hidden font-sans text-text-main antialiased;
+  }
+
+  /*
+    Janela de feature é janela normal, com moldura e conteúdo mais alto que a tela: ela ROLA. A trava
+    acima serve ao overlay transparente do avatar (`data-surface="overlay"`), onde a barra de rolagem
+    apareceria por cima do desktop. `settings` fica travada de propósito — tem scroller interno.
+  */
+  html[data-surface='plugin-view'] {
+    overflow-y: auto;
+  }
+
+  html[data-surface='plugin-view'] body {
+    overflow: visible;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+}
+
+/* ── High-Tech Luxury Components ── */
+
+/*
+  Os três literais desta regra (`rgba(255,255,255,.07)`, `rgba(15,17,32,.4)` e o hover em branco)
+  não acompanhavam tema nenhum: nos temas Light e Sakura o `vt-card` era um painel ESCURO sobre
+  fundo claro, com borda branca invisível. Agora sai tudo do material do tema.
+*/
+@utility vt-card {
+  position: relative;
+  border: 1px solid var(--border-subtle);
+  background: var(--glass-layer);
+  backdrop-filter: blur(40px);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  padding: 1.25rem;
+  overflow: hidden;
+  transition: border-color 200ms ease;
+
+  &:hover {
+    border-color: var(--border-strong);
+  }
+}
+
+/*
+  O foco era ciano cravado (`rgba(6,182,212,.4)`) — a única cor de foco do app que ignorava o acento
+  em vigor, então num painel roxo o campo focado acendia azul. Agora usa o acento herdado.
+*/
+@utility vt-input-field {
+  @apply box-border block w-full rounded-lg bg-surface-raise px-3 py-2 text-sm text-text-main outline-none;
+  border: 1px solid var(--border-subtle);
+  transition: border-color 150ms, background-color 150ms;
+
+  &:focus {
+    border-color: var(--accent-rim);
+    background-color: var(--accent-soft);
+  }
+}
+
+/*
+  `text-slate-500` (#64748b) dava 4,29:1 sobre `--bg` — abaixo do AA para 10px, e literal fixo que
+  não acompanha tema nenhum. `text-text-muted` resolve para `--text-muted` (7,8:1) e segue o tema.
+*/
+@utility vt-label {
+  @apply text-micro font-medium uppercase tracking-[0.15em] text-text-muted;
+}
+
+@utility electron-drag {
+  -webkit-app-region: drag;
+}
+
+@utility electron-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+body[data-dragging='true'],
+body[data-dragging='true'] * {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+
+/* ── Slider thumb with aurora glow ── */
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow), 0 2px 4px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: transform 100ms ease;
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+}
+
+/* ── Scrollbar system ── */
+* {
+  scrollbar-width: thin;
+  /* Branco a 8% é invisível sobre fundo claro: nos temas Light e Sakura a barra de rolagem sumia. */
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+/*
+  FOCO VISÍVEL, UM SÓ.
+
+  Havia `focus-visible:ring-cyan-500/50` espalhado por dezenas de arquivos — ciano fixo, sem relação
+  com o acento da tela, e ausente em metade dos controles. Este é o padrão do app; só sobrescreva
+  quando o controle precisar de um anel de cor diferente por contraste com o próprio fundo.
+
+  Fica em `@layer base`: fora de camada ele vencia todo utilitário do Tailwind (`focus-visible:outline-none`,
+  `rounded-*`), e herdar o raio do pai deixava quadrado qualquer controle arredondado ao focar.
+*/
+@layer base {
+  /* `tabindex="-1"` is a focus target, not a tab stop: dialogs and open dropdowns got a purple frame. */
+  :where(button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}
+
+/* ── Animations ── */
+
+@keyframes scan-line-move {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100%); }
+}
+
+.scan-line {
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 100px;
+  background: linear-gradient(to bottom, transparent, var(--accent-soft), transparent);
+  animation: scan-line-move 4s linear infinite;
+  pointer-events: none;
+}
+
+/*
+  `.thinking-dot` (SpeechBubble.tsx:234) era um className sem regra em CSS nenhum — grep achava uma
+  única ocorrência, o próprio JSX. Os três pontos do estado "pensando" ficavam parados (e, sem o piso
+  de `--neural-cyan` acima, invisíveis). Mesma curva do `BreathingDots` vivo em ThinkingHUD.tsx:63-77
+  (1,2s, escala 1→1,35, opacidade 0,5→1); o stagger vem do `animationDelay` inline por índice.
+  O bloco `prefers-reduced-motion` abaixo neutraliza o loop sem apagar o ponto.
+*/
+@keyframes thinking-dot-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.35); opacity: 1; }
+}
+
+.thinking-dot {
+  animation: thinking-dot-breathe 1.2s ease-in-out infinite;
+}
+
+/*
+  HUD da janela principal (components/hud/). O vidro é ADAPTATIVO: `--hud-backdrop` escurece o que
+  está atrás no tema escuro (texto claro legível sobre papel de parede claro) e clareia no tema claro
+  — um papel de parede escuro quase não muda, um claro deixa de lavar o texto. Os níveis ao vivo
+  (microfone, TTS) chegam como `--lvl` escrito por ref/rAF: nenhum `setState` por quadro, e só
+  `transform`/`opacity` animam.
+*/
+:root {
+  --hud-glass: color-mix(in srgb, var(--bg) 62%, transparent);
+  --hud-glass-strong: color-mix(in srgb, var(--bg) 84%, transparent);
+  --hud-edge: color-mix(in srgb, var(--text) 14%, transparent);
+  --hud-backdrop: blur(16px) saturate(1.5) brightness(0.72);
+  --hud-text-halo: 0 1px 2px color-mix(in srgb, var(--bg) 85%, transparent);
+}
+
+:root[data-scheme='light'] {
+  --hud-backdrop: blur(16px) saturate(1.3) brightness(1.18);
+}
+
+.hud-glass {
+  background: var(--hud-glass);
+  border: 1px solid var(--hud-edge);
+  -webkit-backdrop-filter: var(--hud-backdrop);
+  backdrop-filter: var(--hud-backdrop);
+}
+
+.hud-glass-strong {
+  background: var(--hud-glass-strong);
+  border: 1px solid var(--hud-edge);
+  -webkit-backdrop-filter: var(--hud-backdrop);
+  backdrop-filter: var(--hud-backdrop);
+}
+
+.hud-halo {
+  text-shadow: var(--hud-text-halo);
+}
+
+@keyframes hud-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes hud-breathe {
+  0%, 100% { transform: scale(0.9); opacity: 0.55; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes hud-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.hud-spin { animation: hud-spin 1.6s linear infinite; }
+.hud-breathe { animation: hud-breathe 1.8s ease-in-out infinite; }
+.hud-reveal { animation: hud-reveal 220ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+.hud-meter-ring {
+  transform: scale(calc(1 + var(--lvl, 0) * 0.55));
+  opacity: calc(0.3 + var(--lvl, 0) * 0.7);
+  transition: transform 90ms linear, opacity 90ms linear;
+}
+
+.hud-meter-bar {
+  transform: scaleY(calc(0.2 + var(--lvl, 0) * var(--w, 1)));
+  transition: transform 70ms linear;
+}
+
+/*
+  VIDA DA MIKA — efeitos ambientes e de resposta ao toque. Só `transform`/`opacity` (compositor);
+  nenhum deles carrega informação que o resto da tela não diga, então o bloco de
+  `prefers-reduced-motion` abaixo pode congelá-los sem perda. Loops só nascem em janela
+  visível: `useEffectQuality` desmonta `AvatarAura` quando o app está pausado/em segundo plano.
+*/
+@keyframes aura-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.94); opacity: var(--aura-lo, 0.5); }
+  50% { transform: translate(-50%, -50%) scale(1.06); opacity: var(--aura-hi, 0.85); }
+}
+
+@keyframes avatar-enter {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes touch-ripple {
+  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.95; }
+  45% { opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+@keyframes stage-drift {
+  0%, 100% { transform: translate(-50%, -50%) translate3d(-3%, -2%, 0) scale(1); }
+  50% { transform: translate(-50%, -50%) translate3d(3%, 2%, 0) scale(1.08); }
+}
+
+@keyframes stage-twinkle {
+  0%, 100% { transform: translateY(0) scale(0.8); opacity: var(--twinkle-lo, 0.12); }
+  50% { transform: translateY(-10px) scale(1.5); opacity: var(--twinkle-hi, 0.5); }
+}
+
+@keyframes menu-pop {
+  from { opacity: 0; transform: scale(0.94) translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes menu-item-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sheen-sweep {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(220%); }
+}
+
+@keyframes ping-soft {
+  0% { transform: scale(1); opacity: 0.6; }
+  80%, 100% { transform: scale(2.4); opacity: 0; }
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.aura-breathe { animation: aura-breathe var(--aura-period, 5.5s) ease-in-out infinite; }
+.avatar-enter { animation: avatar-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.touch-ripple { animation: touch-ripple 800ms cubic-bezier(0.25, 0.7, 0.4, 1) both; }
+.stage-drift { animation: stage-drift var(--drift-period, 26s) ease-in-out infinite; }
+.stage-twinkle { animation: stage-twinkle var(--twinkle-period, 6s) ease-in-out infinite; }
+.menu-pop { animation: menu-pop 160ms cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: top left; }
+.menu-item-in { animation: menu-item-in 180ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.sheen-sweep { animation: sheen-sweep 2.2s ease-in-out infinite; }
+.ping-soft { animation: ping-soft 1.8s cubic-bezier(0, 0, 0.2, 1) infinite; }
+.pop-in { animation: pop-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Accessibility (WCAG 2.3.3): respect the OS "reduce motion" setting.
+   Near-zero durations keep state-conveying animations functional while removing
+   sustained/looping motion that can trigger vestibular discomfort. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

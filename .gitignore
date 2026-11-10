@@ -1,0 +1,126 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+out/
+*.tsbuildinfo
+
+# Coverage
+coverage/
+
+# Environment
+**/ui.js
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Turbo
+.turbo/
+
+# electron-builder output (Stage C: Tauri bundles under target/, already covered below)
+release/
+
+# Rebuild stamp (local cache, don't commit)
+apps/desktop/.rebuild-stamp
+
+# Rust
+**/config.db
+target/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test
+__snapshots__/
+**/config.db-shm
+**/config.db-wal
+# Playwright E2E artifacts (traces, screenshots, last-run) — regenerated, never commit
+test-results/
+playwright-report/
+.slim/
+
+Handle.zip
+handle_tmp/
+
+# Git worktrees
+.worktrees/
+the-bot-mika.2026-04-16.private-key.pem
+.claude/worktrees/
+
+**.db
+codemap.md
+codemap.json
+
+# Private keys / Secrets
+*.key
+data/master.key
+gitleaks-report.json
+
+# Backups
+*.bak
+
+# Multi-agent orchestration scratch/handoff artifacts
+.agents/
+
+# Native build artifacts (rebuilt via napi)
+*.node
+
+# Embedded Python runtime — baixado sob demanda pelo setup do Whisper/STT, nunca versionado
+apps/desktop/Python/
+# Briefings gerados para as sessoes de homologacao (o relatorio vai para docs/homologation)
+.homologation/
+
+
+# Dados gerados por execução de teste/homologação (turbo já os exclui dos inputs)
+**/test-data-dir/
+**/temp*/
+**/*.tmp
+bench-tmp*
+
+# Saida de execucao da homologacao E2E (relatorio de um run, nunca baseline).
+# `homologation/playwright.config.ts` escreve `report/results.json` + `report/artifacts/`, e os
+# specs gravam catalog/features/settings-paths/duolingo. Versionado, o relatorio congela o estado
+# de um boot antigo e passa por atual — foi o que aconteceu com os ~84 nomes de tools pre-unificacao.
+apps/desktop/e2e/homologation/report/
+# Screenshots e dumps que a suite E2E grava a cada execucao. O cabecalho la em cima ja dizia
+# "screenshots — regenerated, never commit", mas so o `tools-catalog.json` estava listado: os ~40
+# PNGs voltavam sujando a arvore em todo `pnpm test:e2e`, e um `git add -A` os recommitava (foi
+# preciso apaga-los a mao em 2026-08-27). Eles sao PROVA de uma execucao, nao baseline — servem
+# para olhar depois de rodar, e congelados no repositorio passam por estado atual.
+apps/desktop/e2e/screenshots/
+
+# Hermes agent local plans/workspace (not product)
+.hermes/
+
+# PoC three-vrm: modelo de amostra baixado por scripts/poc/vrm-poc.mts
+apps/desktop/src/renderer/public/vrm/sample.vrm
+
+# HTML de entrada do alvo Tauri: derivado de index.html no build, artefato e nao fonte.
+apps/desktop/src/renderer/index.tauri.html
+
+# Schemas de ACL gerados pelo tauri-build a cada compilacao.
+apps/desktop/src-tauri/gen/
+
+# Tarballs soltos (um actionlint_py-*.tar.gz já foi versionado por engano na raiz)
+*.tar.gz
+
+# Python (steam/guard-code.py)
+__pycache__/
+*.pyc
+
+# Segredos e artefatos locais: nunca versionar (smoke test de seguranca)
+tmp-homologation/
+.temp-*
+**/session-data/

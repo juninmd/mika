@@ -1,0 +1,1 @@
+O arquivo não rastreado ~~docs/desktop-mascot-mcp-comparison.md~~ foi preservado. A auditoria inicial não alterou testes, fonte, binário de avatar, configuração de usuário ou certificado. As correções posteriores estão registradas no acompanhamento. Os achados abertos impedem tratar o escopo como uma revisão sem pendências.

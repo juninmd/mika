@@ -1,0 +1,71 @@
+* text=auto
+*.ts text eol=lf
+*.tsx text eol=lf
+# `.mts` ficou de fora desta lista e por isso caiu no `* text=auto` acima: com
+# `core.autocrlf=true` (padrão do Git no Windows) três scripts entraram no repositório com CRLF, e
+# o `biome check scripts/` do `pnpm lint` falhava neles — o formatador quer LF. O gate ficava
+# vermelho por causa do sistema operacional de quem commitou, não do código.
+*.mts text eol=lf
+*.cts text eol=lf
+# `.rs` caiu no `* text=auto` e escapou da fixação: com `core.autocrlf=true` (padrão do git no
+# Windows e nos runners windows-latest) o checkout chegava CRLF, e `include_str!` fecha os gates
+# de contrato do Rust (`the_e2e_hooks_*`, `the_e2e_http_host_*`) casando `\n` no fonte — os dois
+# testes ficavam vermelhos SO no sistema de quem checa, não no código. Mesma classe dos `.mts`
+# acima; 535 arquivos trocaram no checkout (blobs já eram LF — `git ls-files --eol`).
+*.rs text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.sh text eol=lf
+# Steam: o steamcmd (Linux) e o `bash`/`python3` do CI leem estes arquivos; CRLF quebra o shebang
+# de `steam/*.py` e vira lixo dentro dos VDF gerados por `envsubst`.
+*.vdf text eol=lf
+*.vdf.template text eol=lf
+steam/*.py text eol=lf
+steam/installscript.vdf text eol=lf
+*.nsh text eol=lf
+# Entradas do hash de `check:license-policy` (`inputHash`) e o arquivo que ele confere: com `core.autocrlf`
+# no Windows o checkout viraria CRLF e o job `prepare` (windows-latest roda `pnpm gates`) reprovaria a release.
+Cargo.lock text eol=lf
+scripts/generators/license-texts/*.txt text eol=lf
+THIRD-PARTY-NOTICES.md text eol=lf
+*.md text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.svg text eol=lf
+*.env text eol=lf
+
+# Binary — never touch line endings
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.zip binary
+*.tar binary
+*.gz binary
+
+# Assets de avatar, audio e modelo. Ficaram de fora desta lista e cairam no `* text=auto` do topo:
+# o `mika.vrm` — o unico modelo de avatar que vai dentro do instalador — entrou no repositorio com 8
+# bytes trocados logo apos o cabecalho glTF, e o app abria sem avatar nenhum, com um
+# "Offset is outside the bounds of the DataView" no console. Corrupcao de asset binario nao aparece
+# em lint, em typecheck nem em diff.
+*.vrm binary
+*.vrma binary
+*.moc3 binary
+*.wav binary
+*.webm binary
+*.mp3 binary
+*.ogg binary
+*.mp4 binary
+*.onnx binary
+*.bin binary
+*.pdf binary

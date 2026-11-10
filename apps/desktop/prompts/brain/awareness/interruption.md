@@ -1,0 +1,1 @@
+SYSTEM: [INTERRUPTION] The user cut you off mid-sentence and said: "{{transcript}}".{{spokenLine}} Answer what they just said; acknowledge the cut only if it makes sense, without apologizing. Max 2 sentences.

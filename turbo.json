@@ -1,0 +1,66 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["pnpm-lock.yaml", "tsconfig.json", "biome.json"],
+  "//": "Turbo filtra o ambiente por padrão: variável não declarada aqui NÃO chega ao processo filho, e some sem aviso — o app roda como se ela nunca tivesse sido definida.",
+  "globalPassThroughEnv": ["MIKA_E2E", "MIKA_LOG_TRANSCRIPTS", "MIKA_PROBE_EVENT_LOOP", "MIKA_UI_CSS_MODEL", "MIKA_UI_CSS_BATCH", "MIKA_HOMOLOG_MODEL", "MIKA_HOMOLOGATION_MODEL", "MIKA_HOMOLOGATION_BATCH", "OLLAMA_HOST"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "**",
+        "!**/.turbo/**",
+        "!**/dist/**",
+        "!**/out/**",
+        "!**/coverage/**",
+        "!**/node_modules/**",
+        "!**/target/**",
+        "!**/release/**",
+        "!**/Python/**",
+        "!**/e2e/**",
+        "!**/test-data-dir/**"
+      ],
+      "outputs": ["out/**", "*.node", "index.node"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "dev:quick": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "inputs": [
+        "**",
+        "!**/.turbo/**",
+        "!**/dist/**",
+        "!**/out/**",
+        "!**/coverage/**",
+        "!**/node_modules/**",
+        "!**/target/**",
+        "!**/release/**",
+        "!**/Python/**",
+        "!**/e2e/**",
+        "!**/test-data-dir/**"
+      ]
+    },
+    "typecheck": {
+      "inputs": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/tsconfig*.json",
+        "!**/.turbo/**",
+        "!**/*.tsbuildinfo",
+        "!**/dist/**",
+        "!**/out/**",
+        "!**/coverage/**",
+        "!**/e2e/**",
+        "!**/test-data-dir/**"
+      ],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

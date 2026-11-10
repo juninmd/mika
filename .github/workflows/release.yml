@@ -1,0 +1,539 @@
+# Todo push na main vira tag vX.Y.Z e duas entregas, de canais que NUNCA se misturam:
+#
+#  - `direct` (site/GitHub): instalador NSIS/AppImage/dmg + `.sig` + `latest.json`, o feed do
+#    `tauri-plugin-updater` (endpoint https://github.com/<repo>/releases/latest/download/latest.json).
+#  - `steam`: build `--features steam` (sem o updater do Tauri), montada em depots e enviada com
+#    `steamcmd +run_app_build` para um branch Steam. Quem atualiza o binário é o cliente Steam
+#    (SteamPipe); a Steam proíbe updater próprio.
+#
+# A versão sai dos commits convencionais (scripts/versioning/next-version.mts); a tag é a fonte da
+# verdade e o CI não commita o bump de volta. `[skip ci]` na mensagem pula a release. A tag nasce no
+# job `tag`, DEPOIS de algum canal ter entregue (a `publish` também a cria ao soltar o rascunho).
+#
+# Só a `main` publica. `workflow_dispatch` em outro branch roda a validação e nada mais. Sem commits
+# novos desde a tag, o dispatch REPUBLICA a última versão no Steam (promover beta -> default sem
+# rebuildar de outro commit); o canal `direct` não roda nesse caso, a release já existe.
+# Secrets, variáveis e passo-a-passo do Steamworks: steam/README.md.
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      steam_branch:
+        description: "Branch Steam que recebe o build. 'default' = produção, exige confirm_default."
+        type: string
+        default: beta
+      confirm_default:
+        description: "Confirmo publicar no branch 'default' (todos os jogadores recebem o update)."
+        type: boolean
+        default: false
+      steam_preview:
+        description: "Steam: só validar os scripts (Preview=1), sem enviar nada."
+        type: boolean
+        default: false
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  CI: true
+  # Actions fixadas por SHA nos `uses:` abaixo: tag móvel redefine em silêncio o que roda com
+  # permissão de escrita. Dependências nativas do Tauri no Linux (webkit, tray, áudio, captura, X11):
+  LINUX_DEPS: >-
+    libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf libssl-dev libasound2-dev
+    libxss-dev libxdo-dev libxkbcommon-dev libxcb1-dev libxrandr-dev libdbus-1-dev
+    libpipewire-0.3-dev libgbm-dev libegl-dev libwayland-dev libclang-dev
+
+jobs:
+  prepare:
+    name: Versão e validação
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      version: ${{ steps.version.outputs.value }}
+      republish: ${{ steps.version.outputs.republish }}
+      direct_ready: ${{ steps.channels.outputs.direct }}
+      steam_ready: ${{ steps.channels.outputs.steam }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: validate-windows
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Próxima versão
+        id: version
+        # Atribuição separada: sob `bash -e`, script quebrado derruba o passo em vez de virar "nada a lançar".
+        # Dispatch sem commits novos: HEAD == última tag, então a versão é a da tag e o passo só republica.
+        run: |
+          version=$(pnpm -s exec tsx scripts/versioning/next-version.mts)
+          republish=false
+          if [ -z "$version" ] && [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            tag=$(git describe --tags --abbrev=0 --match 'v[0-9]*.[0-9]*.[0-9]*')
+            version=${tag#v}
+            republish=true
+            echo "::notice::sem commits novos: republicando v$version (só o Steam)."
+          fi
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+          echo "republish=$republish" >> "$GITHUB_OUTPUT"
+
+      - name: Nada a lançar
+        if: steps.version.outputs.value == ''
+        run: echo "Nenhum commit desde a última tag."
+
+      # Cada canal só roda com o que precisa, e só a partir da `main`. Falta de secret não derruba o outro canal nem o fork:
+      # vira aviso. `direct` sem chave de assinatura NÃO publica: um release sem `latest.json`
+      # quebraria a checagem de quem já tem o app (o endpoint aponta sempre para o último release).
+      - name: Canais habilitados
+        id: channels
+        env:
+          REPUBLISH: ${{ steps.version.outputs.republish }}
+          SIGNING_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          UPDATER_PUBKEY: ${{ vars.TAURI_UPDATER_PUBKEY }}
+          STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+          STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+          STEAM_TOTP: ${{ secrets.STEAM_TOTP }}
+          STEAM_APP_ID: ${{ secrets.STEAM_APP_ID }}
+          STEAM_DEPOT_WINDOWS_ID: ${{ secrets.STEAM_DEPOT_WINDOWS_ID }}
+          STEAM_DEPOT_LINUX_ID: ${{ secrets.STEAM_DEPOT_LINUX_ID }}
+        run: |
+          direct=false steam=false
+          # Variável colada no painel costuma levar espaço/quebra de linha no fim: vazia de fato não conta.
+          UPDATER_PUBKEY="$(printf '%s' "$UPDATER_PUBKEY" | tr -d '[:space:]')"
+          if [ -n "$SIGNING_KEY" ] && [ -n "$UPDATER_PUBKEY" ]; then direct=true
+          else echo "::warning::direct desligado: faltam o secret TAURI_SIGNING_PRIVATE_KEY e/ou a variável TAURI_UPDATER_PUBKEY (steam/README.md)."; fi
+          if [ -n "$STEAM_USERNAME" ] && [ -n "$STEAM_PASSWORD" ] && [ -n "$STEAM_TOTP" ] && [ -n "$STEAM_APP_ID" ] \
+             && [ -n "$STEAM_DEPOT_WINDOWS_ID" ] && [ -n "$STEAM_DEPOT_LINUX_ID" ]; then steam=true
+          else echo "::notice::steam desligado: secrets STEAM_* incompletos (steam/README.md)."; fi
+          if [ "$direct" = true ] && [ "$REPUBLISH" = true ]; then
+            direct=false; echo "::notice::direct desligado: republicação não refaz a release do GitHub."
+          fi
+          if [ "$GITHUB_REF" != refs/heads/main ]; then
+            direct=false steam=false
+            echo "::warning::$GITHUB_REF não é a main: nada é publicado (direct e steam desligados)."
+          fi
+          echo "direct=$direct" >> "$GITHUB_OUTPUT"
+          echo "steam=$steam" >> "$GITHUB_OUTPUT"
+
+      # `pnpm gates` termina em `cargo test --lib`, e o `tauri-build` exige `out/prompts`
+      # (bundle.resources) e `out/renderer` (frontendDist, embarcado em `generate_context!`).
+      - name: Validar
+        if: steps.version.outputs.value != ''
+        run: >-
+          pnpm --filter @mika/desktop build && pnpm -s lint && pnpm -s gates && pnpm -s typecheck
+          && pnpm -s test:unit
+
+      # Mesma janela de commits da versão; vai para o corpo da release e para o `notes` do
+      # `latest.json` — o changelog que o updater mostra no app antes de baixar.
+      - name: Notas da release
+        if: steps.version.outputs.value != '' && steps.channels.outputs.direct == 'true'
+        run: |
+          mkdir -p release-notes
+          pnpm -s exec tsx scripts/versioning/release-notes.mts > release-notes/notes.md
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: steps.version.outputs.value != '' && steps.channels.outputs.direct == 'true'
+        with:
+          name: release-notes
+          if-no-files-found: error
+          retention-days: 3
+          path: release-notes
+
+  direct:
+    name: Direct (${{ matrix.name }})
+    needs: prepare
+    if: needs.prepare.outputs.version != '' && needs.prepare.outputs.direct_ready == 'true'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    # Proteção do ambiente `release` (revisores obrigatórios) antes de qualquer job tocar a chave de assinatura.
+    environment: release
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { name: windows-x86_64, os: windows-latest, bundles: nsis }
+          - { name: linux-x86_64, os: ubuntu-24.04, bundles: appimage }
+          - { name: darwin-aarch64, os: macos-latest, bundles: "app,dmg" }
+    defaults:
+      run:
+        shell: bash
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      APPIMAGE_EXTRACT_AND_RUN: 1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: direct-${{ matrix.name }}
+
+      - name: Dependências do sistema (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS
+
+      # Sem scripts de instalação de dependência neste job (ele assina release). O único que o build
+      # precisa é o do esbuild (vite/tsx), rodado de forma explícita.
+      - run: pnpm install --frozen-lockfile --ignore-scripts && pnpm rebuild esbuild
+
+      # Authenticode só com certificado: sem os secrets o instalador sai sem assinatura (SmartScreen avisa).
+      - name: Certificado Authenticode (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: |
+          if (-not $env:WINDOWS_CERTIFICATE) { Write-Host "::notice::sem WINDOWS_CERTIFICATE: instalador sem Authenticode."; exit 0 }
+          $pfx = Join-Path $env:RUNNER_TEMP 'codesign.pfx'
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE))
+          $password = ConvertTo-SecureString $env:WINDOWS_CERTIFICATE_PASSWORD -AsPlainText -Force
+          $cert = Import-PfxCertificate -FilePath $pfx -CertStoreLocation Cert:\CurrentUser\My -Password $password
+          Remove-Item $pfx
+          "WINDOWS_THUMBPRINT=$($cert.Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      # Exportadas só com secret presente: variável vazia faz o bundler tentar assinar com nada.
+      - name: Assinatura e notarização (macOS)
+        if: runner.os == 'macOS'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          if [ -z "$APPLE_CERTIFICATE" ]; then echo "::notice::sem APPLE_CERTIFICATE: dmg sem assinatura/notarização."; exit 0; fi
+          for name in APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD APPLE_SIGNING_IDENTITY APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID; do
+            if [ -n "${!name}" ]; then echo "$name=${!name}" >> "$GITHUB_ENV"; fi
+          done
+
+      # A chave de assinatura do updater (o `.sig` que o app verifica antes de instalar) existe SÓ aqui.
+      # `--config` recebe um ARQUIVO: JSON inline passa mal pelo `pnpm exec` no Windows (aspas).
+      # Windows: o `DirectML.dll` que o `ort` deixa em `target/release` não entra no instalador (o bundler
+      # só empacota exe + resources); `installer-hooks.nsh` o lê de MIKA_DIRECTML_DLL. O CRT do exe é
+      # estático (`staticVCRuntime`); `bundleVCRuntime` leva o do VS ao lado dele para as DLLs de terceiros.
+      - name: Empacotar
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          UPDATER_PUBKEY: ${{ vars.TAURI_UPDATER_PUBKEY }}
+          BUNDLES: ${{ matrix.bundles }}
+        run: |
+          # Chave pública minisign em base64 de linha única: espaço/CR/LF colado junto invalida o updater.
+          UPDATER_PUBKEY="$(printf '%s' "$UPDATER_PUBKEY" | tr -d '[:space:]')"
+          endpoint="https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/latest.json"
+          config=$(jq -nc --arg v "$VERSION" --arg key "$UPDATER_PUBKEY" --arg endpoint "$endpoint" \
+            '{version: $v, bundle: {createUpdaterArtifacts: true}, plugins: {updater: {endpoints: [$endpoint], pubkey: $key}}}')
+          if [ "$RUNNER_OS" = Windows ]; then
+            config=$(jq -c '.bundle.windows = {bundleVCRuntime: true}' <<<"$config")
+            export MIKA_DIRECTML_DLL="$(cygpath -w "$PWD/target/release/DirectML.dll")"
+          fi
+          if [ -n "${WINDOWS_THUMBPRINT:-}" ]; then
+            config=$(jq -c --arg t "$WINDOWS_THUMBPRINT" \
+              '.bundle.windows += {certificateThumbprint: $t, digestAlgorithm: "sha256", timestampUrl: "http://timestamp.digicert.com"}' <<<"$config")
+          fi
+          printf '%s' "$config" > "$RUNNER_TEMP/tauri.ci.json"
+          (cd apps/desktop && npm pkg set "version=$VERSION")
+          pnpm --filter @mika/desktop exec tauri build --bundles "$BUNDLES" --config "$RUNNER_TEMP/tauri.ci.json" -- --locked
+
+      - name: Conferir DirectML no instalador (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          if ! command -v 7z >/dev/null; then echo "::warning::7z ausente: DirectML.dll não conferido."; exit 0; fi
+          listing=$(7z l target/release/bundle/nsis/*-setup.exe)
+          grep -qi 'DirectML.dll' <<<"$listing" || { echo "::error::DirectML.dll não entrou no instalador NSIS."; exit 1; }
+
+      # `upload-artifact` com vários `path:` usa o menor ancestral comum e preserva subpastas
+      # (`nsis/`, `appimage/`...): o `publish` esperaria arquivos soltos. Junta tudo numa pasta plana.
+      - name: Reunir artefatos
+        run: |
+          mkdir out
+          find target/release/bundle -type f \( -name '*-setup.exe*' -o -name '*.AppImage*' -o -name '*.dmg' -o -name '*.app.tar.gz*' \) -exec cp {} out/ \;
+          ls -l out
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: direct-${{ matrix.name }}
+          if-no-files-found: error
+          retention-days: 3
+          path: out
+
+  # Rascunho primeiro: se um upload falhar, nenhuma release pela metade vira "latest".
+  publish:
+    name: Publicar release
+    needs: [prepare, direct]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: direct-*
+          path: dist
+          merge-multiple: true
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-notes
+          path: dist
+
+      - name: latest.json do updater
+        run: |
+          cd dist
+          base="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${VERSION}"
+          jq -n --arg v "$VERSION" --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --rawfile notes notes.md \
+            '{version: $v, notes: $notes, pub_date: $date, platforms: {}}' > latest.json
+          add_platform() { # $1 = chave do Tauri, $2 = glob do artefato assinado
+            local file
+            file=$(compgen -G "$2" | head -n1) || true
+            [ -n "$file" ] && [ -f "$file.sig" ] || { echo "::error::artefato assinado ausente para $1 ($2)"; exit 1; }
+            jq --arg k "$1" --arg s "$(cat "$file.sig")" --arg u "$base/$(basename "$file")" \
+              '.platforms[$k] = {signature: $s, url: $u}' latest.json > latest.tmp && mv latest.tmp latest.json
+          }
+          add_platform windows-x86_64 '*-setup.exe'
+          add_platform linux-x86_64 '*.AppImage'
+          add_platform darwin-aarch64 '*.app.tar.gz'
+          cat latest.json
+
+      - name: Publicar
+        run: |
+          cd dist
+          # Rascunho órfão de uma execução anterior que falhou no meio (nome de tag igual).
+          gh release delete "v$VERSION" --repo "$GITHUB_REPOSITORY" --yes || true
+          gh release create "v$VERSION" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "Mika $VERSION" --notes-file notes.md --generate-notes --draft \
+            *-setup.exe *-setup.exe.sig *.AppImage *.AppImage.sig *.dmg *.app.tar.gz *.app.tar.gz.sig latest.json
+          gh release edit "v$VERSION" --repo "$GITHUB_REPOSITORY" --draft=false --latest
+
+  steam:
+    name: Steam depot (${{ matrix.name }})
+    needs: prepare
+    # Só no repositório do dono: fork não tem os secrets e não deve compilar o build Steam.
+    if: >-
+      github.repository_owner == 'juninmd' && needs.prepare.outputs.version != ''
+      && needs.prepare.outputs.steam_ready == 'true'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { name: windows, os: windows-latest }
+          - { name: linux, os: ubuntu-24.04 }
+    defaults:
+      run:
+        shell: bash
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      # Lido por `option_env!` em src/steam.rs: o AppID entra no binário (restart_app_if_necessary).
+      MIKA_STEAM_APP_ID: ${{ secrets.STEAM_APP_ID }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: steam-${{ matrix.name }}
+
+      - name: Dependências do sistema (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS
+
+      - run: pnpm install --frozen-lockfile
+
+      # Sem bundle: o depot é uma pasta, não um instalador. Sem updater: a feature `steam` não o registra.
+      # `--config` recebe um ARQUIVO (JSON inline passa mal pelo `pnpm exec` no Windows).
+      - name: Compilar (--features steam)
+        run: |
+          (cd apps/desktop && npm pkg set "version=$VERSION")
+          jq -nc --arg v "$VERSION" '{version: $v}' > "$RUNNER_TEMP/tauri.ci.json"
+          pnpm --filter @mika/desktop exec tauri build --no-bundle --features steam --config "$RUNNER_TEMP/tauri.ci.json" -- --locked
+
+      - name: Montar o depot
+        run: bash steam/assemble-depot.sh "${{ matrix.name }}" "steam-depot/${{ matrix.name }}"
+
+      # Os redistribuíveis vêm de URL móvel (aka.ms): sem hash fixo possível, a prova é a assinatura Microsoft.
+      - name: Verificar assinatura dos redistribuíveis (Windows)
+        if: matrix.name == 'windows'
+        shell: pwsh
+        run: |
+          foreach ($rel in 'vcredist/vc_redist.x64.exe', 'webview2/MicrosoftEdgeWebview2Setup.exe') {
+            $path = Join-Path 'steam-depot/windows/_CommonRedist' $rel
+            $sig = Get-AuthenticodeSignature -FilePath $path
+            if ($sig.Status -ne 'Valid' -or $sig.SignerCertificate.Subject -notmatch 'O=Microsoft Corporation') {
+              throw "$rel sem assinatura Authenticode válida da Microsoft (status: $($sig.Status))"
+            }
+            Write-Host "$rel assinado por $($sig.SignerCertificate.Subject)"
+          }
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: steam-depot-${{ matrix.name }}
+          if-no-files-found: error
+          retention-days: 3
+          path: steam-depot/${{ matrix.name }}
+
+  steam-upload:
+    name: Steam upload
+    needs: [prepare, steam]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # `steam-production` (branch default) pode exigir revisores nas configurações do repositório.
+    environment: ${{ inputs.steam_branch == 'default' && 'steam-production' || 'steam-beta' }}
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      # Push em main não tem inputs: cai no `beta`. `default` só quando pedido E confirmado.
+      STEAM_BRANCH: ${{ inputs.steam_branch || 'beta' }}
+      CONFIRM_DEFAULT: ${{ inputs.confirm_default }}
+      STEAM_PREVIEW: ${{ inputs.steam_preview && '1' || '0' }}
+    steps:
+      - name: Escolher o branch
+        run: |
+          case "$STEAM_BRANCH" in
+            *[!A-Za-z0-9._-]*|"") echo "::error::nome de branch inválido: '$STEAM_BRANCH'"; exit 1 ;;
+          esac
+          if [ "$STEAM_BRANCH" = default ] && [ "$CONFIRM_DEFAULT" != true ]; then
+            echo "::error::branch 'default' exige confirm_default=true (todos os jogadores recebem o update)."; exit 1
+          fi
+          echo "Steam: build $VERSION -> branch '$STEAM_BRANCH' (preview=$STEAM_PREVIEW)"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: steam-depot-*
+          path: steam-content
+          # Sem merge: cada depot numa pasta (`windows/`, `linux/`), como os `depot_build_*.vdf` esperam.
+
+      - name: Normalizar pastas dos depots
+        run: |
+          mv steam-content/steam-depot-windows steam-content/windows
+          mv steam-content/steam-depot-linux steam-content/linux
+          # upload-artifact não preserva o bit de execução.
+          chmod +x steam-content/linux/bin/mika-desktop
+
+      # `gettext-base` (envsubst) PRECISA estar instalado antes de gerar os VDF.
+      - name: Dependências (envsubst, steamcmd)
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends lib32gcc-s1 gettext-base
+          mkdir -p "$HOME/steamcmd" && cd "$HOME/steamcmd"
+          curl -fsSL -o steamcmd_linux.tar.gz https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz
+          # Valve republica este arquivo no mesmo URL: se o hash mudar, confira o novo e atualize aqui.
+          echo "cebf0046bfd08cf45da6bc094ae47aa39ebf4155e5ede41373b579b8f1071e7c  steamcmd_linux.tar.gz" | sha256sum -c -
+          tar xzf steamcmd_linux.tar.gz
+
+      - name: Gerar os scripts VDF
+        env:
+          STEAM_APP_ID: ${{ secrets.STEAM_APP_ID }}
+          STEAM_DEPOT_WINDOWS_ID: ${{ secrets.STEAM_DEPOT_WINDOWS_ID }}
+          STEAM_DEPOT_LINUX_ID: ${{ secrets.STEAM_DEPOT_LINUX_ID }}
+        run: |
+          mkdir -p steam-build/output
+          export BUILD_DESC="Mika $VERSION (${GITHUB_SHA::7})"
+          export BUILD_OUTPUT="$PWD/steam-build/output"
+          export CONTENT_ROOT="$PWD/steam-content"
+          export VDF_DIR="$PWD/steam-build"
+          for name in app_build depot_build_windows depot_build_linux; do
+            envsubst < "steam/$name.vdf.template" > "steam-build/$name.vdf"
+          done
+
+      # steamcmd pode sair com 0 mesmo quando o build falha: o sinal de sucesso é a linha do log.
+      - name: Enviar para a Steam
+        env:
+          STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+          STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+          STEAM_TOTP: ${{ secrets.STEAM_TOTP }}
+        run: |
+          set -o pipefail
+          code=$(python3 steam/guard-code.py "$STEAM_TOTP")
+          echo "::add-mask::$code"
+          log=steam-build/output/steamcmd.log
+          # O log vira artefato: o login do build não deve ir junto.
+          "$HOME/steamcmd/steamcmd.sh" +login "$STEAM_USERNAME" "$STEAM_PASSWORD" "$code" \
+            +run_app_build "$PWD/steam-build/app_build.vdf" +quit 2>&1 | sed -u "s|$STEAM_USERNAME|***|g" | tee "$log"
+          if [ "$STEAM_PREVIEW" = 1 ]; then
+            ! grep -q 'ERROR' "$log" || { echo "::error::steamcmd (preview) reportou ERROR."; exit 1; }
+          else
+            grep -q 'Successfully finished AppID' "$log" || { echo "::error::steamcmd não terminou o build ('Successfully finished AppID' ausente)."; exit 1; }
+          fi
+          if [ "$STEAM_BRANCH" = default ]; then
+            echo "::notice::Se a Steam recusou SetLive em 'default', promova o build manualmente em Steamworks > Builds."
+          fi
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: steam-build-output
+          if-no-files-found: ignore
+          retention-days: 7
+          path: steam-build/output
+
+  # Tag só depois de algum canal ter entregue: sem ela, o próximo push recalcularia a mesma versão.
+  # `publish` já cria a tag ao soltar o rascunho; este job cobre o caso só-Steam e é idempotente.
+  tag:
+    name: Tag da versão
+    needs: [prepare, direct, publish, steam, steam-upload]
+    if: >-
+      !cancelled() && needs.prepare.outputs.version != '' && needs.prepare.outputs.republish != 'true'
+      && !contains(needs.*.result, 'failure')
+      && (needs.publish.result == 'success' || (needs.steam-upload.result == 'success' && !inputs.steam_preview))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Criar a tag
+        run: |
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION já existe."; exit 0
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/tags/v$VERSION" -f sha="$GITHUB_SHA" >/dev/null
+          echo "Tag v$VERSION criada em $GITHUB_SHA."

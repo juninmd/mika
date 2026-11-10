@@ -1,0 +1,123 @@
+{
+  "sampleRate": 16000,
+  "cases": [
+    {
+      "file": "keyboard-mechanical.wav",
+      "description": "Teclado mecânico, ~8 teclas/s, 10 s",
+      "expectSpeech": false,
+      "speechSegments": [],
+      "noise": [
+        "keyboard"
+      ]
+    },
+    {
+      "file": "keyboard-membrane.wav",
+      "description": "Teclado de membrana, ~5 teclas/s, 10 s",
+      "expectSpeech": false,
+      "speechSegments": [],
+      "noise": [
+        "keyboard"
+      ]
+    },
+    {
+      "file": "keyboard-close-mic.wav",
+      "description": "Teclado mecânico colado no microfone (muito alto), 8 s",
+      "expectSpeech": false,
+      "speechSegments": [],
+      "noise": [
+        "keyboard"
+      ]
+    },
+    {
+      "file": "mouse-clicks.wav",
+      "description": "Cliques e duplo-cliques de mouse, 8 s",
+      "expectSpeech": false,
+      "speechSegments": [],
+      "noise": [
+        "mouse"
+      ]
+    },
+    {
+      "file": "fan-room-tone.wav",
+      "description": "Ventoinha / ruído de sala, 8 s",
+      "expectSpeech": false,
+      "speechSegments": [],
+      "noise": [
+        "fan"
+      ]
+    },
+    {
+      "file": "keyboard-and-fan.wav",
+      "description": "Digitação sobre ventoinha, 10 s",
+      "expectSpeech": false,
+      "speechSegments": [],
+      "noise": [
+        "keyboard",
+        "fan"
+      ]
+    },
+    {
+      "file": "speech-with-typing.wav",
+      "description": "Fala real do usuário com digitação por baixo o tempo todo",
+      "expectSpeech": true,
+      "speechSegments": [
+        [
+          2.2,
+          6.5
+        ]
+      ],
+      "noise": [
+        "keyboard"
+      ]
+    },
+    {
+      "file": "typing-then-command.wav",
+      "description": "4 s só digitando, depois \"abrir site\" (TTS) — a fala deve começar em ~4 s, não antes",
+      "expectSpeech": true,
+      "speechSegments": [
+        [
+          4.2,
+          6.68
+        ]
+      ],
+      "noise": [
+        "keyboard"
+      ]
+    },
+    {
+      "file": "quiet-speech-with-fan.wav",
+      "description": "Fala real a -12 dB sobre ventoinha — tem de continuar sendo fala",
+      "expectSpeech": true,
+      "speechSegments": [
+        [
+          1.7,
+          6
+        ]
+      ],
+      "noise": [
+        "fan"
+      ]
+    },
+    {
+      "file": "command-with-mouse.wav",
+      "description": "Comando (TTS) com cliques de mouse antes e durante",
+      "expectSpeech": true,
+      "speechSegments": [
+        [
+          2.2,
+          4.68
+        ]
+      ],
+      "noise": [
+        "mouse"
+      ]
+    },
+    {
+      "file": "silence.wav",
+      "description": "Silêncio digital, 5 s",
+      "expectSpeech": false,
+      "speechSegments": [],
+      "noise": []
+    }
+  ]
+}

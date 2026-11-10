@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mika</title>
+    <!--
+      As fontes NÃO vêm mais de fonts.googleapis.com. Ver o bloco de tipografia em
+      `src/styles.css`: elas são empacotadas com o app, porque este app roda local e sem rede a
+      folha do Google nunca chegava — todo título caía no `serif` do sistema (Times New Roman) e o
+      app ainda pingava o Google a cada janela aberta, contrariando a própria etapa de privacidade
+      do onboarding.
+    -->
+    <!--
+      Cubism4 Core SDK (639 KB) is NOT loaded here on purpose.
+
+      It only has to be in place before pixi-live2d-display builds a model, and
+      `ensureCubismCoreLoaded()` in live2d/live2d-loader.ts already injects and awaits it
+      on demand — it handles both the "tag exists" and "no tag" cases. Loading it here
+      made every window pay for it at boot, including Settings, which never draws an
+      avatar. It now loads when the first model does.
+    -->
+
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>

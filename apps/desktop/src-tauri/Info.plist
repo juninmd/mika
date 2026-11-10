@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Mika usa o microfone para ouvir e conversar com você por voz. O áudio é processado no seu computador.</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>Mika observa a sua tela, quando você ativa a visão, para comentar jogos e o que você está fazendo.</string>
+</dict>
+</plist>

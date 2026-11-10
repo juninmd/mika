@@ -1,0 +1,5 @@
+{
+  "model": "qwen3.5:4b",
+  "responseChars": 266,
+  "describedRealScreen": true
+}
