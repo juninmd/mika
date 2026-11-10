@@ -142,7 +142,7 @@ ort = "2.0.0-rc.15"
 realfft = "3.5"
 tokenizers = { version = "1.0.0-rc.2", features = ["regex"] }
 rusqlite = { version = "0.40", features = ["bundled"] }
-sysinfo = "0.39"
+sysinfo = "0.40"
 # Idioma do SO no primeiro boot (`config/locale.rs`): Windows (GetUserPreferredUILanguages), macOS
 # (CFLocale — app aberto pelo Finder não tem `LANG`) e Linux (`LC_ALL`/`LANG`) numa chamada só.
 # MIT OR Apache-2.0, sem dependências nativas além das do próprio SO.
