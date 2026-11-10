@@ -152,7 +152,7 @@ jobs:
           mkdir -p release-notes
           pnpm -s exec tsx scripts/versioning/release-notes.mts > release-notes/notes.md
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: steps.version.outputs.value != '' && steps.channels.outputs.direct == 'true'
         with:
           name: release-notes
@@ -281,7 +281,7 @@ jobs:
           find target/release/bundle -type f \( -name '*-setup.exe*' -o -name '*.AppImage*' -o -name '*.dmg' -o -name '*.app.tar.gz*' \) -exec cp {} out/ \;
           ls -l out
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: direct-${{ matrix.name }}
           if-no-files-found: error
@@ -408,7 +408,7 @@ jobs:
             Write-Host "$rel assinado por $($sig.SignerCertificate.Subject)"
           }
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: steam-depot-${{ matrix.name }}
           if-no-files-found: error
@@ -505,7 +505,7 @@ jobs:
             echo "::notice::Se a Steam recusou SetLive em 'default', promova o build manualmente em Steamworks > Builds."
           fi
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: steam-build-output
