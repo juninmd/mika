@@ -17,9 +17,13 @@ opt-level = 2
 
 # `opt-level = 3`, não "s": log-mel, reamostragem e JPEG rodam em Rust puro no caminho de cada
 # turno de voz/visão, e "s" corta a vetorização exatamente desses laços.
+# `lto = "thin"` + `codegen-units = 1`: o crate grande segue em uma unidade de codegen (mesma
+# vetorização dos laços acima) e o LTO entre crates fica paralelo. `lto = true` (fat) é serial e
+# era o maior custo do passo "Empacotar" do release (12 min no Linux, ~25 no Windows/macOS, cache frio).
+# Voltar para `true` se a medição de voz/visão mostrar regressão.
 [profile.release]
 codegen-units = 1
-lto = true
+lto = "thin"
 opt-level = 3
 strip = true
 # Explícito: o default já é unwind, e o código assumia abort sem que isso estivesse escrito. Com

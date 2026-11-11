@@ -73,6 +73,7 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: ci-verify
+          cache-on-failure: true
 
       - name: Dependências do sistema (Linux)
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS
@@ -111,6 +112,7 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: ci-check-${{ matrix.os }}
+          cache-on-failure: true
 
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
@@ -155,6 +157,7 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: ci-e2e-${{ matrix.os }}
+          cache-on-failure: true
 
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'

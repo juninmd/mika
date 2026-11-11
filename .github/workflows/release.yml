@@ -204,6 +204,7 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: validate-windows
+          cache-on-failure: true
 
       - run: pnpm install --frozen-lockfile
 
@@ -219,7 +220,7 @@ jobs:
     # Proteção do ambiente `release` (revisores obrigatórios) antes de qualquer job tocar a chave de assinatura.
     environment: release
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - { name: windows-x86_64, os: windows-latest, bundles: nsis }
@@ -246,6 +247,7 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: direct-${{ matrix.name }}
+          cache-on-failure: true
 
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
@@ -426,6 +428,7 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: steam-${{ matrix.name }}
+          cache-on-failure: true
 
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
