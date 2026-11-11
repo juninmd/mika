@@ -153,47 +153,45 @@ struct DenoiseInputs {
 /// O laço de remoção de ruído (§3 do JS). Roda inteiramente dentro do `spawn_blocking` do
 /// chamador — cada `Session::run` é síncrono e `cancel` é checado entre passos porque não há outro
 /// ponto de interrupção possível aqui (não é `.await`able).
+///
+/// Os cinco tensores que não mudam entre passos (estilo, máscaras, saída do encoder, total de
+/// passos) são montados UMA vez e passados por referência: antes cada um dos 20 passos clonava a
+/// saída inteira do encoder e o estilo, alocação e cópia pagas na frente do primeiro áudio. Os
+/// latentes andam por move — a saída de um passo vira a entrada do próximo sem clone.
 fn denoise(
     session: &mut Session,
-    inputs: &DenoiseInputs,
+    inputs: DenoiseInputs,
     max_latent_len: i64,
     latent_channels: i64,
     num_inference_steps: u32,
     cancel: &CancelHandle,
 ) -> Result<Vec<f32>, String> {
+    let err = |e: ort::Error| e.to_string();
+    let style = Tensor::from_array(([1i64, inputs.style_rows, STYLE_DIM as i64], inputs.style)).map_err(err)?;
+    let mask = Tensor::from_array(([1i64, max_latent_len], vec![1i64; max_latent_len as usize])).map_err(err)?;
+    let encoder_outputs = Tensor::from_array((inputs.encoder_dims, inputs.encoder_outputs)).map_err(err)?;
+    let attention_mask = Tensor::from_array(([1i64, inputs.seq_len], inputs.attention_mask)).map_err(err)?;
+    let steps_tensor = Tensor::from_array(([1i64], vec![num_inference_steps as f32])).map_err(err)?;
     let mut latents = randn((latent_channels * max_latent_len) as usize);
-    let latent_mask = vec![1i64; max_latent_len as usize];
 
     for step in 0..num_inference_steps {
         if cancel.is_cancelled() {
             return Err("TTS cancelled".to_string());
         }
-
-        let style = Tensor::from_array(([1i64, inputs.style_rows, STYLE_DIM as i64], inputs.style.clone()))
-            .map_err(|e| e.to_string())?;
-        let noisy_latents = Tensor::from_array(([1i64, latent_channels, max_latent_len], latents.clone()))
-            .map_err(|e| e.to_string())?;
-        let mask = Tensor::from_array(([1i64, max_latent_len], latent_mask.clone())).map_err(|e| e.to_string())?;
-        let encoder_outputs = Tensor::from_array((inputs.encoder_dims.clone(), inputs.encoder_outputs.clone()))
-            .map_err(|e| e.to_string())?;
-        let attention_mask = Tensor::from_array(([1i64, inputs.seq_len], inputs.attention_mask.clone()))
-            .map_err(|e| e.to_string())?;
-        let timestep = Tensor::from_array(([1i64], vec![step as f32])).map_err(|e| e.to_string())?;
-        let steps_tensor = Tensor::from_array(([1i64], vec![num_inference_steps as f32])).map_err(|e| e.to_string())?;
-
+        let noisy_latents = Tensor::from_array(([1i64, latent_channels, max_latent_len], latents)).map_err(err)?;
+        let timestep = Tensor::from_array(([1i64], vec![step as f32])).map_err(err)?;
         let outputs = session
             .run(ort::inputs![
-                "style" => style,
+                "style" => &style,
                 "noisy_latents" => noisy_latents,
-                "latent_mask" => mask,
-                "encoder_outputs" => encoder_outputs,
-                "attention_mask" => attention_mask,
+                "latent_mask" => &mask,
+                "encoder_outputs" => &encoder_outputs,
+                "attention_mask" => &attention_mask,
                 "timestep" => timestep,
-                "num_inference_steps" => steps_tensor,
+                "num_inference_steps" => &steps_tensor,
             ])
             .map_err(|e| format!("latent_denoiser falhou no passo {step}: {e}"))?;
-
-        let (_, denoised) = outputs["denoised_latents"].try_extract_tensor::<f32>().map_err(|e| e.to_string())?;
+        let (_, denoised) = outputs["denoised_latents"].try_extract_tensor::<f32>().map_err(err)?;
         latents = denoised.to_vec();
     }
 
@@ -216,7 +214,7 @@ fn generate_speech(
 
     let (last_hidden_state, encoder_dims, durations_samples) = {
         let mut encoder = sessions.text_encoder.blocking_lock();
-        let ids_tensor = Tensor::from_array(([1i64, seq_len], input_ids.clone())).map_err(|e| e.to_string())?;
+        let ids_tensor = Tensor::from_array(([1i64, seq_len], input_ids)).map_err(|e| e.to_string())?;
         let mask_tensor = Tensor::from_array(([1i64, seq_len], attention_mask.clone())).map_err(|e| e.to_string())?;
         let style_tensor = Tensor::from_array(([1i64, style_rows, STYLE_DIM as i64], voice_embedding.to_vec()))
             .map_err(|e| e.to_string())?;
@@ -251,7 +249,7 @@ fn generate_speech(
 
     let final_latents = {
         let mut denoiser = sessions.latent_denoiser.blocking_lock();
-        denoise(&mut denoiser, &denoise_inputs, max_latent_len, latent_channels, num_inference_steps, cancel)?
+        denoise(&mut denoiser, denoise_inputs, max_latent_len, latent_channels, num_inference_steps, cancel)?
     };
 
     if cancel.is_cancelled() {

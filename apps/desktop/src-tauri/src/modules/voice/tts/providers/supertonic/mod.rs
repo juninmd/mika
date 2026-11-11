@@ -156,4 +156,45 @@ mod tests {
         assert!(rms > 0.01, "áudio praticamente mudo: RMS {rms:.4}");
         let _ = std::fs::remove_dir_all(&dir);
     }
+
+    /// Benchmark de latência pelo caminho de produção: boot (`prewarm`) → primeira fala da sessão
+    /// (o tempo até o primeiro áudio que o usuário sente) → falas seguintes já quentes. Grava JSON
+    /// em `MIKA_TTS_BENCH_OUT` para comparar antes/depois de uma mudança no pipeline.
+    ///   MIKA_SUPERTONIC_DIR=... MIKA_TTS_BENCH_OUT=bench.json cargo test --release --lib tts_latency_bench -- --ignored --nocapture
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore = "precisa do modelo Supertonic (baixa na primeira vez)"]
+    async fn tts_latency_bench() {
+        let (store, dir) = store();
+        let cache_dir: PathBuf = std::env::var("MIKA_SUPERTONIC_DIR").expect("defina MIKA_SUPERTONIC_DIR").into();
+        assets::ensure_model_files(&cache_dir, &store).await.expect("modelo");
+        let opts = SupertonicOptions { voice: "F3".into(), language: "pt".into(), speed: 1.0, steps: 20, cache_dir: cache_dir.clone() };
+        assets::ensure_voice(&cache_dir, &opts.voice, &store).await.expect("voz");
+        let sentences = ["Boa, essa foi por pouco!", "Oi, tudo bem? Vamos jogar mais uma partida hoje?", "Se você pegar o atalho pela esquerda, chega no chefe antes do tempo acabar."];
+        let started = std::time::Instant::now();
+        prewarm(cache_dir.clone()).await;
+        let prewarm_ms = started.elapsed().as_millis();
+        let mut runs = Vec::new();
+        for round in 0..4 {
+            for text in sentences {
+                let t = std::time::Instant::now();
+                let wav = generate(text, &opts, &store, &cancel_handle()).await.expect("síntese");
+                let ms = t.elapsed().as_secs_f64() * 1000.0;
+                let audio_ms = (wav.len() - 44) as f64 / 2.0 / 44.1;
+                runs.push(serde_json::json!({"round": round, "text": text, "ms": ms.round(), "audioMs": audio_ms.round(), "rtf": ms / audio_ms}));
+            }
+        }
+        let warm: Vec<f64> = runs.iter().skip(sentences.len()).map(|r| r["ms"].as_f64().unwrap()).collect();
+        let report = serde_json::json!({
+            "prewarmMs": prewarm_ms,
+            "firstSpeechMs": runs[0]["ms"],
+            "warmMeanMs": (warm.iter().sum::<f64>() / warm.len() as f64).round(),
+            "warmMeanRtf": runs.iter().skip(sentences.len()).map(|r| r["rtf"].as_f64().unwrap()).sum::<f64>() / warm.len() as f64,
+            "runs": runs,
+        });
+        println!("{report:#}");
+        if let Ok(out) = std::env::var("MIKA_TTS_BENCH_OUT") {
+            std::fs::write(out, serde_json::to_string_pretty(&report).unwrap()).unwrap();
+        }
+        let _ = std::fs::remove_dir_all(&dir);
+    }
 }
