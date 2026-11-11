@@ -51,10 +51,12 @@ env:
     libpipewire-0.3-dev libgbm-dev libegl-dev libwayland-dev libclang-dev
 
 jobs:
+  # Só decide versão e canais (segundos): os builds dependem dele, não da validação pesada, que roda em
+  # paralelo no job `validate`. Quem PUBLICA espera os dois (`publish`, `steam-upload`, `tag`).
   prepare:
-    name: Versão e validação
-    runs-on: windows-latest
-    timeout-minutes: 60
+    name: Versão e canais
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         shell: bash
@@ -75,10 +77,6 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-
-      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-        with:
-          shared-key: validate-windows
 
       - run: pnpm install --frozen-lockfile
 
@@ -136,14 +134,6 @@ jobs:
           echo "direct=$direct" >> "$GITHUB_OUTPUT"
           echo "steam=$steam" >> "$GITHUB_OUTPUT"
 
-      # `pnpm gates` termina em `cargo test --lib`, e o `tauri-build` exige `out/prompts`
-      # (bundle.resources) e `out/renderer` (frontendDist, embarcado em `generate_context!`).
-      - name: Validar
-        if: steps.version.outputs.value != ''
-        run: >-
-          pnpm --filter @mika/desktop build && pnpm -s lint && pnpm -s gates && pnpm -s typecheck
-          && pnpm -s test:unit
-
       # Mesma janela de commits da versão; vai para o corpo da release e para o `notes` do
       # `latest.json` — o changelog que o updater mostra no app antes de baixar.
       - name: Notas da release
@@ -159,6 +149,66 @@ jobs:
           if-no-files-found: error
           retention-days: 3
           path: release-notes
+
+  # A validação mais lenta do pipeline, em paralelo com os builds: o que publica espera por ela.
+  # `pnpm gates` termina em `cargo test --lib`, e o `tauri-build` exige `out/prompts`
+  # (bundle.resources) e `out/renderer` (frontendDist, embarcado em `generate_context!`).
+  # Parte só-TypeScript da validação, em ubuntu e sem Rust: não espera o `cargo test` do Windows.
+  validate-js:
+    name: Validação (lint, tipos, unidade)
+    needs: prepare
+    if: needs.prepare.outputs.version != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm -s lint && pnpm -s typecheck && pnpm -s test:unit
+
+  validate:
+    name: Validação (build, gates, cargo test)
+    needs: prepare
+    if: needs.prepare.outputs.version != ''
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      # Sem debuginfo em dev/test: compila e linka mais rápido, cache menor. (O build de release não muda.)
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: validate-windows
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Validar
+        run: pnpm --filter @mika/desktop build && pnpm -s gates
 
   direct:
     name: Direct (${{ matrix.name }})
@@ -291,7 +341,7 @@ jobs:
   # Rascunho primeiro: se um upload falhar, nenhuma release pela metade vira "latest".
   publish:
     name: Publicar release
-    needs: [prepare, direct]
+    needs: [prepare, validate, validate-js, direct]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -417,7 +467,7 @@ jobs:
 
   steam-upload:
     name: Steam upload
-    needs: [prepare, steam]
+    needs: [prepare, validate, validate-js, steam]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     # `steam-production` (branch default) pode exigir revisores nas configurações do repositório.
@@ -517,7 +567,7 @@ jobs:
   # `publish` já cria a tag ao soltar o rascunho; este job cobre o caso só-Steam e é idempotente.
   tag:
     name: Tag da versão
-    needs: [prepare, direct, publish, steam, steam-upload]
+    needs: [prepare, validate, validate-js, direct, publish, steam, steam-upload]
     if: >-
       !cancelled() && needs.prepare.outputs.version != '' && needs.prepare.outputs.republish != 'true'
       && !contains(needs.*.result, 'failure')

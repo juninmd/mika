@@ -4,6 +4,11 @@ name: CI
 
 on:
   pull_request:
+    # PR só de documentação não compila nada.
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE*"
 
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
@@ -14,6 +19,9 @@ permissions:
 
 env:
   CI: true
+  # Sem debuginfo em dev/test: compila e linka mais rápido e o cache do Rust fica menor.
+  CARGO_PROFILE_DEV_DEBUG: 0
+  CARGO_PROFILE_TEST_DEBUG: 0
   # Dependências nativas do Tauri no Linux (webkit, tray, áudio, captura, X11) — igual a release.yml.
   LINUX_DEPS: >-
     libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf libssl-dev libasound2-dev
@@ -21,8 +29,33 @@ env:
     libpipewire-0.3-dev libgbm-dev libegl-dev libwayland-dev libclang-dev
 
 jobs:
+  # Só TypeScript, sem Rust nem libs do sistema: roda em paralelo com `verify` (que leva o `cargo test`).
+  js:
+    name: Lint, tipos e unidade
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm -s lint
+
+      - run: pnpm -s typecheck
+
+      - run: pnpm -s test:unit
+
   verify:
-    name: Lint, gates, tipos e unidade
+    name: Build e gates
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -50,13 +83,7 @@ jobs:
       - name: Build do renderer e dos prompts
         run: pnpm --filter @mika/desktop build
 
-      - run: pnpm -s lint
-
       - run: pnpm -s gates
-
-      - run: pnpm -s typecheck
-
-      - run: pnpm -s test:unit
 
   rust:
     name: cargo check (${{ matrix.os }})
