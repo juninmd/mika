@@ -99,9 +99,50 @@ pub fn split_into_sentences(text: &str) -> Vec<String> {
     chunks
 }
 
+/// Só o primeiro trecho de uma fala longa é cortado: ele é o que o usuário espera em silêncio.
+const FIRST_CLAUSE_SPLIT_FROM: usize = 60;
+const CLAUSE_MIN_CHARS: usize = 20;
+
+/// Corta uma frase longa na primeira pausa de oração (`,` `;` `:` seguidos de espaço) quando os
+/// dois lados ficam com pelo menos [`CLAUSE_MIN_CHARS`]. A síntese local cresce com o tamanho do
+/// texto, então o primeiro áudio sai na metade do tempo e o resto sintetiza enquanto ele toca; a
+/// pausa cai onde a vírgula já pedia uma. Exige espaço depois para nunca partir "3,5".
+pub fn split_first_clause(sentence: &str) -> Vec<String> {
+    if sentence.chars().count() <= FIRST_CLAUSE_SPLIT_FROM {
+        return vec![sentence.to_string()];
+    }
+    let cut = sentence.char_indices().zip(sentence.chars().skip(1)).enumerate().find_map(|(n, ((i, c), next))| {
+        let is_pause = matches!(c, ',' | ';' | ':') && next.is_whitespace() && n + 1 >= CLAUSE_MIN_CHARS;
+        (is_pause && sentence[i + 1..].trim_start().chars().count() >= CLAUSE_MIN_CHARS).then_some(i + 1)
+    });
+    match cut {
+        Some(at) => vec![sentence[..at].to_string(), sentence[at..].trim_start().to_string()],
+        None => vec![sentence.to_string()],
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn split_first_clause_cuts_a_long_sentence_at_the_first_comma_with_room_on_both_sides() {
+        let out = split_first_clause("Se você pegar o atalho pela esquerda, passando pela ponte quebrada, chega no chefe antes.");
+        assert_eq!(out, vec!["Se você pegar o atalho pela esquerda,", "passando pela ponte quebrada, chega no chefe antes."]);
+    }
+
+    #[test]
+    fn split_first_clause_leaves_short_sentences_and_tiny_heads_alone() {
+        assert_eq!(split_first_clause("Oi, tudo bem? Vamos jogar?"), vec!["Oi, tudo bem? Vamos jogar?"]);
+        let tiny_head = "Bom, então vamos pegar o atalho pela esquerda e chegar no chefe bem antes do tempo.";
+        assert_eq!(split_first_clause(tiny_head), vec![tiny_head]);
+    }
+
+    #[test]
+    fn split_first_clause_never_cuts_a_decimal_comma() {
+        let text = "A versão 3,5 do patch mudou o dano da espada longa e também o tempo de recarga dela.";
+        assert_eq!(split_first_clause(text), vec![text]);
+    }
 
     #[test]
     fn split_into_sentences_breaks_on_terminal_punctuation() {
