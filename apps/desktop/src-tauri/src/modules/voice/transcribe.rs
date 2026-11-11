@@ -142,6 +142,18 @@ fn is_local_provider(provider: &str) -> bool {
     matches!(provider, "electron" | "local-whisper" | "nemotron")
 }
 
+/// PCM16 LE → [`super::stt_cleanup::trim_silence`] → PCM16 LE. Outro rate passa intacto: quem
+/// recusa, alto, é o motor (contrato PCM16 mono 16 kHz).
+fn cleaned_pcm(pcm: Vec<u8>, sample_rate: u32) -> Vec<u8> {
+    if sample_rate != DEFAULT_PCM_SAMPLE_RATE || pcm.len() % 2 != 0 {
+        return pcm;
+    }
+    let mut samples: Vec<i16> = pcm.chunks_exact(2).map(|b| i16::from_le_bytes([b[0], b[1]])).collect();
+    let removed = super::stt_cleanup::trim_silence(&mut samples);
+    log::debug!("[STT] {} ms de silêncio cortados antes do STT", removed as u64 * 1_000 / u64::from(DEFAULT_PCM_SAMPLE_RATE));
+    samples.iter().flat_map(|s| s.to_le_bytes()).collect()
+}
+
 /// Whisper, fed noise, writes caption annotations ("[Música]", "(risos)", "♪") that nobody said;
 /// an annotation-only transcript is no speech, not a message for the Mika to answer.
 fn without_annotations(text: &str) -> String {
@@ -230,6 +242,7 @@ pub(crate) async fn transcribe_local(
     sample_rate: u32,
     language: Option<String>,
 ) -> Result<Option<String>, String> {
+    let pcm = cleaned_pcm(pcm, sample_rate);
     let text = if provider == "nemotron" {
         nemotron::transcribe(data_dir, pcm, sample_rate, language).await?.map(|r| r.text)
     } else {
