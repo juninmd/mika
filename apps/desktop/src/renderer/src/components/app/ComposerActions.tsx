@@ -92,8 +92,9 @@ export function QuickActionsBar({
               onChange(t(action.msg))
               textareaRef.current?.focus()
             }}
-            className="min-h-7 rounded-full border border-border-subtle bg-surface-raise px-2.5 py-1 text-caption font-medium leading-none text-text-muted backdrop-blur-md transition-[background-color,border-color,color,box-shadow] duration-150 hover:border-info-rim hover:bg-info-soft hover:text-text-main hover:shadow-md hover:shadow-info/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            className="inline-flex min-h-7 items-center gap-1.5 rounded-full border border-border-subtle bg-surface-raise px-2.5 py-1 text-caption font-medium leading-none text-text-muted backdrop-blur-md transition-[background-color,border-color,color,box-shadow] duration-150 hover:border-info-rim hover:bg-info-soft hover:text-text-main hover:shadow-md hover:shadow-info/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
+            <action.icon size={13} strokeWidth={2} aria-hidden="true" />
             {t(action.label)}
           </motion.button>
         ))}

@@ -1,4 +1,5 @@
 import { BentoGrid } from '@mika/sdk-ui/settings'
+import { AudioLines, Cloud, VolumeX } from 'lucide-react'
 import { audioMimeFromBase64 } from '../../../settings/voice/tts-provider-constants'
 import { useTtsAudioTest } from '../../../settings/voice/tts-provider-subcomponents'
 import { runtimeApi } from '../../wizard-app-saves'
@@ -57,6 +58,12 @@ function VoicePreview({ copy, provider }: { copy: WizardCopy['tts']; provider: E
   )
 }
 
+const TTS_ICONS = {
+  none: <VolumeX size={16} />,
+  supertonic: <AudioLines size={16} />,
+  elevenlabs: <Cloud size={16} />,
+} as const
+
 export function TtsStep({ copy, error, onBack, onNext, onTtsChange, saving, tts }: TtsStepProps) {
   return (
     <>
@@ -70,6 +77,7 @@ export function TtsStep({ copy, error, onBack, onNext, onTtsChange, saving, tts 
               selected={tts === id}
               title={copy.options[id].name}
               description={copy.options[id].description}
+              icon={TTS_ICONS[id]}
               onClick={() => onTtsChange(id)}
             />
           ))}

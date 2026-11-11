@@ -1,13 +1,5 @@
+import { History, MessageCircle, MessageCirclePlus, Mic, Pin, Settings2, Trash2 } from 'lucide-react'
 import { useMemo } from 'react'
-import {
-  HistoryIcon,
-  MessageIcon,
-  MicrophoneIcon,
-  PinIcon,
-  SettingsIcon,
-  SparkIcon,
-  TrashIcon,
-} from '../components/Icons'
 import type { ContextMenuItem } from '../components/MikaContextMenu'
 import { useDockActions } from './useDockActions'
 import { useI18n } from './useI18n'
@@ -35,19 +27,19 @@ export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
         id: 'chat',
         label: t('shell.menu.chat'),
         hint: 'Ctrl+Space',
-        icon: <MessageIcon className="h-3.5 w-3.5" />,
+        icon: <MessageCircle size={14} />,
         onSelect: onOpenChat,
       },
       {
         id: 'topic',
         label: t('shell.menu.topic'),
-        icon: <SparkIcon className="h-3.5 w-3.5" />,
+        icon: <MessageCirclePlus size={14} />,
         onSelect: () => onSendMessage(t('shell.menu.topicPrompt')),
       },
       {
         id: 'history',
         label: t('shell.menu.history'),
-        icon: <HistoryIcon className="h-3.5 w-3.5" />,
+        icon: <History size={14} />,
         onSelect: onOpenHistory,
         separatorBefore: true,
       },
@@ -56,27 +48,27 @@ export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
         label: t('shell.menu.mic'),
         hint: 'F9',
         checked: micEnabled,
-        icon: <MicrophoneIcon className="h-3.5 w-3.5" />,
+        icon: <Mic size={14} />,
         onSelect: onToggleMic,
       },
       {
         id: 'pin',
         label: t('shell.menu.pin'),
         checked: pinned,
-        icon: <PinIcon className="h-3.5 w-3.5" />,
+        icon: <Pin size={14} />,
         onSelect: onTogglePin,
       },
       {
         id: 'settings',
         label: t('shell.menu.settings'),
-        icon: <SettingsIcon className="h-3.5 w-3.5" />,
+        icon: <Settings2 size={14} />,
         onSelect: () => void openSettings(),
         separatorBefore: true,
       },
       {
         id: 'clear',
         label: t('shell.menu.clearHistory'),
-        icon: <TrashIcon className="h-3.5 w-3.5" />,
+        icon: <Trash2 size={14} />,
         onSelect: onClearHistory,
         confirmLabel: t('shell.menu.clearHistoryArmed'),
         destructive: true,

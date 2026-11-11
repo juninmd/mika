@@ -17,12 +17,15 @@ export function StepHeader({ step, title, description }: { step: string; title: 
 export function OptionCard({
   description,
   disabled,
+  icon,
   onClick,
   selected,
   title,
 }: {
   description: string
   disabled?: boolean
+  /** Lucide glyph that says what the choice is (local, cloud, voice off…) before the text is read. */
+  icon?: ReactNode
   onClick: () => void
   selected: boolean
   title: string
@@ -44,6 +47,14 @@ export function OptionCard({
           aria-hidden="true"
           className="absolute inset-x-0 top-0 h-0.5 bg-accent shadow-[0_0_10px_var(--accent-glow)]"
         />
+      )}
+      {icon && (
+        <span
+          aria-hidden="true"
+          className={`flex size-8 shrink-0 items-center justify-center rounded-xl border transition-colors duration-150 ${selected ? 'border-accent-rim bg-accent/15 text-accent-text' : 'border-border-subtle bg-surface-raise-strong text-text-muted'}`}
+        >
+          {icon}
+        </span>
       )}
       <span className="min-w-0 flex-1">
         <span

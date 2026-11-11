@@ -1,15 +1,20 @@
 import type { TranslationDict } from '@mika/sdk/i18n'
+import { Dices, Gamepad2, type LucideIcon, MessageCircleHeart, Monitor, UserSearch } from 'lucide-react'
 import type { SlashCommandDef } from '../../hooks/shell-commands'
 import { slashCommandOptionId } from '../../hooks/useSlashCommandSuggestions'
 
 export const MAX_MSG_LENGTH = 2000
 
-export const QUICK_ACTIONS: ReadonlyArray<{ label: keyof TranslationDict; msg: keyof TranslationDict }> = [
-  { label: 'shell.composer.quick.screen', msg: 'shell.composer.quick.screenMsg' },
-  { label: 'shell.composer.quick.game', msg: 'shell.composer.quick.gameMsg' },
-  { label: 'shell.composer.quick.who', msg: 'shell.composer.quick.whoMsg' },
-  { label: 'shell.composer.quick.react', msg: 'shell.composer.quick.reactMsg' },
-  { label: 'shell.composer.quick.surprise', msg: 'shell.composer.quick.surpriseMsg' },
+export const QUICK_ACTIONS: ReadonlyArray<{
+  label: keyof TranslationDict
+  msg: keyof TranslationDict
+  icon: LucideIcon
+}> = [
+  { label: 'shell.composer.quick.screen', msg: 'shell.composer.quick.screenMsg', icon: Monitor },
+  { label: 'shell.composer.quick.game', msg: 'shell.composer.quick.gameMsg', icon: Gamepad2 },
+  { label: 'shell.composer.quick.who', msg: 'shell.composer.quick.whoMsg', icon: UserSearch },
+  { label: 'shell.composer.quick.react', msg: 'shell.composer.quick.reactMsg', icon: MessageCircleHeart },
+  { label: 'shell.composer.quick.surprise', msg: 'shell.composer.quick.surpriseMsg', icon: Dices },
 ]
 
 export const PLACEHOLDERS: ReadonlyArray<keyof TranslationDict> = [
