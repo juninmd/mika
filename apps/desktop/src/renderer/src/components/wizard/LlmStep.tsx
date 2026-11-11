@@ -1,5 +1,6 @@
 import type { LLMModelCatalogItem } from '@mika/sdk/contracts'
 import { AuroraField, BentoGrid, GlassCard, GlassSelect } from '@mika/sdk-ui/settings'
+import { Cloud, Server } from 'lucide-react'
 import { OllamaSetupGuide } from './OllamaSetupGuide'
 import { ErrorBanner, OptionCard, PrimaryButton, SecondaryButton, StepHeader } from './WizardPrimitives'
 import type { WizardCopy } from './wizard-copy'
@@ -25,6 +26,9 @@ type LlmStepProps = {
   saving: boolean
   selectedProvider: LlmProvider
 }
+
+/** Runs on this PC (or the user's own host); the rest are hosted APIs. */
+const LOCAL_LLM = new Set<string>(['ollama', 'unsloth', 'openaiCompatible'])
 
 export function LlmStep({
   apiKey,
@@ -58,6 +62,7 @@ export function LlmStep({
               title={item.name}
               description={copy.providers[item.id]}
               disabled={saving}
+              icon={LOCAL_LLM.has(item.id) ? <Server size={16} /> : <Cloud size={16} />}
               onClick={() => onProviderChange(item.id)}
             />
           ))}

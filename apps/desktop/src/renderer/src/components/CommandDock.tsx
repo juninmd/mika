@@ -102,6 +102,34 @@ function DockLegend({ label, kbd, visible }: { label: string; kbd?: string; visi
   )
 }
 
+const MAG_MAX = 0.22
+const MAG_REACH_PX = 90
+
+/**
+ * macOS-style magnification: buttons near the pointer grow, neighbours a little less. Writes the CSS
+ * `scale` property straight to the DOM (no React state per pointer move) so the hover lift in
+ * `DockButton`, which uses `transform`, still composes. Off under reduced motion.
+ */
+const dockButtons = (dock: HTMLElement | null) => dock?.querySelectorAll<HTMLElement>('[data-dock-button]') ?? []
+
+function useDockMagnify(dockRef: React.RefObject<HTMLDivElement | null>) {
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (e.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      for (const button of dockButtons(dockRef.current)) {
+        const rect = button.getBoundingClientRect()
+        const distance = Math.abs(e.clientX - (rect.left + rect.width / 2))
+        button.style.scale = String(1 + MAG_MAX * Math.max(0, 1 - distance / MAG_REACH_PX))
+      }
+    },
+    [dockRef],
+  )
+  const onPointerLeave = useCallback(() => {
+    for (const button of dockButtons(dockRef.current)) button.style.scale = ''
+  }, [dockRef])
+  return { onPointerMove, onPointerLeave }
+}
+
 export const CommandDock = memo(function CommandDock(p: T) {
   const { t } = useI18n()
   const dockRef = useRef<HTMLDivElement>(null)
@@ -127,6 +155,7 @@ export const CommandDock = memo(function CommandDock(p: T) {
     buttons[map[e.key] as number]?.focus()
   }, [])
 
+  const magnify = useDockMagnify(dockRef)
   const peeked = items[peek] ?? items.mic
   const surface = p.policy.dockSurface === 'solid' ? 'hud-glass-strong shadow-lg shadow-bg-deep/40' : 'hud-glass-strong'
   const groups = DOCK_GROUPS.map((group) => group.filter((key) => items[key])).filter((group) => group.length)
@@ -138,6 +167,8 @@ export const CommandDock = memo(function CommandDock(p: T) {
       aria-label={t('shell.dock.label')}
       aria-orientation="horizontal"
       onKeyDown={handleKeyNav}
+      onPointerMove={magnify.onPointerMove}
+      onPointerLeave={magnify.onPointerLeave}
       className={`pointer-events-auto relative flex items-center gap-1 rounded-2xl p-1 ${surface}`}
       style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
     >
