@@ -18,6 +18,13 @@ const CONV_CONTEXT: i64 = 8;
 const PRED_LAYERS: i64 = 2;
 const PRED_HIDDEN: usize = 640;
 const MAX_SYMBOLS_PER_FRAME: usize = 10;
+/// Log-mel de silêncio digital (`ln(0 + 2^-24)`, ver `features.rs`). Preencher com `0.0` — o que o
+/// contexto inicial e a cauda do último bloco faziam — é `ln(1)`: um quadro ALTO, não mudo, colado
+/// antes da primeira e depois da última palavra. Medido no smoke de escuta (`voice/stt_smoke.rs`).
+const SILENT_FRAME: f32 = -16.635_532;
+/// Blocos de silêncio depois do áudio: o encoder em streaming olha à frente, e sem isto a última
+/// sílaba saía cortada ("na Steam" → "na Ste").
+const FLUSH_CHUNKS: usize = 1;
 
 pub struct Graphs {
     pub encoder: Session,
@@ -51,13 +58,13 @@ pub fn transcribe(graphs: &mut Graphs, mel: &[f32], lang_id: i64) -> Result<Vec<
     };
     let zero_state = vec![0.0; PRED_LAYERS as usize * PRED_HIDDEN];
     let mut prediction = predict(&mut graphs.decoder, BLANK, zero_state.clone(), zero_state)?;
-    let mut context = vec![0.0f32; PRE_ENCODE * N_MELS];
+    let mut context = vec![SILENT_FRAME; PRE_ENCODE * N_MELS];
     let mut tokens = Vec::new();
-    for chunk in 0..frames.div_ceil(CHUNK) {
+    for chunk in 0..frames.div_ceil(CHUNK) + FLUSH_CHUNKS {
         let mut input = std::mem::take(&mut context);
         let new = &mel[(chunk * CHUNK * N_MELS).min(mel.len())..((chunk + 1) * CHUNK * N_MELS).min(mel.len())];
         input.extend_from_slice(new);
-        input.resize((PRE_ENCODE + CHUNK) * N_MELS, 0.0);
+        input.resize((PRE_ENCODE + CHUNK) * N_MELS, SILENT_FRAME);
         context = input[CHUNK * N_MELS..].to_vec();
         let encoded = encode(&mut graphs.encoder, input, &mut cache, lang_id)?;
         for frame in encoded.chunks_exact(HIDDEN) {
