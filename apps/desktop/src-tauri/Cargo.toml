@@ -214,7 +214,7 @@ webview2-com = "0.39"
 # Versão/licença conferidas em crates.io em 2026-09-26: 0.25.1, Apache-2.0.
 uiautomation = "0.25.1"
 # A MESMA série que `webview2-com` usa (0.39 usa windows-core 0.62).
-windows-core = "0.62"
+windows-core = "0.100"
 # Janela ativa em primeiro plano (`GetForegroundWindow`/`GetWindowTextW`/`GetWindowThreadProcessId`,
 # ver `modules/system_signals/active_window.rs`). JÁ resolvida em `Cargo.lock` na 0.62.2 —
 # dependência transitiva de `sysinfo` e `xcap` (ambos diretos, acima) — então esta linha não amplia
