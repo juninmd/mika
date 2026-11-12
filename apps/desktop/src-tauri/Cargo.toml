@@ -239,7 +239,7 @@ objc2-app-kit = { version = "0.3", default-features = false, features = ["std", 
 # `modules/system_signals/active_window.rs`). JÁ resolvida em `Cargo.lock` (0.13.2) — dependência
 # transitiva de `enigo` e `global-hotkey` — então esta linha não amplia a árvore de dependências, só a nomeia.
 [target.'cfg(target_os = "linux")'.dependencies]
-x11rb = "0.13"
+x11rb = "0.14"
 
 # Só afeta `cargo test`/`cargo bench` — `[dev-dependencies]` nunca entra na árvore de
 # `cargo build --release`/`tauri build`, então isto não muda o binário de produção. `tauri/test`
