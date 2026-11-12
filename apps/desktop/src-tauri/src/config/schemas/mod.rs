@@ -152,8 +152,10 @@ fn app() -> Namespace {
             // paleta gravam esta chave, e o observador aplica na janela. Reaplicada no boot.
             boolean("fullscreen", false),
             // Atualização automática (`modules/update/auto.rs`): só avisa, ou baixa e instala sozinha
-            // quando o PC fica ocioso. Controle em Configurações → Atualizações.
-            choice("autoUpdate", "install", &["off", "notify", "install"]),
+            // quando o PC fica ocioso. Padrão `notify`: quem decide instalar é o dono do PC, e o
+            // aviso chega no mesmo boot em que a versão nova é encontrada. Controle em
+            // Configurações → Atualizações.
+            choice("autoUpdate", "notify", &["off", "notify", "install"]),
         ],
     }
 }

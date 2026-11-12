@@ -5,8 +5,8 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "967f947bb48d04590878a3dff4f8fedc8decd316+dirty",
-    "tree": "586db4e03e19dc75",
+    "commit": "61dcc3b1db09393030dd8180aa47dc8d9d5bcd96",
+    "tree": "9064d7780a0fd67d",
     "contract": "6a303d7b5c636319",
     "deps": {
       "@fontsource-variable/inter": "^5.3.0",
@@ -34,9 +34,9 @@
     "lockfile": "4d85bfe4ac1d3048"
   },
   "ambiente": {
-    "plataforma": "linux",
-    "node": "v22.23.4",
-    "data": "2026-11-11"
+    "plataforma": "win32",
+    "node": "v24.21.0",
+    "data": "2026-11-12"
   },
   "criterios": [
     {

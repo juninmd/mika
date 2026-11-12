@@ -100,9 +100,10 @@ sem ele a tela Sobre/aceite do EULA falha.
 ## 3. Auto-update do canal `direct`
 
 No app, `app.autoUpdate` (Configurações → Atualizações) decide o que o laço de fundo faz
-(`apps/desktop/src-tauri/src/modules/update/auto.rs`): `install` (padrão) checa a cada 6 h, baixa fora de jogo
-e de bateria e instala só com o PC ocioso; `notify` só checa e avisa; `off` deixa só o botão manual. O laço
-não nasce na build Steam nem sem endpoint de update. Nada disso funciona sem uma release com `latest.json`:
+(`apps/desktop/src-tauri/src/modules/update/auto.rs`): `notify` (padrão) só checa e avisa, e baixar/instalar
+continua com o usuário; `install` checa a cada 6 h, baixa fora de jogo e de bateria e instala só com o PC
+ocioso; `off` deixa só o botão manual. O laço não nasce na build Steam nem sem endpoint de update. Nada disso
+funciona sem uma release com `latest.json`:
 
 Gerar o par de chaves (uma vez) e guardar a chave privada com segurança:
 
