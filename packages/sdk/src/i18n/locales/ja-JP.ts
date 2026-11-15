@@ -247,6 +247,8 @@ export const jaJP: TranslationDict = {
   'shell.senses.memory.label': '記憶: {{status}}',
   'shell.senses.memory.active': '有効',
   'shell.senses.memory.off': '無効',
+  'shell.passenger.chip.label': 'パッセンジャーモード',
+  'shell.passenger.chip.hint': 'このセッションは何も保存されません。クリックで終了。',
   'shell.senses.ago': '{{s}}秒前',
   'shell.senses.ocr': '画面の文字を読んでいます',
   'shell.palette.toolError': '"{{label}}"を実行できませんでした',
@@ -1415,6 +1417,9 @@ export const jaJP: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'オフラインモード',
   'settings.privacy.field.offlineMode.description':
     'マシンから出るすべてのリクエストをブロックします — LLM、TTS、STT、連携機能。ローカルのプロバイダー(Ollama、Whisper)は引き続き動作します。',
+  'settings.privacy.field.passengerMode.label': 'パッセンジャーモード',
+  'settings.privacy.field.passengerMode.description':
+    'このセッションのみ:Mikaは普段どおり話しますが、会話・記憶・ビジュアル日記を保存しません。アプリの再起動で自動的にオフになります。',
   'settings.status.ready': '準備完了',
   'settings.status.changed': '変更',
   'settings.status.saving': '保存中',

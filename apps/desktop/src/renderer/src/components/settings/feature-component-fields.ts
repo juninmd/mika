@@ -160,6 +160,7 @@ export const FEATURE_COMPONENT_HANDLED_FIELDS = {
 
   PrivacyPanel: [
     'privacy.offlineMode',
+    'privacy.passengerMode',
     'privacy.conversationRetention',
     'privacy.screenCapture',
     'privacy.clipboardLogging',

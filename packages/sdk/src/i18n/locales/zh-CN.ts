@@ -246,6 +246,8 @@ export const zhCN: TranslationDict = {
   'shell.senses.memory.label': '记忆：{{status}}',
   'shell.senses.memory.active': '已启用',
   'shell.senses.memory.off': '已禁用',
+  'shell.passenger.chip.label': '乘客模式',
+  'shell.passenger.chip.hint': '本次会话不会保存任何内容。点击退出。',
   'shell.senses.ago': '{{s}}秒前',
   'shell.senses.ocr': '正在读取屏幕文字',
   'shell.palette.toolError': '无法执行"{{label}}"',
@@ -1359,6 +1361,9 @@ export const zhCN: TranslationDict = {
   'settings.privacy.field.offlineMode.label': '离线模式',
   'settings.privacy.field.offlineMode.description':
     '阻止所有离开本机的请求——LLM、TTS、STT 及各类集成。本地提供方(Ollama、Whisper)仍可正常工作。',
+  'settings.privacy.field.passengerMode.label': '乘客模式',
+  'settings.privacy.field.passengerMode.description':
+    '仅限本次会话:米卡照常聊天,但不保存对话、记忆或视觉日记。重新打开应用时自动关闭。',
   'settings.status.ready': '已就绪',
   'settings.status.changed': '已更改',
   'settings.status.saving': '保存中',

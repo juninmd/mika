@@ -65,6 +65,7 @@
 mod client_tests;
 mod endpoint_guard;
 pub mod feature;
+pub mod passenger;
 pub mod senses;
 mod tests;
 

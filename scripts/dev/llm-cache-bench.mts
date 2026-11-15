@@ -6,18 +6,29 @@
 // - `split`: o system fica fixo e o contexto do turno vai colado à última mensagem do usuário
 //   (`brain::persona::system_prompt::TurnPrompt`) — o prefixo system + histórico é reaproveitado.
 //
-// Roda no PC (a nuvem não instala o Ollama): `pnpm bench:llm`. Variáveis opcionais: OLLAMA_URL
-// (padrão http://127.0.0.1:11434), MODEL (padrão qwen3.5:4b), TURNS (padrão 10), NUM_CTX (32768,
-// o padrão do app), OUT (arquivo JSON do relatório).
+// Roda no PC (a nuvem não instala o Ollama): `pnpm bench:llm`. Opções: --url (padrão
+// http://127.0.0.1:11434), --model (padrão qwen3.5:4b), --turns (10), --num-ctx (32768, o padrão do
+// app), --out (arquivo JSON do relatório). Ex.: `pnpm bench:llm --model qwen3.5:9b --turns 12`.
 import { readFileSync, writeFileSync } from 'node:fs'
+import { parseArgs } from 'node:util'
 
-const OLLAMA = process.env.OLLAMA_URL ?? 'http://127.0.0.1:11434'
-const MODEL = process.env.MODEL ?? 'qwen3.5:4b'
-const TURNS = Number(process.env.TURNS ?? 10)
-const NUM_CTX = Number(process.env.NUM_CTX ?? 32768)
-const OUT = process.env.OUT ?? 'llm-cache-bench.json'
+const { values: args } = parseArgs({
+  options: {
+    url: { type: 'string', default: 'http://127.0.0.1:11434' },
+    model: { type: 'string', default: 'qwen3.5:4b' },
+    turns: { type: 'string', default: '10' },
+    'num-ctx': { type: 'string', default: '32768' },
+    out: { type: 'string', default: 'llm-cache-bench.json' },
+  },
+})
+const OLLAMA = args.url
+const MODEL = args.model
+const TURNS = Number(args.turns)
+const NUM_CTX = Number(args['num-ctx'])
+const OUT = args.out
 
-const prompt = (name: string) => readFileSync(new URL(`../../apps/desktop/prompts/brain/${name}.md`, import.meta.url), 'utf8')
+const prompt = (name: string) =>
+  readFileSync(new URL(`../../apps/desktop/prompts/brain/${name}.md`, import.meta.url), 'utf8')
 const STABLE = prompt('system').replaceAll(/\{\{\w+\}\}/g, 'Mika')
 const TAIL = prompt('system-tail').replaceAll('{{name}}', 'Mika').replaceAll('{{language}}', 'Brazilian Portuguese')
 
@@ -45,7 +56,8 @@ const volatile = (turn: number) =>
 
 function request(mode: Mode, history: Msg[], text: string, turn: number): Msg[] {
   const context = volatile(turn)
-  if (mode === 'legado') return [{ role: 'system', content: `${STABLE}\n\n${context}` }, ...history, { role: 'user', content: text }]
+  if (mode === 'legado')
+    return [{ role: 'system', content: `${STABLE}\n\n${context}` }, ...history, { role: 'user', content: text }]
   const user = `${text}\n\n[TURN CONTEXT — written by the app, not by the user; never quote or mention it]\n${context}`
   return [{ role: 'system', content: STABLE }, ...history, { role: 'user', content: user }]
 }
@@ -62,7 +74,14 @@ async function runTurn(messages: Msg[]): Promise<{ reply: string; stats: Omit<Tu
   const started = performance.now()
   const res = await fetch(`${OLLAMA}/api/chat`, {
     method: 'POST',
-    body: JSON.stringify({ model: MODEL, messages, stream: true, think: false, keep_alive: '30m', options: { num_ctx: NUM_CTX, temperature: 0, seed: 7 } }),
+    body: JSON.stringify({
+      model: MODEL,
+      messages,
+      stream: true,
+      think: false,
+      keep_alive: '30m',
+      options: { num_ctx: NUM_CTX, temperature: 0, seed: 7 },
+    }),
   })
   if (!res.ok || !res.body) throw new Error(`/api/chat: HTTP ${res.status}`)
   let reply = ''
@@ -81,7 +100,12 @@ async function runTurn(messages: Msg[]): Promise<{ reply: string; stats: Omit<Tu
       reply += piece
     }
   }
-  const stats = { promptTokens: Number(last.prompt_eval_count ?? 0), promptEvalMs: ms(last.prompt_eval_duration), firstTokenMs, totalMs: Math.round(performance.now() - started) }
+  const stats = {
+    promptTokens: Number(last.prompt_eval_count ?? 0),
+    promptEvalMs: ms(last.prompt_eval_duration),
+    firstTokenMs,
+    totalMs: Math.round(performance.now() - started),
+  }
   return { reply, stats }
 }
 
@@ -94,7 +118,9 @@ async function runMode(mode: Mode): Promise<Turn[]> {
     const { reply, stats } = await runTurn(request(mode, history, text, index + 1))
     history.push({ role: 'user', content: text }, { role: 'assistant', content: reply })
     turns.push({ turn: index + 1, ...stats })
-    console.log(`${mode} turno ${index + 1}: ${stats.promptTokens} tokens reprocessados, 1º token em ${stats.firstTokenMs} ms`)
+    console.log(
+      `${mode} turno ${index + 1}: ${stats.promptTokens} tokens reprocessados, 1º token em ${stats.firstTokenMs} ms`,
+    )
   }
   return turns
 }
@@ -102,12 +128,24 @@ async function runMode(mode: Mode): Promise<Turn[]> {
 const median = (values: number[]) => [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)] ?? 0
 const summary = (turns: Turn[]) => {
   const later = turns.slice(1) // o 1º turno não tem histórico para reaproveitar nos dois modos
-  return { medianFirstTokenMs: median(later.map((t) => t.firstTokenMs)), medianPromptTokens: median(later.map((t) => t.promptTokens)) }
+  return {
+    medianFirstTokenMs: median(later.map((t) => t.firstTokenMs)),
+    medianPromptTokens: median(later.map((t) => t.promptTokens)),
+  }
 }
 
 const legado = await runMode('legado')
 const split = await runMode('split')
-const report = { model: MODEL, numCtx: NUM_CTX, turns: TURNS, date: new Date().toISOString(), legado: { summary: summary(legado), turns: legado }, split: { summary: summary(split), turns: split } }
+const report = {
+  model: MODEL,
+  numCtx: NUM_CTX,
+  turns: TURNS,
+  date: new Date().toISOString(),
+  legado: { summary: summary(legado), turns: legado },
+  split: { summary: summary(split), turns: split },
+}
 writeFileSync(OUT, `${JSON.stringify(report, null, 2)}\n`)
-console.log(`\nMediana do 1º token (turnos 2+): legado ${report.legado.summary.medianFirstTokenMs} ms, split ${report.split.summary.medianFirstTokenMs} ms`)
+console.log(
+  `\nMediana do 1º token (turnos 2+): legado ${report.legado.summary.medianFirstTokenMs} ms, split ${report.split.summary.medianFirstTokenMs} ms`,
+)
 console.log(`Relatório: ${OUT}`)

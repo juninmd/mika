@@ -7,6 +7,7 @@ import { ActiveEffectChip } from '../effects/ActiveEffectChip'
 import { GameSessionHud } from '../hud/GameSessionHud'
 import type { HudLayout } from '../hud/hud-layout'
 import { type BackgroundMode, hudPolicy } from '../hud/hud-policy'
+import { PassengerChip } from '../hud/PassengerChip'
 import { PresenceOrb } from '../hud/PresenceOrb'
 import { derivePresence } from '../hud/presence-state'
 import { MoodHUD } from '../MoodHUD'
@@ -137,7 +138,12 @@ export const HudLayer = memo(function HudLayer(props: HudLayerProps) {
         onToggleMic={props.onToggleMic}
         gameName={session?.gameName}
         renderDetails={renderDetails}
-        pinned={<ActiveEffectChip />}
+        pinned={
+          <div className="flex flex-col items-center gap-1 empty:hidden">
+            <PassengerChip />
+            <ActiveEffectChip />
+          </div>
+        }
         bubbleShown={bubbleVisible || traceVisible}
       />
 

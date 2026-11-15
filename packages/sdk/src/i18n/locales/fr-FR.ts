@@ -252,6 +252,8 @@ export const frFR: TranslationDict = {
   'shell.senses.memory.label': 'Mémoire : {{status}}',
   'shell.senses.memory.active': 'active',
   'shell.senses.memory.off': 'désactivée',
+  'shell.passenger.chip.label': 'Mode passager',
+  'shell.passenger.chip.hint': 'Rien de cette session n’est enregistré. Cliquez pour quitter.',
   'shell.senses.ago': 'il y a {{s}} s',
   'shell.senses.ocr': "Lecture du texte à l'écran",
   'shell.palette.toolError': 'Impossible d\'exécuter "{{label}}"',
@@ -1492,6 +1494,9 @@ export const frFR: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'Mode hors ligne',
   'settings.privacy.field.offlineMode.description':
     'Bloque toute requête sortant de la machine — LLM, TTS, STT et intégrations. Les fournisseurs locaux (Ollama, Whisper) continuent de fonctionner.',
+  'settings.privacy.field.passengerMode.label': 'Mode passager',
+  'settings.privacy.field.passengerMode.description':
+    'Cette session seulement : Mika discute comme d’habitude mais ne garde ni conversation, ni mémoire, ni journal visuel. Se désactive au redémarrage.',
   'settings.status.ready': 'Prête à fonctionner',
   'settings.status.changed': 'Modifié',
   'settings.status.saving': 'Enregistrement',

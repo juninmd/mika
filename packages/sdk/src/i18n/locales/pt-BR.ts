@@ -250,6 +250,8 @@ export const ptBR: TranslationDict = {
   'shell.senses.memory.label': 'Memória: {{status}}',
   'shell.senses.memory.active': 'ativa',
   'shell.senses.memory.off': 'desligada',
+  'shell.passenger.chip.label': 'Modo passageiro',
+  'shell.passenger.chip.hint': 'Nada desta sessão é guardado. Clique para sair.',
   'shell.senses.ago': '{{s}}s atrás',
   'shell.senses.ocr': 'Lendo o texto da tela',
   'shell.palette.toolError': 'Não consegui executar "{{label}}"',
@@ -1448,6 +1450,9 @@ export const ptBR: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'Modo Offline',
   'settings.privacy.field.offlineMode.description':
     'Bloqueia toda requisição para fora da máquina — LLM, TTS, STT e integrações. Provedores locais (Ollama, Whisper) continuam funcionando.',
+  'settings.privacy.field.passengerMode.label': 'Modo passageiro',
+  'settings.privacy.field.passengerMode.description':
+    'Só esta sessão: a Mika conversa normalmente, mas não guarda conversa, memória nem diário visual. Desliga sozinho ao reabrir o app.',
   'settings.status.ready': 'Pronta para operar',
   'settings.status.changed': 'Alterado',
   'settings.status.saving': 'Salvando',
