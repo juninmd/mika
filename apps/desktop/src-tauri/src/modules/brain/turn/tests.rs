@@ -144,7 +144,7 @@ async fn run(model: FakeModel, max_tool_steps: u32) -> (Result<TurnResult, TurnE
     let observer = CollectingObserver::new();
     let result = run_turn(
         model.model(),
-        "system".to_string(),
+        "system".into(),
         vec![],
         "olá",
         vec![],
@@ -445,7 +445,7 @@ async fn empty_text_with_no_tool_call_is_a_named_error_not_a_silent_empty_succes
 async fn run_with_user_content(model: FakeModel, user_content: &str, max_tool_steps: u32) -> (Result<TurnResult, TurnError>, TurnAbortHandle) {
     let (handle, signal) = TurnAbortHandle::new();
     let observer = CollectingObserver::new();
-    let result = run_turn(model.model(), "system".to_string(), vec![], user_content, vec![], max_tool_steps, None, None, None, signal, &observer).await;
+    let result = run_turn(model.model(), "system".into(), vec![], user_content, vec![], max_tool_steps, None, None, None, signal, &observer).await;
     (result, handle)
 }
 
@@ -505,7 +505,7 @@ async fn a_rejected_claim_never_reaches_the_observer_as_a_text_chunk() {
     let (handle, signal) = TurnAbortHandle::new();
     let observer = CollectingObserver::new();
     let result =
-        run_turn(model.model(), "system".to_string(), vec![], "abre a calculadora", vec![], 6, None, None, None, signal, &observer).await;
+        run_turn(model.model(), "system".into(), vec![], "abre a calculadora", vec![], 6, None, None, None, signal, &observer).await;
     drop(handle);
 
     let turn = result.unwrap();
@@ -733,7 +733,7 @@ async fn aborting_mid_stream_cancels_the_call_instead_of_yielding_a_second_respo
 
     let turn = tokio::spawn(run_turn(
         model.model(),
-        "system".to_string(),
+        "system".into(),
         vec![],
         "olá",
         vec![],
@@ -1165,7 +1165,7 @@ async fn the_stream_is_consumed_to_the_end_even_when_the_abort_handle_was_droppe
     let (handle, signal) = TurnAbortHandle::new();
     drop(handle);
     let observer = CollectingObserver::new();
-    let run = run_turn(model.model(), "system".to_string(), vec![], "olá", vec![], 6, None, None, None, signal, &observer);
+    let run = run_turn(model.model(), "system".into(), vec![], "olá", vec![], 6, None, None, None, signal, &observer);
     let result = tokio::time::timeout(Duration::from_secs(5), run).await.expect("o laço não pode girar sem consumir o stream");
     assert_eq!(result.unwrap().text, "Oi, tudo bem?");
 }
@@ -1199,7 +1199,7 @@ async fn aborting_while_a_tool_hangs_ends_the_turn_instead_of_waiting_for_the_to
         handle.abort();
     });
 
-    let run = run_turn(model.model(), "system".to_string(), vec![], "olá", vec![], 6, None, None, None, signal, &observer);
+    let run = run_turn(model.model(), "system".into(), vec![], "olá", vec![], 6, None, None, None, signal, &observer);
     let result = tokio::time::timeout(Duration::from_secs(5), run).await.expect("o abort tem de soltar o turno da tool travada");
 
     assert!(matches!(result, Err(TurnError::Aborted)), "{result:?}");

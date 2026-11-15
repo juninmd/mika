@@ -60,6 +60,7 @@ use tokio::sync::watch;
 use crate::config::store::ConfigStore;
 use crate::modules::brain::llm_provider::ChatModel;
 use crate::modules::brain::persona;
+use crate::modules::brain::persona::system_prompt::TurnPrompt;
 
 // `pub(crate)`: `post_turn::pipeline` reuses the same pure detector to decide whether a turn is
 // memory-poisoned (an unresolved action claim) before storing it — see the wiring there.
@@ -106,7 +107,8 @@ mod prompt_trace {
         STATE.get_or_init(|| Mutex::new(None))
     }
 
-    pub(super) fn record(system_prompt: &str, user_content: &str) {
+    pub(super) fn record(system_prompt: &super::TurnPrompt, user_content: &str) {
+        let system_prompt = system_prompt.full();
         let trace = json!({ "systemPrompt": system_prompt, "userContent": user_content });
         if let Ok(mut guard) = state().lock() {
             *guard = Some(trace);
@@ -378,12 +380,12 @@ fn build_ollama_model(config: &TurnLlmConfig) -> ChatModel {
 /// chat regular via `persona::screen_context` (fecha a lacuna que a antiga
 /// `PersonaState.screen_context` deixava, ver o cabeçalho daquele arquivo), atrás das mesmas guardas
 /// de visão/privacidade/frescor documentadas lá.
-async fn compose_system_prompt(store: &ConfigStore, user_content: &str) -> Result<String, TurnError> {
+async fn compose_system_prompt(store: &ConfigStore, user_content: &str) -> Result<TurnPrompt, TurnError> {
     // A nota de crise (`crisis.rs`) NÃO entra aqui: vai por último, em [`finish_system_prompt`].
     persona::compose_system_prompt(store, user_content).await.map_err(TurnError::Provider)
 }
 
-/// Passo final da composição: healing/monólogo ([`append_turn_context`]), a nota de idioma da
+/// Passo final da composição (na metade volátil, `TurnPrompt::context`): healing/monólogo ([`append_turn_context`]), a nota de idioma da
 /// mensagem (`reply_language.rs`, só quando ela foi escrita noutro idioma) e, por ÚLTIMO, a nota de
 /// crise (`crisis.rs`). Última instrução do prompt é a que o modelo pequeno mais obedece — com o
 /// monólogo ("provoque", "faça piada") depois dela, a nota ficava soterrada.
@@ -493,7 +495,7 @@ impl std::error::Error for TurnError {}
 /// duas tentativas, ainda vira `Err(EmptyOutput)` de fato (nada pra resumir).
 pub async fn run_turn(
     model: ChatModel,
-    system_prompt: String,
+    system_prompt: TurnPrompt,
     history: Vec<Message>,
     user_content: &str,
     tools: Vec<ToolDefinition>,
@@ -551,7 +553,7 @@ fn empty_output_fallback(tool_names: Vec<String>) -> TurnResult {
 
 async fn run_turn_once(
     model: ChatModel,
-    system_prompt: String,
+    system_prompt: TurnPrompt,
     history: Vec<Message>,
     user_content: &str,
     tools: Vec<ToolDefinition>,
@@ -577,7 +579,7 @@ async fn run_turn_once(
     let mut first_token_logged = false;
 
     let mut messages = history;
-    messages.push(Message::user(user_content));
+    messages.push(Message::user(system_prompt.user_message(user_content)));
 
     let mut steps: Vec<TurnStep> = Vec::new();
     let mut total_usage = Usage::new();
@@ -622,7 +624,7 @@ async fn run_turn_once(
         // `preamble` entra como a PRIMEIRA mensagem `system` da conversa; um resumo rolante de
         // `HistoryStore::to_turn_history` vem logo depois, e os provedores juntam as `system` iniciais.
         let mut request = CompletionRequest::from(messages.clone())
-            .preamble(system_prompt.clone())
+            .preamble(system_prompt.system.clone())
             .tools(active_tools)
             .temperature(temperature)
             .max_tokens(max_tokens)
@@ -845,7 +847,8 @@ pub async fn run_turn_ollama(
         (config, model, monologue_text)
     };
     let (system_prompt, (config, model, monologue_text)) = tokio::join!(compose_system_prompt(store, user_content), prepare);
-    let system_prompt = finish_system_prompt(system_prompt?, &failure_tracker::failure_tracker().self_healing_context(), monologue_text.as_deref(), user_content, store);
+    let mut system_prompt = system_prompt?;
+    system_prompt.context = finish_system_prompt(std::mem::take(&mut system_prompt.context), &failure_tracker::failure_tracker().self_healing_context(), monologue_text.as_deref(), user_content, store);
     log::debug!("turno: prompt montado em {}ms", prompt_started.elapsed().as_millis());
     prompt_trace::record(&system_prompt, user_content);
     let additional_params = Some(build_ollama_additional_params(&config));
@@ -972,7 +975,8 @@ async fn run_turn_remote(
     };
     let (system_prompt, (profile, monologue_text)) = tokio::join!(compose_system_prompt(store, user_content), prepare);
     fit_to_model(&mut 0, &mut config.max_tokens, &profile);
-    let system_prompt = finish_system_prompt(system_prompt?, &failure_tracker::failure_tracker().self_healing_context(), monologue_text.as_deref(), user_content, store);
+    let mut system_prompt = system_prompt?;
+    system_prompt.context = finish_system_prompt(std::mem::take(&mut system_prompt.context), &failure_tracker::failure_tracker().self_healing_context(), monologue_text.as_deref(), user_content, store);
     log::debug!("turno: prompt montado em {}ms", prompt_started.elapsed().as_millis());
     prompt_trace::record(&system_prompt, user_content);
 
@@ -1033,7 +1037,7 @@ pub async fn run_turn_ollama_raw(
     let config = resolve_ollama_config_for_model(store).await;
 
     let model = build_ollama_model(&config);
-    let system_prompt = build_raw_system_prompt(store, task_prompt)?;
+    let system_prompt = build_raw_system_prompt(store, task_prompt)?.into();
     let additional_params = Some(build_ollama_additional_params(&config));
 
     run_turn(model, system_prompt, vec![], user_content, vec![], 1, config.temperature, config.max_tokens, additional_params, abort, observer).await
@@ -1105,7 +1109,7 @@ async fn run_turn_llm_raw_provider(
     let model = super::llm_provider::build_remote_model(store, &provider, &config).map_err(TurnError::Provider)?;
     let profile = crate::modules::llm::model_profile::resolve(store, &provider, &config.model).await;
     fit_to_model(&mut 0, &mut config.max_tokens, &profile);
-    let system_prompt = build_raw_system_prompt(store, task_prompt)?;
+    let system_prompt = build_raw_system_prompt(store, task_prompt)?.into();
     let additional_params = build_remote_additional_params(&provider, store, prompt_family, &config.model, &profile);
 
     run_turn(model, system_prompt, vec![], user_content, vec![], 1, config.temperature, config.max_tokens, additional_params, abort, observer).await
