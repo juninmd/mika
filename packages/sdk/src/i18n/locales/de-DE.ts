@@ -26,6 +26,7 @@ export const deDE: TranslationDict = {
   'shell.palette.openChat': 'Chat öffnen',
   'shell.palette.history': 'Verlauf ansehen',
   'shell.palette.fullscreen': 'Vollbild umschalten',
+  'shell.palette.miniMode': 'Mini-Modus aktivieren',
   'shell.palette.settings': 'Einstellungen',
   'shell.palette.reopenWizard': 'Willkommens-Einrichtung wiederholen',
   'shell.palette.reopenWizardHint':
@@ -279,6 +280,7 @@ export const deDE: TranslationDict = {
   'shell.menu.pinOff': 'Von oben lösen',
   'shell.menu.mic': 'Mikrofon',
   'shell.menu.pin': 'Im Vordergrund halten',
+  'shell.menu.miniMode': 'Mini-Modus',
   'shell.menu.settings': 'Einstellungen',
   'shell.menu.clearHistory': 'Verlauf löschen',
   'shell.tray.show': 'Anzeigen',
@@ -2526,6 +2528,10 @@ export const deDE: TranslationDict = {
     'Füllt den ganzen Monitor mit dem Avatar-Fenster. Drücken Sie F11 im Fenster zum Umschalten; Größe und Position von vorher kehren beim Verlassen zurück.',
   'settings.window.stateLabel': 'Jetzt',
   'settings.window.state.fullscreen': 'Vollbild',
+  'settings.window.state.mini': 'Mini',
+  'settings.window.mini.label': 'Mini-Modus',
+  'settings.window.mini.hint':
+    'Verkleinert das Fenster auf ein kleines Quadrat unten links, das nur ihren Kopf zeigt. Chat, Verlauf oder eine Freigabeanfrage holen das volle Fenster zurück.',
   'settings.window.state.windowed': 'Im Fenster',
   'settings.performance.profileLabel': 'Leistungsprofil',
   'settings.performance.profile.auto': 'Automatisch',

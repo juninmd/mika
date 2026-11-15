@@ -26,6 +26,7 @@ export const frFR: TranslationDict = {
   'shell.palette.openChat': 'Ouvrir le chat',
   'shell.palette.history': 'Voir l’historique',
   'shell.palette.fullscreen': 'Basculer le plein écran',
+  'shell.palette.miniMode': 'Passer en mode mini',
   'shell.palette.settings': 'Paramètres',
   'shell.palette.reopenWizard': 'Refaire l’accueil',
   'shell.palette.reopenWizardHint':
@@ -279,6 +280,7 @@ export const frFR: TranslationDict = {
   'shell.menu.pinOff': 'Détacher du haut',
   'shell.menu.mic': 'Microphone',
   'shell.menu.pin': 'Garder au premier plan',
+  'shell.menu.miniMode': 'Mode mini',
   'shell.menu.settings': 'Paramètres',
   'shell.menu.clearHistory': 'Effacer l’historique',
   'shell.tray.show': 'Afficher',
@@ -2537,6 +2539,10 @@ export const frFR: TranslationDict = {
     "Occupe tout l'écran avec la fenêtre de l'avatar. Appuyez sur F11 dans la fenêtre pour basculer ; la taille et la position précédentes reviennent en sortant.",
   'settings.window.stateLabel': 'Actuellement',
   'settings.window.state.fullscreen': 'Plein écran',
+  'settings.window.state.mini': 'Mini',
+  'settings.window.mini.label': 'Mode mini',
+  'settings.window.mini.hint':
+    "Réduit la fenêtre à un petit carré dans le coin inférieur gauche, avec seulement sa tête. Ouvrir le chat, l'historique ou une demande d'approbation rétablit la fenêtre complète.",
   'settings.window.state.windowed': 'En fenêtre',
   'settings.performance.profileLabel': 'Profil de performances',
   'settings.performance.profile.auto': 'Automatique',

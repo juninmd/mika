@@ -99,6 +99,15 @@ describe('shell api bridge (electronShellApi)', () => {
     expect(ipcRendererInvoke).toHaveBeenCalledWith('window-get-fullscreen')
   })
 
+  it('shell.window.setMiniMode / isMiniMode invoke their channels with the requested state', async () => {
+    ipcRendererInvoke.mockResolvedValue(true)
+    const api = createElectronShellApi({ getHealth: vi.fn() } as never)
+    await api.shell.window?.setMiniMode?.(true)
+    expect(ipcRendererInvoke).toHaveBeenCalledWith('window-set-mini-mode', true)
+    expect(await api.shell.window?.isMiniMode?.()).toBe(true)
+    expect(ipcRendererInvoke).toHaveBeenCalledWith('window-get-mini-mode')
+  })
+
   it('shell.window.setIgnoreMouseEvents sends (fire-and-forget) with the flag', () => {
     const api = createElectronShellApi({ getHealth: vi.fn() } as never)
     api.shell.window?.setIgnoreMouseEvents(true)
