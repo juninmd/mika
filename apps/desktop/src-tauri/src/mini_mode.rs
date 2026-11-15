@@ -67,14 +67,24 @@ fn saved(app: &AppHandle) -> bool {
         .unwrap_or(false)
 }
 
+/// O que a janela deve ser AGORA, lido da config e não do valor que disparou o observador: dois
+/// pedidos seguidos convergem para o último, em qualquer ordem de chegada. A tela cheia vence.
+fn wanted(mini: bool, fullscreen: bool) -> bool {
+    mini && !fullscreen
+}
+
 fn enter(window: &WebviewWindow) -> tauri::Result<()> {
-    if ACTIVE.swap(true, Ordering::Relaxed) {
+    if is_mini() {
         return Ok(());
     }
+    // Leituras que podem falhar ANTES de marcar o estado: um erro aqui não deixa `ACTIVE` ligado
+    // com a janela ainda no tamanho normal.
     let monitor = window.current_monitor()?;
     let size = window.inner_size()?;
+    let position = window.outer_position()?;
     let trusted = !monitor.as_ref().is_some_and(|m| covers(size, *m.size()));
-    *BEFORE.lock().unwrap_or_else(|e| e.into_inner()) = trusted.then_some((window.outer_position()?, size));
+    *BEFORE.lock().unwrap_or_else(|e| e.into_inner()) = trusted.then_some((position, size));
+    ACTIVE.store(true, Ordering::Relaxed);
 
     // O piso da janela normal (300x400) é maior que o quadrado: baixa o piso antes de encolher.
     window.set_min_size(Some(LogicalSize::new(SIDE, SIDE)))?;
@@ -138,11 +148,14 @@ pub fn leave(app: &AppHandle) -> Result<(), String> {
     crate::state::config_store(app)?.set(CONFIG_PATH, json!(false))
 }
 
-/// Boot: reaplicado quando o avatar é revelado. Com as duas preferências ligadas (só por edição
-/// manual da config), a tela cheia vence.
+fn sync(app: &AppHandle) {
+    apply(app, wanted(saved(app), crate::fullscreen::saved(app)));
+}
+
+/// Boot: reaplicado quando o avatar é revelado.
 pub fn restore(app: &AppHandle) {
-    if saved(app) && !crate::fullscreen::saved(app) {
-        apply(app, true);
+    if saved(app) {
+        sync(app);
     }
 }
 
@@ -156,10 +169,15 @@ pub fn spawn(app: &AppHandle) {
     };
     let app = app.clone();
     store.watch(Box::new(move |path, value| {
-        let Some(on) = requested(path, value) else { return };
-        // Fora da pilha de `set()`: mexer na janela dentro do callback do store prenderia quem gravou.
-        let app = app.clone();
-        tauri::async_runtime::spawn(async move { apply(&app, on) });
+        if requested(path, value).is_none() {
+            return;
+        }
+        // Fora da pilha de `set()` (mexer na janela dentro do callback do store prenderia quem
+        // gravou) e na thread principal: os pedidos são aplicados um por vez, na ordem da fila.
+        let handle = app.clone();
+        if let Err(error) = app.run_on_main_thread(move || sync(&handle)) {
+            log::warn!("modo mini: pedido não chegou à thread principal ({error})");
+        }
     }));
 }
 
@@ -173,6 +191,13 @@ mod tests {
         assert_eq!(requested("app.miniMode", &json!(false)), Some(false));
         assert_eq!(requested("app.miniMode", &json!("true")), None);
         assert_eq!(requested("app.fullscreen", &json!(true)), None);
+    }
+
+    #[test]
+    fn fullscreen_wins_when_both_preferences_are_on() {
+        assert!(wanted(true, false));
+        assert!(!wanted(true, true));
+        assert!(!wanted(false, false));
     }
 
     #[test]

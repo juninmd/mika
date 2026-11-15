@@ -51,6 +51,8 @@ export type { VowelWeightsLike } from './vrm-mouth'
 /** How fast the head-shot camera catches up with the head bone (1/s): quick enough for a jump, soft enough not to cancel her sway. */
 const HEAD_FOLLOW_RATE = 6
 const headNow = new THREE.Vector3()
+/** Floor for the measured head height (m): a model with an odd head bone still gets a frame, not a camera inside her head. */
+const MIN_HEAD_HEIGHT = 0.12
 
 export class VrmAvatar implements AvatarEngine {
   readonly capabilities: AvatarEngineCapabilities = { bodyRig: true, namedActions: true }
@@ -90,6 +92,8 @@ export class VrmAvatar implements AvatarEngine {
   private height = 1
   private disposed = false
   private headOnly = false
+  /** Head bone to crown (hair, hat) in the rest pose, measured once per loaded model. */
+  private headHeight = MIN_HEAD_HEIGHT
   /** Camera position relative to the head bone, fixed when the head shot is framed. */
   private readonly headOffset = new THREE.Vector3()
 
@@ -142,6 +146,9 @@ export class VrmAvatar implements AvatarEngine {
   private fit(): void {
     const frame = this.headOnly ? this.modelFrame() : null
     if (frame) {
+      // Crown = live head bone + the head height measured at rest: the bounds alone would frame
+      // whatever pose she happened to be in when the window shrank.
+      frame.bounds.max.y = frame.head.y + this.headHeight
       this.camera.aspect = this.width / Math.max(1, this.height)
       frameShowcase(this.camera, frame.bounds, 'head', 0, frame.head)
       this.headOffset.subVectors(this.camera.position, frame.head)
@@ -202,6 +209,8 @@ export class VrmAvatar implements AvatarEngine {
     syncAccessories(this.accessories)
     this.scene.add(vrm.scene)
     this.postFx?.trackGlow(vrm.scene)
+    const rest = this.modelFrame()
+    if (rest) this.headHeight = Math.max(MIN_HEAD_HEIGHT, rest.bounds.max.y - rest.head.y)
     // Bones only exist to frame against once the model is in the scene — refit now instead of
     // waiting for the next window resize.
     this.fit()

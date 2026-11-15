@@ -43,7 +43,7 @@ pub(crate) fn context_from_label(label: &str) -> InvokeContext {
 /// nome errado aqui não dá erro, só faz a ação cair no sidecar e nunca acontecer.
 ///
 /// `auto-launch:*` NÃO entra: é registro/arquivo de sistema, que o sidecar Node resolve.
-pub const SHELL_CHANNELS: [&str; 12] = [
+pub const SHELL_CHANNELS: [&str; 14] = [
     "open-settings",
     "window-close",
     "window-toggle-always-on-top",
