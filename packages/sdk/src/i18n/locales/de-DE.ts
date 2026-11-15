@@ -252,6 +252,8 @@ export const deDE: TranslationDict = {
   'shell.senses.memory.label': 'Gedächtnis: {{status}}',
   'shell.senses.memory.active': 'aktiv',
   'shell.senses.memory.off': 'aus',
+  'shell.passenger.chip.label': 'Beifahrermodus',
+  'shell.passenger.chip.hint': 'Aus dieser Sitzung wird nichts gespeichert. Klicken zum Beenden.',
   'shell.senses.ago': 'vor {{s}} s',
   'shell.senses.ocr': 'Liest Text auf dem Bildschirm',
   'shell.palette.toolError': '„{{label}}“ konnte nicht ausgeführt werden',
@@ -958,6 +960,9 @@ export const deDE: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Zusammenfassung beim Spielende',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika kommentiert eine Sitzungszusammenfassung, wenn das Spiel geschlossen wird.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Hinweise in Stufen, ohne Spoiler',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'Hängst du an derselben Stelle, gibt Mika zuerst einen Hinweis, dann einen Tipp und erst danach die Lösung. Aus: Sie nennt direkt die Lösung.',
   'settings.gamerCompanion.field.steamPath.label': 'Steam-Ordner',
   'settings.gamerCompanion.field.steamPath.description':
     'Optional. Leer lassen, um Program Files/Steam automatisch zu erkennen.',
@@ -1477,6 +1482,9 @@ export const deDE: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'Offline-Modus',
   'settings.privacy.field.offlineMode.description':
     'Blockiert jede Anfrage, die den Rechner verlässt — LLM, TTS, STT und Integrationen. Lokale Anbieter (Ollama, Whisper) funktionieren weiter.',
+  'settings.privacy.field.passengerMode.label': 'Beifahrermodus',
+  'settings.privacy.field.passengerMode.description':
+    'Nur diese Sitzung: Mika plaudert wie gewohnt, speichert aber weder Gespräch noch Erinnerung noch visuelles Tagebuch. Schaltet sich beim Neustart ab.',
   'settings.status.ready': 'Bereit',
   'settings.status.changed': 'Geändert',
   'settings.status.saving': 'Speichert',

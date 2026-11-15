@@ -119,7 +119,8 @@ impl HistoryStore {
 
     pub fn push(&self, message: ChatMessage) -> Result<(), String> {
         let mut inner = self.lock()?;
-        if inner.db.is_some() {
+        // Modo passageiro: a conversa segue na memória (contexto desta sessão), nunca no disco.
+        if inner.db.is_some() && !crate::modules::privacy::passenger::passenger_mode() {
             let session_id = inner.session_id.clone().unwrap_or_default();
             super::chat_write::append_with_retry(inner.db.as_ref().expect("checado acima"), &session_id, &message)?;
         }

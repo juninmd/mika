@@ -140,6 +140,7 @@ export const FEATURE_COMPONENT_HANDLED_FIELDS = {
     'gamer-companion.momentCooldowns.cutscene',
     'gamer-companion.momentCooldowns.defeat',
     'gamer-companion.sessionSummaryEnabled',
+    'gamer-companion.helpLadderEnabled',
   ],
   MoodPanel: [
     'mood.enabled',
@@ -159,6 +160,7 @@ export const FEATURE_COMPONENT_HANDLED_FIELDS = {
 
   PrivacyPanel: [
     'privacy.offlineMode',
+    'privacy.passengerMode',
     'privacy.conversationRetention',
     'privacy.screenCapture',
     'privacy.clipboardLogging',

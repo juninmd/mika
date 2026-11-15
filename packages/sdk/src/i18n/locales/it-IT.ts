@@ -251,6 +251,8 @@ export const itIT: TranslationDict = {
   'shell.senses.memory.label': 'Memoria: {{status}}',
   'shell.senses.memory.active': 'attiva',
   'shell.senses.memory.off': 'disattivata',
+  'shell.passenger.chip.label': 'Modalità passeggero',
+  'shell.passenger.chip.hint': 'Niente di questa sessione viene salvato. Clicca per uscire.',
   'shell.senses.ago': '{{s}}s fa',
   'shell.senses.ocr': 'Sto leggendo il testo sullo schermo',
   'shell.palette.toolError': 'Impossibile eseguire "{{label}}"',
@@ -948,6 +950,9 @@ export const itIT: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Riepilogo alla chiusura del gioco',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika commenta un riepilogo della sessione quando il gioco si chiude.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Indizi a gradini, senza spoiler',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'Se resti bloccato sullo stesso punto, Mika dà prima un indizio, poi un consiglio e solo dopo la soluzione. Disattivato, risponde subito con la soluzione.',
   'settings.gamerCompanion.field.steamPath.label': 'Cartella di Steam',
   'settings.gamerCompanion.field.steamPath.description':
     'Opzionale. Lascia vuoto per rilevare Program Files/Steam automaticamente.',
@@ -1461,6 +1466,9 @@ export const itIT: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'Modalità offline',
   'settings.privacy.field.offlineMode.description':
     'Blocca ogni richiesta in uscita dal computer — LLM, TTS, STT e integrazioni. I provider locali (Ollama, Whisper) continuano a funzionare.',
+  'settings.privacy.field.passengerMode.label': 'Modalità passeggero',
+  'settings.privacy.field.passengerMode.description':
+    'Solo questa sessione: Mika chiacchiera come sempre ma non salva conversazione, memoria né diario visivo. Si spegne al riavvio dell’app.',
   'settings.status.ready': "Pronta all'uso",
   'settings.status.changed': 'Modificato',
   'settings.status.saving': 'Salvataggio',

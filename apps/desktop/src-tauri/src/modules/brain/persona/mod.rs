@@ -78,14 +78,15 @@ use crate::config::store::ConfigStore;
 /// PRIMEIRO no `join!` (o primeiro poll já despacha o pedido) e as outras sete fontes, locais e
 /// síncronas, são montadas enquanto ele está em voo — antes, o turno bloqueava o worker async
 /// esperando o vetor e só então montava o resto.
-pub async fn compose_system_prompt(store: &ConfigStore, user_content: &str) -> Result<String, String> {
+pub async fn compose_system_prompt(store: &ConfigStore, user_content: &str) -> Result<system_prompt::TurnPrompt, String> {
     let (episodic, mut dynamic_context) = tokio::join!(build_episodic_context_block(user_content), async { local_context_blocks(store) });
     // After recall: the message's embedding is now cached, so ranking facts by it costs no wait.
     dynamic_context.push_str(&facts_block::build_long_term_facts_block(user_content));
     dynamic_context.push_str(&people_block::build_mentioned_people_block(user_content));
     dynamic_context.push_str(&episodic);
-    let prompt = system_prompt::build_full_system_prompt(store, &dynamic_context)?;
-    Ok(crate::modules::chat::inject_persona_state(&prompt, &crate::modules::chat::gather_persona_state(store)))
+    let mut prompt = system_prompt::build_split_system_prompt(store, &dynamic_context)?;
+    prompt.context = crate::modules::chat::inject_persona_state(&prompt.context, &crate::modules::chat::gather_persona_state(store));
+    Ok(prompt)
 }
 
 /// As fontes de `dynamic_context` que não dependem da mensagem, na ordem de prioridade descrita acima.
@@ -182,7 +183,7 @@ mod tests {
         crate::modules::brain::post_turn::session_accumulator::accumulator()
             .add_facts(&["prefere respostas curtas e diretas nesta rodada de teste de persona".to_string()], &[], &[]);
 
-        let prompt = compose_system_prompt(&store, "").await.expect("system.md deveria existir via fallback de dev");
+        let prompt = compose_system_prompt(&store, "").await.expect("system.md deveria existir via fallback de dev").full();
         let _ = std::fs::remove_dir_all(&dir);
 
         assert!(prompt.contains("## Established In This Conversation"));
@@ -199,7 +200,7 @@ mod tests {
         let store = ConfigStore::open(&dir, crate::config::schemas::registry()).unwrap();
         store.set("character.affinityScore", serde_json::json!(-20.0)).unwrap();
 
-        let prompt = compose_system_prompt(&store, "").await.expect("system.md deveria existir via fallback de dev");
+        let prompt = compose_system_prompt(&store, "").await.expect("system.md deveria existir via fallback de dev").full();
         let _ = std::fs::remove_dir_all(&dir);
 
         let bond_at = prompt.find("## Bond With The User").expect("bloco de vínculo ausente");

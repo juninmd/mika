@@ -2,7 +2,7 @@ import { join } from 'node:path'
 import type { Page } from '@playwright/test'
 import type { ElectronShellApi } from '../../src/shared/electron-api-types'
 import { expect, test } from '../fixtures/tauri-app'
-import type { FakeOllama } from '../fixtures/fake-ollama-server'
+import { outgoingSystem } from '../fixtures/outgoing-prompt'
 
 type Bridge = Window & { electronAPI: ElectronShellApi }
 
@@ -14,12 +14,6 @@ async function send(page: Page, content: string) {
   expect(history.messages.find((message) => message.id === reply.id)?.role).toBe('assistant')
 }
 
-function outgoingSystem(llm: FakeOllama, userText: string): string {
-  const body = llm.requests.map((request) => request.body as { messages?: { role: string; content: string }[] })
-    .find((request) => request.messages?.some((message) => message.role === 'user' && message.content === userText))
-  expect(body, 'requisição HTTP real do Electron ao provedor de teste').toBeDefined()
-  return body?.messages?.filter((message) => message.role === 'system').map((message) => message.content).join('\n') ?? ''
-}
 
 test('configurações de persona e instruções chegam ao HTTP e ao trace sem esperar o TTL', async ({ app, llm }) => {
   const page = await app.firstWindow()

@@ -250,6 +250,8 @@ export const esES: TranslationDict = {
   'shell.senses.memory.label': 'Memoria: {{status}}',
   'shell.senses.memory.active': 'activa',
   'shell.senses.memory.off': 'apagada',
+  'shell.passenger.chip.label': 'Modo pasajero',
+  'shell.passenger.chip.hint': 'No se guarda nada de esta sesión. Haz clic para salir.',
   'shell.senses.ago': 'hace {{s}}s',
   'shell.senses.ocr': 'Leyendo el texto de la pantalla',
   'shell.palette.toolError': 'No pude ejecutar "{{label}}"',
@@ -949,6 +951,9 @@ export const esES: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Resumen al cerrar el juego',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika comenta un resumen de la sesión cuando el juego se cierra.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Pistas por pasos, sin spoilers',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'Si te atascas en lo mismo, Mika da primero una pista, luego un consejo y solo después la solución. Desactivado, responde con la solución de inmediato.',
   'settings.gamerCompanion.field.steamPath.label': 'Carpeta de Steam',
   'settings.gamerCompanion.field.steamPath.description':
     'Opcional. Deja vacío para detectar Program Files/Steam automáticamente.',
@@ -1467,6 +1472,9 @@ export const esES: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'Modo sin conexión',
   'settings.privacy.field.offlineMode.description':
     'Bloquea toda solicitud que salga de la máquina: LLM, TTS, STT e integraciones. Los proveedores locales (Ollama, Whisper) siguen funcionando.',
+  'settings.privacy.field.passengerMode.label': 'Modo pasajero',
+  'settings.privacy.field.passengerMode.description':
+    'Solo esta sesión: Mika conversa como siempre, pero no guarda conversación, memoria ni diario visual. Se apaga solo al reabrir la app.',
   'settings.status.ready': 'Lista para operar',
   'settings.status.changed': 'Cambiado',
   'settings.status.saving': 'Guardando',
