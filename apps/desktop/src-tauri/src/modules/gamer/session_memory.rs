@@ -90,6 +90,16 @@ impl SessionMemory {
         self.db.update_summary(id, summary)
     }
 
+    /// "Onde paramos?" ao reabrir um jogo: o resumo da última sessão encerrada e os três locais
+    /// registrados mais recentes. `None` na primeira vez no jogo. Texto em inglês: vai para prompt.
+    pub fn resume_recap(&self, game_id: &str, game_name: &str) -> Option<String> {
+        const MAX_PLACES: usize = 3;
+        let summary = self.db.last_finished_by_game_id(game_id).ok().flatten()?.summary.filter(|s| !s.trim().is_empty())?;
+        let places: Vec<String> = self.find_locations(game_name, None).unwrap_or_default().into_iter().take(MAX_PLACES).map(|l| l.location_name).collect();
+        let places = if places.is_empty() { String::new() } else { format!("\n- Latest places: {}", places.join(", ")) };
+        Some(format!("- Last session: {summary}{places}"))
+    }
+
     pub fn session_by_id(&self, id: &str) -> Result<Option<GameSession>, String> {
         self.db.by_id(id)
     }
@@ -206,6 +216,26 @@ mod tests {
 
         let found = sm.session_for_game("570").unwrap().unwrap();
         assert_eq!(found.id, latest.id);
+    }
+
+    /// "Onde paramos?": a retomada é a sessão ENCERRADA anterior (nunca a que acabou de abrir) e os
+    /// locais mais recentes do jogo — sem isso a Mika só sabia "jogou 40min" ao reabrir o jogo.
+    #[test]
+    fn resume_recap_brings_the_last_finished_session_and_the_latest_places() {
+        let sm = memory();
+        assert_eq!(sm.resume_recap("1245620", "Elden Ring"), None, "primeira vez no jogo: nada para retomar");
+
+        let first = sm.start_session("1245620", "Elden Ring").unwrap();
+        sm.end_session().unwrap();
+        sm.set_summary(&first.id, "Venceu o Margit depois de cinco tentativas.").unwrap();
+        for place in ["Stormveil", "Liurnia"] {
+            sm.save_location("Elden Ring", place, "", &[], &[], None).unwrap();
+        }
+        sm.start_session("1245620", "Elden Ring").unwrap();
+
+        let recap = sm.resume_recap("1245620", "Elden Ring").unwrap();
+        assert!(recap.contains("Venceu o Margit"), "{recap}");
+        assert!(recap.contains("Liurnia, Stormveil"), "local mais recente primeiro: {recap}");
     }
 
     #[test]

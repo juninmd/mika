@@ -5,8 +5,8 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "92572a40893eb5e567800c8ad154e0c95e59d0b6+dirty",
-    "tree": "511d411951f19dcf",
+    "commit": "a7a2d5c429d15c39052b2d01e446777baf5735d8+dirty",
+    "tree": "9e716686154357a0",
     "contract": "6a303d7b5c636319",
     "deps": {
       "@fontsource-variable/inter": "^5.3.0",

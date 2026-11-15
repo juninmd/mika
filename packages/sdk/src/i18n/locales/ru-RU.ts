@@ -258,6 +258,8 @@ export const ruRU: TranslationDict = {
   'shell.senses.memory.label': 'Память: {{status}}',
   'shell.senses.memory.active': 'активна',
   'shell.senses.memory.off': 'выключена',
+  'shell.passenger.chip.label': 'Режим пассажира',
+  'shell.passenger.chip.hint': 'Ничего из этой сессии не сохраняется. Нажмите, чтобы выйти.',
   'shell.senses.ago': '{{s}} с назад',
   'shell.senses.ocr': 'Читаю текст на экране',
   'shell.palette.toolError': 'Не удалось выполнить «{{label}}»',
@@ -949,6 +951,9 @@ export const ruRU: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Итоги при закрытии игры',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika комментирует итоги сессии, когда игра закрывается.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Подсказки по шагам, без спойлеров',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'Если вы застряли на одном месте, Мика сначала даёт намёк, потом совет и только затем решение. Выключено: сразу даёт решение.',
   'settings.gamerCompanion.field.steamPath.label': 'Папка Steam',
   'settings.gamerCompanion.field.steamPath.description':
     'Необязательно. Оставь пустым для автоопределения Program Files/Steam.',
@@ -1468,6 +1473,9 @@ export const ruRU: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'Офлайн-режим',
   'settings.privacy.field.offlineMode.description':
     'Блокирует все запросы за пределы компьютера — LLM, TTS, STT и интеграции. Локальные провайдеры (Ollama, Whisper) продолжают работать.',
+  'settings.privacy.field.passengerMode.label': 'Режим пассажира',
+  'settings.privacy.field.passengerMode.description':
+    'Только эта сессия: Мика общается как обычно, но не сохраняет разговор, память и визуальный дневник. Выключается при перезапуске.',
   'settings.status.ready': 'Готово',
   'settings.status.changed': 'Изменено',
   'settings.status.saving': 'Сохраняю',

@@ -157,12 +157,7 @@ impl GameWatcher {
                 // SHOULD (specs/08-gamer-companion.md, "Sessão"): puxa a sessão anterior DO MESMO
                 // jogo antes de abrir a nova — consultado ANTES de `start_session` fechar a corrente,
                 // então uma sessão anterior deste mesmo `game_id` (se houver) ainda é a mais recente.
-                let recall_summary = self
-                    .session_memory
-                    .session_for_game(&game_id)
-                    .ok()
-                    .flatten()
-                    .and_then(|previous| previous.summary);
+                let recall_summary = self.session_memory.resume_recap(&game_id, &game_name);
                 // `start_session` encerra a sessão corrente sozinho, mas descarta o valor devolvido —
                 // encerra aqui primeiro para CAPTURAR a sessão que estava rodando quando o jogo trocou
                 // sem passar por `Stopped` (mesmo caso do teste
@@ -516,7 +511,7 @@ mod tests {
 
     /// SHOULD do spec (08-gamer-companion.md, "Sessão"): reabrir o MESMO jogo publica o resumo da
     /// sessão anterior no payload de `GameChanged`, para `event_reactions::on_game_changed` puxar a
-    /// conversa de volta — ver `session_memory.rs::session_for_game`.
+    /// conversa de volta — ver `session_memory.rs::resume_recap`.
     #[tokio::test]
     async fn apply_publishes_the_previous_session_summary_when_the_same_game_reopens() {
         let (w, _dir) = watcher(true);
@@ -535,12 +530,12 @@ mod tests {
         let envelope = loop {
             let received = tokio::time::timeout_at(deadline, sub.recv()).await.ok().flatten().expect("GameChanged não publicado a tempo");
             if received.key == crate::events::EventKey::GameChanged
-                && received.payload.get("previousSessionSummary").and_then(serde_json::Value::as_str) == Some("Morreu pro primeiro chefe três vezes.")
+                && received.payload.get("previousSessionSummary").and_then(serde_json::Value::as_str).is_some_and(|recap| recap.contains("Morreu pro primeiro chefe três vezes."))
             {
                 break received;
             }
         };
-        assert_eq!(envelope.payload["previousSessionSummary"], "Morreu pro primeiro chefe três vezes.");
+        assert_eq!(envelope.payload["previousSessionSummary"], "- Last session: Morreu pro primeiro chefe três vezes.");
     }
 
     #[test]

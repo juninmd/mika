@@ -248,6 +248,8 @@ export const koKR: TranslationDict = {
   'shell.senses.memory.label': '기억: {{status}}',
   'shell.senses.memory.active': '활성',
   'shell.senses.memory.off': '꺼짐',
+  'shell.passenger.chip.label': '승객 모드',
+  'shell.passenger.chip.hint': '이번 세션은 아무것도 저장되지 않아요. 클릭하면 종료돼요.',
   'shell.senses.ago': '{{s}}초 전',
   'shell.senses.ocr': '화면의 글자를 읽는 중',
   'shell.palette.toolError': '"{{label}}"을(를) 실행하지 못했어요',
@@ -922,6 +924,9 @@ export const koKR: TranslationDict = {
     '순간 유형별 Mika의 코멘트 사이 최소 간격이에요: 보스, 업적, 승리, 죽음, 컷신, 패배.',
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': '게임 종료 시 요약',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description': '게임이 종료되면 Mika가 세션 요약을 말해 줘요.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': '단계별 힌트, 스포일러 없이',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    '같은 곳에서 막히면 Mika가 먼저 힌트, 그다음 팁, 마지막에 해답을 알려 줘요. 끄면 바로 해답을 알려 줘요.',
   'settings.gamerCompanion.field.steamPath.label': 'Steam 폴더',
   'settings.gamerCompanion.field.steamPath.description':
     '선택 사항이에요. 비워 두면 Program Files/Steam을 자동으로 찾아요.',
@@ -1410,6 +1415,9 @@ export const koKR: TranslationDict = {
   'settings.privacy.field.offlineMode.label': '오프라인 모드',
   'settings.privacy.field.offlineMode.description':
     'LLM, TTS, STT, 연동 등 기기 밖으로 나가는 모든 요청을 차단해요. 로컬 제공자(Ollama, Whisper)는 계속 작동해요.',
+  'settings.privacy.field.passengerMode.label': '승객 모드',
+  'settings.privacy.field.passengerMode.description':
+    '이번 세션만: Mika는 평소처럼 대화하지만 대화, 기억, 시각 일기를 저장하지 않아요. 앱을 다시 열면 자동으로 꺼져요.',
   'settings.status.ready': '준비됨',
   'settings.status.changed': '변경됨',
   'settings.status.saving': '저장 중',

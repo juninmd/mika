@@ -131,17 +131,57 @@ fn build_volatile_context(store: &ConfigStore, dynamic_context: &str) -> Result<
     Ok(parts.join("\n\n"))
 }
 
-/// `buildSystemPrompt(store, dynamicContext)` — o `system.md` rico completo (stable + volatile).
-/// Chamado por `brain::turn::compose_system_prompt` a cada turno; ver o cabeçalho deste arquivo
-/// para as duas lacunas documentadas (sem cache, sem consciência temporal).
-pub fn build_full_system_prompt(store: &ConfigStore, dynamic_context: &str) -> Result<String, String> {
-    let stable = build_stable_system_prompt(store)?;
-    let volatile = build_volatile_context(store, dynamic_context)?;
-    if volatile.is_empty() {
-        Ok(stable)
-    } else {
-        Ok(format!("{stable}\n\n{volatile}"))
+/// O prompt de um turno em duas metades. `system` é o que não muda entre turnos (o `system.md`
+/// renderizado + SO); `context` é o que muda (hora, tela, jogo, perfil, humor, `system-tail.md`,
+/// notas de crise/idioma) e viaja colado à ÚLTIMA mensagem do usuário, nunca no `system`.
+///
+/// Por quê: com a hora (ao minuto) e a tela dentro do `system`, a primeira mensagem mudava a cada
+/// turno e o Ollama (assim como o cache implícito dos provedores remotos) reprocessava o histórico
+/// INTEIRO a cada fala — o prefixo comum acabava antes do histórico. Com o volátil no fim, o prefixo
+/// `system` + histórico fica idêntico entre turnos e o KV-cache é reaproveitado. O `system-tail.md`
+/// vai junto do volátil de propósito: a última instrução é a que o modelo pequeno mais obedece.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct TurnPrompt {
+    pub system: String,
+    pub context: String,
+}
+
+impl From<String> for TurnPrompt {
+    fn from(system: String) -> Self {
+        Self { system, context: String::new() }
     }
+}
+
+impl From<&str> for TurnPrompt {
+    fn from(system: &str) -> Self {
+        system.to_string().into()
+    }
+}
+
+impl TurnPrompt {
+    /// O texto que sai como a última mensagem `user`: a fala do usuário e, depois dela, o contexto do
+    /// turno marcado como do app — o modelo não pode tomá-lo por fala do usuário.
+    pub fn user_message(&self, user_content: &str) -> String {
+        if self.context.trim().is_empty() {
+            return user_content.to_string();
+        }
+        format!("{user_content}\n\n[TURN CONTEXT — written by the app, not by the user; never quote or mention it]\n{}", self.context)
+    }
+
+    /// As duas metades juntas, na ordem em que o modelo lê: para o painel "Último Prompt" e testes.
+    pub fn full(&self) -> String {
+        if self.context.is_empty() { self.system.clone() } else { format!("{}\n\n{}", self.system, self.context) }
+    }
+}
+
+/// `buildSplitSystemPrompt(store, dynamicContext)` — o `system.md` rico, partido em estável/volátil.
+pub fn build_split_system_prompt(store: &ConfigStore, dynamic_context: &str) -> Result<TurnPrompt, String> {
+    Ok(TurnPrompt { system: build_stable_system_prompt(store)?, context: build_volatile_context(store, dynamic_context)? })
+}
+
+/// As duas metades concatenadas — o que o modelo lê, em um texto só.
+pub fn build_full_system_prompt(store: &ConfigStore, dynamic_context: &str) -> Result<String, String> {
+    build_split_system_prompt(store, dynamic_context).map(|prompt| prompt.full())
 }
 
 #[cfg(test)]
@@ -207,6 +247,26 @@ mod tests {
     /// A seção é SEMPRE presente, como `buildVolatileContext` no TS — sem contexto dinâmico, o
     /// placeholder de "sem observações" ocupa o lugar (era o comportamento que faltava até esta
     /// rodada, quando a seção inteira ficava de fora sem `dynamic_context`).
+    /// O cache de prefixo do Ollama só vale se o `system` for byte a byte o mesmo entre turnos: hora,
+    /// tela e perfil mudam a cada fala e têm de ir na metade que viaja com a última mensagem.
+    #[test]
+    fn the_system_half_is_stable_across_turns_and_the_volatile_half_rides_the_user_message() {
+        let (store, _dir) = store();
+        let first = build_split_system_prompt(&store, "jogando Elden Ring").unwrap();
+        store.set("user.timezone", serde_json::json!("Asia/Tokyo")).unwrap();
+        let second = build_split_system_prompt(&store, "programando em Rust").unwrap();
+
+        assert_eq!(first.system, second.system);
+        for volatile in ["## TIME AWARENESS", "jogando Elden Ring", "## CRITICAL STYLE RULES"] {
+            assert!(!first.system.contains(volatile), "`{volatile}` no system quebra o cache");
+            assert!(first.context.contains(volatile));
+        }
+        let message = first.user_message("oi Mika");
+        assert!(message.starts_with("oi Mika\n\n[TURN CONTEXT"));
+        assert!(message.ends_with(&first.context), "o contexto (com a nota de crise no fim) fecha a mensagem");
+        assert_eq!(TurnPrompt::from("raw").user_message("oi"), "oi");
+    }
+
     #[test]
     fn build_full_system_prompt_always_includes_temporal_awareness() {
         let (store, _dir) = store();

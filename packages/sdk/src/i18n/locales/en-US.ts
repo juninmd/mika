@@ -251,6 +251,8 @@ export const enUS: TranslationDict = {
   'shell.senses.memory.label': 'Memory: {{status}}',
   'shell.senses.memory.active': 'active',
   'shell.senses.memory.off': 'off',
+  'shell.passenger.chip.label': 'Passenger mode',
+  'shell.passenger.chip.hint': 'Nothing from this session is saved. Click to leave.',
   'shell.senses.ago': '{{s}}s ago',
   'shell.senses.ocr': 'Reading text on screen',
   'shell.palette.toolError': 'Could not run "{{label}}"',
@@ -933,6 +935,9 @@ export const enUS: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Summary on game close',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika comments a session summary when the game closes.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Step-by-step hints, no spoilers',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'When you are stuck on the same thing, Mika gives a hint first, then a tip, and only then the solution. Off, she answers with the solution right away.',
   'settings.gamerCompanion.field.steamPath.label': 'Steam Folder',
   'settings.gamerCompanion.field.steamPath.description': 'Optional. Leave empty to auto-detect Program Files/Steam.',
   'settings.gamerCompanion.field.steamApiKey.label': 'Steam Web API Key',
@@ -1437,6 +1442,9 @@ export const enUS: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'Offline Mode',
   'settings.privacy.field.offlineMode.description':
     'Blocks every request leaving the machine — LLM, TTS, STT and integrations. Local providers (Ollama, Whisper) keep working.',
+  'settings.privacy.field.passengerMode.label': 'Passenger mode',
+  'settings.privacy.field.passengerMode.description':
+    'This session only: Mika chats as usual but keeps no conversation, memory or visual diary. Turns itself off when the app restarts.',
   'settings.status.ready': 'Ready',
   'settings.status.changed': 'Changed',
   'settings.status.saving': 'Saving',

@@ -26,6 +26,11 @@ fn privacy() -> Namespace {
                 FieldUi::new("settings.privacy.field.offlineMode.label")
                     .described("settings.privacy.field.offlineMode.description"),
             ),
+            // `privacy::passenger`: só esta sessão, nada no disco; desligado de novo a cada boot.
+            boolean("passengerMode", false).with_ui(
+                FieldUi::new("settings.privacy.field.passengerMode.label")
+                    .described("settings.privacy.field.passengerMode.description"),
+            ),
         ],
     }
 }

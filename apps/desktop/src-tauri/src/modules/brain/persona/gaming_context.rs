@@ -36,6 +36,9 @@ pub fn build_gaming_context_block() -> String {
     // `run_turn_ollama`) para não mexer na assinatura de uma função com vários chamadores fora do
     // gamer.
     lines.push("- He is playing right now: answer in 1-2 short sentences, straight to the point, without breaking his game flow.".to_string());
+    if let Some(recap) = memory.resume_recap(&session.game_id, &session.game_name) {
+        lines.push(format!("\n## Last Time In This Game\n{recap}\n- If he asks where you left off, answer from this in one sentence, without spoilers of what he has not reached."));
+    }
     format!("{}\n", lines.join("\n"))
 }
 
@@ -65,6 +68,23 @@ mod tests {
         // MUST (08-gamer-companion.md §"Estado de comportamento"): respostas mais curtas com sessão
         // ativa — instrução no bloco de prompt, não um parâmetro extra em `run_turn_ollama`.
         assert!(block.contains("answer in 1-2 short sentences"), "{block}");
+    }
+
+    /// "Onde paramos?" no chat comum: com sessão anterior do MESMO jogo, o bloco traz a retomada para
+    /// o modelo responder a partir dela — antes, só a fala proativa de abertura sabia disso.
+    #[test]
+    fn build_gaming_context_block_carries_the_resume_recap_of_the_same_game() {
+        let _guard = lock();
+        let memory = Arc::new(SessionMemory::new(SessionDb::open_in_memory().unwrap()));
+        let first = memory.start_session("570", "Dota 2").unwrap();
+        memory.end_session().unwrap();
+        memory.set_summary(&first.id, "Perdeu duas partidas de Pudge.").unwrap();
+        memory.start_session("570", "Dota 2").unwrap();
+        crate::modules::gamer::set_session_memory(Arc::clone(&memory));
+
+        let block = build_gaming_context_block();
+        assert!(block.contains("## Last Time In This Game"), "{block}");
+        assert!(block.contains("Perdeu duas partidas de Pudge."), "{block}");
     }
 
     #[test]

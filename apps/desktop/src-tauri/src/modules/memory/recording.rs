@@ -8,9 +8,10 @@
 use crate::config::store::ConfigStore;
 
 /// = `isMemoryRecordingAllowed`: `true` a menos que `memory.enabled` esteja explicitamente `false`
-/// — ausência de config, ou config ilegível, nunca bloqueia a gravação (mesmo fallback do TS).
+/// — ausência de config, ou config ilegível, nunca bloqueia a gravação (mesmo fallback do TS). O
+/// modo passageiro (`privacy::passenger`) também bloqueia, sem tocar em `memory.enabled`.
 pub fn memory_recording_allowed(config: &ConfigStore) -> bool {
-    config.get("memory.enabled").and_then(|v| v.as_bool()) != Some(false)
+    config.get("memory.enabled").and_then(|v| v.as_bool()) != Some(false) && !crate::modules::privacy::passenger::is_passenger_mode(config)
 }
 
 #[cfg(test)]

@@ -268,6 +268,8 @@ export type TranslationDict = {
   'shell.senses.memory.label': string
   'shell.senses.memory.active': string
   'shell.senses.memory.off': string
+  'shell.passenger.chip.label': string
+  'shell.passenger.chip.hint': string
   'shell.senses.ago': string
   'shell.senses.ocr': string
   'shell.palette.toolError': string
@@ -888,6 +890,8 @@ export type TranslationDict = {
   'settings.gamerCompanion.field.momentCooldowns.description': string
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': string
   'settings.gamerCompanion.field.sessionSummaryEnabled.description': string
+  'settings.gamerCompanion.field.helpLadderEnabled.label': string
+  'settings.gamerCompanion.field.helpLadderEnabled.description': string
   'settings.gamerCompanion.field.steamPath.label': string
   'settings.gamerCompanion.field.steamPath.description': string
   'settings.gamerCompanion.field.steamApiKey.label': string
@@ -1341,6 +1345,8 @@ export type TranslationDict = {
   'settings.privacy.field.clipboardLogging.description': string
   'settings.privacy.field.offlineMode.label': string
   'settings.privacy.field.offlineMode.description': string
+  'settings.privacy.field.passengerMode.label': string
+  'settings.privacy.field.passengerMode.description': string
   'settings.status.ready': string
   'settings.status.changed': string
   'settings.status.saving': string

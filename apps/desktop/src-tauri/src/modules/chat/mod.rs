@@ -139,6 +139,11 @@ pub fn all_messages(db_path: &Path) -> Result<Vec<ChatMessage>, String> {
 /// `timestamp` gerados em `chat_write.rs` — ver o cabeçalho de lá para a retentativa de `seq` que
 /// essa segunda conexão sobre o MESMO arquivo exige.
 pub fn append_message(db_path: &Path, role: &str, content: &str) -> Result<(), String> {
+    if crate::modules::privacy::passenger::passenger_mode() {
+        let timestamp_ms = send::now_millis();
+        let message = history::ChatMessage { id: uuid::Uuid::new_v4().to_string(), role: role.to_string(), content: content.to_string(), timestamp_ms };
+        return history_store().push(message); // `push` não toca o disco no modo passageiro
+    }
     let db = chat_db::ChatDb::open(db_path)?;
     let session_id = db.current_session_id()?;
     let written = chat_write::append_message(&db, &session_id, role, content)?;

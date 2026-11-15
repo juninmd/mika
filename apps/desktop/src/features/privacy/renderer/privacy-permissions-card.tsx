@@ -7,11 +7,13 @@ export function PrivacyPermissionsCard({
   screenCapture,
   clipboardLogging,
   offlineMode,
+  passengerMode,
   saveBool,
 }: {
   screenCapture: boolean
   clipboardLogging: boolean
   offlineMode: boolean
+  passengerMode: boolean
   saveBool: (path: string, value: boolean) => Promise<void>
 }) {
   const { t } = useI18n()
@@ -29,6 +31,12 @@ export function PrivacyPermissionsCard({
       value: screenCapture,
     },
     {
+      label: t('settings.privacy.field.passengerMode.label'),
+      description: t('settings.privacy.field.passengerMode.description'),
+      configPath: 'privacy.passengerMode',
+      value: passengerMode,
+    },
+    {
       label: t('settings.privacy.field.clipboardLogging.label'),
       description: t('settings.privacy.field.clipboardLogging.description'),
       configPath: 'privacy.clipboardLogging',
@@ -39,7 +47,7 @@ export function PrivacyPermissionsCard({
   return (
     <GlassCard span="full">
       <SectionHeader title={t('settings.privacy.panel.localPermissionsLabel')} className="mb-4" />
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         {privacyToggles.map((toggle) => (
           <div key={toggle.configPath} className="rounded-xl border border-border-subtle bg-surface-raise/40 p-3">
             <GlassToggle
