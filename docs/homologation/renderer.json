@@ -5,7 +5,7 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "61dcc3b1db09393030dd8180aa47dc8d9d5bcd96",
+    "commit": "6bf9f30c779420e905c0bcd76d1a9c41c556844a+dirty",
     "tree": "9064d7780a0fd67d",
     "contract": "6a303d7b5c636319",
     "deps": {
@@ -18,9 +18,9 @@
       "@pixiv/three-vrm": "3.5.5",
       "@pixiv/three-vrm-animation": "3.5.5",
       "@tauri-apps/api": "^2.12.4",
-      "dompurify": "^3.4.17",
-      "framer-motion": "^14.10.1",
-      "lucide-react": "^1.70.0",
+      "dompurify": "^3.4.18",
+      "framer-motion": "^14.14.0",
+      "lucide-react": "^1.73.0",
       "mermaid": "^12.3.0",
       "pixi-live2d-display": "^0.4.0",
       "pixi.js": "6.5.10",
@@ -31,12 +31,12 @@
       "zod": "catalog:",
       "zustand": "^5.1.0"
     },
-    "lockfile": "4d85bfe4ac1d3048"
+    "lockfile": "f0c04416b62f016b"
   },
   "ambiente": {
-    "plataforma": "win32",
-    "node": "v24.21.0",
-    "data": "2026-11-12"
+    "plataforma": "linux",
+    "node": "v22.23.4",
+    "data": "2026-11-15"
   },
   "criterios": [
     {

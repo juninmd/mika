@@ -81,7 +81,7 @@
     "check:release-docs": "tsx scripts/checks/release-docs.mts"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.6",
+    "@biomejs/biome": "^2.6.7",
     "@mika/desktop": "workspace:*",
     "@mika/sdk": "workspace:*",
     "@playwright/test": "catalog:",
@@ -92,7 +92,7 @@
     "playwright": "catalog:",
     "rimraf": "^6.1.4",
     "tsx": "^4.23.15",
-    "turbo": "^2.11.10",
+    "turbo": "^2.11.11",
     "typescript": "catalog:",
     "vitest": "^5.1.0",
     "zod": "catalog:"
