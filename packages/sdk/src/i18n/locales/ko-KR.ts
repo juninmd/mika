@@ -920,6 +920,9 @@ export const koKR: TranslationDict = {
     '순간 유형별 Mika의 코멘트 사이 최소 간격이에요: 보스, 업적, 승리, 죽음, 컷신, 패배.',
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': '게임 종료 시 요약',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description': '게임이 종료되면 Mika가 세션 요약을 말해 줘요.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': '단계별 힌트, 스포일러 없이',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    '같은 곳에서 막히면 Mika가 먼저 힌트, 그다음 팁, 마지막에 해답을 알려 줘요. 끄면 바로 해답을 알려 줘요.',
   'settings.gamerCompanion.field.steamPath.label': 'Steam 폴더',
   'settings.gamerCompanion.field.steamPath.description':
     '선택 사항이에요. 비워 두면 Program Files/Steam을 자동으로 찾아요.',

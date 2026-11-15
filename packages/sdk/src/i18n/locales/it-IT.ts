@@ -948,6 +948,9 @@ export const itIT: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Riepilogo alla chiusura del gioco',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika commenta un riepilogo della sessione quando il gioco si chiude.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Indizi a gradini, senza spoiler',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'Se resti bloccato sullo stesso punto, Mika dà prima un indizio, poi un consiglio e solo dopo la soluzione. Disattivato, risponde subito con la soluzione.',
   'settings.gamerCompanion.field.steamPath.label': 'Cartella di Steam',
   'settings.gamerCompanion.field.steamPath.description':
     'Opzionale. Lascia vuoto per rilevare Program Files/Steam automaticamente.',

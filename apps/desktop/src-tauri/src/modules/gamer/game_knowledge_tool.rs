@@ -54,7 +54,7 @@ fn favorite_games(store: &ConfigStore) -> String {
 }
 
 /// Espelha os 6 placeholders de `game-knowledge.md` (`loadPrompt('game-knowledge', {...})`).
-fn render_ask_prompt(store: &ConfigStore, game: &str, topic: Option<&str>, spoiler_level: &str) -> String {
+fn render_ask_prompt(store: &ConfigStore, game: &str, topic: Option<&str>, spoiler_level: &str, help_level: &str) -> String {
     let favorites = favorite_games(store);
     TEMPLATE
         .replace("{{nickname}}", &nickname(store))
@@ -62,13 +62,14 @@ fn render_ask_prompt(store: &ConfigStore, game: &str, topic: Option<&str>, spoil
         .replace("{{game}}", game)
         .replace("{{focus}}", topic.unwrap_or("general context useful for playing better"))
         .replace("{{spoilerLevel}}", spoiler_level)
+        .replace("{{helpLevel}}", help_level)
         .replace("{{language}}", &crate::config::locale::app_language(store))
 }
 
 /// Porte de `askGameKnowledge`: gera o guia por LLM e recusa um guia vazio como sucesso (mesma
 /// checagem do TS — `success: true` com string vazia faria a Mika "explicar" o jogo em silêncio).
-async fn ask_response(store: &ConfigStore, game: &str, topic: Option<&str>, spoiler_level: &str) -> Value {
-    let prompt = render_ask_prompt(store, game, topic, spoiler_level);
+async fn ask_response(store: &ConfigStore, game: &str, topic: Option<&str>, spoiler_level: &str, help_level: &str) -> Value {
+    let prompt = render_ask_prompt(store, game, topic, spoiler_level, help_level);
     let (_handle, signal) = TurnAbortHandle::new();
 
     let text = match turn::run_turn_llm_raw(store, None, &prompt, signal, &NullObserver).await {
@@ -85,7 +86,34 @@ async fn ask_response(store: &ConfigStore, game: &str, topic: Option<&str>, spoi
         });
     }
 
-    json!({ "success": true, "data": { "game": game, "topic": topic.unwrap_or("geral"), "guide": guide } })
+    json!({ "success": true, "data": { "game": game, "topic": topic.unwrap_or("geral"), "helpLevel": help_level, "guide": guide } })
+}
+
+/// Um travamento "esfria" depois disto: voltar ao mesmo chefe no dia seguinte recomeça na pista.
+const HELP_LADDER_RESET_MS: u64 = 30 * 60_000;
+const HELP_LEVELS: [&str; 3] = ["hint", "tip", "solution"];
+
+/// Escada de ajuda sem spoiler (`gamer-companion.helpLadderEnabled`): o mesmo jogo+tópico pedido de
+/// novo sobe um degrau — pista, depois dica, depois solução. Em memória de processo: é o
+/// travamento de agora, não preferência para gravar.
+#[derive(Default)]
+pub struct HelpLadder(std::sync::Mutex<std::collections::HashMap<String, (usize, u64)>>);
+
+impl HelpLadder {
+    pub fn level(&self, store: &ConfigStore, game: &str, topic: Option<&str>, explicit: Option<&str>, now_ms: u64) -> &'static str {
+        if let Some(level) = HELP_LEVELS.into_iter().find(|level| Some(*level) == explicit) {
+            return level;
+        }
+        if !store.get("gamer-companion.helpLadderEnabled").and_then(|v| v.as_bool()).unwrap_or(true) {
+            return "solution";
+        }
+        let key = format!("{}|{}", game.trim().to_lowercase(), topic.unwrap_or("").trim().to_lowercase());
+        let mut asked = self.0.lock().unwrap_or_else(|e| e.into_inner());
+        let (step, last) = asked.get(&key).copied().unwrap_or((0, now_ms));
+        let step = if now_ms.saturating_sub(last) > HELP_LADDER_RESET_MS { 0 } else { step };
+        asked.insert(key, (step + 1, now_ms));
+        HELP_LEVELS[step.min(HELP_LEVELS.len() - 1)]
+    }
 }
 
 fn string_array(value: Option<&Value>) -> Vec<String> {
@@ -164,6 +192,7 @@ pub fn definition() -> ToolDefinition {
                 "game": { "type": "string" },
                 "topic": { "type": "string" },
                 "spoilerLevel": { "type": "string", "enum": ["none", "light", "full"], "description": "none = no plot reveals; light = early game only; full = anything." },
+                "helpLevel": { "type": "string", "enum": ["hint", "tip", "solution"], "description": "Only when they say how much help they want (\"just the answer\" = solution). Omit it and the help climbs by itself: hint, then tip, then solution." },
                 "query": { "type": "string" },
                 "locationName": { "type": "string" },
                 "description": { "type": "string" },
@@ -181,11 +210,12 @@ pub fn definition() -> ToolDefinition {
 pub struct GameKnowledgeHandler {
     memory: Arc<SessionMemory>,
     store: Arc<ConfigStore>,
+    ladder: HelpLadder,
 }
 
 impl GameKnowledgeHandler {
     pub fn new(memory: Arc<SessionMemory>, store: Arc<ConfigStore>) -> Self {
-        Self { memory, store }
+        Self { memory, store, ladder: HelpLadder::default() }
     }
 }
 
@@ -205,7 +235,8 @@ impl ToolHandler for GameKnowledgeHandler {
                 let game = args.get("game").and_then(Value::as_str).map(str::trim).unwrap_or("");
                 let topic = args.get("topic").and_then(Value::as_str).map(str::trim).filter(|s| !s.is_empty());
                 let spoiler_level = args.get("spoilerLevel").and_then(Value::as_str).unwrap_or("none");
-                ask_response(&self.store, game, topic, spoiler_level).await
+                let help_level = self.ladder.level(&self.store, game, topic, args.get("helpLevel").and_then(Value::as_str), super::iso_time::now_ms());
+                ask_response(&self.store, game, topic, spoiler_level, help_level).await
             }
             other => json!({ "success": false, "error": format!("unknown action: {other}"), "errorCode": "invalid_args" }),
         })
@@ -324,11 +355,33 @@ mod tests {
     fn render_ask_prompt_fills_every_placeholder_the_template_declares() {
         let dir = TempDir::new();
         let store = ConfigStore::open(&dir.0, crate::config::schemas::registry()).unwrap();
-        let rendered = render_ask_prompt(&store, "Hollow Knight", Some("City of Tears"), "light");
+        let rendered = render_ask_prompt(&store, "Hollow Knight", Some("City of Tears"), "light", "tip");
         assert!(!rendered.contains("{{"), "placeholder não preenchido: {rendered}");
         assert!(rendered.contains("Hollow Knight"));
         assert!(rendered.contains("City of Tears"));
         assert!(rendered.contains("light"));
+        assert!(rendered.contains("Help level: tip"));
+    }
+
+    /// Escada sem spoiler: o mesmo travamento pedido de novo sobe um degrau (pista → dica → solução),
+    /// um pedido explícito pula direto, e o toggle desligado devolve o guia completo de antes.
+    #[test]
+    fn the_help_ladder_climbs_per_game_and_topic_and_respects_an_explicit_level() {
+        let dir = TempDir::new();
+        let store = ConfigStore::open(&dir.0, crate::config::schemas::registry()).unwrap();
+        let ladder = HelpLadder::default();
+        let climb = |topic: &str, explicit: Option<&str>| ladder.level(&store, "Hollow Knight", Some(topic), explicit, 0);
+
+        assert_eq!(climb("Hornet", None), "hint");
+        assert_eq!(climb("hornet ", None), "tip", "mesmo tópico, caixa/espaço diferentes");
+        assert_eq!(climb("Hornet", None), "solution");
+        assert_eq!(climb("Hornet", None), "solution");
+        assert_eq!(climb("Mantis Lords", None), "hint", "outro tópico começa do zero");
+        assert_eq!(climb("Soul Master", Some("solution")), "solution");
+        assert_eq!(ladder.level(&store, "Hollow Knight", Some("Mantis Lords"), None, HELP_LADDER_RESET_MS + 1), "hint", "esfria depois de um tempo");
+
+        store.set("gamer-companion.helpLadderEnabled", json!(false)).unwrap();
+        assert_eq!(climb("Grimm", None), "solution");
     }
 
     #[test]

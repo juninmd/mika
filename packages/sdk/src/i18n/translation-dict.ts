@@ -886,6 +886,8 @@ export type TranslationDict = {
   'settings.gamerCompanion.field.momentCooldowns.description': string
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': string
   'settings.gamerCompanion.field.sessionSummaryEnabled.description': string
+  'settings.gamerCompanion.field.helpLadderEnabled.label': string
+  'settings.gamerCompanion.field.helpLadderEnabled.description': string
   'settings.gamerCompanion.field.steamPath.label': string
   'settings.gamerCompanion.field.steamPath.description': string
   'settings.gamerCompanion.field.steamApiKey.label': string

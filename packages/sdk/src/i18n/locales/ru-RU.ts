@@ -947,6 +947,9 @@ export const ruRU: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Итоги при закрытии игры',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika комментирует итоги сессии, когда игра закрывается.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Подсказки по шагам, без спойлеров',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'Если вы застряли на одном месте, Мика сначала даёт намёк, потом совет и только затем решение. Выключено: сразу даёт решение.',
   'settings.gamerCompanion.field.steamPath.label': 'Папка Steam',
   'settings.gamerCompanion.field.steamPath.description':
     'Необязательно. Оставь пустым для автоопределения Program Files/Steam.',

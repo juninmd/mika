@@ -918,6 +918,9 @@ export const jaJP: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'ゲーム終了時の要約',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'ゲームが終了するとMikaがセッションの要約をコメントします。',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': '段階的なヒント（ネタバレなし）',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    '同じところで詰まると、Mikaはまずヒント、次にコツ、最後に答えを教えます。オフにするとすぐに答えを教えます。',
   'settings.gamerCompanion.field.steamPath.label': 'Steamフォルダ',
   'settings.gamerCompanion.field.steamPath.description':
     '任意項目。空欄にすると Program Files/Steam を自動検出します。',

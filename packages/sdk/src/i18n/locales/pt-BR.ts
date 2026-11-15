@@ -938,6 +938,9 @@ export const ptBR: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Resumo ao fechar o jogo',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika comenta um resumo da sessão quando o jogo fecha.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Dicas em degraus, sem spoiler',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'No mesmo travamento, a Mika dá primeiro uma pista, depois uma dica e só então a solução. Desligado, ela já responde com a solução.',
   'settings.gamerCompanion.field.steamPath.label': 'Pasta da Steam',
   'settings.gamerCompanion.field.steamPath.description':
     'Opcional. Deixe vazio para detectar Program Files/Steam automaticamente.',

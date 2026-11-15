@@ -887,6 +887,9 @@ export const zhCN: TranslationDict = {
     '米卡针对不同时刻类型(boss、成就、胜利、死亡、过场动画和失败)之间评论的最小间隔。',
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': '游戏关闭时的总结',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description': '游戏关闭时,米卡会评论本次会话的总结。',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': '分步提示,不剧透',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    '在同一处卡关时,米卡会先给线索,再给技巧,最后才给出答案。关闭后会直接给出答案。',
   'settings.gamerCompanion.field.steamPath.label': 'Steam 文件夹',
   'settings.gamerCompanion.field.steamPath.description': '可选。留空以自动检测 Program Files/Steam。',
   'settings.gamerCompanion.field.steamApiKey.label': 'Steam Web API Key',

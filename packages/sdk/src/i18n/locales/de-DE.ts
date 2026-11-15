@@ -958,6 +958,9 @@ export const deDE: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Zusammenfassung beim Spielende',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika kommentiert eine Sitzungszusammenfassung, wenn das Spiel geschlossen wird.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Hinweise in Stufen, ohne Spoiler',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'Hängst du an derselben Stelle, gibt Mika zuerst einen Hinweis, dann einen Tipp und erst danach die Lösung. Aus: Sie nennt direkt die Lösung.',
   'settings.gamerCompanion.field.steamPath.label': 'Steam-Ordner',
   'settings.gamerCompanion.field.steamPath.description':
     'Optional. Leer lassen, um Program Files/Steam automatisch zu erkennen.',

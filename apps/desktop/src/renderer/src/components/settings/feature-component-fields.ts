@@ -140,6 +140,7 @@ export const FEATURE_COMPONENT_HANDLED_FIELDS = {
     'gamer-companion.momentCooldowns.cutscene',
     'gamer-companion.momentCooldowns.defeat',
     'gamer-companion.sessionSummaryEnabled',
+    'gamer-companion.helpLadderEnabled',
   ],
   MoodPanel: [
     'mood.enabled',

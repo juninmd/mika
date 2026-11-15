@@ -949,6 +949,9 @@ export const esES: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Resumen al cerrar el juego',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika comenta un resumen de la sesión cuando el juego se cierra.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Pistas por pasos, sin spoilers',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'Si te atascas en lo mismo, Mika da primero una pista, luego un consejo y solo después la solución. Desactivado, responde con la solución de inmediato.',
   'settings.gamerCompanion.field.steamPath.label': 'Carpeta de Steam',
   'settings.gamerCompanion.field.steamPath.description':
     'Opcional. Deja vacío para detectar Program Files/Steam automáticamente.',
