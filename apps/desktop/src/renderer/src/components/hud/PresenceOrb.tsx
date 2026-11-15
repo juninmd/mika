@@ -14,6 +14,7 @@ import { useI18n } from '../../hooks/useI18n'
 import { getMicLevel, subscribeMicLevel } from '../../lib/mic-level-bus'
 import type { HudRect } from './hud-layout'
 import type { HudPolicy } from './hud-policy'
+import { PassengerChip } from './PassengerChip'
 import type { Presence, PresenceKind } from './presence-state'
 import { ttsLevelWrite } from './tts-level-write'
 
@@ -291,6 +292,7 @@ export const PresenceOrb = memo(function PresenceOrb({
             {renderDetails()}
           </section>
         )}
+        <PassengerChip />
         <div className="pointer-events-auto empty:hidden">{pinned}</div>
       </div>
     </div>
