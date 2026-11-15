@@ -1,10 +1,15 @@
-import { History, MessageCircle, MessageCirclePlus, Mic, Pin, Settings2, Trash2 } from 'lucide-react'
+import { History, MessageCircle, MessageCirclePlus, Mic, Minimize2, Pin, Settings2, Trash2 } from 'lucide-react'
 import { useMemo } from 'react'
 import type { ContextMenuItem } from '../components/MikaContextMenu'
 import { useDockActions } from './useDockActions'
 import { useI18n } from './useI18n'
+import { setMiniMode } from './useMiniMode'
+
+/** The mini window is 240 px tall: only what fits, and the way back out. */
+const MINI_MENU = new Set(['mini', 'mic', 'settings'])
 
 interface MikaMenuActions {
+  mini: boolean
   pinned: boolean
   micEnabled: boolean
   onTogglePin: () => void
@@ -18,11 +23,20 @@ interface MikaMenuActions {
 export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
   const { t } = useI18n()
   const { openSettings } = useDockActions()
-  const { pinned, micEnabled, onTogglePin, onOpenChat, onOpenHistory, onToggleMic, onClearHistory, onSendMessage } =
-    actions
+  const {
+    mini,
+    pinned,
+    micEnabled,
+    onTogglePin,
+    onOpenChat,
+    onOpenHistory,
+    onToggleMic,
+    onClearHistory,
+    onSendMessage,
+  } = actions
 
-  return useMemo(
-    () => [
+  const items = useMemo(
+    (): ContextMenuItem[] => [
       {
         id: 'chat',
         label: t('shell.menu.chat'),
@@ -59,6 +73,13 @@ export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
         onSelect: onTogglePin,
       },
       {
+        id: 'mini',
+        label: t('shell.menu.miniMode'),
+        checked: mini,
+        icon: <Minimize2 size={14} />,
+        onSelect: () => setMiniMode(!mini),
+      },
+      {
         id: 'settings',
         label: t('shell.menu.settings'),
         icon: <Settings2 size={14} />,
@@ -75,6 +96,7 @@ export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
       },
     ],
     [
+      mini,
       micEnabled,
       pinned,
       onOpenChat,
@@ -87,4 +109,5 @@ export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
       t,
     ],
   )
+  return useMemo(() => (mini ? items.filter((item) => MINI_MENU.has(item.id)) : items), [mini, items])
 }

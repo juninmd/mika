@@ -49,6 +49,8 @@ pub const SHELL_CHANNELS: [&str; 12] = [
     "window-toggle-always-on-top",
     "window-toggle-fullscreen",
     "window-get-fullscreen",
+    "window-set-mini-mode",
+    "window-get-mini-mode",
     "window-ignore-mouse",
     "window-move",
     "window-start-drag",
@@ -79,6 +81,11 @@ fn handle_shell(app: &AppHandle, caller: &str, channel: &str, payload: &Value) -
         }
         "window-toggle-fullscreen" => crate::fullscreen::toggle(app).map(Value::Bool),
         "window-get-fullscreen" => crate::fullscreen::is_fullscreen(app).map(Value::Bool),
+        "window-set-mini-mode" => {
+            let on = payload.as_bool().ok_or("payload deve ser booleano")?;
+            crate::mini_mode::set(app, on).map(|_| Value::Null)
+        }
+        "window-get-mini-mode" => Ok(Value::Bool(crate::mini_mode::is_mini())),
         "window-ignore-mouse" => {
             let ignore = payload.as_bool().ok_or("payload deve ser booleano")?;
             shell_actions::set_ignore_mouse(app, ignore).map(|_| Value::Null)

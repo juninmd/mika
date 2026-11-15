@@ -38,6 +38,7 @@ export const VrmCanvas = React.memo(function VrmCanvas({
   mouseRef,
   isSpeaking = false,
   onAvatarInteract,
+  headOnly = false,
 }: AvatarCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const avatarRef = useRef<VrmAvatar | null>(null)
@@ -64,6 +65,8 @@ export const VrmCanvas = React.memo(function VrmCanvas({
   // whenever `voice.mouseTracking` changes, and re-running that effect rebuilds the whole model.
   const mouseRefRef = useRef(mouseRef)
   mouseRefRef.current = mouseRef
+  const headOnlyRef = useRef(headOnly)
+  headOnlyRef.current = headOnly
   const onBatteryRef = useRef(false)
   const syncQualityRef = useRef<(() => void) | null>(null)
 
@@ -86,6 +89,7 @@ export const VrmCanvas = React.memo(function VrmCanvas({
     let lastRender = last
     let minFrameMs = 0
     const avatar = new VrmAvatar(canvas, window.innerWidth, window.innerHeight)
+    avatar.setHeadOnly(headOnlyRef.current)
     avatar.setLipSyncSources(volumeRef, vowelsRef)
     avatarRef.current = avatar
 
@@ -214,7 +218,8 @@ export const VrmCanvas = React.memo(function VrmCanvas({
           const xFrac = (e.clientX - bounds.left) / bounds.width
           const yFrac = (e.clientY - bounds.top) / bounds.height
           avatar.setCursorTarget(xFrac * 2 - 1, yFrac * 2 - 1)
-          if (isHeadHitArea({ xFrac, yFrac })) avatar.reactToHeadPat()
+          // In the head shot the whole canvas is her head.
+          if (headOnlyRef.current || isHeadHitArea({ xFrac, yFrac })) avatar.reactToHeadPat()
           else avatar.reactToPoke()
           onAvatarInteractRef.current?.(e.clientX, e.clientY)
         },
@@ -248,6 +253,11 @@ export const VrmCanvas = React.memo(function VrmCanvas({
   useEffect(() => {
     avatarRef.current?.setExpression(expression, intensity)
   }, [expression, intensity])
+
+  useEffect(() => {
+    avatarRef.current?.setHeadOnly(headOnly)
+    avatarRef.current?.render()
+  }, [headOnly])
 
   // Re-applied once the model is up: each model path mounts a fresh avatar.
   const wind = useAvatarWind()

@@ -41,11 +41,16 @@ import {
   writeVisemes,
 } from './vrm-scene-setup'
 import { applyHairShine } from './vrm-shine'
+import { frameShowcase } from './vrm-showcase-framing'
 import { DEFAULT_WIND_STRENGTH, SpringWind, type Vec3, windInto } from './vrm-wind'
 
 export type { VowelWeightsLike } from './vrm-mouth'
 
 // Same AvatarEngine contract as the Live2D animator, backed by a VRM model via three.js + @pixiv/three-vrm.
+
+/** How fast the head-shot camera catches up with the head bone (1/s): quick enough for a jump, soft enough not to cancel her sway. */
+const HEAD_FOLLOW_RATE = 6
+const headNow = new THREE.Vector3()
 
 export class VrmAvatar implements AvatarEngine {
   readonly capabilities: AvatarEngineCapabilities = { bodyRig: true, namedActions: true }
@@ -84,6 +89,9 @@ export class VrmAvatar implements AvatarEngine {
   private width = 1
   private height = 1
   private disposed = false
+  private headOnly = false
+  /** Camera position relative to the head bone, fixed when the head shot is framed. */
+  private readonly headOffset = new THREE.Vector3()
 
   constructor(canvas: HTMLCanvasElement, width: number, height: number) {
     // Same as the Live2D stage: without it a hybrid laptop renders the avatar on the iGPU.
@@ -121,15 +129,42 @@ export class VrmAvatar implements AvatarEngine {
     this.renderer.setPixelRatio(currentRenderPixelRatio())
     this.renderer.setSize(width, height, false)
     this.postFx?.syncSize()
-    fitCamera(this.camera, width, height, this.vrm)
+    this.fit()
+  }
+
+  /** Mini window: frames the head alone instead of the whole body. */
+  setHeadOnly(headOnly: boolean): void {
+    if (this.headOnly === headOnly) return
+    this.headOnly = headOnly
+    this.fit()
+  }
+
+  private fit(): void {
+    const frame = this.headOnly ? this.modelFrame() : null
+    if (frame) {
+      this.camera.aspect = this.width / Math.max(1, this.height)
+      frameShowcase(this.camera, frame.bounds, 'head', 0, frame.head)
+      this.headOffset.subVectors(this.camera.position, frame.head)
+    } else {
+      fitCamera(this.camera, this.width, this.height, this.vrm)
+    }
     this.refreshInk()
+  }
+
+  /** Head shot: the camera rides the head bone, so a jump or a lean never pushes the face out of the mini window. */
+  private followHead(vrm: VRM, dt: number): void {
+    const head = vrm.humanoid?.getRawBoneNode('head')
+    if (!head) return
+    head.getWorldPosition(headNow).add(this.headOffset)
+    this.camera.position.lerp(headNow, 1 - Math.exp(-dt * HEAD_FOLLOW_RATE))
   }
 
   /** O traço tem piso em pixels de tela: recalcula quando o enquadramento ou a janela mudam. */
   private refreshInk(): void {
     const frame = this.modelFrame()
     if (!frame || !this.vrm) return
-    const distance = this.camera.position.distanceTo(frame.bounds.getCenter(new THREE.Vector3()))
+    const focus = this.headOnly ? frame.head : frame.bounds.getCenter(new THREE.Vector3())
+    const distance = this.camera.position.distanceTo(focus)
     applyOutlineInk(this.vrm.scene, worldPerPixel(distance, this.camera.fov, this.height))
   }
 
@@ -169,8 +204,7 @@ export class VrmAvatar implements AvatarEngine {
     this.postFx?.trackGlow(vrm.scene)
     // Bones only exist to frame against once the model is in the scene — refit now instead of
     // waiting for the next window resize.
-    fitCamera(this.camera, this.width, this.height, vrm)
-    this.refreshInk()
+    this.fit()
   }
 
   /** World bounds of the loaded model alone (no props, lights or stage dressing) plus its head
@@ -297,6 +331,7 @@ export class VrmAvatar implements AvatarEngine {
     windInto(this.windNow, this.elapsed, this.windStrength)
     this.wind?.apply(this.windNow)
     stepVrm(vrm, dt)
+    if (this.headOnly) this.followHead(vrm, dt)
     syncAccessories(this.accessories)
     this.props.update(dt, this.action.name, this.action.progress)
     this.katana.update(dt, this.action.name, this.action.progress, this.windNow)

@@ -66,6 +66,8 @@ export const DESKTOP_SHELL_CHANNELS = {
   WindowToggleAlwaysOnTop: 'window-toggle-always-on-top',
   WindowToggleFullscreen: 'window-toggle-fullscreen',
   WindowGetFullscreen: 'window-get-fullscreen',
+  WindowSetMiniMode: 'window-set-mini-mode',
+  WindowGetMiniMode: 'window-get-mini-mode',
   WindowIgnoreMouse: 'window-ignore-mouse',
   WindowMove: 'window-move',
   WindowStartDrag: 'window-start-drag',
@@ -94,6 +96,7 @@ export const DESKTOP_RENDERER_EVENT_CHANNELS = {
   PowerProfile: 'power:profile',
   MouseMove: 'mouse-move',
   WindowFullscreen: 'window:fullscreen',
+  WindowMiniMode: 'window:mini-mode',
 } as const
 
 export const DESKTOP_BRIDGED_EVENT_CHANNELS = {

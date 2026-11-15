@@ -48,6 +48,7 @@ export type TranslationDict = {
   'shell.palette.openChat': string
   'shell.palette.history': string
   'shell.palette.fullscreen': string
+  'shell.palette.miniMode': string
   'shell.palette.settings': string
   'shell.palette.reopenWizard': string
   'shell.palette.reopenWizardHint': string
@@ -289,6 +290,7 @@ export type TranslationDict = {
   'shell.menu.micOn': string
   'shell.menu.mic': string
   'shell.menu.pin': string
+  'shell.menu.miniMode': string
   'shell.menu.pinOn': string
   'shell.menu.pinOff': string
   'shell.menu.settings': string
@@ -2259,6 +2261,9 @@ export type TranslationDict = {
   'settings.window.fullscreen.hint': string
   'settings.window.stateLabel': string
   'settings.window.state.fullscreen': string
+  'settings.window.state.mini': string
+  'settings.window.mini.label': string
+  'settings.window.mini.hint': string
   'settings.window.state.windowed': string
   'settings.performance.profileLabel': string
   'settings.performance.profile.auto': string

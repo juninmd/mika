@@ -13,4 +13,6 @@ export interface AvatarCanvasProps {
   mouseRef?: { current: { x: number; y: number } | undefined }
   isSpeaking?: boolean
   onAvatarInteract?: (x?: number, y?: number) => void
+  /** Mini window: frame the head alone (VRM); Live2D keeps its whole-body fit, just smaller. */
+  headOnly?: boolean
 }
