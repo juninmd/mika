@@ -321,8 +321,21 @@ mod tests {
         use crate::config::schema::choice;
         let dir = TempDir::new();
         let schema = SchemaRegistry::new(vec![
-            Namespace { name: "privacy", fields: vec![boolean("offlineMode", false), boolean("screenCapture", false)] },
-            Namespace { name: "app", fields: vec![choice("locale", "pt-BR", &["pt-BR", "de-DE", "ja-JP"])] },
+            Namespace {
+                name: "privacy",
+                fields: vec![
+                    boolean("offlineMode", false),
+                    boolean("screenCapture", false),
+                ],
+            },
+            Namespace {
+                name: "app",
+                fields: vec![choice(
+                    "locale",
+                    "pt-BR",
+                    &["pt-BR", "de-DE", "ja-JP", "zh-CN"],
+                )],
+            },
         ]);
         let store = ConfigStore::open(&dir.0, schema).unwrap();
         store.set("app.locale", serde_json::json!(locale)).unwrap();
@@ -337,27 +350,53 @@ mod tests {
         state
     }
 
-    /// Alemão não está no Supertonic, mas há voz Piper verificada: a fala chega no Piper (que aqui
-    /// falha pelo binário ausente, com o caminho configurado no erro) em vez de morrer no erro de idioma.
+    /// Alemão era fallback do Piper; o Supertonic 3 fala alemão, então a fala vai a ele (aqui barrada
+    /// pelo modo offline antes de baixar o modelo) e nunca ao Piper.
     #[tokio::test]
-    async fn supertonic_falls_back_to_the_piper_voice_of_a_language_the_model_cannot_speak() {
+    async fn german_is_spoken_by_supertonic_3_not_by_the_piper_fallback() {
         let (store, _dir) = locale_store("de-DE");
-        let err = generate_with_provider(&supertonic_state("de"), "Hallo", std::path::Path::new("."), &store, &cancel())
-            .await
-            .unwrap_err();
-        assert!(err.contains("/does/not/exist/piper"), "não chegou no Piper: {err}");
+        store
+            .set("privacy.offlineMode", serde_json::json!(true))
+            .unwrap();
+        let err = generate_with_provider(
+            &supertonic_state("de"),
+            "Hallo",
+            std::path::Path::new("."),
+            &store,
+            &cancel(),
+        )
+        .await
+        .unwrap_err();
+        assert!(
+            err.to_lowercase().contains("offline"),
+            "não tentou o Supertonic: {err}"
+        );
+        assert!(
+            !err.contains("/does/not/exist/piper"),
+            "caiu no Piper: {err}"
+        );
     }
 
-    /// Japonês não tem voz Piper verificada: o erro nomeia o idioma e manda para a nuvem — nunca
-    /// fonemas de outro idioma nem voz inventada.
+    /// Chinês não está no Supertonic 3 nem tem voz Piper verificada: o erro nomeia o idioma e manda
+    /// para a nuvem — nunca fonemas de outro idioma nem voz inventada.
     #[tokio::test]
-    async fn a_language_without_any_verified_local_voice_names_the_language_and_points_to_the_cloud() {
-        let (store, _dir) = locale_store("ja-JP");
-        let err = generate_with_provider(&supertonic_state("ja"), "こんにちは", std::path::Path::new("."), &store, &cancel())
-            .await
-            .unwrap_err();
-        assert!(err.contains("Japanese") && err.contains("Google"), "{err}");
-        assert!(!err.contains("/does/not/exist/piper"), "tentou o Piper sem voz verificada: {err}");
+    async fn a_language_without_any_verified_local_voice_names_the_language_and_points_to_the_cloud(
+    ) {
+        let (store, _dir) = locale_store("zh-CN");
+        let err = generate_with_provider(
+            &supertonic_state("zh"),
+            "你好",
+            std::path::Path::new("."),
+            &store,
+            &cancel(),
+        )
+        .await
+        .unwrap_err();
+        assert!(err.contains("Chinese") && err.contains("Google"), "{err}");
+        assert!(
+            !err.contains("/does/not/exist/piper"),
+            "tentou o Piper sem voz verificada: {err}"
+        );
     }
 
     // --- fallback ElevenLabs -> Supertonic ------------------------------------------------------

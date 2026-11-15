@@ -20,7 +20,7 @@ export function buildEmbeddingConfig(input: EmbeddingConfigInput): Record<string
 export type ModelMeta = { id: string; dims: number; note?: string }
 
 export const PROVIDERS = [
-  { id: 'local', label: 'e5', desc: 'e5 no seu PC, offline' },
+  { id: 'local', label: 'granite', desc: 'granite no seu PC, offline' },
   { id: 'google', label: 'Google AI', desc: 'Gemini Embedding' },
   { id: 'openrouter', label: 'OpenRouter', desc: 'Catálogo universal' },
   { id: 'ollama', label: 'Ollama', desc: 'Modelos locais' },
@@ -74,7 +74,7 @@ export function fallbackCatalog(provider: string): LLMModelCatalogItem[] {
 }
 
 export const DEFAULT_MODEL: Record<string, string> = {
-  local: 'multilingual-e5-small',
+  local: 'granite-embedding-97m-multilingual-r2',
   google: 'gemini-embedding-001',
   openrouter: 'google/gemini-embedding-001',
   ollama: 'embeddinggemma',

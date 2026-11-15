@@ -200,6 +200,6 @@ export const koKR: WizardCopy = {
     ttsCloud: '클라우드 제공자 선택됨',
     llmLabel: '언어 모델 (LLM)',
     embeddingLabel: '벡터 기억 (임베딩)',
-    embeddingDetail: '로컬 e5 (~135 MB): 서버 없이 오프라인으로 의미 기반 기억 검색',
+    embeddingDetail: '로컬 granite (~125 MB): 서버 없이 오프라인으로 의미 기반 기억 검색',
   },
 }

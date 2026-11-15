@@ -9,7 +9,7 @@ use crate::config::store::ConfigStore;
 use crate::modules::voice::tts::preprocessor::TextPreprocessorOptions;
 use crate::modules::voice::tts::providers::remote::{AzureTtsOptions, ElevenLabsOptions, GoogleTtsOptions, OpenAiTtsOptions};
 
-pub const DEFAULT_SUPERTONIC_STEPS: u32 = 20;
+pub const DEFAULT_SUPERTONIC_STEPS: u32 = 8;
 
 #[derive(Clone)]
 pub struct TtsState {
@@ -123,7 +123,7 @@ mod tests {
         let state = TtsState::default();
         assert_eq!(state.provider, "supertonic");
         assert_eq!(state.supertonic_voice, "F3");
-        assert_eq!(state.supertonic_steps, 20);
+        assert_eq!(state.supertonic_steps, 8);
         assert_eq!(state.piper_voice, "pt_BR-faber-medium");
         assert_eq!(state.piper_binary_path, "");
         assert_eq!(state.piper_rate, 1.0);
@@ -166,7 +166,20 @@ mod tests {
         assert_eq!(TtsState::from_config(&store).supertonic_language, "pt");
         store.set("voice.supertonicLanguage", serde_json::json!("en")).unwrap();
         assert_eq!(TtsState::from_config(&store).supertonic_language, "en");
-        assert!(store.set("voice.supertonicLanguage", serde_json::json!("de")).is_err(), "idioma fora do modelo aceito");
+        store
+            .set("voice.supertonicLanguage", serde_json::json!("de"))
+            .unwrap();
+        assert_eq!(
+            TtsState::from_config(&store).supertonic_language,
+            "de",
+            "Supertonic 3 fala alemão"
+        );
+        assert!(
+            store
+                .set("voice.supertonicLanguage", serde_json::json!("zh"))
+                .is_err(),
+            "idioma fora do modelo aceito"
+        );
 
         // O "pt" que ninguém escolheu segue a interface; o que não é o default fica como está.
         store.set("voice.supertonicLanguage", serde_json::json!("pt")).unwrap();

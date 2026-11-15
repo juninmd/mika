@@ -1049,7 +1049,7 @@ export const jaJP: TranslationDict = {
   'settings.llm.panel.embeddingModelLabel': '埋め込みモデル',
   'settings.llm.panel.embeddingModelDescription':
     '選択したプロバイダーのカタログです。モデルを変更するとベクトルインデックスが無効になります。',
-  'settings.embeddings.field.embeddingProvider.option.local': 'ローカル(e5、オフライン)',
+  'settings.embeddings.field.embeddingProvider.option.local': 'ローカル(granite、オフライン)',
   'settings.llm.panel.localEmbeddingHint':
     'PC上で動作し、サーバーも費用も不要です。初回はモデルをダウンロードしてください。',
   'settings.llm.panel.localEmbeddingReady': '埋め込みモデルの準備完了',
@@ -1526,8 +1526,12 @@ export const jaJP: TranslationDict = {
   'settings.voiceTts.language.es': 'Español',
   'settings.voiceTts.language.en': 'English',
   'settings.voiceTts.language.pt': 'Português',
+  'settings.voiceTts.language.de': 'Deutsch',
+  'settings.voiceTts.language.it': 'Italiano',
+  'settings.voiceTts.language.ja': '日本語',
+  'settings.voiceTts.language.ru': 'Русский',
   'settings.voiceTts.field.supertonicSteps.helperText':
-    'ステップ数が多いほど音質が向上します。コストはほぼゼロ:実測で2ステップは RTF 0.14、20ステップは 0.17 でした。',
+    'ステップ数が多いほど音質は上がりますが、遅くなります。実測で8ステップは RTF 0.24、20ステップは 0.54 でした。',
   'settings.voiceTts.field.elevenLabsVoiceId.label': '音声 ID',
   'settings.voiceTts.field.azureTtsSubscriptionKey.label': 'Azure サブスクリプション キー',
   'settings.voiceTts.field.azureTtsRegion.label': 'Azure リージョン',
@@ -1549,7 +1553,7 @@ export const jaJP: TranslationDict = {
     '一度ダウンロード(約60MB)されると再利用されます。完全なカタログは rhasspy/piper-voices にあります。',
   'settings.voiceTts.field.piperBinaryPath.label': '実行ファイルのパス',
   'settings.voiceTts.field.piperBinaryPath.helperText':
-    'github.com/rhasspy/piper から Piper をインストールしてください。空欄の場合はシステムの PATH から「piper」を探します。',
+    'github.com/OHF-Voice/piper1-gpl から Piper をインストールしてください。空欄の場合はシステムの PATH から「piper」を探します。',
   'settings.voiceTts.field.supertonicVoice.label': 'Supertonic 音声',
   'settings.voiceTts.field.supertonicVoice.option.f1': 'F1(女性)',
   'settings.voiceTts.field.supertonicVoice.option.f2': 'F2(女性)',
@@ -1599,7 +1603,7 @@ export const jaJP: TranslationDict = {
   'settings.voiceTts.panel.executablePathLabel': '実行ファイルのパス',
   'settings.voiceTts.panel.piperPathPlaceholder': "空欄 = PATH から 'piper' を探す",
   'settings.voiceTts.panel.piperHint':
-    '音声は一度だけダウンロードされ(約60MB)、マシンに保存されます。実行ファイルは別途インストールが必要です — github.com/rhasspy/piper。',
+    '音声は一度だけダウンロードされ(約60MB)、マシンに保存されます。実行ファイルは別途インストールが必要です — github.com/OHF-Voice/piper1-gpl。',
   'settings.voiceTts.panel.refinementSteps': '精緻化ステップ数',
   'settings.voiceTts.panel.stepsSuffix': 'ステップ',
   'settings.voiceTts.panel.supertonicHint':
@@ -2446,7 +2450,7 @@ export const jaJP: TranslationDict = {
   'settings.performance.accel.model.nemotron': 'Nemotron',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
-  'settings.performance.accel.model.e5': 'e5 埋め込み',
+  'settings.performance.accel.model.e5': 'granite 埋め込み',
   'settings.performance.accel.reason.userCpu': '設定で CPU を選択',
   'settings.performance.accel.reason.tinyModel': '極小モデル：GPU に送るコストが計算より大きい',
   'settings.performance.accel.reason.perToken': '1 トークンずつ生成：毎ステップ GPU へのコピーが発生',
@@ -3282,8 +3286,10 @@ export const jaJP: TranslationDict = {
     'Supertonic は{{language}}を話せず、この言語にはライセンス確認済みのローカル音声もありません。設定 > 音声 でクラウドプロバイダー (Azure Speech、Google Cloud、ElevenLabs) を選んでください。',
   'voice.tts.piper.emptyText': 'Piper: テキストが空です。',
   'voice.tts.piper.configuredPathMissing': 'Piper: 設定されたパスが存在しません: "{{path}}"。',
+  'voice.tts.piper.outdated':
+    'Piper のバージョンは {{version}} です。Mika の音声には Piper 1.5 以降が必要です。Piper を更新してください (github.com/OHF-Voice/piper1-gpl)。',
   'voice.tts.piper.binaryNotFound':
-    'Piper が見つかりません。バイナリ (github.com/rhasspy/piper) をインストールするか、音声設定でパスを指定してください。',
+    'Piper が見つかりません。バイナリ (github.com/OHF-Voice/piper1-gpl) をインストールするか、音声設定でパスを指定してください。',
   'voice.tts.piper.invalidVoiceKey': 'Piper: 音声キーが無効です: "{{voice}}"。',
   'voice.tts.piper.voiceNotInCatalog':
     'Piper: 音声 "{{voice}}" は検証済み音声カタログにないため、ダウンロードされません。',

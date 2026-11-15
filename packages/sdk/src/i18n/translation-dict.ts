@@ -1445,6 +1445,10 @@ export type TranslationDict = {
   'settings.voiceTts.language.es': string
   'settings.voiceTts.language.en': string
   'settings.voiceTts.language.pt': string
+  'settings.voiceTts.language.de': string
+  'settings.voiceTts.language.it': string
+  'settings.voiceTts.language.ja': string
+  'settings.voiceTts.language.ru': string
   'settings.voiceTts.field.supertonicSteps.helperText': string
   'settings.voiceTts.field.elevenLabsVoiceId.label': string
   'settings.voiceTts.field.azureTtsSubscriptionKey.label': string
@@ -3075,6 +3079,7 @@ export type TranslationDict = {
   'voice.tts.supertonicUnsupportedLanguage': string
   'voice.tts.piper.emptyText': string
   'voice.tts.piper.configuredPathMissing': string
+  'voice.tts.piper.outdated': string
   'voice.tts.piper.binaryNotFound': string
   'voice.tts.piper.invalidVoiceKey': string
   'voice.tts.piper.voiceNotInCatalog': string

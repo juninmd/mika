@@ -1064,7 +1064,7 @@ export const enUS: TranslationDict = {
   'settings.llm.panel.embeddingModelLabel': 'Embedding model',
   'settings.llm.panel.embeddingModelDescription':
     'Catalog of the selected provider. Changing the model invalidates the vector index.',
-  'settings.embeddings.field.embeddingProvider.option.local': 'Local (e5, offline)',
+  'settings.embeddings.field.embeddingProvider.option.local': 'Local (granite, offline)',
   'settings.llm.panel.localEmbeddingHint': 'Runs on your PC, no server and no cost. Download the model the first time.',
   'settings.llm.panel.localEmbeddingReady': 'Embedding model ready',
   'settings.llm.panel.localEmbeddingDownload': 'Download/verify model (~135 MB)',
@@ -1550,8 +1550,12 @@ export const enUS: TranslationDict = {
   'settings.voiceTts.language.es': 'Español',
   'settings.voiceTts.language.en': 'English',
   'settings.voiceTts.language.pt': 'Português',
+  'settings.voiceTts.language.de': 'Deutsch',
+  'settings.voiceTts.language.it': 'Italiano',
+  'settings.voiceTts.language.ja': '日本語',
+  'settings.voiceTts.language.ru': 'Русский',
   'settings.voiceTts.field.supertonicSteps.helperText':
-    'More steps = better audio. Costs almost nothing: measured, 2 steps give RTF 0.14 and 20 steps 0.17.',
+    'More steps = better audio, but slower: measured, 8 steps give RTF 0.24 and 20 steps 0.54.',
   'settings.voiceTts.field.elevenLabsVoiceId.label': 'Voice ID',
   'settings.voiceTts.field.azureTtsSubscriptionKey.label': 'Azure Subscription Key',
   'settings.voiceTts.field.azureTtsRegion.label': 'Azure Region',
@@ -1573,7 +1577,7 @@ export const enUS: TranslationDict = {
     'Downloaded once (~60 MB) and reused. The full catalog is at rhasspy/piper-voices.',
   'settings.voiceTts.field.piperBinaryPath.label': 'Executable Path',
   'settings.voiceTts.field.piperBinaryPath.helperText':
-    'Install Piper from github.com/rhasspy/piper. Empty = looks for "piper" on the system PATH.',
+    'Install Piper from github.com/OHF-Voice/piper1-gpl. Empty = looks for "piper" on the system PATH.',
   'settings.voiceTts.field.supertonicVoice.label': 'Supertonic Voice',
   'settings.voiceTts.field.supertonicVoice.option.f1': 'F1 (Female)',
   'settings.voiceTts.field.supertonicVoice.option.f2': 'F2 (Female)',
@@ -1623,7 +1627,7 @@ export const enUS: TranslationDict = {
   'settings.voiceTts.panel.executablePathLabel': 'Executable Path',
   'settings.voiceTts.panel.piperPathPlaceholder': "empty = looks for 'piper' on PATH",
   'settings.voiceTts.panel.piperHint':
-    'The voice is downloaded once (~60 MB) and stays on the machine. The executable must be installed separately — github.com/rhasspy/piper.',
+    'The voice is downloaded once (~60 MB) and stays on the machine. The executable must be installed separately — github.com/OHF-Voice/piper1-gpl.',
   'settings.voiceTts.panel.refinementSteps': 'Refinement Steps',
   'settings.voiceTts.panel.stepsSuffix': 'steps',
   'settings.voiceTts.panel.supertonicHint':
@@ -2484,7 +2488,7 @@ export const enUS: TranslationDict = {
   'settings.performance.accel.model.nemotron': 'Nemotron',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
-  'settings.performance.accel.model.e5': 'e5 embeddings',
+  'settings.performance.accel.model.e5': 'granite embeddings',
   'settings.performance.accel.reason.userCpu': 'CPU chosen in Settings',
   'settings.performance.accel.reason.tinyModel': 'tiny model: sending it to the GPU costs more than computing it',
   'settings.performance.accel.reason.perToken': 'generates one token at a time: a GPU copy every step',
@@ -3326,8 +3330,10 @@ export const enUS: TranslationDict = {
     'Supertonic cannot speak {{language}} and no local voice with a verified license exists for it. Pick a cloud provider (Azure Speech, Google Cloud or ElevenLabs) in Settings > Voice.',
   'voice.tts.piper.emptyText': 'Piper: the text is empty.',
   'voice.tts.piper.configuredPathMissing': 'Piper: the configured path does not exist: "{{path}}".',
+  'voice.tts.piper.outdated':
+    'Your Piper is version {{version}}; the voices Mika uses need Piper 1.5 or newer. Update Piper (github.com/OHF-Voice/piper1-gpl).',
   'voice.tts.piper.binaryNotFound':
-    'Piper was not found. Install the binary (github.com/rhasspy/piper) or set its path in the voice settings.',
+    'Piper was not found. Install the binary (github.com/OHF-Voice/piper1-gpl) or set its path in the voice settings.',
   'voice.tts.piper.invalidVoiceKey': 'Piper: invalid voice key: "{{voice}}".',
   'voice.tts.piper.voiceNotInCatalog':
     'Piper: the voice "{{voice}}" is not in the verified voice catalog, so it will not be downloaded.',
