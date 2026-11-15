@@ -1051,7 +1051,7 @@ export const koKR: TranslationDict = {
   'settings.llm.panel.embeddingModelLabel': '임베딩 모델',
   'settings.llm.panel.embeddingModelDescription':
     '선택한 제공자의 카탈로그예요. 모델을 바꾸면 벡터 인덱스가 무효화돼요.',
-  'settings.embeddings.field.embeddingProvider.option.local': '로컬 (e5, 오프라인)',
+  'settings.embeddings.field.embeddingProvider.option.local': '로컬 (granite, 오프라인)',
   'settings.llm.panel.localEmbeddingHint':
     '내 PC에서 실행돼요. 서버도 비용도 필요 없어요. 처음에는 모델을 내려받아야 해요.',
   'settings.llm.panel.localEmbeddingReady': '임베딩 모델 준비 완료',
@@ -1522,8 +1522,12 @@ export const koKR: TranslationDict = {
   'settings.voiceTts.language.es': 'Español',
   'settings.voiceTts.language.en': 'English',
   'settings.voiceTts.language.pt': 'Português',
+  'settings.voiceTts.language.de': 'Deutsch',
+  'settings.voiceTts.language.it': 'Italiano',
+  'settings.voiceTts.language.ja': '日本語',
+  'settings.voiceTts.language.ru': 'Русский',
   'settings.voiceTts.field.supertonicSteps.helperText':
-    '단계가 많을수록 소리가 좋아져요. 비용은 거의 들지 않아요. 측정 결과 2단계는 RTF 0.14, 20단계는 0.17이었어요.',
+    '단계가 많을수록 소리가 좋아지지만 느려져요. 측정 결과 8단계는 RTF 0.24, 20단계는 0.54였어요.',
   'settings.voiceTts.field.elevenLabsVoiceId.label': '음성 ID',
   'settings.voiceTts.field.azureTtsSubscriptionKey.label': 'Azure 구독 키',
   'settings.voiceTts.field.azureTtsRegion.label': 'Azure 리전',
@@ -1545,7 +1549,7 @@ export const koKR: TranslationDict = {
     '한 번 내려받으면(~60 MB) 계속 재사용해요. 전체 카탈로그는 rhasspy/piper-voices에 있어요.',
   'settings.voiceTts.field.piperBinaryPath.label': '실행 파일 경로',
   'settings.voiceTts.field.piperBinaryPath.helperText':
-    'github.com/rhasspy/piper에서 Piper를 설치하세요. 비워 두면 시스템 PATH에서 "piper"를 찾아요.',
+    'github.com/OHF-Voice/piper1-gpl에서 Piper를 설치하세요. 비워 두면 시스템 PATH에서 "piper"를 찾아요.',
   'settings.voiceTts.field.supertonicVoice.label': 'Supertonic 음성',
   'settings.voiceTts.field.supertonicVoice.option.f1': 'F1 (여성)',
   'settings.voiceTts.field.supertonicVoice.option.f2': 'F2 (여성)',
@@ -1595,7 +1599,7 @@ export const koKR: TranslationDict = {
   'settings.voiceTts.panel.executablePathLabel': '실행 파일 경로',
   'settings.voiceTts.panel.piperPathPlaceholder': '비워 두면 PATH에서 piper를 찾아요',
   'settings.voiceTts.panel.piperHint':
-    '음성은 한 번 내려받으면(~60 MB) 기기에 남아요. 실행 파일은 따로 설치해야 해요 — github.com/rhasspy/piper.',
+    '음성은 한 번 내려받으면(~60 MB) 기기에 남아요. 실행 파일은 따로 설치해야 해요 — github.com/OHF-Voice/piper1-gpl.',
   'settings.voiceTts.panel.refinementSteps': '정제 단계',
   'settings.voiceTts.panel.stepsSuffix': '단계',
   'settings.voiceTts.panel.supertonicHint':
@@ -2440,7 +2444,7 @@ export const koKR: TranslationDict = {
   'settings.performance.accel.model.nemotron': 'Nemotron',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
-  'settings.performance.accel.model.e5': 'e5 임베딩',
+  'settings.performance.accel.model.e5': 'granite 임베딩',
   'settings.performance.accel.reason.userCpu': '설정에서 CPU를 선택함',
   'settings.performance.accel.reason.tinyModel': '아주 작은 모델: GPU로 보내는 비용이 계산하는 비용보다 커요',
   'settings.performance.accel.reason.perToken': '토큰을 하나씩 생성해서 매 단계마다 GPU 복사가 필요해요',
@@ -3149,8 +3153,10 @@ export const koKR: TranslationDict = {
     'Supertonic은 {{language}}을(를) 말할 수 없고, 이 언어에는 라이선스가 확인된 로컬 음성도 없습니다. 설정 > 음성에서 클라우드 제공자(Azure Speech, Google Cloud 또는 ElevenLabs)를 선택하세요.',
   'voice.tts.piper.emptyText': 'Piper: 텍스트가 비어 있습니다.',
   'voice.tts.piper.configuredPathMissing': 'Piper: 설정된 경로가 존재하지 않습니다: "{{path}}".',
+  'voice.tts.piper.outdated':
+    'Piper 버전이 {{version}}입니다. Mika의 음성에는 Piper 1.5 이상이 필요합니다. Piper를 업데이트하세요 (github.com/OHF-Voice/piper1-gpl).',
   'voice.tts.piper.binaryNotFound':
-    'Piper를 찾을 수 없습니다. 바이너리(github.com/rhasspy/piper)를 설치하거나 음성 설정에서 경로를 지정하세요.',
+    'Piper를 찾을 수 없습니다. 바이너리(github.com/OHF-Voice/piper1-gpl)를 설치하거나 음성 설정에서 경로를 지정하세요.',
   'voice.tts.piper.invalidVoiceKey': 'Piper: 잘못된 음성 키입니다: "{{voice}}".',
   'voice.tts.piper.voiceNotInCatalog':
     'Piper: 음성 "{{voice}}"은(는) 검증된 음성 카탈로그에 없어 다운로드되지 않습니다.',

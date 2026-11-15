@@ -9,7 +9,7 @@ atribuição dessas licenças. Nada aqui concede direitos sobre o Mika em si —
 Arquivo gerado por `scripts/generators/third-party-notices.mts` (`pnpm notices:gen`). Não edite à
 mão: a próxima geração apaga a edição.
 
-<!-- mika-notices-input-sha256: 8b2e648d0441f707d407d5c50d08667f3e2610a6f4dc428f21bcf033a49916a9 -->
+<!-- mika-notices-input-sha256: bc82db570e1efd180dd3854b9b874c196c8423b106f82e03dbe859d04fb240b8 -->
 
 ## 1. Assets, modelos e runtimes
 
@@ -123,14 +123,14 @@ Inventário conferido na fonte de cada item. Itens marcados "verificar" ou "NÃO
 - **Distribuição:** baixado sob demanda (ação do usuário)
 - **Nota:** Pendência jurídica: confirmar qual termo governa a conversão distribuída. Até lá, o texto da OpenMDW-1.1 (que exige reter a licença e os avisos de origem) é anexado e a NVIDIA Open Model License deve ser lida em https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/.
 
-### Supertonic-TTS-2 (ONNX)
+### Supertonic 3 (ONNX)
 
 - **Uso:** Voz local padrão (TTS)
 - **Licença:** BigScience OpenRAIL-M (modelo); MIT (código de exemplo)
 - **Titular:** Copyright (c) 2026 Supertone Inc.
-- **Origem:** https://huggingface.co/Supertone/supertonic-2
+- **Origem:** https://huggingface.co/supertone-oss-archive/supertonic-3
 - **Distribuição:** baixado sob demanda (ação do usuário)
-- **Nota:** A OpenRAIL-M impõe restrições de uso (Attachment A) que o distribuidor DEVE repassar aos usuários (cláusula 5): o EULA as incorpora. Revisão fixa no Hugging Face.
+- **Nota:** A OpenRAIL-M impõe restrições de uso (Attachment A) que o distribuidor DEVE repassar aos usuários (cláusula 5): o EULA as incorpora. A Supertone encerrou as atividades em 2026 e moveu pesos e código para a organização supertone-oss-archive; a licença do modelo não mudou. Revisão fixa (aafc6e3) com SHA-256 por arquivo.
 
 ### Kokoro-82M v1.0 (ONNX)
 
@@ -141,14 +141,14 @@ Inventário conferido na fonte de cada item. Itens marcados "verificar" ou "NÃO
 - **Distribuição:** baixado sob demanda (ação do usuário)
 - **Nota:** O código de download existe; o provedor está cortado de dispatch.rs e não aparece nas configurações.
 
-### multilingual-e5-small (Xenova, conversão ONNX)
+### granite-embedding-97m-multilingual-r2 (conversão ONNX)
 
 - **Uso:** Embeddings locais da memória semântica
-- **Licença:** MIT (conforme declarado em intfloat/multilingual-e5-small)
-- **Titular:** intfloat (modelo original); Xenova (conversão)
-- **Origem:** https://huggingface.co/Xenova/multilingual-e5-small
+- **Licença:** Apache-2.0
+- **Titular:** IBM (modelo original); onnx-community (conversão)
+- **Origem:** https://huggingface.co/ibm-granite/granite-embedding-97m-multilingual-r2
 - **Distribuição:** baixado sob demanda (ação do usuário)
-- **Nota:** O cartão da conversão não declara licença própria. Verificar o titular do copyright e anexar o texto MIT do repositório original.
+- **Nota:** Conversão onnx-community/granite-embedding-97m-multilingual-r2-ONNX (Apache-2.0), revisão fixa 536a9f2 com SHA-256. Substitui o multilingual-e5-small.
 
 ### Piper (binário externo) e vozes rhasspy/piper-voices
 
@@ -157,7 +157,7 @@ Inventário conferido na fonte de cada item. Itens marcados "verificar" ou "NÃO
 - **Titular:** rhasspy; autores dos datasets de cada voz
 - **Origem:** https://huggingface.co/rhasspy/piper-voices
 - **Distribuição:** fornecido pelo usuário, não distribuído
-- **Nota:** O binário do Piper não é distribuído: o usuário o instala. Vozes oferecidas (catálogo com SHA-256 na revisão 375a0fe do repositório, apps/desktop/src-tauri/src/modules/voice/tts/providers/piper/catalog.rs): pt_BR-faber-medium (dataset CC0), pt_BR-edresson-low (dataset CC BY 4.0 — exige atribuição), de_DE-thorsten-medium (dataset Thorsten-Voice, CC0), it_IT-paola-medium (dataset paolapersico1/Voice-Dataset-Italian, CC0-1.0) e ru_RU-denis-medium (dataset NabuCasa/voice-datasets, CC0). PENDÊNCIA JURÍDICA: faber, thorsten, paola e denis são ajustes finos do checkpoint en_US-lessac, treinado no dataset Lessac/Blizzard 2013, cuja licença é só para pesquisa e exclui uso comercial, inclusive o desenvolvimento de produtos de síntese de voz — a linhagem dos pesos precisa de parecer antes de vender. en_US-lessac-high (treinada direto nesse dataset) e en_US-amy-medium (licença do dataset não verificada) foram RETIRADAS da interface e do catálogo. Sem voz Piper oferecida para en (o Supertonic já fala), ja e ko (o Piper não tem voz nesses idiomas) nem zh (zh_CN-huayan: licença do dataset "Unknown"); irina (ru: "Unknown"), ruslan (ru: CC BY-NC-SA) e pavoque (de: CC BY-NC-SA) NÃO podem ser oferecidas num produto vendido. Antes de ampliar a lista, conferir o MODEL_CARD e a origem de cada voz.
+- **Nota:** O binário do Piper não é distribuído: o usuário o instala (Piper 1.5+, OHF-Voice/piper1-gpl, exigido pelas vozes retreinadas). Vozes oferecidas (catálogo com SHA-256 na revisão 6b9cfaa do repositório, apps/desktop/src-tauri/src/modules/voice/tts/providers/piper/catalog.rs): pt_BR-faber-medium e it_IT-paola-medium (datasets OHF-Voice/voice-datasets, CC0; ajuste fino da base hifi_tts_92, treinada no Hi-Fi TTS, CC BY 4.0 — exige atribuição), de_DE-thorsten-medium (dataset Thorsten-Voice, CC0; base rdh, CC0), ru_RU-denis-medium (dataset OHF-Voice/voice-datasets, CC0; base rdh, CC0) e pt_BR-edresson-low (dataset CC BY 4.0 — exige atribuição). As quatro primeiras foram retreinadas em nov/2026 e NÃO derivam mais do checkpoint en_US-lessac (dataset Lessac/Blizzard 2013, só pesquisa): a pendência de linhagem registrada antes fica encerrada para elas. en_US-lessac-high e en_US-amy-medium seguem RETIRADAS. Sem voz Piper oferecida para en (o Supertonic já fala), ja e ko (o Piper não tem voz nesses idiomas) nem zh (zh_CN-huayan: licença do dataset "Unknown"); irina (ru: "Unknown"), ruslan (ru: CC BY-NC-SA) e pavoque (de: CC BY-NC-SA) NÃO podem ser oferecidas num produto vendido. Antes de ampliar a lista, conferir o MODEL_CARD e a origem de cada voz.
 
 ### Steamworks SDK (steam_api64.dll / libsteam_api.so)
 
@@ -2953,7 +2953,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ### Texto 31
 
-Aplica-se a: Kokoro-82M v1.0 (ONNX), Whisper tiny/base/small (conversão ONNX onnx-community), allocator-api2 0.2.21, anyhow 1.0.104, async-trait 0.1.92, constant_time_eq 0.6.1, dary_heap 0.3.9, dtoa 1.0.11, dyn-clone 1.0.20, erased-serde 0.4.11, itoa 1.0.19, libc 0.2.191, litrs 1.0.1, mach2 0.7.0, num_enum 0.7.6, num_enum_derive 0.7.6, oneshot 0.2.1, osakit 0.3.1, paste 1.0.15, pastey 0.2.3, proc-macro2 1.0.107, process-wrap 10.0.1, quote 1.0.47, ref-cast 1.0.27, ref-cast-impl 1.0.27, rustc-hash 2.1.3, rustversion 1.0.23, ryu 1.0.23, ryu-js 1.0.3, semver 1.0.28, serde 1.0.229, serde-untagged 0.1.9, serde_core 1.0.229, serde_derive 1.0.229, serde_derive_internals 0.29.1, serde_derive_internals 0.30.0, serde_json 1.0.154, serde_path_to_error 0.1.20, serde_repr 0.1.21, serde_urlencoded 0.7.1, syn 2.0.119, syn 3.0.10, thin-vec 0.2.21, thiserror 1.0.69, thiserror 2.0.21, thiserror-impl 1.0.69, thiserror-impl 2.0.21, typed-path 0.13.0, typeid 1.0.3, unicode-ident 1.0.27, utf8-zero 0.8.1, wasm-streams 0.5.0, yada 0.7.0
+Aplica-se a: Kokoro-82M v1.0 (ONNX), Whisper tiny/base/small (conversão ONNX onnx-community), allocator-api2 0.2.21, anyhow 1.0.104, async-trait 0.1.92, constant_time_eq 0.6.1, dary_heap 0.3.9, dtoa 1.0.11, dyn-clone 1.0.20, erased-serde 0.4.11, granite-embedding-97m-multilingual-r2 (conversão ONNX), itoa 1.0.19, libc 0.2.191, litrs 1.0.1, mach2 0.7.0, num_enum 0.7.6, num_enum_derive 0.7.6, oneshot 0.2.1, osakit 0.3.1, paste 1.0.15, pastey 0.2.3, proc-macro2 1.0.107, process-wrap 10.0.1, quote 1.0.47, ref-cast 1.0.27, ref-cast-impl 1.0.27, rustc-hash 2.1.3, rustversion 1.0.23, ryu 1.0.23, ryu-js 1.0.3, semver 1.0.28, serde 1.0.229, serde-untagged 0.1.9, serde_core 1.0.229, serde_derive 1.0.229, serde_derive_internals 0.29.1, serde_derive_internals 0.30.0, serde_json 1.0.154, serde_path_to_error 0.1.20, serde_repr 0.1.21, serde_urlencoded 0.7.1, syn 2.0.119, syn 3.0.10, thin-vec 0.2.21, thiserror 1.0.69, thiserror 2.0.21, thiserror-impl 1.0.69, thiserror-impl 2.0.21, typed-path 0.13.0, typeid 1.0.3, unicode-ident 1.0.27, utf8-zero 0.8.1, wasm-streams 0.5.0, yada 0.7.0
 
 ```text
 Apache License
@@ -24586,7 +24586,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### Texto 437
 
-Aplica-se a: Supertonic-TTS-2 (ONNX)
+Aplica-se a: Supertonic 3 (ONNX)
 
 ```text
 BigScience Open RAIL-M License

@@ -130,6 +130,55 @@ fn resolve_binary(configured: &str, locale: &str) -> Result<String, String> {
     Err(msg(locale, "voice.tts.piper.binaryNotFound", &[]))
 }
 
+/// Cache por revisão do catálogo: a voz da `v1.0.0` (linhagem Lessac, raiz do cache) nunca é
+/// confundida com a retreinada de mesmo nome — o cache vem ANTES do catálogo em [`ensure_voice`].
+fn revision_dir(cache_dir: &Path) -> PathBuf {
+    cache_dir.join(&catalog::REVISION[..7])
+}
+
+/// `"1.5.0"`, `"piper 1.8.0"` → `(1, 5)`. O CLI C++ (legado 1.2 e o de `piper1-gpl` 1.5+) imprime a
+/// versão em `--version`; o CLI Python não tem a flag e não imprime número nenhum.
+fn parse_version(output: &str) -> Option<(u32, u32)> {
+    let token = output
+        .split_whitespace()
+        .find(|t| t.chars().next().is_some_and(|c| c.is_ascii_digit()))?;
+    let mut parts = token.split('.').map(|p| p.parse::<u32>().ok());
+    Some((parts.next()??, parts.next()??))
+}
+
+/// As vozes do catálogo exigem Piper 1.5+ ([`catalog::MIN_PIPER_VERSION`]). Um binário que DIZ ser
+/// mais antigo é recusado com o motivo; um que não informa versão (CLI Python) segue — não há como
+/// perguntar, e recusar quebraria quem já tem o Piper novo pelo `pip`. Resultado guardado por binário.
+fn check_version(binary: &str, locale: &str) -> Result<(), String> {
+    static SEEN: std::sync::Mutex<Vec<(String, Option<(u32, u32)>)>> =
+        std::sync::Mutex::new(Vec::new());
+    let mut seen = SEEN
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    let version = match seen.iter().find(|(b, _)| b == binary) {
+        Some((_, version)) => *version,
+        None => {
+            let output = Command::new(binary)
+                .arg("--version")
+                .stdin(Stdio::null())
+                .output();
+            let version = output
+                .ok()
+                .and_then(|o| parse_version(&String::from_utf8_lossy(&o.stdout)));
+            seen.push((binary.to_string(), version));
+            version
+        }
+    };
+    match version {
+        Some(found) if found < catalog::MIN_PIPER_VERSION => Err(msg(
+            locale,
+            "voice.tts.piper.outdated",
+            &[("version", &format!("{}.{}", found.0, found.1))],
+        )),
+        _ => Ok(()),
+    }
+}
+
 /// Baixa (se ausente) `.onnx`+`.onnx.json` da voz no cache local — mesmo chokepoint de privacidade
 /// e mesmo padrão `.part` + rename atômico de `providers/supertonic/assets.rs::download_to_file`
 /// ([`commit_download`]: download interrompido não pode deixar um cache que parece pronto). Só voz
@@ -140,6 +189,7 @@ async fn ensure_voice(cache_dir: &Path, voice_key: &str, store: &ConfigStore) ->
 
     // Cache ANTES do catálogo: o catálogo decide o que BAIXA, não o que já está no disco (uma voz que
     // saiu do catálogo depois de baixada continua falando).
+    let cache_dir = &revision_dir(cache_dir);
     let model_path = cache_dir.join(format!("{}.onnx", voice.key));
     let config_path = cache_dir.join(format!("{}.onnx.json", voice.key));
     if model_path.is_file() && config_path.is_file() {
@@ -261,6 +311,7 @@ pub async fn generate(text: &str, opts: &PiperOptions, store: &ConfigStore, canc
     }
 
     let binary = resolve_binary(&opts.binary_path, &locale)?;
+    check_version(&binary, &locale)?;
     let model_path = ensure_voice(&opts.cache_dir, &opts.voice, store).await?;
     let length_scale = rate_to_length_scale(opts.rate);
 

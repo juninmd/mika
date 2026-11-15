@@ -1,6 +1,6 @@
 //! `llm:getStatus` / `llm:status` — o estado AO VIVO do cérebro: o Ollama responde? Que versão?
 //! Que modelos estão instalados (`/api/tags`) e quais estão carregados na VRAM agora (`/api/ps`)?
-//! Mais a latência dos últimos turnos ([`super::turn_metrics`]) e o e5 local do embedding.
+//! Mais a latência dos últimos turnos ([`super::turn_metrics`]) e o embedder local (granite).
 //!
 //! Também é a fonte de `hasLLM` em `mika:get-health`: antes era `true` fixo ("LLM é compilado no
 //! binário"), então a tela dizia que havia cérebro com o Ollama desligado e nenhuma chave salva.
@@ -140,7 +140,11 @@ fn local_embedding(app: &AppHandle) -> Value {
         let cache = embedder::cache_dir(&dir);
         embedder::FILES.iter().filter_map(|(file, _, _)| std::fs::metadata(cache.join(file)).ok()).map(|m| m.len()).sum()
     });
-    let model = embedder::MODEL_ID.rsplit('/').next().unwrap_or(embedder::MODEL_ID);
+    let model = embedder::MODEL_ID
+        .rsplit('/')
+        .next()
+        .unwrap_or(embedder::MODEL_ID)
+        .trim_end_matches("-ONNX");
     json!({ "model": model, "dimensions": embedder::DIMENSIONS, "downloaded": downloaded, "sizeBytes": size })
 }
 

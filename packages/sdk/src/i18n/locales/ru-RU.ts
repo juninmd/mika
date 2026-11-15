@@ -1085,7 +1085,7 @@ export const ruRU: TranslationDict = {
   'settings.llm.panel.embeddingModelLabel': 'Модель эмбеддингов',
   'settings.llm.panel.embeddingModelDescription':
     'Каталог выбранного провайдера. Смена модели делает векторный индекс недействительным.',
-  'settings.embeddings.field.embeddingProvider.option.local': 'Локально (e5, офлайн)',
+  'settings.embeddings.field.embeddingProvider.option.local': 'Локально (granite, офлайн)',
   'settings.llm.panel.localEmbeddingHint':
     'Работает на твоём ПК, без сервера и бесплатно. При первом запуске скачай модель.',
   'settings.llm.panel.localEmbeddingReady': 'Модель эмбеддингов готова',
@@ -1581,8 +1581,12 @@ export const ruRU: TranslationDict = {
   'settings.voiceTts.language.es': 'Español',
   'settings.voiceTts.language.en': 'English',
   'settings.voiceTts.language.pt': 'Português',
+  'settings.voiceTts.language.de': 'Deutsch',
+  'settings.voiceTts.language.it': 'Italiano',
+  'settings.voiceTts.language.ja': '日本語',
+  'settings.voiceTts.language.ru': 'Русский',
   'settings.voiceTts.field.supertonicSteps.helperText':
-    'Больше шагов — лучше звук. Стоит почти ничего: по замерам, 2 шага дают RTF 0.14, а 20 шагов — 0.17.',
+    'Больше шагов — лучше звук, но медленнее: по замерам, 8 шагов дают RTF 0.24, а 20 шагов — 0.54.',
   'settings.voiceTts.field.elevenLabsVoiceId.label': 'ID голоса',
   'settings.voiceTts.field.azureTtsSubscriptionKey.label': 'Ключ подписки Azure',
   'settings.voiceTts.field.azureTtsRegion.label': 'Регион Azure',
@@ -1604,7 +1608,7 @@ export const ruRU: TranslationDict = {
     'Скачивается один раз (~60 МБ) и используется повторно. Полный каталог — на rhasspy/piper-voices.',
   'settings.voiceTts.field.piperBinaryPath.label': 'Путь к исполняемому файлу',
   'settings.voiceTts.field.piperBinaryPath.helperText':
-    'Установи Piper с github.com/rhasspy/piper. Пусто = ищет «piper» в системном PATH.',
+    'Установи Piper с github.com/OHF-Voice/piper1-gpl. Пусто = ищет «piper» в системном PATH.',
   'settings.voiceTts.field.supertonicVoice.label': 'Голос Supertonic',
   'settings.voiceTts.field.supertonicVoice.option.f1': 'F1 (женский)',
   'settings.voiceTts.field.supertonicVoice.option.f2': 'F2 (женский)',
@@ -1654,7 +1658,7 @@ export const ruRU: TranslationDict = {
   'settings.voiceTts.panel.executablePathLabel': 'Путь к исполняемому файлу',
   'settings.voiceTts.panel.piperPathPlaceholder': 'пусто = ищет «piper» в PATH',
   'settings.voiceTts.panel.piperHint':
-    'Голос скачивается один раз (~60 МБ) и остаётся на компьютере. Исполняемый файл нужно установить отдельно — github.com/rhasspy/piper.',
+    'Голос скачивается один раз (~60 МБ) и остаётся на компьютере. Исполняемый файл нужно установить отдельно — github.com/OHF-Voice/piper1-gpl.',
   'settings.voiceTts.panel.refinementSteps': 'Шаги уточнения',
   'settings.voiceTts.panel.stepsSuffix': 'шагов',
   'settings.voiceTts.panel.supertonicHint':
@@ -2543,7 +2547,7 @@ export const ruRU: TranslationDict = {
   'settings.performance.accel.model.nemotron': 'Nemotron',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
-  'settings.performance.accel.model.e5': 'Эмбеддинги e5',
+  'settings.performance.accel.model.e5': 'Эмбеддинги granite',
   'settings.performance.accel.reason.userCpu': 'CPU выбран в настройках',
   'settings.performance.accel.reason.tinyModel': 'крошечная модель: отправка на GPU обходится дороже самих вычислений',
   'settings.performance.accel.reason.perToken': 'генерирует по одному токену: копирование на GPU на каждом шаге',
@@ -3275,8 +3279,10 @@ export const ruRU: TranslationDict = {
     'Supertonic не умеет говорить на языке «{{language}}», а локального голоса с проверенной лицензией для него нет. Выберите облачного провайдера (Azure Speech, Google Cloud или ElevenLabs) в разделе Настройки > Голос.',
   'voice.tts.piper.emptyText': 'Piper: текст пуст.',
   'voice.tts.piper.configuredPathMissing': 'Piper: указанный путь не существует: "{{path}}".',
+  'voice.tts.piper.outdated':
+    'Ваш Piper версии {{version}}; голосам Mika нужен Piper 1.5 или новее. Обновите Piper (github.com/OHF-Voice/piper1-gpl).',
   'voice.tts.piper.binaryNotFound':
-    'Piper не найден. Установите бинарный файл (github.com/rhasspy/piper) или укажите путь к нему в настройках голоса.',
+    'Piper не найден. Установите бинарный файл (github.com/OHF-Voice/piper1-gpl) или укажите путь к нему в настройках голоса.',
   'voice.tts.piper.invalidVoiceKey': 'Piper: недопустимый ключ голоса: "{{voice}}".',
   'voice.tts.piper.voiceNotInCatalog':
     'Piper: голоса "{{voice}}" нет в каталоге проверенных голосов, поэтому он не будет загружен.',

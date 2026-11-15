@@ -207,6 +207,6 @@ export const deDE: WizardCopy = {
     ttsCloud: 'Cloud-Anbieter ausgewählt',
     llmLabel: 'Sprachmodell (LLM)',
     embeddingLabel: 'Vektorgedächtnis (Embeddings)',
-    embeddingDetail: 'Lokales e5 (~135 MB): semantische Gedächtnissuche offline, ohne Server',
+    embeddingDetail: 'Lokales granite (~125 MB): semantische Gedächtnissuche offline, ohne Server',
   },
 }

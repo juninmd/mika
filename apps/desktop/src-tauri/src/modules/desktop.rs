@@ -538,10 +538,6 @@ async fn prepare_whisper(store: &ConfigStore, data_dir: &Path) -> WizardResult {
 
 const VOICE_DOWNLOAD_TIMEOUT: Duration = Duration::from_secs(60);
 
-const SUPERTONIC_MODEL_ID: &str = "onnx-community/Supertonic-TTS-2-ONNX";
-const SUPERTONIC_REVISION: &str = "68d4d9420d0e0e51d14656e1ec5c9b091490b49e";
-const SUPERTONIC_VOICE_BYTES: usize = 12_928 * 4;
-
 const KOKORO_MODEL_ID: &str = "onnx-community/Kokoro-82M-v1.0-ONNX";
 const KOKORO_REVISION: &str = "1939ad2a8e416c0acfeecc08a694d14ef25f2231";
 const KOKORO_STYLE_MIN_BYTES: usize = 256 * 4;
@@ -563,10 +559,6 @@ fn is_valid_kokoro_voice(voice: &str) -> bool {
     }
     let rest: String = chars.collect();
     !rest.is_empty() && rest.chars().all(|c| c.is_ascii_lowercase())
-}
-
-fn supertonic_voice_url(voice: &str) -> String {
-    format!("https://huggingface.co/{SUPERTONIC_MODEL_ID}/resolve/{SUPERTONIC_REVISION}/voices/{voice}.bin")
 }
 
 fn kokoro_voice_url(voice: &str) -> String {
@@ -600,9 +592,16 @@ async fn prepare_tts(store: &ConfigStore, data_dir: &Path, req: &WizardAssetRequ
         "supertonic" => {
             let voice = req.tts_voice.as_deref().unwrap_or("F3");
             if is_valid_supertonic_voice(voice) {
+                // No cache que a síntese lê (`data_dir/supertonic`, ver `speak_tool.rs`): antes o wizard
+                // gravava `supertonic-F3.bin` na raiz dessa pasta, um arquivo que nada lia.
                 let cache_dir = data_dir.join("supertonic");
-                let file_name = format!("supertonic-{voice}.bin");
-                ensure_voice_bin(store, "wizard:tts", &cache_dir, &file_name, &supertonic_voice_url(voice), SUPERTONIC_VOICE_BYTES).await;
+                if let Err(e) = crate::modules::voice::tts::providers::supertonic::prefetch_voice(
+                    &cache_dir, voice, store,
+                )
+                .await
+                {
+                    log::warn!("wizard: voz Supertonic {voice} não baixou: {e}");
+                }
             }
             WizardResult::ok(format!("Voz Supertonic ({voice}) pronta"))
         }
@@ -687,6 +686,7 @@ pub fn ensure_local_embedding(app: &AppHandle, store: std::sync::Arc<ConfigStore
     let Ok(data_dir) = crate::state::app_data_dir(app) else { return };
     crate::modules::inference::embedder::set_data_dir(&data_dir);
     let wants_download = provider.as_deref().unwrap_or("local") == "local";
+    let app = app.clone();
     tauri::async_runtime::spawn(async move {
         if wants_download && !crate::modules::inference::embedder::is_downloaded(&data_dir) {
             let result = embedding_download::prepare_local_embedding(&store, &data_dir).await;
@@ -696,8 +696,39 @@ pub fn ensure_local_embedding(app: &AppHandle, store: std::sync::Arc<ConfigStore
         let warm = tauri::async_runtime::spawn_blocking(|| crate::modules::inference::embedder::embed("")).await;
         if let Ok(Err(e)) = warm {
             log::info!("embedding local indisponível: {e}");
+            return;
+        }
+        crate::modules::inference::embedder::remove_legacy_cache(&data_dir);
+        if wants_download {
+            reembed_local_memories(&app).await;
         }
     });
+}
+
+/// Troca de modelo local (e5 → granite): as memórias ganham vetor do modelo novo em segundo plano,
+/// em vez de ficarem só na busca por palavra-chave até serem regravadas.
+async fn reembed_local_memories(app: &AppHandle) {
+    let Ok(memory) = crate::modules::memory::memory_store(app) else {
+        return;
+    };
+    let job = tauri::async_runtime::spawn_blocking(move || {
+        let embed = |text: &str| {
+            crate::modules::inference::embedder::embed(text)
+                .ok()
+                .map(|v| v.into_iter().map(f64::from).collect())
+        };
+        crate::modules::memory::episodic::embedding::reembed_missing(
+            memory,
+            &crate::modules::memory::episodic::embedding::local_signature(),
+            embed,
+        )
+    });
+    match job.await {
+        Ok(Ok(0)) => {}
+        Ok(Ok(count)) => log::info!("memória: {count} vetores recalculados com o embedder local"),
+        Ok(Err(e)) => log::warn!("memória: reembed local falhou: {e}"),
+        Err(e) => log::warn!("memória: reembed local não completou: {e}"),
+    }
 }
 
 // --- Despacho ------------------------------------------------------------------------------------
@@ -1053,15 +1084,10 @@ mod tests {
         }
     }
 
-    /// `supertonic.runtime.ts`/`kokoro-voices.ts` foram removidos (backend Node deletado na
+    /// `kokoro-voices.ts` foi removido (backend Node deletado na
     /// migração para Tauri) — os IDs/revisions que eles fixavam viram literais nas URLs esperadas.
     #[test]
-    fn supertonic_and_kokoro_voice_urls_match_the_expected_revisions() {
-        assert_eq!(
-            supertonic_voice_url("F3"),
-            "https://huggingface.co/onnx-community/Supertonic-TTS-2-ONNX/resolve/68d4d9420d0e0e51d14656e1ec5c9b091490b49e/voices/F3.bin"
-        );
-
+    fn kokoro_voice_url_matches_the_expected_revision() {
         assert_eq!(
             kokoro_voice_url("pf_dora"),
             "https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/1939ad2a8e416c0acfeecc08a694d14ef25f2231/voices/pf_dora.bin"
