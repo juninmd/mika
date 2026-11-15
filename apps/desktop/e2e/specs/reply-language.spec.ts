@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test'
 import type { ElectronShellApi } from '../../src/shared/electron-api-types'
 import { artifactPath, writeArtifact } from '../fixtures/artifact'
-import type { FakeOllama } from '../fixtures/fake-ollama-server'
+import { outgoingSystem } from '../fixtures/outgoing-prompt'
 import { expect, test } from '../fixtures/tauri-app'
 
 type Bridge = Window & { electronAPI: ElectronShellApi }
@@ -18,19 +18,6 @@ async function send(page: Page, content: string) {
   expect(reply.content.trim()).not.toBe('')
 }
 
-/**
- * O prompt de sistema do turno de CHAT com `userText` enviado a partir de `from` (índice em
- * `llm.requests`). O primeiro casamento é o turno; os seguintes são o pós-turno (extração de
- * pessoas/fatos, `## CURRENT TASK`), que reenvia a mesma mensagem com outro prompt.
- */
-function outgoingSystem(llm: FakeOllama, userText: string, from: number): string {
-  const body = llm.requests
-    .slice(from)
-    .map((request) => request.body as { messages?: { role: string; content: string }[] })
-    .find((request) => request.messages?.some((message) => message.role === 'user' && message.content === userText))
-  expect(body, 'turno de chat real enviado ao provedor').toBeDefined()
-  return body?.messages?.filter((message) => message.role === 'system').map((message) => message.content).join('\n') ?? ''
-}
 
 test('Mika responde no idioma em que a mensagem foi escrita, e o toggle desliga isso', async ({ app, llm }) => {
   const page = await app.firstWindow()

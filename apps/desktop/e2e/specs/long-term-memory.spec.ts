@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test'
 import type { ElectronShellApi } from '../../src/shared/electron-api-types'
 import { writeArtifact } from '../fixtures/artifact'
-import type { FakeOllama } from '../fixtures/fake-ollama-server'
+import { outgoingSystem } from '../fixtures/outgoing-prompt'
 import { expect, test } from '../fixtures/tauri-app'
 
 type Bridge = Window & { electronAPI: ElectronShellApi }
@@ -23,13 +23,6 @@ async function knownFacts(page: Page): Promise<string> {
   return JSON.stringify(result)
 }
 
-function outgoingSystem(llm: FakeOllama, userText: string): string {
-  const body = llm.requests
-    .map((request) => request.body as { messages?: { role: string; content: string }[] })
-    .find((request) => request.messages?.some((message) => message.role === 'user' && message.content === userText))
-  expect(body, 'turno de chat real enviado ao provedor').toBeDefined()
-  return body?.messages?.filter((message) => message.role === 'system').map((message) => message.content).join('\n') ?? ''
-}
 
 test('fato dito no chat é extraído, gravado e volta no prompt do turno seguinte', async ({ app, llm }) => {
   const page = await app.firstWindow()
