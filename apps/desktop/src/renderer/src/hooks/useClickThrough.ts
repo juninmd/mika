@@ -33,9 +33,10 @@ export function pollIgnoreDecision(
   innerHeight: number,
   dragging: boolean,
   hitTest: (x: number, y: number) => boolean,
+  revealPx = DOCK_REVEAL_PX,
 ): boolean | null {
   if (!pos.isInside || dragging) return null
-  return pos.insideY <= innerHeight - DOCK_REVEAL_PX && hitTest(pos.insideX, pos.insideY)
+  return pos.insideY <= innerHeight - revealPx && hitTest(pos.insideX, pos.insideY)
 }
 
 const DOCK_REVEAL_PX = 80
@@ -104,6 +105,8 @@ export function useClickThrough(): void {
         window.innerHeight,
         document.body.dataset.dragging === 'true',
         shouldIgnoreAt,
+        // The edge dock (EdgeDock.tsx) has no bottom strip to reveal.
+        document.body.dataset.edgeDock === 'true' ? 0 : DOCK_REVEAL_PX,
       )
       if (ignore !== null) setIgnore(ignore)
     }

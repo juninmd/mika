@@ -20,3 +20,24 @@ export function miniModeAction({ mini, entered, blocking, overlayOpen }: MiniMod
   if (!entered) return 'close-overlays'
   return overlayOpen ? 'leave' : null
 }
+
+/** Where the mini window lives (`app.miniModeStyle`, applied by `mini_mode.rs`). */
+export type MiniModeStyle = 'head' | 'dock-right' | 'dock-left'
+
+export function parseMiniModeStyle(value: unknown): MiniModeStyle {
+  return value === 'dock-right' || value === 'dock-left' ? value : 'head'
+}
+
+export function isDockStyle(style: MiniModeStyle): style is 'dock-right' | 'dock-left' {
+  return style !== 'head'
+}
+
+/** What needs the full window: the edge dock carries its own compact chat, the head square carries nothing. */
+export function miniOverlayOpen(state: {
+  style: MiniModeStyle
+  showInput: boolean
+  showHistory: boolean
+  wheelOpen: boolean
+}): boolean {
+  return state.showHistory || state.wheelOpen || (state.showInput && !isDockStyle(state.style))
+}
