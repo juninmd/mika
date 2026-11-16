@@ -46,6 +46,7 @@ export const DESKTOP_EVENT_CHANNELS = {
   ShortcutToggleInput: 'shortcut:toggle-input',
   ShortcutToggleMic: 'shortcut:toggle-mic',
   ShortcutPushToTalk: 'shortcut:push-to-talk',
+  ShortcutDockTalk: 'shortcut:dock-talk',
   TtsAudio: 'mika:event:tts:audio',
   ChatStreamChunk: 'mika:event:chat:stream-chunk',
   ChatAssistantMessage: 'mika:event:chat:assistant-message',
@@ -97,6 +98,7 @@ export const DESKTOP_RENDERER_EVENT_CHANNELS = {
   MouseMove: 'mouse-move',
   WindowFullscreen: 'window:fullscreen',
   WindowMiniMode: 'window:mini-mode',
+  WindowDiscreet: 'window:discreet',
 } as const
 
 export const DESKTOP_BRIDGED_EVENT_CHANNELS = {

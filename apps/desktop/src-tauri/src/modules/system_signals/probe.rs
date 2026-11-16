@@ -14,6 +14,12 @@
 //!   the Accessibility permission): its localized name stands in for the title.
 //!
 //! The process name comes from `sysinfo` for that one PID only.
+//!
+//! [`foreground_fullscreen`] answers "is the app in front covering the screen?" for the edge dock's
+//! discreet mode (`dock_discreet.rs`): `SHQueryUserNotificationState` on Windows (the same signal the
+//! OS uses to hold its own toasts during games and presentations), `_NET_WM_STATE_FULLSCREEN` on the
+//! active X11 window, and on macOS — where the fullscreen flag of another app's window needs the
+//! Accessibility permission — the frontmost app looking like a game.
 
 use super::foreground::RawForeground;
 
@@ -79,8 +85,9 @@ pub(super) fn probe_foreground() -> Option<RawForeground> {
     Some(RawForeground { title: name, process_name, pid })
 }
 
+/// One X11 connection for both probes, reopened on the next call after any error.
 #[cfg(target_os = "linux")]
-pub(super) fn probe_foreground() -> Option<RawForeground> {
+fn with_x11<T>(probe: impl FnOnce(&x11::Session) -> Result<T, Box<dyn std::error::Error>>) -> Option<T> {
     use std::sync::Mutex;
     static X11: Mutex<Option<x11::Session>> = Mutex::new(None);
 
@@ -88,19 +95,44 @@ pub(super) fn probe_foreground() -> Option<RawForeground> {
     if session.is_none() {
         *session = x11::Session::open().inspect_err(|error| log::debug!("janela ativa (X11): sem conexão ({error})")).ok();
     }
-    let probed = session.as_ref()?.active_window();
-    match probed {
-        Ok(Some((title, pid))) => {
-            let process_name = if pid == 0 { String::new() } else { process_name_for_pid(pid) };
-            Some(RawForeground { title, process_name, pid })
-        }
-        Ok(None) => None,
-        Err(error) => {
+    let probed = probe(session.as_ref()?);
+    probed
+        .inspect_err(|error| {
             log::debug!("janela ativa (X11): sonda falhou, reconecta no próximo tick ({error})");
             *session = None;
-            None
-        }
-    }
+        })
+        .ok()
+}
+
+#[cfg(target_os = "linux")]
+pub(super) fn probe_foreground() -> Option<RawForeground> {
+    let (title, pid) = with_x11(|session| session.active_window())??;
+    let process_name = if pid == 0 { String::new() } else { process_name_for_pid(pid) };
+    Some(RawForeground { title, process_name, pid })
+}
+
+#[cfg(target_os = "linux")]
+pub(super) fn foreground_fullscreen() -> Option<bool> {
+    with_x11(|session| session.active_is_fullscreen())
+}
+
+#[cfg(target_os = "windows")]
+pub(super) fn foreground_fullscreen() -> Option<bool> {
+    use windows::Win32::UI::Shell::{SHQueryUserNotificationState, QUNS_BUSY, QUNS_PRESENTATION_MODE, QUNS_RUNNING_D3D_FULL_SCREEN};
+
+    let state = unsafe { SHQueryUserNotificationState() }.ok()?;
+    Some([QUNS_BUSY, QUNS_RUNNING_D3D_FULL_SCREEN, QUNS_PRESENTATION_MODE].contains(&state))
+}
+
+#[cfg(target_os = "macos")]
+pub(super) fn foreground_fullscreen() -> Option<bool> {
+    let raw = probe_foreground()?;
+    Some(super::foreground::is_likely_game_app(&raw.title, &raw.process_name))
+}
+
+#[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
+pub(super) fn foreground_fullscreen() -> Option<bool> {
+    None
 }
 
 #[cfg(target_os = "linux")]
@@ -116,6 +148,8 @@ mod x11 {
         net_name: Atom,
         utf8: Atom,
         pid: Atom,
+        state: Atom,
+        fullscreen: Atom,
     }
 
     type Probe<T> = Result<T, Box<dyn std::error::Error>>;
@@ -126,7 +160,8 @@ mod x11 {
             let root = conn.setup().roots.get(screen).ok_or("screen fora do setup")?.root;
             let atom = |name: &str| -> Probe<Atom> { Ok(conn.intern_atom(false, name.as_bytes())?.reply()?.atom) };
             let (active, net_name, utf8, pid) = (atom("_NET_ACTIVE_WINDOW")?, atom("_NET_WM_NAME")?, atom("UTF8_STRING")?, atom("_NET_WM_PID")?);
-            Ok(Self { conn, root, active, net_name, utf8, pid })
+            let (state, fullscreen) = (atom("_NET_WM_STATE")?, atom("_NET_WM_STATE_FULLSCREEN")?);
+            Ok(Self { conn, root, active, net_name, utf8, pid, state, fullscreen })
         }
 
         fn property(&self, window: Window, name: impl Into<Atom>, kind: impl Into<Atom>, len: u32) -> Probe<Vec<u8>> {
@@ -146,6 +181,13 @@ mod x11 {
             }
             let pid = self.card32(window, self.pid, AtomEnum::CARDINAL)?.unwrap_or(0);
             Ok(Some((String::from_utf8_lossy(&title).into_owned(), pid)))
+        }
+
+        /// EWMH `_NET_WM_STATE` of the focused window lists `_NET_WM_STATE_FULLSCREEN`.
+        pub(super) fn active_is_fullscreen(&self) -> Probe<bool> {
+            let Some(window) = self.card32(self.root, self.active, AtomEnum::WINDOW)?.filter(|w| *w != 0) else { return Ok(false) };
+            let reply = self.conn.get_property(false, window, self.state, AtomEnum::ATOM, 0, 32)?.reply()?;
+            Ok(reply.value32().is_some_and(|mut atoms| atoms.any(|atom| atom == self.fullscreen)))
         }
     }
 }

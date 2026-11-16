@@ -1,5 +1,5 @@
 import { t } from '@mika/sdk/i18n'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useEmojiReactions } from '../components/EmojiReaction'
 import { getElectronApi } from '../lib/shell-api'
@@ -147,6 +147,12 @@ export function useAppShell() {
     setSpeechPaused(ttsIsPlaying && autoMuteDuringTts)
   }, [ttsIsPlaying, autoMuteDuringTts, setSpeechPaused])
 
+  // Edge dock talk (Ctrl+Shift+Space): opens, never toggles — pressed twice mid-game it must not close the chat.
+  const handleDockTalk = useCallback(() => {
+    setShowInput(true)
+    handleSetMic(true)
+  }, [setShowInput, handleSetMic])
+
   useGlobalShortcuts({
     onToggleInput: () => toggleOverlay('input'),
     onToggleMic: handleToggleMic,
@@ -155,6 +161,7 @@ export function useAppShell() {
     onHide: closeOverlaysWrapper,
     // Same path as holding the dock mic button (`CommandDock` pttMode → onSetMic).
     onPushToTalk: inputMode === 'ptt' && sttEnabled ? handleSetMic : undefined,
+    onDockTalk: handleDockTalk,
   })
 
   useDesktopShellBootstrap({

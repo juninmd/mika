@@ -2553,6 +2553,28 @@ export const deDE: TranslationDict = {
   'settings.window.style.head': 'Nur der Kopf in der Ecke',
   'settings.window.style.dockRight': 'Dock am rechten Rand',
   'settings.window.style.dockLeft': 'Dock am linken Rand',
+  'shell.edgeDock.reveal': 'Dock anzeigen',
+  'shell.edgeDock.openChat': 'Unterhaltung öffnen',
+  'shell.edgeDock.quick.recap': 'Wo waren wir stehen geblieben?',
+  'shell.edgeDock.quick.recapPrompt':
+    'Wo waren wir stehen geblieben? Erinnere mich daran, was in der letzten Sitzung dieses Spiels passiert ist.',
+  'shell.edgeDock.quick.hint': 'Spoilerfreier Tipp',
+  'shell.edgeDock.quick.hintPrompt': 'Gib mir einen spoilerfreien Tipp, wo ich gerade feststecke.',
+  'shell.edgeDock.quick.passenger': 'Passagiermodus: Nichts aus dieser Sitzung wird gespeichert',
+  'shell.edgeDock.card.reminder': 'Erinnerung',
+  'shell.edgeDock.card.recap': 'Sitzungszusammenfassung',
+  'shell.edgeDock.card.level.hint': 'Hinweis',
+  'shell.edgeDock.card.level.tip': 'Tipp',
+  'shell.edgeDock.card.level.solution': 'Lösung',
+  'settings.window.dockAutoHide.label': 'Am Rand automatisch ausblenden',
+  'settings.window.dockAutoHide.hint':
+    'Untätig und ohne Unterhaltung wird das Dock zu einem schmalen Streifen am Rand und kehrt zurück, wenn die Maus darüberfährt.',
+  'settings.window.dockDiscreet.label': 'Diskreter Modus im Vollbild',
+  'settings.window.dockDiscreet.hint':
+    'Mit einem Spiel oder einer App im Vollbild im Vordergrund verschwindet das Dock und Klicks gehen durch das Fenster. Das Gesprächs-Tastenkürzel holt es zurück.',
+  'settings.shortcuts.dockTalk.label': 'Über das Dock sprechen',
+  'settings.shortcuts.dockTalk.description':
+    'Öffnet den kompakten Chat und das Mikrofon, ohne dem Spiel den Fokus zu nehmen.',
   'settings.performance.profileLabel': 'Leistungsprofil',
   'settings.performance.profile.auto': 'Automatisch',
   'settings.performance.profile.autoHint': 'Flott, solange du chattest, sparsam bei Spielen und wenn du weg bist.',
