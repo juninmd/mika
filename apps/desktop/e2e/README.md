@@ -24,17 +24,18 @@ Live2D) não existe no Chromium, então specs de skin Live2D rodam só no caminh
 
 ### Estado da suíte no host (medido em Linux/xvfb)
 
-Rodada completa no host: **88 de 109 specs passam, 1 pulado**. O que sobra não é do host — a CI
+Rodada completa no host (2026-11-15): **100 de 118 specs passam, 3 pulados** (`MIKA_E2E_CHROMIUM=/opt/pw-browsers/chromium` no contêiner da nuvem). O que sobra não é do host — a CI
 (`ci.yml`, job `e2e`) roda só `@smoke` até isto ser resolvido:
 
 | Spec | Causa |
 |---|---|
-| `homologation-capture-all` (04), `homologation-extras` (3) | esperam o wizard de **4** etapas; ele tem 8 (`WIZARD_STEPS`) |
-| `memory-reaction` (F3, F3-boundaries, F4, F5-C-TC1/TC4, F6-W-TC2/TC4/TC5) | `real_person` não entra mais sozinho no catálogo (`vision::watcher::may_auto_catalog`); os specs ainda emitem `real_person`/`medium` |
+| `memory-reaction` (2 casos) | `real_person` não entra mais sozinho no catálogo (`vision::watcher::may_auto_catalog`); os specs ainda emitem `real_person`/`medium` |
 | `user-journey-all-features` | espera resposta do assistente por 60 s no ambiente lento do contêiner |
 | `controls-audit` | `keepawake` pede o barramento de sistema do D-Bus (ausente em contêiner); orçamento de 900 s |
 | `haru-vrm`, `vrm-life` (3) | animação em tempo real: com GL por software (`swiftshader`) o quadro não anda no ritmo esperado |
-| `settings-navigation-full` | passa em ~3 min num contêiner de 4 núcleos; o `setTimeout` do spec é 60 s |
+| `settings-navigation-full`, `homologation-full` (2), `homologation-extras` (1), `ux-audit` (settings, wizard) | percorrer todas as abas de Configurações com GL por software estoura o timeout (240 s ainda não basta no contêiner de 4 núcleos) |
+| `ux-audit` (shell) | menu de contexto medido 6 px além da viewport de 400 px (a janela real é mais larga que a viewport do Playwright) |
+| `avatar-background-modes` | `transparent` precisa de compositor; o Xvfb não tem, então a borda sai opaca |
 
 ## Como rodar
 

@@ -20,6 +20,10 @@ export type ElectronShellNamespace = {
     toggleFullscreen?: () => Promise<boolean>
     isFullscreen?: () => Promise<boolean>
     onFullscreenChange?: (callback: (payload: { fullscreen: boolean }) => void) => () => void
+    /** Mini mode (head only, bottom-left corner; persisted as `app.miniMode`). Idempotent on purpose. */
+    setMiniMode?: (on: boolean) => Promise<void>
+    isMiniMode?: () => Promise<boolean>
+    onMiniModeChange?: (callback: (payload: { mini: boolean }) => void) => () => void
     setIgnoreMouseEvents: (ignore: boolean) => void
     moveBy: (deltaX: number, deltaY: number) => void
     startDrag?: () => void

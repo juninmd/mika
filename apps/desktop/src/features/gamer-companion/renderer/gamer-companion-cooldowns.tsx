@@ -13,6 +13,7 @@ export function GamerCompanionCooldowns({
   onSave: FeatureComponentProps['onSave']
 }) {
   const sessionSummaryEnabled = configBool(config, 'gamer-companion.sessionSummaryEnabled', true)
+  const helpLadderEnabled = configBool(config, 'gamer-companion.helpLadderEnabled', true)
   const bossCooldown = configNum(config, 'gamer-companion.momentCooldowns.boss', 90)
   const achievementCooldown = configNum(config, 'gamer-companion.momentCooldowns.achievement', 60)
   const victoryCooldown = configNum(config, 'gamer-companion.momentCooldowns.victory', 60)
@@ -23,12 +24,19 @@ export function GamerCompanionCooldowns({
   return (
     <GlassCard span="full">
       <SectionHeader title={t('settings.gamerCompanion.panel.sectionComments')} className="mb-3" />
-      <div className="mb-4">
+      <div className="mb-4 grid gap-4 sm:grid-cols-2">
         <GlassToggle
           label={t('settings.gamerCompanion.panel.summaryLabel')}
           description={t('settings.gamerCompanion.panel.summaryDescription')}
           configPath="gamer-companion.sessionSummaryEnabled"
           value={sessionSummaryEnabled}
+          onSave={onSave}
+        />
+        <GlassToggle
+          label={t('settings.gamerCompanion.field.helpLadderEnabled.label')}
+          description={t('settings.gamerCompanion.field.helpLadderEnabled.description')}
+          configPath="gamer-companion.helpLadderEnabled"
+          value={helpLadderEnabled}
           onSave={onSave}
         />
       </div>

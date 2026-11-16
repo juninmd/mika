@@ -26,6 +26,7 @@ export const jaJP: TranslationDict = {
   'shell.palette.openChat': 'チャットを開く',
   'shell.palette.history': '履歴を見る',
   'shell.palette.fullscreen': '全画面を切り替え',
+  'shell.palette.miniMode': 'ミニモードにする',
   'shell.palette.settings': '設定',
   'shell.palette.reopenWizard': '初期設定をやり直す',
   'shell.palette.reopenWizardHint': '初回セットアップ（言語・プライバシー・モデル・音声）を再表示',
@@ -71,15 +72,15 @@ export const jaJP: TranslationDict = {
   'shell.composer.micDenied': 'マイクの権限が拒否されました。',
   'shell.composer.micError': '音声認識に失敗しました:',
   'shell.composer.micNotFound': 'マイクが見つかりません。接続して「オーディオデバイス」を確認してください。',
-  'shell.composer.quick.screen': '👀 画面',
+  'shell.composer.quick.screen': '画面',
   'shell.composer.quick.screenMsg': '今わたしの画面には何がある？',
-  'shell.composer.quick.game': '🎮 ゲーム',
+  'shell.composer.quick.game': 'ゲーム',
   'shell.composer.quick.gameMsg': '今遊んでいるこのゲームについて教えて。',
-  'shell.composer.quick.who': '🧍 誰？',
+  'shell.composer.quick.who': '誰？',
   'shell.composer.quick.whoMsg': '画面に誰がいる？その人物やキャラクターについて教えて。',
-  'shell.composer.quick.react': '💬 リアクション',
+  'shell.composer.quick.react': 'リアクション',
   'shell.composer.quick.reactMsg': '画面に映っているものにリアクションして！',
-  'shell.composer.quick.surprise': '🎲 サプライズ',
+  'shell.composer.quick.surprise': 'サプライズ',
   'shell.composer.quick.surpriseMsg': '何かランダムで驚かせて。豆知識、オタクジョーク、トリビア、何でもいい。',
   'shell.composer.ph1': '話しかけて...',
   'shell.composer.ph2': '何が知りたい？',
@@ -247,6 +248,8 @@ export const jaJP: TranslationDict = {
   'shell.senses.memory.label': '記憶: {{status}}',
   'shell.senses.memory.active': '有効',
   'shell.senses.memory.off': '無効',
+  'shell.passenger.chip.label': 'パッセンジャーモード',
+  'shell.passenger.chip.hint': 'このセッションは何も保存されません。クリックで終了。',
   'shell.senses.ago': '{{s}}秒前',
   'shell.senses.ocr': '画面の文字を読んでいます',
   'shell.palette.toolError': '"{{label}}"を実行できませんでした',
@@ -271,6 +274,7 @@ export const jaJP: TranslationDict = {
   'shell.menu.pinOff': '固定を解除',
   'shell.menu.mic': 'マイク',
   'shell.menu.pin': '最前面に固定',
+  'shell.menu.miniMode': 'ミニモード',
   'shell.menu.settings': '設定',
   'shell.menu.clearHistory': '履歴を消去',
   'shell.tray.show': '表示',
@@ -918,6 +922,9 @@ export const jaJP: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'ゲーム終了時の要約',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'ゲームが終了するとMikaがセッションの要約をコメントします。',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': '段階的なヒント（ネタバレなし）',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    '同じところで詰まると、Mikaはまずヒント、次にコツ、最後に答えを教えます。オフにするとすぐに答えを教えます。',
   'settings.gamerCompanion.field.steamPath.label': 'Steamフォルダ',
   'settings.gamerCompanion.field.steamPath.description':
     '任意項目。空欄にすると Program Files/Steam を自動検出します。',
@@ -1049,7 +1056,7 @@ export const jaJP: TranslationDict = {
   'settings.llm.panel.embeddingModelLabel': '埋め込みモデル',
   'settings.llm.panel.embeddingModelDescription':
     '選択したプロバイダーのカタログです。モデルを変更するとベクトルインデックスが無効になります。',
-  'settings.embeddings.field.embeddingProvider.option.local': 'ローカル(e5、オフライン)',
+  'settings.embeddings.field.embeddingProvider.option.local': 'ローカル(granite、オフライン)',
   'settings.llm.panel.localEmbeddingHint':
     'PC上で動作し、サーバーも費用も不要です。初回はモデルをダウンロードしてください。',
   'settings.llm.panel.localEmbeddingReady': '埋め込みモデルの準備完了',
@@ -1412,6 +1419,9 @@ export const jaJP: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'オフラインモード',
   'settings.privacy.field.offlineMode.description':
     'マシンから出るすべてのリクエストをブロックします — LLM、TTS、STT、連携機能。ローカルのプロバイダー(Ollama、Whisper)は引き続き動作します。',
+  'settings.privacy.field.passengerMode.label': 'パッセンジャーモード',
+  'settings.privacy.field.passengerMode.description':
+    'このセッションのみ:Mikaは普段どおり話しますが、会話・記憶・ビジュアル日記を保存しません。アプリの再起動で自動的にオフになります。',
   'settings.status.ready': '準備完了',
   'settings.status.changed': '変更',
   'settings.status.saving': '保存中',
@@ -1526,8 +1536,12 @@ export const jaJP: TranslationDict = {
   'settings.voiceTts.language.es': 'Español',
   'settings.voiceTts.language.en': 'English',
   'settings.voiceTts.language.pt': 'Português',
+  'settings.voiceTts.language.de': 'Deutsch',
+  'settings.voiceTts.language.it': 'Italiano',
+  'settings.voiceTts.language.ja': '日本語',
+  'settings.voiceTts.language.ru': 'Русский',
   'settings.voiceTts.field.supertonicSteps.helperText':
-    'ステップ数が多いほど音質が向上します。コストはほぼゼロ:実測で2ステップは RTF 0.14、20ステップは 0.17 でした。',
+    'ステップ数が多いほど音質は上がりますが、遅くなります。実測で8ステップは RTF 0.24、20ステップは 0.54 でした。',
   'settings.voiceTts.field.elevenLabsVoiceId.label': '音声 ID',
   'settings.voiceTts.field.azureTtsSubscriptionKey.label': 'Azure サブスクリプション キー',
   'settings.voiceTts.field.azureTtsRegion.label': 'Azure リージョン',
@@ -1549,7 +1563,7 @@ export const jaJP: TranslationDict = {
     '一度ダウンロード(約60MB)されると再利用されます。完全なカタログは rhasspy/piper-voices にあります。',
   'settings.voiceTts.field.piperBinaryPath.label': '実行ファイルのパス',
   'settings.voiceTts.field.piperBinaryPath.helperText':
-    'github.com/rhasspy/piper から Piper をインストールしてください。空欄の場合はシステムの PATH から「piper」を探します。',
+    'github.com/OHF-Voice/piper1-gpl から Piper をインストールしてください。空欄の場合はシステムの PATH から「piper」を探します。',
   'settings.voiceTts.field.supertonicVoice.label': 'Supertonic 音声',
   'settings.voiceTts.field.supertonicVoice.option.f1': 'F1(女性)',
   'settings.voiceTts.field.supertonicVoice.option.f2': 'F2(女性)',
@@ -1599,7 +1613,7 @@ export const jaJP: TranslationDict = {
   'settings.voiceTts.panel.executablePathLabel': '実行ファイルのパス',
   'settings.voiceTts.panel.piperPathPlaceholder': "空欄 = PATH から 'piper' を探す",
   'settings.voiceTts.panel.piperHint':
-    '音声は一度だけダウンロードされ(約60MB)、マシンに保存されます。実行ファイルは別途インストールが必要です — github.com/rhasspy/piper。',
+    '音声は一度だけダウンロードされ(約60MB)、マシンに保存されます。実行ファイルは別途インストールが必要です — github.com/OHF-Voice/piper1-gpl。',
   'settings.voiceTts.panel.refinementSteps': '精緻化ステップ数',
   'settings.voiceTts.panel.stepsSuffix': 'ステップ',
   'settings.voiceTts.panel.supertonicHint':
@@ -2411,6 +2425,10 @@ export const jaJP: TranslationDict = {
     'アバターウィンドウでモニター全体を覆います。ウィンドウ内で F11 を押すと切り替わり、解除すると以前のサイズと位置に戻ります。',
   'settings.window.stateLabel': '現在',
   'settings.window.state.fullscreen': '全画面',
+  'settings.window.state.mini': 'ミニ',
+  'settings.window.mini.label': 'ミニモード',
+  'settings.window.mini.hint':
+    'ウィンドウを画面左下の小さな正方形に縮め、頭だけを表示します。チャット、履歴、承認リクエストを開くと元のウィンドウに戻ります。',
   'settings.window.state.windowed': 'ウィンドウ表示',
   'settings.performance.profileLabel': 'パフォーマンスプロファイル',
   'settings.performance.profile.auto': '自動',
@@ -2446,7 +2464,7 @@ export const jaJP: TranslationDict = {
   'settings.performance.accel.model.nemotron': 'Nemotron',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
-  'settings.performance.accel.model.e5': 'e5 埋め込み',
+  'settings.performance.accel.model.e5': 'granite 埋め込み',
   'settings.performance.accel.reason.userCpu': '設定で CPU を選択',
   'settings.performance.accel.reason.tinyModel': '極小モデル：GPU に送るコストが計算より大きい',
   'settings.performance.accel.reason.perToken': '1 トークンずつ生成：毎ステップ GPU へのコピーが発生',
@@ -3282,8 +3300,10 @@ export const jaJP: TranslationDict = {
     'Supertonic は{{language}}を話せず、この言語にはライセンス確認済みのローカル音声もありません。設定 > 音声 でクラウドプロバイダー (Azure Speech、Google Cloud、ElevenLabs) を選んでください。',
   'voice.tts.piper.emptyText': 'Piper: テキストが空です。',
   'voice.tts.piper.configuredPathMissing': 'Piper: 設定されたパスが存在しません: "{{path}}"。',
+  'voice.tts.piper.outdated':
+    'Piper のバージョンは {{version}} です。Mika の音声には Piper 1.5 以降が必要です。Piper を更新してください (github.com/OHF-Voice/piper1-gpl)。',
   'voice.tts.piper.binaryNotFound':
-    'Piper が見つかりません。バイナリ (github.com/rhasspy/piper) をインストールするか、音声設定でパスを指定してください。',
+    'Piper が見つかりません。バイナリ (github.com/OHF-Voice/piper1-gpl) をインストールするか、音声設定でパスを指定してください。',
   'voice.tts.piper.invalidVoiceKey': 'Piper: 音声キーが無効です: "{{voice}}"。',
   'voice.tts.piper.voiceNotInCatalog':
     'Piper: 音声 "{{voice}}" は検証済み音声カタログにないため、ダウンロードされません。',

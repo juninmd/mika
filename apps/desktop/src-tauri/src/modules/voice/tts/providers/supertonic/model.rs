@@ -1,32 +1,21 @@
-//! O pipeline de inferência em si — porte de
-//! `node_modules/@huggingface/transformers/src/models/supertonic/modeling_supertonic.js`
-//! (`SupertonicForConditionalGeneration::generate_speech`), a única fonte consultada para os nomes
-//! de tensor e a ordem dos 3 grafos: não é um formato documentado publicamente, e adivinhar aqui
-//! teria o mesmo risco que este repositório já pagou em canal reivindicado sem paridade real (ver
-//! `project_canal_reivindicado_nao_e_migrado`). Config numérica (`SAMPLING_RATE`, `STYLE_DIM`,
-//! `BASE_CHUNK_SIZE`, `CHUNK_COMPRESS_FACTOR`, `LATENT_DIM`) veio do `config.json` publicado do
-//! modelo (`onnx-community/Supertonic-TTS-2-ONNX`, mesma revisão pinada de `assets.rs`) — constantes
-//! fixas, não lidas em runtime, mesma escolha de `supertonic.runtime.ts` (`VOICE_FLOATS` hardcoded).
+//! O pipeline de inferência do Supertonic 3 — porte de `TextToSpeech::_infer` do exemplo oficial
+//! (`supertonic/rust/src/helper.rs`, commit `1e9799e`), a fonte dos nomes de tensor e da ordem dos
+//! 4 grafos: `duration_predictor` (duração em segundos) → `text_encoder` (embedding do texto) →
+//! `vector_estimator` (laço de remoção de ruído, um passo por chamada) → `vocoder` (forma de onda).
+//! A config numérica (`sample_rate`, `base_chunk_size`, `chunk_compress_factor`, `latent_dim`) é
+//! lida do `tts.json` fixado, não adivinhada.
 //!
-//! **Sessão + tokenizer compartilhados por processo**, mesmo padrão e mesmo motivo de
+//! **Sessões compartilhadas por processo**, mesmo padrão e mesmo motivo de
 //! `inference/vad.rs::SHARED_SESSION`: dois carregamentos concorrentes do mesmo arquivo já causaram
-//! EACCES neste repositório (ver o cabeçalho de lá). O `Mutex` assíncrono colapsa cargas
-//! concorrentes numa só; as demais reusam o `Arc`. Guarda o dispositivo que o plano de aceleração
-//! (`inference::accel`) pediu: trocar Automática/GPU/CPU recarrega na próxima fala.
-//!
-//! **`padding`/`truncation` do `tokenizers` 1.0.0-rc.2.** Esta versão da crate é read-only e NÃO
-//! aplica truncation automática (`lib.rs` da crate: "truncation and padding ... are not in this
-//! release"). Como cada chamada é uma sentença só (`batch_size == 1`, ver `speaker.rs`), padding
-//! nunca é necessário; truncation vira um corte manual em [`encode_text`] no mesmo limite do
-//! `tokenizer_config.json` (`model_max_length: 1000`), defensivo — nenhuma sentença de TTS real
-//! chega perto disso.
+//! EACCES neste repositório. O `Mutex` assíncrono colapsa cargas concorrentes numa só; as demais
+//! reusam o `Arc`. Guarda o dispositivo que o plano de aceleração (`inference::accel`) pediu: trocar
+//! Automática/GPU/CPU recarrega na próxima fala.
 
 use std::path::Path;
 use std::sync::Arc;
 
 use ort::session::Session;
 use ort::value::Tensor;
-use tokenizers::pipeline::{EncodeOptions, PipelineTokenizer};
 use tokio::sync::Mutex as AsyncMutex;
 
 use crate::modules::inference::accel::Model;
@@ -34,52 +23,74 @@ use crate::modules::inference::session::{Device, Load};
 
 use crate::modules::voice::tts::abort_registry::CancelHandle;
 
-use super::assets::SupertonicPaths;
+use super::assets::{SupertonicPaths, VoiceStyle};
+use super::text;
 
-const SAMPLING_RATE: u32 = 44_100;
-const STYLE_DIM: usize = 128;
-const BASE_CHUNK_SIZE: usize = 512;
-const CHUNK_COMPRESS_FACTOR: usize = 6;
-const LATENT_DIM: usize = 24;
-const MODEL_MAX_LENGTH: usize = 1_000;
+/// Os campos do `tts.json` que o pipeline usa.
+#[derive(serde::Deserialize, Clone, Copy)]
+struct AeConfig {
+    sample_rate: u32,
+    base_chunk_size: usize,
+}
+
+#[derive(serde::Deserialize, Clone, Copy)]
+struct TtlConfig {
+    chunk_compress_factor: usize,
+    latent_dim: usize,
+}
+
+#[derive(serde::Deserialize, Clone, Copy)]
+struct Config {
+    ae: AeConfig,
+    ttl: TtlConfig,
+}
 
 struct Sessions {
+    duration_predictor: AsyncMutex<Session>,
     text_encoder: AsyncMutex<Session>,
-    latent_denoiser: AsyncMutex<Session>,
-    voice_decoder: AsyncMutex<Session>,
-    tokenizer: PipelineTokenizer,
+    vector_estimator: AsyncMutex<Session>,
+    vocoder: AsyncMutex<Session>,
+    indexer: Vec<i64>,
+    config: Config,
 }
 
 static SHARED: AsyncMutex<Option<(Device, Arc<Sessions>)>> = AsyncMutex::const_new(None);
 static LEASE: crate::modules::inference::Lease = crate::modules::inference::Lease::new();
 
-/// Unloads the three sessions after `max_idle` without speech — the power governor's
+/// Unloads the four sessions after `max_idle` without speech — the power governor's
 /// `inference::evict_idle`, same policy as Whisper/Nemotron/e5. A synthesis in flight keeps its
 /// own `Arc`; the next one reloads.
 pub(crate) fn evict_if_idle(max_idle: std::time::Duration, now_ms: u64) -> bool {
     crate::modules::inference::evict_async_if_idle(&SHARED, &LEASE, max_idle, now_ms)
 }
 
-fn load_session(load: &mut Load, path: &Path, label: &str) -> Result<Session, String> {
-    load.session(path).map_err(|e| format!("ort não carregou {label} ({}): {e}", path.display()))
+fn load_session(load: &mut Load, path: &Path, label: &str) -> Result<AsyncMutex<Session>, String> {
+    load.session(path)
+        .map(AsyncMutex::new)
+        .map_err(|e| format!("ort não carregou {label} ({}): {e}", path.display()))
+}
+
+fn read_json<T: serde::de::DeserializeOwned>(path: &Path) -> Result<T, String> {
+    let bytes = std::fs::read(path).map_err(|e| format!("não leu {}: {e}", path.display()))?;
+    serde_json::from_slice(&bytes).map_err(|e| format!("{} ilegível: {e}", path.display()))
 }
 
 fn build_sessions(paths: &SupertonicPaths) -> Result<(Device, Sessions), String> {
-    let mut load = Load::new(Model::Supertonic, Some(crate::modules::system::governor::onnx_threads()));
-    let text_encoder = load_session(&mut load, &paths.text_encoder, "text_encoder")?;
-    let latent_denoiser = load_session(&mut load, &paths.latent_denoiser, "latent_denoiser")?;
-    let voice_decoder = load_session(&mut load, &paths.voice_decoder, "voice_decoder")?;
-
-    let canonical = tokenizers::canonicalize_file(&paths.tokenizer)
-        .map_err(|e| format!("tokenizer.json não converteu para o formato canônico: {e}"))?;
-    let tokenizer =
-        tokenizers::from_json(&canonical).map_err(|e| format!("tokenizer.json canônico não carregou: {e}"))?;
-
+    let mut load = Load::new(
+        Model::Supertonic,
+        Some(crate::modules::system::governor::onnx_threads()),
+    );
     let sessions = Sessions {
-        text_encoder: AsyncMutex::new(text_encoder),
-        latent_denoiser: AsyncMutex::new(latent_denoiser),
-        voice_decoder: AsyncMutex::new(voice_decoder),
-        tokenizer,
+        duration_predictor: load_session(
+            &mut load,
+            &paths.duration_predictor,
+            "duration_predictor",
+        )?,
+        text_encoder: load_session(&mut load, &paths.text_encoder, "text_encoder")?,
+        vector_estimator: load_session(&mut load, &paths.vector_estimator, "vector_estimator")?,
+        vocoder: load_session(&mut load, &paths.vocoder, "vocoder")?,
+        indexer: read_json(&paths.unicode_indexer)?,
+        config: read_json(&paths.config)?,
     };
     Ok((load.plan().device, sessions))
 }
@@ -106,24 +117,7 @@ pub async fn load(paths: SupertonicPaths) -> Result<(), String> {
     shared_sessions(paths).await.map(drop)
 }
 
-fn encode_text(tokenizer: &PipelineTokenizer, text: &str) -> Result<(Vec<i64>, Vec<i64>), String> {
-    let mut encodings = tokenizer
-        .encode(text, &EncodeOptions::default())
-        .wait()
-        .map_err(|e| format!("tokenizer não codificou o texto: {e}"))?;
-    let encoding = encodings.pop().ok_or_else(|| "tokenizer devolveu zero encodings".to_string())?;
-
-    let mut ids: Vec<i64> = encoding.ids().iter().map(|t| i64::from(t.id())).collect();
-    ids.truncate(MODEL_MAX_LENGTH);
-    if ids.is_empty() {
-        return Err("texto sanitizado não produziu nenhum token".to_string());
-    }
-    let attention_mask = vec![1i64; ids.len()];
-    Ok((ids, attention_mask))
-}
-
-/// Box-Muller — `randn` de `utils/tensor.js`, sem depender de `rand_distr` (não está no grafo do
-/// crate; `rand::rng().random::<f32>()` já é suficiente para um par uniforme -> normal).
+/// Box-Muller — sem depender de `rand_distr` (não está no grafo do crate).
 fn randn(len: usize) -> Vec<f32> {
     use rand::RngExt;
     let mut rng = rand::rng();
@@ -141,151 +135,177 @@ fn randn(len: usize) -> Vec<f32> {
     out
 }
 
-struct DenoiseInputs {
-    style: Vec<f32>,
-    style_rows: i64,
-    encoder_outputs: Vec<f32>,
-    encoder_dims: Vec<i64>,
-    attention_mask: Vec<i64>,
-    seq_len: i64,
+fn tensor<T: ort::value::PrimitiveTensorElementType + std::fmt::Debug + Clone + 'static>(
+    dims: impl Into<Vec<i64>>,
+    data: Vec<T>,
+) -> Result<Tensor<T>, String> {
+    Tensor::from_array((dims.into(), data)).map_err(|e| e.to_string())
 }
 
-/// O laço de remoção de ruído (§3 do JS). Roda inteiramente dentro do `spawn_blocking` do
-/// chamador — cada `Session::run` é síncrono e `cancel` é checado entre passos porque não há outro
-/// ponto de interrupção possível aqui (não é `.await`able).
+/// Entradas do texto que valem para os três primeiros grafos.
+struct TextInputs {
+    ids: Tensor<i64>,
+    mask: Tensor<f32>,
+    len: i64,
+}
+
+fn text_inputs(sessions: &Sessions, tagged: &str) -> Result<TextInputs, String> {
+    let ids = text::to_ids(&sessions.indexer, tagged);
+    let len = ids.len() as i64;
+    Ok(TextInputs {
+        ids: tensor([1, len], ids)?,
+        mask: tensor([1, 1, len], vec![1.0f32; len as usize])?,
+        len,
+    })
+}
+
+/// Duração da fala em segundos, já dividida pela velocidade.
+fn predict_duration(
+    sessions: &Sessions,
+    text: &TextInputs,
+    style: &VoiceStyle,
+    speed: f32,
+) -> Result<f32, String> {
+    let mut session = sessions.duration_predictor.blocking_lock();
+    let style_dp = tensor(style.dp_dims, style.dp.clone())?;
+    let outputs = session
+        .run(ort::inputs!["text_ids" => &text.ids, "style_dp" => style_dp, "text_mask" => &text.mask])
+        .map_err(|e| format!("duration_predictor falhou: {e}"))?;
+    let (_, duration) = outputs["duration"]
+        .try_extract_tensor::<f32>()
+        .map_err(|e| e.to_string())?;
+    Ok(duration.first().copied().unwrap_or(0.0) / speed.max(0.01))
+}
+
+fn encode_text(
+    sessions: &Sessions,
+    text: &TextInputs,
+    style_ttl: &Tensor<f32>,
+) -> Result<(Vec<i64>, Vec<f32>), String> {
+    let mut session = sessions.text_encoder.blocking_lock();
+    let outputs = session
+        .run(ort::inputs!["text_ids" => &text.ids, "style_ttl" => style_ttl, "text_mask" => &text.mask])
+        .map_err(|e| format!("text_encoder falhou: {e}"))?;
+    let (shape, data) = outputs["text_emb"]
+        .try_extract_tensor::<f32>()
+        .map_err(|e| e.to_string())?;
+    Ok((shape.to_vec(), data.to_vec()))
+}
+
+/// Forma do latente: `[1, canais, comprimento]` para `duration` segundos de áudio.
+fn latent_shape(config: &Config, duration: f32) -> (i64, i64) {
+    let wav_len = (duration * config.ae.sample_rate as f32) as usize;
+    let chunk = config.ae.base_chunk_size * config.ttl.chunk_compress_factor;
+    let len = wav_len.div_ceil(chunk).max(1);
+    (
+        (config.ttl.latent_dim * config.ttl.chunk_compress_factor) as i64,
+        len as i64,
+    )
+}
+
+/// O laço de remoção de ruído. Os tensores constantes entre passos são montados UMA vez; o latente
+/// anda por move — a saída de um passo vira a entrada do próximo sem clone. `cancel` é checado entre
+/// passos porque `Session::run` síncrono não tem outro ponto de interrupção.
 fn denoise(
-    session: &mut Session,
-    inputs: &DenoiseInputs,
-    max_latent_len: i64,
-    latent_channels: i64,
-    num_inference_steps: u32,
+    sessions: &Sessions,
+    text: &TextInputs,
+    text_emb: (Vec<i64>, Vec<f32>),
+    style_ttl: &Tensor<f32>,
+    (channels, len): (i64, i64),
+    total_steps: u32,
     cancel: &CancelHandle,
 ) -> Result<Vec<f32>, String> {
-    let mut latents = randn((latent_channels * max_latent_len) as usize);
-    let latent_mask = vec![1i64; max_latent_len as usize];
-
-    for step in 0..num_inference_steps {
+    let text_emb = tensor(text_emb.0, text_emb.1)?;
+    let latent_mask = tensor([1, 1, len], vec![1.0f32; len as usize])?;
+    let total = tensor([1], vec![total_steps as f32])?;
+    let mut latent = randn((channels * len) as usize);
+    let mut session = sessions.vector_estimator.blocking_lock();
+    for step in 0..total_steps {
         if cancel.is_cancelled() {
             return Err("TTS cancelled".to_string());
         }
-
-        let style = Tensor::from_array(([1i64, inputs.style_rows, STYLE_DIM as i64], inputs.style.clone()))
-            .map_err(|e| e.to_string())?;
-        let noisy_latents = Tensor::from_array(([1i64, latent_channels, max_latent_len], latents.clone()))
-            .map_err(|e| e.to_string())?;
-        let mask = Tensor::from_array(([1i64, max_latent_len], latent_mask.clone())).map_err(|e| e.to_string())?;
-        let encoder_outputs = Tensor::from_array((inputs.encoder_dims.clone(), inputs.encoder_outputs.clone()))
-            .map_err(|e| e.to_string())?;
-        let attention_mask = Tensor::from_array(([1i64, inputs.seq_len], inputs.attention_mask.clone()))
-            .map_err(|e| e.to_string())?;
-        let timestep = Tensor::from_array(([1i64], vec![step as f32])).map_err(|e| e.to_string())?;
-        let steps_tensor = Tensor::from_array(([1i64], vec![num_inference_steps as f32])).map_err(|e| e.to_string())?;
-
         let outputs = session
             .run(ort::inputs![
-                "style" => style,
-                "noisy_latents" => noisy_latents,
-                "latent_mask" => mask,
-                "encoder_outputs" => encoder_outputs,
-                "attention_mask" => attention_mask,
-                "timestep" => timestep,
-                "num_inference_steps" => steps_tensor,
+                "noisy_latent" => tensor([1, channels, len], latent)?,
+                "text_emb" => &text_emb,
+                "style_ttl" => style_ttl,
+                "latent_mask" => &latent_mask,
+                "text_mask" => &text.mask,
+                "current_step" => tensor([1], vec![step as f32])?,
+                "total_step" => &total,
             ])
-            .map_err(|e| format!("latent_denoiser falhou no passo {step}: {e}"))?;
-
-        let (_, denoised) = outputs["denoised_latents"].try_extract_tensor::<f32>().map_err(|e| e.to_string())?;
-        latents = denoised.to_vec();
+            .map_err(|e| format!("vector_estimator falhou no passo {step}: {e}"))?;
+        let (_, denoised) = outputs["denoised_latent"]
+            .try_extract_tensor::<f32>()
+            .map_err(|e| e.to_string())?;
+        latent = denoised.to_vec();
     }
-
-    Ok(latents)
+    Ok(latent)
 }
 
-/// Porte de `generate_speech`. `speed`/`num_inference_steps` já vêm resolvidos pelo chamador
-/// (`state::effective_speed`/`supertonic_steps`) — este arquivo não conhece prosódia.
+fn vocode(
+    sessions: &Sessions,
+    latent: Vec<f32>,
+    (channels, len): (i64, i64),
+) -> Result<Vec<f32>, String> {
+    let mut session = sessions.vocoder.blocking_lock();
+    let outputs = session
+        .run(ort::inputs!["latent" => tensor([1, channels, len], latent)?])
+        .map_err(|e| format!("vocoder falhou: {e}"))?;
+    let (_, wav) = outputs["wav_tts"]
+        .try_extract_tensor::<f32>()
+        .map_err(|e| e.to_string())?;
+    Ok(wav.to_vec())
+}
+
+fn check(cancel: &CancelHandle) -> Result<(), String> {
+    if cancel.is_cancelled() {
+        return Err("TTS cancelled".to_string());
+    }
+    Ok(())
+}
+
+/// `tagged` já vem com a tag do idioma ([`text::preprocess`]); `speed`/`steps` já resolvidos pelo
+/// chamador (`state::effective_speed`/`supertonic_steps`).
 fn generate_speech(
     sessions: &Sessions,
-    text: &str,
-    voice_embedding: &[f32],
+    tagged: &str,
+    style: &VoiceStyle,
     speed: f32,
-    num_inference_steps: u32,
+    steps: u32,
     cancel: &CancelHandle,
 ) -> Result<(Vec<f32>, u32), String> {
-    let (input_ids, attention_mask) = encode_text(&sessions.tokenizer, text)?;
-    let seq_len = input_ids.len() as i64;
-    let style_rows = (voice_embedding.len() / STYLE_DIM) as i64;
-
-    let (last_hidden_state, encoder_dims, durations_samples) = {
-        let mut encoder = sessions.text_encoder.blocking_lock();
-        let ids_tensor = Tensor::from_array(([1i64, seq_len], input_ids.clone())).map_err(|e| e.to_string())?;
-        let mask_tensor = Tensor::from_array(([1i64, seq_len], attention_mask.clone())).map_err(|e| e.to_string())?;
-        let style_tensor = Tensor::from_array(([1i64, style_rows, STYLE_DIM as i64], voice_embedding.to_vec()))
-            .map_err(|e| e.to_string())?;
-
-        let outputs = encoder
-            .run(ort::inputs!["input_ids" => ids_tensor, "attention_mask" => mask_tensor, "style" => style_tensor])
-            .map_err(|e| format!("text_encoder falhou: {e}"))?;
-
-        let (hs_shape, hs_data) = outputs["last_hidden_state"].try_extract_tensor::<f32>().map_err(|e| e.to_string())?;
-        let (_, dur_data) = outputs["durations"].try_extract_tensor::<f32>().map_err(|e| e.to_string())?;
-        let duration_samples = dur_data.first().copied().unwrap_or(0.0) / speed.max(0.01) * SAMPLING_RATE as f32;
-
-        (hs_data.to_vec(), hs_shape.to_vec(), duration_samples)
-    };
-
-    if cancel.is_cancelled() {
-        return Err("TTS cancelled".to_string());
+    let text = text_inputs(sessions, tagged)?;
+    if text.len == 0 {
+        return Err("texto sanitizado não produziu nenhum caractere".to_string());
     }
-
-    let latent_size = (BASE_CHUNK_SIZE * CHUNK_COMPRESS_FACTOR) as f32;
-    let max_latent_len = ((durations_samples / latent_size).ceil() as i64).max(1);
-    let latent_channels = (LATENT_DIM * CHUNK_COMPRESS_FACTOR) as i64;
-
-    let denoise_inputs = DenoiseInputs {
-        style: voice_embedding.to_vec(),
-        style_rows,
-        encoder_outputs: last_hidden_state,
-        encoder_dims,
-        attention_mask,
-        seq_len,
-    };
-
-    let final_latents = {
-        let mut denoiser = sessions.latent_denoiser.blocking_lock();
-        denoise(&mut denoiser, &denoise_inputs, max_latent_len, latent_channels, num_inference_steps, cancel)?
-    };
-
-    if cancel.is_cancelled() {
-        return Err("TTS cancelled".to_string());
-    }
-
-    let waveform = {
-        let mut decoder = sessions.voice_decoder.blocking_lock();
-        let latents_tensor =
-            Tensor::from_array(([1i64, latent_channels, max_latent_len], final_latents)).map_err(|e| e.to_string())?;
-        let outputs =
-            decoder.run(ort::inputs!["latents" => latents_tensor]).map_err(|e| format!("voice_decoder falhou: {e}"))?;
-        let (_, wave_data) = outputs["waveform"].try_extract_tensor::<f32>().map_err(|e| e.to_string())?;
-        wave_data.to_vec()
-    };
-
-    let trim_len = (durations_samples.ceil() as usize).min(waveform.len());
-    Ok((waveform[..trim_len].to_vec(), SAMPLING_RATE))
+    let duration = predict_duration(sessions, &text, style, speed)?;
+    check(cancel)?;
+    let style_ttl = tensor(style.ttl_dims, style.ttl.clone())?;
+    let text_emb = encode_text(sessions, &text, &style_ttl)?;
+    check(cancel)?;
+    let shape = latent_shape(&sessions.config, duration);
+    let latent = denoise(sessions, &text, text_emb, &style_ttl, shape, steps, cancel)?;
+    check(cancel)?;
+    let mut wav = vocode(sessions, latent, shape)?;
+    let sample_rate = sessions.config.ae.sample_rate;
+    wav.truncate((duration * sample_rate as f32) as usize);
+    Ok((wav, sample_rate))
 }
 
 /// Ponto de entrada assíncrono: carrega (ou reusa) as sessões e roda a síntese inteira dentro de
-/// `spawn_blocking` — mesma garantia de `inference/vad.rs`/`inference/whisper.rs` (`ort::Session`
-/// síncrono nunca roda direto numa task async).
+/// `spawn_blocking` (`ort::Session` síncrono nunca roda direto numa task async).
 pub async fn synthesize(
     paths: SupertonicPaths,
-    text: String,
-    voice_embedding: Vec<f32>,
+    tagged: String,
+    style: VoiceStyle,
     speed: f32,
-    num_inference_steps: u32,
+    steps: u32,
     cancel: CancelHandle,
 ) -> Result<(Vec<f32>, u32), String> {
     let sessions = shared_sessions(paths).await?;
     tokio::task::spawn_blocking(move || {
-        generate_speech(&sessions, &text, &voice_embedding, speed, num_inference_steps, &cancel)
+        generate_speech(&sessions, &tagged, &style, speed, steps, &cancel)
     })
     .await
     .map_err(|e| format!("síntese do Supertonic cancelada: {e}"))?
@@ -294,6 +314,28 @@ pub async fn synthesize(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A conta do exemplo oficial: 1 s a 44,1 kHz com blocos de 512×6 amostras = 15 posições
+    /// (arredonda para cima), 24×6 canais.
+    #[test]
+    fn latent_shape_rounds_the_audio_up_to_whole_chunks() {
+        let config = Config {
+            ae: AeConfig {
+                sample_rate: 44_100,
+                base_chunk_size: 512,
+            },
+            ttl: TtlConfig {
+                chunk_compress_factor: 6,
+                latent_dim: 24,
+            },
+        };
+        assert_eq!(latent_shape(&config, 1.0), (144, 15));
+        assert_eq!(
+            latent_shape(&config, 0.0),
+            (144, 1),
+            "nunca um latente vazio"
+        );
+    }
 
     #[test]
     fn randn_produces_the_requested_length_with_both_even_and_odd_counts() {
@@ -311,7 +353,13 @@ mod tests {
         let samples = randn(200);
         assert!(samples.iter().all(|s| s.is_finite()));
         let mean: f32 = samples.iter().sum::<f32>() / samples.len() as f32;
-        assert!(mean.abs() < 1.0, "média longe de 0 para uma normal padrão: {mean}");
-        assert!(samples.iter().any(|&s| s != samples[0]), "todas as amostras iguais — gerador degenerado");
+        assert!(
+            mean.abs() < 1.0,
+            "média longe de 0 para uma normal padrão: {mean}"
+        );
+        assert!(
+            samples.iter().any(|&s| s != samples[0]),
+            "todas as amostras iguais — gerador degenerado"
+        );
     }
 }

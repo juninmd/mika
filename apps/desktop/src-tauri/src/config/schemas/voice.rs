@@ -341,20 +341,58 @@ fn supertonic_fields() -> Vec<FieldSchema> {
                 .control("number")
                 .helper("settings.voiceTts.field.supertonicRate.helperText"),
         ),
-        int_range("supertonicSteps", 20, 2, 32).with_ui(
+        int_range("supertonicSteps", 8, 2, 32).with_ui(
             FieldUi::new("settings.voiceTts.field.supertonicSteps.label")
                 .control("number")
                 .helper("settings.voiceTts.field.supertonicSteps.helperText"),
         ),
         // Mesma lista de `supertonic::SUPPORTED_LANGUAGES`; rótulo é o nome do idioma na própria língua.
-        choice("supertonicLanguage", "pt", &["pt", "en", "es", "fr", "ko"]).with_ui(
-            FieldUi::new("settings.voiceTts.field.supertonicLanguage.label").control("select").options(&[
-                UiOption { label: "Português", value: "pt" },
-                UiOption { label: "English", value: "en" },
-                UiOption { label: "Español", value: "es" },
-                UiOption { label: "Français", value: "fr" },
-                UiOption { label: "한국어", value: "ko" },
-            ]),
+        choice(
+            "supertonicLanguage",
+            "pt",
+            &crate::modules::voice::tts::providers::supertonic::SUPPORTED_LANGUAGES,
+        )
+        .with_ui(
+            FieldUi::new("settings.voiceTts.field.supertonicLanguage.label")
+                .control("select")
+                .options(&[
+                    UiOption {
+                        label: "Português",
+                        value: "pt",
+                    },
+                    UiOption {
+                        label: "English",
+                        value: "en",
+                    },
+                    UiOption {
+                        label: "Español",
+                        value: "es",
+                    },
+                    UiOption {
+                        label: "Français",
+                        value: "fr",
+                    },
+                    UiOption {
+                        label: "한국어",
+                        value: "ko",
+                    },
+                    UiOption {
+                        label: "Deutsch",
+                        value: "de",
+                    },
+                    UiOption {
+                        label: "Italiano",
+                        value: "it",
+                    },
+                    UiOption {
+                        label: "日本語",
+                        value: "ja",
+                    },
+                    UiOption {
+                        label: "Русский",
+                        value: "ru",
+                    },
+                ]),
         ),
     ]
 }

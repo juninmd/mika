@@ -172,6 +172,25 @@ navegador do usuário. Vale só com a janela do avatar em foco (`WINDOW_SHORTCUT
 nunca do último clique: o SO pode tirar a janela da tela cheia por fora (gesto no macOS), e
 `on_resized` desliga a preferência para os dois lados não divergirem.
 
+## Modo mini da janela do avatar
+
+**MUST**: o modo mini é uma preferência (`app.miniMode`) com a mesma rota da tela cheia: o
+interruptor de Configurações (`WindowModeCard`), o item "Modo mini" do menu de contexto e o da paleta
+chamam o mesmo canal (`window-set-mini-mode`), que grava a chave; um observador do `ConfigStore`
+(`src-tauri/src/mini_mode.rs`) encolhe a janela para um quadrado de 240 px no canto inferior esquerdo
+da área útil do monitor e devolve tamanho e posição anteriores ao sair. Reaplicado no boot.
+
+**MUST**: em mini a janela mostra só a cabeça do modelo VRM (`frameShowcase` com o shot `head`, a
+câmera segue o osso da cabeça); HUD, dock, painéis e toasts não são renderizados. Live2D mantém o
+enquadramento de corpo inteiro, só menor.
+
+**MUST**: o canal é `set`, não `toggle` — idempotente. O renderer sai do mini sozinho quando algo
+precisa da janela inteira (chat, histórico, roda, aprovação de ferramenta, aceite legal, cartão de
+crise), e ao entrar fecha o que estava aberto em vez de voltar atrás (`miniModeAction`).
+
+**MUST NOT**: mini e tela cheia ao mesmo tempo. Quem entra desfaz o outro antes de gravar a própria
+chave (`mini_mode::set` → `fullscreen::leave`; `fullscreen::toggle` → `mini_mode::leave`).
+
 ## Onboarding
 
 **MUST**: o primeiro uso pede o mínimo: um provedor, uma credencial, um modelo. Persona e

@@ -48,6 +48,7 @@ export type TranslationDict = {
   'shell.palette.openChat': string
   'shell.palette.history': string
   'shell.palette.fullscreen': string
+  'shell.palette.miniMode': string
   'shell.palette.settings': string
   'shell.palette.reopenWizard': string
   'shell.palette.reopenWizardHint': string
@@ -267,6 +268,8 @@ export type TranslationDict = {
   'shell.senses.memory.label': string
   'shell.senses.memory.active': string
   'shell.senses.memory.off': string
+  'shell.passenger.chip.label': string
+  'shell.passenger.chip.hint': string
   'shell.senses.ago': string
   'shell.senses.ocr': string
   'shell.palette.toolError': string
@@ -289,6 +292,7 @@ export type TranslationDict = {
   'shell.menu.micOn': string
   'shell.menu.mic': string
   'shell.menu.pin': string
+  'shell.menu.miniMode': string
   'shell.menu.pinOn': string
   'shell.menu.pinOff': string
   'shell.menu.settings': string
@@ -886,6 +890,8 @@ export type TranslationDict = {
   'settings.gamerCompanion.field.momentCooldowns.description': string
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': string
   'settings.gamerCompanion.field.sessionSummaryEnabled.description': string
+  'settings.gamerCompanion.field.helpLadderEnabled.label': string
+  'settings.gamerCompanion.field.helpLadderEnabled.description': string
   'settings.gamerCompanion.field.steamPath.label': string
   'settings.gamerCompanion.field.steamPath.description': string
   'settings.gamerCompanion.field.steamApiKey.label': string
@@ -1339,6 +1345,8 @@ export type TranslationDict = {
   'settings.privacy.field.clipboardLogging.description': string
   'settings.privacy.field.offlineMode.label': string
   'settings.privacy.field.offlineMode.description': string
+  'settings.privacy.field.passengerMode.label': string
+  'settings.privacy.field.passengerMode.description': string
   'settings.status.ready': string
   'settings.status.changed': string
   'settings.status.saving': string
@@ -1445,6 +1453,10 @@ export type TranslationDict = {
   'settings.voiceTts.language.es': string
   'settings.voiceTts.language.en': string
   'settings.voiceTts.language.pt': string
+  'settings.voiceTts.language.de': string
+  'settings.voiceTts.language.it': string
+  'settings.voiceTts.language.ja': string
+  'settings.voiceTts.language.ru': string
   'settings.voiceTts.field.supertonicSteps.helperText': string
   'settings.voiceTts.field.elevenLabsVoiceId.label': string
   'settings.voiceTts.field.azureTtsSubscriptionKey.label': string
@@ -2255,6 +2267,9 @@ export type TranslationDict = {
   'settings.window.fullscreen.hint': string
   'settings.window.stateLabel': string
   'settings.window.state.fullscreen': string
+  'settings.window.state.mini': string
+  'settings.window.mini.label': string
+  'settings.window.mini.hint': string
   'settings.window.state.windowed': string
   'settings.performance.profileLabel': string
   'settings.performance.profile.auto': string
@@ -3075,6 +3090,7 @@ export type TranslationDict = {
   'voice.tts.supertonicUnsupportedLanguage': string
   'voice.tts.piper.emptyText': string
   'voice.tts.piper.configuredPathMissing': string
+  'voice.tts.piper.outdated': string
   'voice.tts.piper.binaryNotFound': string
   'voice.tts.piper.invalidVoiceKey': string
   'voice.tts.piper.voiceNotInCatalog': string

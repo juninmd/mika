@@ -137,6 +137,15 @@ impl SessionDb {
         Ok(collect_sessions(&mut stmt, params![game_id])?.into_iter().next())
     }
 
+    /// A sessão mais recente JÁ ENCERRADA do jogo — a corrente (sem `end_time`) fica de fora.
+    pub fn last_finished_by_game_id(&self, game_id: &str) -> Result<Option<GameSession>, String> {
+        let conn = self.lock()?;
+        let mut stmt = conn
+            .prepare("SELECT id, game_id, game_name, start_time, end_time, events, summary FROM game_sessions WHERE game_id = ?1 AND end_time IS NOT NULL ORDER BY start_time DESC, rowid DESC LIMIT 1")
+            .map_err(|e| format!("last_finished_by_game_id: {e}"))?;
+        Ok(collect_sessions(&mut stmt, params![game_id])?.into_iter().next())
+    }
+
     pub fn by_id(&self, id: &str) -> Result<Option<GameSession>, String> {
         let conn = self.lock()?;
         let mut stmt = conn

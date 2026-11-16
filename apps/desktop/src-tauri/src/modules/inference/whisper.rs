@@ -27,10 +27,11 @@
 
 use std::f64::consts::PI;
 use std::path::{Path, PathBuf};
-use std::sync::{Mutex, OnceLock};
+use std::sync::{Arc, Mutex, OnceLock};
 use std::time::Instant;
 
 use ort::session::Session;
+use realfft::{RealFftPlanner, RealToComplex};
 
 use super::accel::Model;
 use ort::value::Tensor;
@@ -235,29 +236,26 @@ fn reflect_pad(samples: &[f32], pad: usize) -> Vec<f32> {
     out
 }
 
-/// DFT direta (O(n²)) do espectro de potência de um frame já janelado — `n_fft` é pequeno (400),
-/// e nenhuma crate de FFT está no grafo de dependências deste projeto (adicionar uma está fora do
-/// escopo deste arquivo). Retorna só os `n_fft/2 + 1` bins não redundantes (sinal real).
-fn dft_power_spectrum(windowed_frame: &[f32]) -> Vec<f32> {
-    let n_fft = windowed_frame.len();
-    let n_bins = n_fft / 2 + 1;
-    let mut out = vec![0.0f32; n_bins];
-    for (k, bin) in out.iter_mut().enumerate() {
-        let mut re = 0.0f64;
-        let mut im = 0.0f64;
-        for (n, &sample) in windowed_frame.iter().enumerate() {
-            let angle = -2.0 * PI * (k as f64) * (n as f64) / (n_fft as f64);
-            re += sample as f64 * angle.cos();
-            im += sample as f64 * angle.sin();
-        }
-        *bin = (re * re + im * im) as f32;
-    }
-    out
+/// Plano de FFT real de `N_FFT` pontos, montado uma vez por processo. Era uma DFT direta (O(n²),
+/// `cos`/`sin` em f64 por amostra): 3000 × 201 × 400 ≈ 241 M termos por janela de 30 s — medido no
+/// smoke de escuta (`voice/stt_smoke.rs`), ~3,5 s dos ~4,6 s de cada frase, com o encoder parado
+/// esperando. `realfft` já estava no grafo (é a mesma do log-mel do Nemotron).
+fn fft_plan() -> &'static Arc<dyn RealToComplex<f32>> {
+    static PLAN: OnceLock<Arc<dyn RealToComplex<f32>>> = OnceLock::new();
+    PLAN.get_or_init(|| RealFftPlanner::<f32>::new().plan_fft_forward(N_FFT))
 }
 
-/// Log-mel de UM frame — a unidade que o teste rápido exercita. O espectrograma completo (3000
-/// frames) só roda em produção e no teste `#[ignore]` com áudio real: 3000 × 201 × 400 DFTs
-/// ingênuas por chamada é caro demais para entrar no gate padrão.
+/// Espectro de potência de um frame já janelado de `N_FFT` amostras — só os `N_FFT/2 + 1` bins não
+/// redundantes (sinal real).
+fn dft_power_spectrum(windowed_frame: &[f32]) -> Vec<f32> {
+    let fft = fft_plan();
+    let mut input = windowed_frame.to_vec();
+    let mut spectrum = fft.make_output_vec();
+    fft.process(&mut input, &mut spectrum).expect("frame do tamanho do plano");
+    spectrum.iter().map(|c| c.norm_sqr()).collect()
+}
+
+/// Log-mel de UM frame — a unidade que o teste rápido exercita.
 fn frame_mel_energies(padded_signal: &[f32], frame_idx: usize, window: &[f32], filters: &[Vec<f32>]) -> Vec<f32> {
     let start = frame_idx * HOP_LENGTH;
     let windowed: Vec<f32> = (0..N_FFT).map(|i| padded_signal[start + i] * window[i]).collect();
@@ -309,6 +307,24 @@ const TASK_TRANSCRIBE_TOKEN: i64 = 50359;
 const NO_TIMESTAMPS_TOKEN: i64 = 50363;
 const EOS_TOKEN: i64 = 50257;
 const MAX_NEW_TOKENS: usize = 224;
+/// `<|nocaptions|>`: a probabilidade dele logo após o `<|startoftranscript|>` é o `no_speech_prob`
+/// do Whisper original.
+const NO_SPEECH_TOKEN: usize = 50362;
+/// `" "` sozinho — `begin_suppress_tokens` do `generation_config.json`.
+const BLANK_TOKEN: usize = 220;
+/// `generation_config.json.suppress_tokens` (whisper-base, revisão fixada), só a parte abaixo de
+/// `EOS_TOKEN`: notas musicais, colchetes, símbolos — o material de que a legenda fantasma é feita.
+/// Os ids acima de `EOS_TOKEN` (especiais e timestamps) saem todos em [`suppress`].
+const SUPPRESS_TOKENS: [usize; 82] = [
+    1, 2, 7, 8, 9, 10, 14, 25, 26, 27, 28, 29, 31, 58, 59, 60, 61, 62, 63, 90, 91, 92, 93, 359, 503, 522, 542, 873, 893, 902, 918, 922, 931, 1350, 1853,
+    1982, 2460, 2627, 3246, 3253, 3268, 3536, 3846, 3961, 4183, 4667, 6585, 6647, 7273, 9061, 9383, 10428, 10929, 11938, 12033, 12331, 12562, 13793,
+    14157, 14635, 15265, 15618, 16553, 16604, 18362, 18956, 20075, 21675, 22520, 26130, 26161, 26435, 28279, 29464, 31650, 32302, 32470, 36865, 42863,
+    47425, 49870, 50254,
+];
+/// Regra do Whisper original (`transcribe.py`): janela com `no_speech_prob` acima disto E confiança
+/// média abaixo de [`LOGPROB_THRESHOLD`] é silêncio, não texto.
+const NO_SPEECH_THRESHOLD: f32 = 0.6;
+const LOGPROB_THRESHOLD: f32 = -1.0;
 
 /// `<|lang|>` → id, os 99 idiomas do Whisper multilíngue. Copiado ao vivo de
 /// `generation_config.json.lang_to_id` (`onnx-community/whisper-base`) — não é uma tabela
@@ -437,8 +453,9 @@ fn decoder_step(
     let outputs = decoder.run(inputs).map_err(|e| format!("decoder Whisper falhou: {e}"))?;
     let (logits_shape, logits_data) = outputs["logits"].try_extract_tensor::<f32>().map_err(|e| e.to_string())?;
     let vocab = logits_shape[2] as usize;
-    let last_pos = (logits_shape[1] - 1) as usize;
-    let last_logits = logits_data[last_pos * vocab..(last_pos + 1) * vocab].to_vec();
+    // Todas as posições: a última escolhe o próximo token; no passo do prefixo, a primeira (logo
+    // após `<|startoftranscript|>`) é de onde sai o `no_speech_prob`.
+    let logits = logits_data.to_vec();
 
     let mut new_decoder_cache = Vec::with_capacity(kv.layers);
     let mut new_encoder_cache = if past_encoder.is_none() { Some(Vec::with_capacity(kv.layers)) } else { None };
@@ -453,7 +470,7 @@ fn decoder_step(
         }
     }
 
-    Ok((last_logits, vocab, new_decoder_cache, new_encoder_cache))
+    Ok((logits, vocab, new_decoder_cache, new_encoder_cache))
 }
 
 fn empty_decoder_cache(kv: DecoderShape) -> Vec<KvCache> {
@@ -474,19 +491,82 @@ fn detect_language(decoder: &mut Session, kv: DecoderShape, encoder_hidden_state
         .ok_or_else(|| "tabela de idiomas vazia".to_string())
 }
 
-/// Decodificação gulosa (sem beam search — mesma simplificação de `whisper.runtime.ts`, que também
-/// não faz beam search). Para para no EOS ou em `MAX_NEW_TOKENS`, o mesmo tipo de teto de
-/// `generation_config.json.max_length` (448 tokens totais, incluindo o prefixo de 4).
-fn greedy_generate(decoder: &mut Session, kv: DecoderShape, encoder_hidden_states: &[f32], enc_seq_len: i64, hidden: i64, lang_token: i64) -> Result<Vec<i64>, String> {
-    let forced_prefix = [DECODER_START_TOKEN, lang_token, TASK_TRANSCRIBE_TOKEN, NO_TIMESTAMPS_TOKEN];
+/// Probabilidade de `id` sob softmax de `logits` — e o log dela, que é o que a média acumula.
+fn log_softmax_at(logits: &[f32], id: usize) -> f32 {
+    let max = logits.iter().copied().fold(f32::NEG_INFINITY, f32::max);
+    let sum: f32 = logits.iter().map(|&l| (l - max).exp()).sum();
+    logits[id] - max - sum.ln()
+}
+
+/// Filtros de logits do `generate` do Whisper: `suppress_tokens`, nenhum especial/timestamp depois
+/// do prefixo (este laço é `<|notimestamps|>`) e, no primeiro token, nada de espaço sozinho. O EOS
+/// imediato fica liberado de propósito: em silêncio, texto vazio é a resposta certa.
+fn suppress(logits: &mut [f32], first: bool) {
+    for &id in &SUPPRESS_TOKENS {
+        logits[id] = f32::NEG_INFINITY;
+    }
+    for l in logits.iter_mut().skip(EOS_TOKEN as usize + 1) {
+        *l = f32::NEG_INFINITY;
+    }
+    if first {
+        logits[BLANK_TOKEN] = f32::NEG_INFINITY;
+    }
+}
+
+/// Tamanho do padrão que se repete no fim de `tokens`, se houver laço: um n-grama de 1..=12
+/// tokens repetido seguido até somar 12 tokens (e no mínimo 3 vezes). Greedy sobre ruído entra
+/// nisso ("o que é o que é o que é…") e só parava em `MAX_NEW_TOKENS` — medido: 9,6 s de silêncio
+/// virando 224 tokens.
+fn repetition_period(tokens: &[i64]) -> Option<usize> {
+    (1..=12).find(|&k| {
+        let reps = 12usize.div_ceil(k).max(3);
+        tokens.len() >= k * reps && {
+            let tail = &tokens[tokens.len() - k * reps..];
+            tail.chunks(k).all(|c| c == &tail[..k])
+        }
+    })
+}
+
+struct Decoded {
+    tokens: Vec<i64>,
+    no_speech_prob: f32,
+    avg_logprob: f32,
+}
+
+impl Decoded {
+    /// Regra do `transcribe.py` original: muito provável silêncio E pouca confiança = sem fala.
+    fn is_silence(&self) -> bool {
+        self.no_speech_prob > NO_SPEECH_THRESHOLD && self.avg_logprob < LOGPROB_THRESHOLD
+    }
+}
+
+/// Decodificação gulosa (sem beam search). Para no EOS, num laço de repetição (que fica com uma só
+/// ocorrência) ou em `MAX_NEW_TOKENS`, o mesmo tipo de teto de `generation_config.json.max_length`.
+fn greedy_generate(
+    decoder: &mut Session,
+    kv: DecoderShape,
+    encoder_hidden_states: &[f32],
+    enc_seq_len: i64,
+    hidden: i64,
+    lang_token: i64,
+) -> Result<Decoded, String> {
+    let forced_prefix = [
+        DECODER_START_TOKEN,
+        lang_token,
+        TASK_TRANSCRIBE_TOKEN,
+        NO_TIMESTAMPS_TOKEN,
+    ];
     let mut generated: Vec<i64> = forced_prefix.to_vec();
     let mut past_decoder = empty_decoder_cache(kv);
     let mut past_encoder: Option<Vec<KvCache>> = None;
+    let (mut no_speech_prob, mut sum_logprob) = (0.0f32, 0.0f32);
 
     for step in 0..MAX_NEW_TOKENS {
-        let use_cache = step > 0;
-        let input_ids: Vec<i64> = if step == 0 { generated.clone() } else { vec![*generated.last().expect("generated nunca fica vazio")] };
-
+        let input_ids: Vec<i64> = if step == 0 {
+            generated.clone()
+        } else {
+            vec![*generated.last().expect("generated nunca fica vazio")]
+        };
         let (logits, vocab, new_decoder_cache, new_encoder_cache) = decoder_step(
             decoder,
             kv,
@@ -494,12 +574,21 @@ fn greedy_generate(decoder: &mut Session, kv: DecoderShape, encoder_hidden_state
             encoder_hidden_states,
             enc_seq_len,
             hidden,
-            use_cache,
+            step > 0,
             &past_decoder,
             past_encoder.as_deref(),
         )?;
-
-        let (best_id, _) = logits.iter().enumerate().fold((0usize, f32::MIN), |acc, (i, &v)| if v > acc.1 { (i, v) } else { acc });
+        if step == 0 {
+            no_speech_prob = log_softmax_at(&logits[..vocab], NO_SPEECH_TOKEN).exp();
+        }
+        let mut last = logits[logits.len() - vocab..].to_vec();
+        suppress(&mut last, step == 0);
+        let (best_id, _) =
+            last.iter().enumerate().fold(
+                (0usize, f32::MIN),
+                |acc, (i, &v)| if v > acc.1 { (i, v) } else { acc },
+            );
+        sum_logprob += log_softmax_at(&last, best_id);
         past_decoder = new_decoder_cache;
         if let Some(enc_cache) = new_encoder_cache {
             past_encoder = Some(enc_cache);
@@ -508,13 +597,21 @@ fn greedy_generate(decoder: &mut Session, kv: DecoderShape, encoder_hidden_state
         if best_id as i64 == EOS_TOKEN {
             break;
         }
-        if best_id >= vocab {
-            return Err(format!("token gerado ({best_id}) fora do vocabulário ({vocab})"));
-        }
         generated.push(best_id as i64);
+        if let Some(k) = repetition_period(&generated[forced_prefix.len()..]) {
+            let reps = 12usize.div_ceil(k).max(3);
+            generated.truncate(generated.len() - k * (reps - 1));
+            break;
+        }
     }
 
-    Ok(generated[forced_prefix.len()..].to_vec())
+    let tokens = generated[forced_prefix.len()..].to_vec();
+    let avg_logprob = sum_logprob / (tokens.len() + 1) as f32;
+    Ok(Decoded {
+        tokens,
+        no_speech_prob,
+        avg_logprob,
+    })
 }
 
 // --- Engine cacheada — evita recarregar ~76 MiB de pesos ONNX a cada transcrição, mesmo padrão do
@@ -648,8 +745,12 @@ fn transcribe_window(engine: &mut WhisperEngine, samples: &[f32], lang_token: Op
         None => detect_language(&mut engine.decoder, engine.kv, &hidden_states, enc_seq_len, hidden)?,
     };
 
-    let token_ids = greedy_generate(&mut engine.decoder, engine.kv, &hidden_states, enc_seq_len, hidden, lang_token)?;
-    let ids_u32: Vec<u32> = token_ids.iter().map(|&id| id as u32).collect();
+    let decoded = greedy_generate(&mut engine.decoder, engine.kv, &hidden_states, enc_seq_len, hidden, lang_token)?;
+    if decoded.is_silence() {
+        log::debug!("[STT] janela Whisper descartada como silêncio (no_speech {:.2}, logprob {:.2})", decoded.no_speech_prob, decoded.avg_logprob);
+        return Ok((String::new(), lang_token));
+    }
+    let ids_u32: Vec<u32> = decoded.tokens.iter().map(|&id| id as u32).collect();
     let text = engine.tokenizer.decode(&ids_u32, true).map_err(|e| format!("tokenizer não decodificou os ids gerados: {e}"))?.trim().to_string();
     Ok((text, lang_token))
 }
@@ -962,6 +1063,65 @@ mod tests {
         for v in mel {
             assert!((v - (-1.5)).abs() < 1e-4, "esperado -1.5 exato para silêncio, veio {v}");
         }
+    }
+
+    // --- guardas anti-alucinação do laço guloso ---------------------------------------------
+
+    #[test]
+    fn a_looping_tail_is_detected_and_a_normal_sentence_is_not() {
+        // "o que é o que é…" no silêncio: padrão de 3 tokens repetido 4 vezes.
+        let looping: Vec<i64> = [10, 11].into_iter().chain([7, 8, 9].repeat(4)).collect();
+        assert_eq!(repetition_period(&looping), Some(3));
+        assert_eq!(repetition_period(&[5; 12]), Some(1));
+        // Fala real repete palavra ("eu tenho eu tenho"), mas não 3 vezes seguidas.
+        assert_eq!(repetition_period(&[1, 2, 3, 4, 3, 4, 5, 6]), None);
+        assert_eq!(
+            repetition_period(&[5; 11]),
+            None,
+            "11 tokens iguais ainda não bastam"
+        );
+    }
+
+    #[test]
+    fn suppress_blocks_specials_and_timestamps_but_lets_the_first_step_end_in_silence() {
+        let mut logits = vec![0.0f32; 51_865];
+        suppress(&mut logits, true);
+        assert!(logits[BLANK_TOKEN].is_infinite() && logits[SUPPRESS_TOKENS[0]].is_infinite());
+        assert!(
+            logits[NO_SPEECH_TOKEN].is_infinite()
+                && logits[NO_TIMESTAMPS_TOKEN as usize + 1].is_infinite()
+        );
+        assert!(
+            logits[EOS_TOKEN as usize].is_finite(),
+            "EOS imediato = texto vazio, a resposta certa em silêncio"
+        );
+        let mut later = vec![0.0f32; 51_865];
+        suppress(&mut later, false);
+        assert!(
+            later[BLANK_TOKEN].is_finite(),
+            "espaço só é barrado no primeiro token"
+        );
+    }
+
+    #[test]
+    fn only_likely_silence_with_low_confidence_counts_as_no_speech() {
+        let decoded = |no_speech_prob, avg_logprob| Decoded {
+            tokens: vec![1],
+            no_speech_prob,
+            avg_logprob,
+        };
+        assert!(decoded(0.9, -1.5).is_silence());
+        assert!(
+            !decoded(0.9, -0.3).is_silence(),
+            "fala confiante não some só porque o no_speech subiu"
+        );
+        assert!(!decoded(0.2, -1.5).is_silence());
+    }
+
+    #[test]
+    fn log_softmax_matches_the_closed_form() {
+        let lp = log_softmax_at(&[0.0, 0.0], 0);
+        assert!((lp - 0.5f32.ln()).abs() < 1e-6, "{lp}");
     }
 
     // --- tokens especiais / idioma -------------------------------------------------------------

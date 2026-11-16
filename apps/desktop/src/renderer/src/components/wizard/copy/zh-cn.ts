@@ -194,6 +194,6 @@ export const zhCN: WizardCopy = {
     ttsCloud: '已选择云端提供商',
     llmLabel: '语言模型（LLM）',
     embeddingLabel: '向量记忆（Embeddings）',
-    embeddingDetail: '本地 e5（约 135 MB）：离线语义检索记忆，无需服务器',
+    embeddingDetail: '本地 granite（约 125 MB）：离线语义检索记忆，无需服务器',
   },
 }

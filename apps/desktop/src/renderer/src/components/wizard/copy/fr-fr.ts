@@ -206,6 +206,6 @@ export const frFR: WizardCopy = {
     ttsCloud: 'Fournisseur cloud sélectionné',
     llmLabel: 'Modèle de langage (LLM)',
     embeddingLabel: 'Mémoire vectorielle (Embeddings)',
-    embeddingDetail: 'e5 local (~135 Mo) : recherche sémantique dans la mémoire, hors ligne et sans serveur',
+    embeddingDetail: 'granite local (~125 Mo) : recherche sémantique dans la mémoire, hors ligne et sans serveur',
   },
 }

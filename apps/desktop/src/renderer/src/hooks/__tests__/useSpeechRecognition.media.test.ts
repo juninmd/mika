@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { startMediaRecorderTranscription } from '../useSpeechRecognition.media'
 
 const transcribeAudio = vi.fn()
@@ -42,7 +42,7 @@ describe('startMediaRecorderTranscription', () => {
     transcribeAudio.mockReset()
     transcribeAudio.mockResolvedValue({ success: true, data: { text: '' } })
     getElectronApiMock.mockReset()
-    getElectronApiMock.mockReturnValue({ runtime: { transcribeAudio } })
+    getElectronApiMock.mockReturnValue({ runtime: { transcribeAudio, log: vi.fn(async () => {}) } })
 
     Object.defineProperty(globalThis, 'MediaRecorder', {
       value: MockMediaRecorder,
@@ -173,5 +173,114 @@ describe('startMediaRecorderTranscription', () => {
     await vi.waitFor(() => expect(close).toHaveBeenCalledTimes(1))
     session.stop()
     vi.unstubAllGlobals()
+  })
+
+  // End of speech used to wait the whole hangover (`voice.vadSilenceMs`, 1200 ms) and only THEN start
+  // decoding + STT. Transcribing at a third of the hangover hides the STT time inside the wait.
+  describe('speculative transcription during the hangover', () => {
+    let level = 0
+    let workletPort: { onmessage: ((event: MessageEvent) => void) | null } | null = null
+
+    const pushAudio = (samples: number) =>
+      workletPort?.onmessage?.({ data: { type: 'audio', audio: new Float32Array(samples).fill(0.2) } } as MessageEvent)
+    const sentBytes = (call: number) => atob(transcribeAudio.mock.calls[call]?.[0].audioBase64).length
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+      level = 0
+      workletPort = null
+      vi.stubGlobal('window', { location: { href: 'http://localhost/' } })
+      Object.defineProperty(globalThis, 'MediaRecorder', {
+        value: class extends MockMediaRecorder {
+          onstop: (() => void) | null = null
+          override stop(): void {
+            this.ondataavailable?.({ data: new Blob(['x']) })
+            this.onstop?.()
+          }
+        },
+        configurable: true,
+      })
+      Object.defineProperty(globalThis, 'AudioContext', {
+        value: class extends MockAudioContext {
+          sampleRate = 48_000
+          audioWorklet = { addModule: async () => {} }
+          override createAnalyser(): MockAnalyser {
+            const analyser = new MockAnalyser()
+            analyser.getByteFrequencyData = (data?: Uint8Array) => data?.fill(Math.round(level * 80))
+            return analyser
+          }
+        },
+        configurable: true,
+      })
+      vi.stubGlobal(
+        'AudioWorkletNode',
+        class {
+          port = { onmessage: null }
+          constructor() {
+            workletPort = this.port
+          }
+          disconnect(): void {}
+        },
+      )
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+      vi.unstubAllGlobals()
+    })
+
+    async function speak(ms: number) {
+      level = 0.6
+      for (let t = 0; t < ms; t += 5) {
+        pushAudio(80)
+        await vi.advanceTimersByTimeAsync(5)
+      }
+    }
+
+    async function silence(ms: number) {
+      level = 0
+      for (let t = 0; t < ms; t += 5) {
+        pushAudio(80)
+        await vi.advanceTimersByTimeAsync(5)
+      }
+    }
+
+    it('transcribes before the hangover ends and reuses that transcript', async () => {
+      transcribeAudio.mockResolvedValue({ success: true, data: { text: 'oi mika' } })
+      const onTranscript = vi.fn()
+      const session = await startMediaRecorderTranscription({ lang: 'pt-BR', vadSilenceMs: 300, onTranscript })
+      await vi.waitFor(() => expect(workletPort).not.toBeNull())
+      await silence(50)
+      await speak(200)
+
+      await silence(150)
+      expect(transcribeAudio).toHaveBeenCalledTimes(1)
+      expect(onTranscript).not.toHaveBeenCalled()
+
+      await silence(250)
+      expect(onTranscript).toHaveBeenCalledWith('oi mika', expect.anything())
+      expect(transcribeAudio).toHaveBeenCalledTimes(1)
+      session.stop()
+    })
+
+    it('discards the early transcript when the user speaks again', async () => {
+      transcribeAudio
+        .mockResolvedValueOnce({ success: true, data: { text: 'mika' } })
+        .mockResolvedValueOnce({ success: true, data: { text: 'mika, abre o youtube' } })
+      const onTranscript = vi.fn()
+      const session = await startMediaRecorderTranscription({ lang: 'pt-BR', vadSilenceMs: 300, onTranscript })
+      await vi.waitFor(() => expect(workletPort).not.toBeNull())
+      await silence(50)
+      await speak(200)
+      await silence(150)
+      await speak(200)
+      await silence(400)
+
+      expect(transcribeAudio).toHaveBeenCalledTimes(2)
+      expect(sentBytes(1)).toBeGreaterThan(sentBytes(0))
+      expect(onTranscript).toHaveBeenCalledTimes(1)
+      expect(onTranscript).toHaveBeenCalledWith('mika, abre o youtube', expect.anything())
+      session.stop()
+    })
   })
 })

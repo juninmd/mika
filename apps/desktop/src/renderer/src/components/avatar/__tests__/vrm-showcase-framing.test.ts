@@ -36,6 +36,19 @@ describe('frameShowcase', () => {
     expect(project(camera, BOUNDS.min.y).y).toBeLessThan(-1)
   })
 
+  // Mini window: the head has to fill the frame on its own, so the cut lands at the shoulders.
+  it('head shot fills the frame with the head and crops at the shoulders', () => {
+    const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 20)
+    const headBone = new THREE.Vector3(0, 1.36, 0)
+    frameShowcase(camera, BOUNDS, 'head', 0, headBone)
+    const crown = project(camera, BOUNDS.max.y)
+    const chin = project(camera, headBone.y)
+    expect(crown.y).toBeLessThan(1)
+    expect(chin.y).toBeGreaterThan(-1)
+    expect(crown.y - chin.y).toBeGreaterThan(1.1)
+    expect(project(camera, 1.15).y).toBeLessThan(-1)
+  })
+
   it('orbits at a fixed distance, with yaw 0 in front of the model', () => {
     const front = shoot('stage', 0)
     const threeQuarter = shoot('stage', Math.PI / 5)

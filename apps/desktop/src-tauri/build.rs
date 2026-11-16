@@ -33,5 +33,29 @@ fn main() {
         println!("cargo:rustc-link-arg-bins=-Wl,-rpath,$ORIGIN");
     }
 
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("macos") {
+        link_clang_rt_osx();
+    }
+
     tauri_build::build()
+}
+
+/// macOS: o ONNX Runtime (CoreML) chama `___isPlatformVersionAtLeast` (checagens de `@available`),
+/// símbolo do runtime do clang. O `rustc` linka com `-nodefaultlibs`, então esse runtime não entra,
+/// e o símbolo só resolve pela `libSystem` quando o deployment target é o do SDK novo. O
+/// `tauri build` usa `minimumSystemVersion` (13.4) como alvo, o linker esconde o símbolo da
+/// `libSystem` e o link falha com `Undefined symbols ... ___isPlatformVersionAtLeast`.
+/// Ligar o `libclang_rt.osx.a` explicitamente resolve em qualquer alvo.
+fn link_clang_rt_osx() {
+    let resource_dir = std::process::Command::new("clang")
+        .arg("--print-resource-dir")
+        .output()
+        .ok()
+        .filter(|out| out.status.success())
+        .map(|out| String::from_utf8_lossy(&out.stdout).trim().to_string());
+    let lib = resource_dir.map(|dir| std::path::Path::new(&dir).join("lib/darwin/libclang_rt.osx.a"));
+    match lib {
+        Some(path) if path.exists() => println!("cargo:rustc-link-arg={}", path.display()),
+        _ => println!("cargo:warning=libclang_rt.osx.a não encontrado: o link do ORT/CoreML pode falhar"),
+    }
 }

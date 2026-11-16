@@ -1,4 +1,4 @@
-import { Cpu, Eye, Gamepad2, MessageSquare, Mic, MicOff, Pin, PinOff, Trash2, VolumeX } from 'lucide-react'
+import { Activity, Eraser, Gamepad2, MessageSquareText, Mic, MicOff, Pin, PinOff, ScanEye, VolumeX } from 'lucide-react'
 import { useMemo } from 'react'
 import { useI18n } from '../hooks/useI18n'
 import {
@@ -100,7 +100,7 @@ export function useNeuralWheelItems({
         id: 'watch',
         label: t('shell.neuralWheel.item.watchScreen'),
         subLabel: t('shell.neuralWheel.item.watchScreenSub'),
-        icon: <Eye size={22} />,
+        icon: <ScanEye size={22} />,
         kind: 'action',
         color: 'cyan',
         onExecute: () => runWatchAction(onCommand, onClose),
@@ -111,7 +111,7 @@ export function useNeuralWheelItems({
         id: 'chat',
         label: t('shell.neuralWheel.item.openChat'),
         subLabel: t('shell.neuralWheel.item.openChatSub'),
-        icon: <MessageSquare size={22} />,
+        icon: <MessageSquareText size={22} />,
         kind: 'action',
         color: 'cyan',
         onExecute: () => runChatAction(onOpenChat, onClose),
@@ -121,7 +121,7 @@ export function useNeuralWheelItems({
         id: 'system',
         label: t('shell.neuralWheel.item.pcStatus'),
         subLabel: t('shell.neuralWheel.item.pcStatusSub'),
-        icon: <Cpu size={22} />,
+        icon: <Activity size={22} />,
         kind: 'action',
         color: 'mint',
         onExecute: () => runSystemAction(onCommand, onClose),
@@ -130,7 +130,7 @@ export function useNeuralWheelItems({
         id: 'clear',
         label: t('shell.neuralWheel.item.clearChat'),
         subLabel: t('shell.neuralWheel.item.clearChatSub'),
-        icon: <Trash2 size={22} />,
+        icon: <Eraser size={22} />,
         kind: 'action',
         color: 'coral',
         onExecute: () => runClearAction(onClearChat, onClose),

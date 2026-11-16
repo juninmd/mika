@@ -109,7 +109,7 @@ const SUPERTONIC_VOICE_DATA = [
   { name: 'M5', tagKey: 'settings.voiceTts.voiceTag.male' as const, value: 'M5' },
 ]
 /** Idiomas que o modelo Supertonic pronuncia (`supertonic::SUPPORTED_LANGUAGES`), no próprio idioma. */
-export const SUPERTONIC_LANGUAGES = ['pt', 'en', 'es', 'fr', 'ko'] as const
+export const SUPERTONIC_LANGUAGES = ['pt', 'en', 'es', 'fr', 'ko', 'de', 'it', 'ja', 'ru'] as const
 export function supertonicLanguages(t: Translate) {
   return SUPERTONIC_LANGUAGES.map((code) => ({
     label: t(`settings.voiceTts.language.${code}`),
