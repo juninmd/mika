@@ -6,10 +6,12 @@
 
 use std::collections::HashMap;
 
-/// Cosine at or above this is the same line reworded. e5-small's scores are compressed: on 11 pt-BR
-/// pairs (2026-09-27) paraphrases scored 0.882-0.918 and unrelated lines 0.836-0.881. 0.9 misses the
-/// loosest paraphrase instead of muting a new line — silence is the worse error (see `guards`).
-pub const SEMANTIC_REPEAT_MIN: f32 = 0.9;
+/// Cosine at or above this is the same line reworded. Measured for granite-embedding-97m-multilingual-r2
+/// on 15 paraphrase and 15 unrelated pt-BR companion lines (2026-11-15): paraphrases 0.811-0.945,
+/// unrelated 0.635-0.786 — a clean gap, where e5-small (the previous model, threshold 0.9) overlapped
+/// (paraphrases 0.911-0.962, unrelated up to 0.906, i.e. two new lines muted as repeats). 0.80 sits in
+/// the gap; silence is the worse error (see `guards`), so a borderline paraphrase passes.
+pub const SEMANTIC_REPEAT_MIN: f32 = 0.80;
 
 pub type Embed = fn(&str) -> Option<Vec<f32>>;
 

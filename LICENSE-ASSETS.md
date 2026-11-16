@@ -71,36 +71,35 @@ Baixados na primeira vez que o usuário liga o recurso, de revisões fixas (nunc
 | ------------------------------------ | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
 | Whisper tiny/base/small (ONNX)       | `onnx-community/whisper-*` (revisão fixa em `whisper.rs`)              | Apache-2.0 (declarada em `openai/whisper-base`)                                                                                                            | `whisper-cache`              |
 | Nemotron 3.5 ASR streaming 0.6B int4 | `onnx-community/nemotron-3.5-asr-streaming-0.6b-onnx-int4`             | **Declarações em conflito**: OpenMDW-1.1 (NVIDIA) × `license: mit` com `license_name: nvidia-open-model-license` (conversão). **Pendência jurídica**       | `nemotron-cache`             |
-| Supertonic-TTS-2 (ONNX)              | `onnx-community/Supertonic-TTS-2-ONNX` (base `Supertone/supertonic-2`) | BigScience OpenRAIL-M (modelo), MIT (código de exemplo); (c) 2026 Supertone Inc. **Impõe restrições de uso repassáveis ao usuário** — incorporadas ao EULA | `supertonic`                 |
+| Supertonic 3 (ONNX)                  | `supertone-oss-archive/supertonic-3` (arquivo oficial, revisão fixa)   | BigScience OpenRAIL-M (modelo), MIT (código de exemplo); (c) 2026 Supertone Inc. **Impõe restrições de uso repassáveis ao usuário** — incorporadas ao EULA | `supertonic/supertonic-3`    |
 | Kokoro-82M v1.0 (ONNX)               | `onnx-community/Kokoro-82M-v1.0-ONNX`                                  | Apache-2.0                                                                                                                                                 | Opção hoje fora da interface |
-| multilingual-e5-small                | `Xenova/multilingual-e5-small`                                         | MIT (declarada em `intfloat/multilingual-e5-small`); cartão da conversão sem licença própria                                                               | `e5-cache`                   |
+| granite-embedding-97m-multilingual-r2 | `onnx-community/granite-embedding-97m-multilingual-r2-ONNX` (base `ibm-granite/…`) | Apache-2.0 (IBM)                                                                                                                               | `granite-cache`              |
 | Silero VAD                           | `snakers4/silero-vad`, commit fixo                                     | MIT, Silero Team                                                                                                                                           | `vad-cache`                  |
-| Vozes Piper                          | `rhasspy/piper-voices` v1.0.0                                          | Repositório MIT; **a licença do dataset varia por voz**                                                                                                    | Cache de voz do Piper        |
+| Vozes Piper                          | `rhasspy/piper-voices`, revisão `6b9cfaa` (vozes retreinadas)          | Repositório MIT; **a licença do dataset varia por voz**                                                                                                    | Cache de voz do Piper        |
 
 **Piper — aviso comercial.** O ecossistema de vozes Piper mistura datasets com licenças diferentes,
 e algumas vozes usam datasets **CC-BY-NC (uso não comercial)**, que **não podem ser oferecidas num
 produto vendido**. As vozes oferecidas na interface (catálogo `voice/tts/providers/piper/catalog.rs`, cada uma com
-SHA-256 do `.onnx` e do `.onnx.json` na revisão fixa `375a0fe` do repositório — nada baixa fora
-dele), com a licença do dataset conferida na origem em 2026-10-06:
+SHA-256 do `.onnx` e do `.onnx.json` na revisão fixa `6b9cfaa` do repositório — nada baixa fora
+dele), com a licença do dataset e da base de ajuste conferidas no `MODEL_CARD` em 2026-11-15:
 
-| Voz                     | Idioma | Dataset                               | Licença                      |
-| ----------------------- | ------ | ------------------------------------- | ---------------------------- |
-| `pt_BR-faber-medium`    | pt     | NabuCasa/voice-datasets               | CC0                          |
-| `pt_BR-edresson-low`    | pt     | TTS-Portuguese-Corpus                 | CC BY 4.0 (exige atribuição) |
-| `de_DE-thorsten-medium` | de     | Thorsten-Voice                        | CC0                          |
-| `it_IT-paola-medium`    | it     | `paolapersico1/Voice-Dataset-Italian` | CC0-1.0 (cartão do dataset)  |
-| `ru_RU-denis-medium`    | ru     | NabuCasa/voice-datasets               | CC0                          |
+| Voz                     | Idioma | Dataset                   | Licença do dataset           | Base do ajuste fino              |
+| ----------------------- | ------ | ------------------------- | ---------------------------- | -------------------------------- |
+| `pt_BR-faber-medium`    | pt     | OHF-Voice/voice-datasets  | CC0                          | `hifi_tts_92` (Hi-Fi TTS, CC BY 4.0 — exige atribuição) |
+| `pt_BR-edresson-low`    | pt     | TTS-Portuguese-Corpus     | CC BY 4.0 (exige atribuição) | `en_US-ryan` (dataset não conferido) |
+| `de_DE-thorsten-medium` | de     | Thorsten-Voice            | CC0                          | `rdh` (CC0)                      |
+| `it_IT-paola-medium`    | it     | OHF-Voice/voice-datasets  | CC0                          | `hifi_tts_92` (Hi-Fi TTS, CC BY 4.0 — exige atribuição) |
+| `ru_RU-denis-medium`    | ru     | OHF-Voice/voice-datasets  | CC0                          | `rdh` (CC0)                      |
 
-**Pendência jurídica de linhagem.** `faber`, `thorsten`, `paola` e `denis` são ajustes finos do
-checkpoint `en_US-lessac`, treinado no dataset Lessac/Blizzard 2013, cuja licença é só para pesquisa e
-exclui "qualquer finalidade comercial, inclusive o desenvolvimento de produtos de síntese de voz".
-Os datasets de cada voz são livres, mas os pesos partem de um checkpoint treinado em dado restrito:
-isso precisa de parecer antes de vender (`edresson` parte do checkpoint `en_US-ryan`, cujo dataset não foi
-conferido). `en_US-lessac-high` (treinada direto nesse dataset) e `en_US-amy-medium` (licença do dataset não verificada) foram
-**retiradas da interface e do catálogo** (quem as tinha salvas volta ao default `pt_BR-faber-medium`). Voz treinada do zero com licença verificada seria a saída
-(`de_DE-eva_k`/`it_IT-riccardo` são x_low e seu dataset M-AILABS não pôde ser conferido).
+**Linhagem resolvida (nov/2026).** `faber`, `thorsten`, `paola` e `denis` eram ajustes finos do
+checkpoint `en_US-lessac` (dataset Lessac/Blizzard 2013, só pesquisa). Foram retreinadas a partir das
+bases `hifi_tts_92` e `rdh`, de licença comercial, e o catálogo passou a baixar só essas versões (que
+exigem **Piper 1.5+**; um Piper que se declara mais antigo é recusado com o motivo). As cópias antigas
+ficam fora do cache novo e nunca são reaproveitadas. `edresson` não foi retreinada e continua partindo
+de `en_US-ryan`, cujo dataset não foi conferido. `en_US-lessac-high` e `en_US-amy-medium` seguem
+**fora da interface e do catálogo**.
 
-**Idiomas sem voz Piper oferecida, de propósito:** `en` (o Supertonic já o fala), `ja` e `ko` (o Piper não tem voz nesses idiomas) e
+**Idiomas sem voz Piper oferecida, de propósito:** `en` (o Supertonic já o fala; desde o Supertonic 3 ele também fala de, it, ja, ko e ru), `ja` e `ko` (o Piper não tem voz nesses idiomas) e
 `zh` (`zh_CN-huayan`: licença do dataset "Unknown"). Também não entram `ru_RU-ruslan` e `de_DE-pavoque`
 (CC BY-NC-SA) nem `ru_RU-irina` ("Unknown"). Nesses idiomas, com Supertonic ou Piper ativo, a aba de
 voz mostra um aviso e manda escolher um provedor de nuvem (Azure Speech, Google Cloud, ElevenLabs).

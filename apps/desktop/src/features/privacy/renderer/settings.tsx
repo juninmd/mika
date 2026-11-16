@@ -16,6 +16,7 @@ export function PrivacyPanel({ config, onSave }: FeatureComponentProps) {
   const clipboardLogging = configBool(config, 'privacy.clipboardLogging')
   const conversationRetention = configStr(config, 'privacy.conversationRetention', 'forever')
   const offlineMode = configBool(config, 'privacy.offlineMode')
+  const passengerMode = configBool(config, 'privacy.passengerMode')
   const localRiskCount = Number(screenCapture) + Number(clipboardLogging)
   const RETENTION_OPTIONS = [
     choiceOption(
@@ -69,6 +70,7 @@ export function PrivacyPanel({ config, onSave }: FeatureComponentProps) {
           screenCapture={screenCapture}
           clipboardLogging={clipboardLogging}
           offlineMode={offlineMode}
+          passengerMode={passengerMode}
           saveBool={saveBool}
         />
 

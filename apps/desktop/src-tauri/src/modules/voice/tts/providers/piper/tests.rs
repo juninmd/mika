@@ -231,11 +231,57 @@ async fn ensure_voice_reuses_an_already_cached_model_without_touching_the_networ
     let (store, _dir) = store(true); // offline: se tentasse rede, o teste falharia pelo guard
     let cache = TempDir::new("cache-hit");
     let key = "pt_BR-faber-medium";
-    std::fs::write(cache.0.join(format!("{key}.onnx")), b"fake-model").unwrap();
-    std::fs::write(cache.0.join(format!("{key}.onnx.json")), b"{}").unwrap();
+    let dir = revision_dir(&cache.0);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join(format!("{key}.onnx")), b"fake-model").unwrap();
+    std::fs::write(dir.join(format!("{key}.onnx.json")), b"{}").unwrap();
 
     let path = ensure_voice(&cache.0, key, &store).await.unwrap();
-    assert_eq!(path, cache.0.join(format!("{key}.onnx")));
+    assert_eq!(path, dir.join(format!("{key}.onnx")));
+}
+
+/// A faber da `v1.0.0` (linhagem Lessac) baixada na raiz do cache não é reaproveitada como se fosse
+/// a retreinada: com rede bloqueada, a busca vai ao download (e para no modo offline).
+#[tokio::test]
+async fn a_voice_cached_from_the_old_revision_is_not_mistaken_for_the_retrained_one() {
+    let (store, _dir) = store(true);
+    let cache = TempDir::new("cache-old-revision");
+    let key = "pt_BR-faber-medium";
+    std::fs::write(cache.0.join(format!("{key}.onnx")), b"old-model").unwrap();
+    std::fs::write(cache.0.join(format!("{key}.onnx.json")), b"{}").unwrap();
+
+    let err = ensure_voice(&cache.0, key, &store).await.unwrap_err();
+    assert!(err.to_lowercase().contains("offline"), "{err}");
+}
+
+#[test]
+fn parse_version_reads_the_cli_output_and_ignores_text_without_a_number() {
+    assert_eq!(parse_version("1.2.0\n"), Some((1, 2)));
+    assert_eq!(parse_version("piper 1.8.0"), Some((1, 8)));
+    assert_eq!(parse_version("usage: piper [-h] -m MODEL"), None);
+    assert_eq!(parse_version(""), None);
+}
+
+/// Piper 1.2 (o CLI C++ antigo) lê os fonemas sem `vowel_clusters`: recusado com a versão no erro.
+/// Um CLI que não informa versão segue (não há como perguntar).
+#[cfg(unix)]
+#[test]
+fn check_version_refuses_an_old_piper_and_lets_an_unversioned_one_through() {
+    use std::os::unix::fs::PermissionsExt;
+    let dir = TempDir::new("piper-version");
+    let script = |name: &str, body: &str| {
+        let path = dir.0.join(name);
+        std::fs::write(&path, format!("#!/bin/sh\n{body}\n")).unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o755)).unwrap();
+        path.display().to_string()
+    };
+    let old = script("piper-old", "echo 1.2.0");
+    let new = script("piper-new", "echo 1.8.0");
+    let python = script("piper-py", "echo 'usage: piper' >&2; exit 2");
+    let err = check_version(&old, "en-US").unwrap_err();
+    assert!(err.contains("1.2"), "{err}");
+    assert!(check_version(&new, "en-US").is_ok());
+    assert!(check_version(&python, "en-US").is_ok());
 }
 
 /// Voz que o usuário JÁ baixou e que depois saiu do catálogo (`en_US-lessac-high` estava na UI) é
@@ -246,10 +292,15 @@ async fn a_cached_voice_that_left_the_catalog_is_still_used() {
     let (store, _dir) = store(true);
     let cache = TempDir::new("cache-retired");
     let key = "en_US-lessac-high";
-    std::fs::write(cache.0.join(format!("{key}.onnx")), b"fake-model").unwrap();
-    std::fs::write(cache.0.join(format!("{key}.onnx.json")), b"{}").unwrap();
+    let dir = revision_dir(&cache.0);
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join(format!("{key}.onnx")), b"fake-model").unwrap();
+    std::fs::write(dir.join(format!("{key}.onnx.json")), b"{}").unwrap();
 
-    assert_eq!(ensure_voice(&cache.0, key, &store).await.unwrap(), cache.0.join(format!("{key}.onnx")));
+    assert_eq!(
+        ensure_voice(&cache.0, key, &store).await.unwrap(),
+        dir.join(format!("{key}.onnx"))
+    );
 }
 
 // --- generate --------------------------------------------------------------------------------

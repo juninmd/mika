@@ -11,6 +11,7 @@
   "scripts": {
     "build": "turbo run build",
     "setup:check": "tsx scripts/dev/setup-check.mts",
+    "bench:llm": "tsx scripts/dev/llm-cache-bench.mts",
     "dev": "pnpm dev:desktop",
     "dev:desktop": "turbo run dev --filter=@mika/desktop",
     "dev:quick": "turbo run dev:quick --filter=@mika/desktop",

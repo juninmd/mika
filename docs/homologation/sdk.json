@@ -5,18 +5,18 @@
     "perfil": "contract"
   },
   "artefato": {
-    "commit": "967f947bb48d04590878a3dff4f8fedc8decd316+dirty",
-    "tree": "f70df77274ecdfdb",
+    "commit": "a7a2d5c429d15c39052b2d01e446777baf5735d8+dirty",
+    "tree": "2839be77c7998a21",
     "contract": "65d0586d5991ee80",
     "deps": {
       "zod": "catalog:"
     },
-    "lockfile": "4d85bfe4ac1d3048"
+    "lockfile": "f0c04416b62f016b"
   },
   "ambiente": {
     "plataforma": "linux",
     "node": "v22.23.4",
-    "data": "2026-11-11"
+    "data": "2026-11-15"
   },
   "criterios": [
     {

@@ -38,6 +38,13 @@ export function createElectronShellApi(mika: MikaRuntimeApi): ElectronShellApi {
           ipcRenderer.on(DESKTOP_RENDERER_EVENT_CHANNELS.WindowFullscreen, listener)
           return () => ipcRenderer.off(DESKTOP_RENDERER_EVENT_CHANNELS.WindowFullscreen, listener)
         },
+        setMiniMode: (on: boolean) => ipcRenderer.invoke(DESKTOP_SHELL_CHANNELS.WindowSetMiniMode, on) as Promise<void>,
+        isMiniMode: () => ipcRenderer.invoke(DESKTOP_SHELL_CHANNELS.WindowGetMiniMode) as Promise<boolean>,
+        onMiniModeChange: (callback: (payload: { mini: boolean }) => void) => {
+          const listener = (_event: unknown, payload: { mini: boolean }) => callback(payload)
+          ipcRenderer.on(DESKTOP_RENDERER_EVENT_CHANNELS.WindowMiniMode, listener)
+          return () => ipcRenderer.off(DESKTOP_RENDERER_EVENT_CHANNELS.WindowMiniMode, listener)
+        },
         setIgnoreMouseEvents: (ignore: boolean) => ipcRenderer.send(DESKTOP_SHELL_CHANNELS.WindowIgnoreMouse, ignore),
         moveBy: (deltaX: number, deltaY: number) =>
           ipcRenderer.send(DESKTOP_SHELL_CHANNELS.WindowMove, { deltaX, deltaY }),

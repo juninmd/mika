@@ -80,6 +80,18 @@ export const DESKTOP_SHELL_INVOKE_ROUTES = {
     requestSchema: emptyPayloadSchema,
     responseSchema: z.boolean(),
   },
+  windowSetMiniMode: {
+    channel: DESKTOP_SHELL_CHANNELS.WindowSetMiniMode,
+    namespace: 'shell',
+    requestSchema: z.boolean(),
+    responseSchema: voidResponseSchema,
+  },
+  windowGetMiniMode: {
+    channel: DESKTOP_SHELL_CHANNELS.WindowGetMiniMode,
+    namespace: 'shell',
+    requestSchema: emptyPayloadSchema,
+    responseSchema: z.boolean(),
+  },
   autoLaunchGet: {
     channel: DESKTOP_SHELL_CHANNELS.AutoLaunchGet,
     namespace: 'shell',

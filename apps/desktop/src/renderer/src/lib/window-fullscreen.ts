@@ -5,20 +5,24 @@ export type FullscreenWindowApi = {
 }
 
 /**
- * Estado real da janela (lido do backend, não da config) + cada mudança empurrada por `window:fullscreen`.
- * Um evento que chegou antes da leitura inicial terminar é mais novo que ela, então vence.
+ * Estado real da janela (lido do backend, não da config) + cada mudança empurrada pelo evento dela
+ * (`window:fullscreen`, `window:mini-mode`). Um evento que chegou antes da leitura inicial terminar
+ * é mais novo que ela, então vence.
  */
-export function subscribeFullscreen(api: FullscreenWindowApi, notify: (fullscreen: boolean) => void): () => void {
+export function subscribeWindowFlag(
+  read: () => Promise<boolean> | undefined,
+  onChange: (push: (value: boolean) => void) => (() => void) | undefined,
+  notify: (value: boolean) => void,
+): () => void {
   let active = true
   let pushed = false
-  const off = api.onFullscreenChange?.(({ fullscreen }) => {
+  const off = onChange((value) => {
     pushed = true
-    if (active) notify(fullscreen)
+    if (active) notify(value)
   })
-  void api
-    .isFullscreen?.()
-    .then((fullscreen) => {
-      if (active && !pushed) notify(fullscreen)
+  void read()
+    ?.then((value) => {
+      if (active && !pushed) notify(value)
     })
     .catch(() => {
       // Superfície sem permissão sobre a janela: os eventos acima ainda alimentam o estado.
@@ -27,4 +31,12 @@ export function subscribeFullscreen(api: FullscreenWindowApi, notify: (fullscree
     active = false
     off?.()
   }
+}
+
+export function subscribeFullscreen(api: FullscreenWindowApi, notify: (fullscreen: boolean) => void): () => void {
+  return subscribeWindowFlag(
+    () => api.isFullscreen?.(),
+    (push) => api.onFullscreenChange?.(({ fullscreen }) => push(fullscreen)),
+    notify,
+  )
 }

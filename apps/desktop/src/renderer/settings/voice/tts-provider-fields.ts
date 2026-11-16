@@ -128,7 +128,7 @@ export function resolveTtsFields(props: TTSProviderPanelProps, rawCfg: Record<st
     piperRate: pick(props.piperRate, () => configNum(rawCfg, 'voice.piperRate', 1.0)),
     supertonicVoice: pick(props.supertonicVoice, () => configStr(rawCfg, 'voice.supertonicVoice', 'F3')),
     supertonicRate: pick(props.supertonicRate, () => configNum(rawCfg, 'voice.supertonicRate', 1.0)),
-    supertonicSteps: pick(props.supertonicSteps, () => configNum(rawCfg, 'voice.supertonicSteps', 20)),
+    supertonicSteps: pick(props.supertonicSteps, () => configNum(rawCfg, 'voice.supertonicSteps', 8)),
     supertonicLanguage: pick(props.supertonicLanguage, () => configStr(rawCfg, 'voice.supertonicLanguage', 'pt')),
     openaiTtsVoice: pick(props.openaiTtsVoice, () => configStr(rawCfg, 'voice.openaiTtsVoice', 'af_heart')),
     openaiTtsModel: pick(props.openaiTtsModel, () => configStr(rawCfg, 'voice.openaiTtsModel', 'kokoro')),

@@ -24,7 +24,7 @@
 
 mod consolidation;
 mod context;
-mod embedding;
+pub(crate) mod embedding;
 mod queries;
 mod search;
 mod service;

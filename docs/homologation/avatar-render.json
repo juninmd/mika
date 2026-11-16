@@ -5,9 +5,9 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "6bf9f30c779420e905c0bcd76d1a9c41c556844a+dirty",
-    "tree": "cfc8570d586a70ed",
-    "contract": "360fb1bc14e19c1a",
+    "commit": "92572a40893eb5e567800c8ad154e0c95e59d0b6+dirty",
+    "tree": "c7fdc3b9c8d9a332",
+    "contract": "1e1809942deb81f2",
     "deps": {
       "@fontsource-variable/inter": "^5.3.0",
       "@fontsource/ibm-plex-mono": "^5.3.0",

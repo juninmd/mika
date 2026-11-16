@@ -15,5 +15,5 @@ export const DesktopSharedModule = defineModule({
   consumes: [],
   emits: [],
   config: [],
-  frozen: { at: '2026-10-30', hash: 'f0c67235ad3f7c5c' },
+  frozen: { at: '2026-11-15', hash: '234569def56b91a1' },
 })

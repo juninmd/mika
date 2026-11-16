@@ -35,6 +35,8 @@ const ROUTE_AUDIT: &[(&str, RouteAudit)] = &[
     ("window-toggle-always-on-top", RouteAudit::Allowlisted("payload ignorado; alterna estado interno")),
     ("window-toggle-fullscreen", RouteAudit::Allowlisted("payload ignorado; alterna `app.fullscreen` a partir do estado real da janela")),
     ("window-get-fullscreen", RouteAudit::Allowlisted("payload ignorado; leitura do estado da janela")),
+    ("window-set-mini-mode", RouteAudit::Validated("bridge.rs: payload.as_bool() obrigatório")),
+    ("window-get-mini-mode", RouteAudit::Allowlisted("payload ignorado; leitura do estado da janela")),
     ("window-ignore-mouse", RouteAudit::Validated("bridge.rs: payload.as_bool() obrigatório")),
     ("window-move", RouteAudit::Validated("bridge.rs: deltaX/deltaY exigidos como f64")),
     ("window-start-drag", RouteAudit::Allowlisted("payload ignorado; inicia o drag nativo da janela")),

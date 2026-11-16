@@ -40,7 +40,7 @@ pub fn is_fullscreen(app: &AppHandle) -> Result<bool, String> {
     main_window(app)?.is_fullscreen().map_err(|e| e.to_string())
 }
 
-fn saved(app: &AppHandle) -> bool {
+pub(crate) fn saved(app: &AppHandle) -> bool {
     crate::state::config_store(app)
         .ok()
         .and_then(|store| store.get(CONFIG_PATH))
@@ -59,8 +59,22 @@ fn apply(app: &AppHandle, on: bool) {
 /// janela é o observador de [`spawn`].
 pub fn toggle(app: &AppHandle) -> Result<bool, String> {
     let next = !is_fullscreen(app)?;
+    if next {
+        // O Tauri guarda a geometria "de antes" no `set_fullscreen`: ela tem de ser a normal, não o quadrado mini.
+        crate::mini_mode::leave(app)?;
+    }
     crate::state::config_store(app)?.set(CONFIG_PATH, json!(next))?;
     Ok(next)
+}
+
+/// Sai da tela cheia AGORA, sem esperar o observador — o modo mini (`mini_mode::set`) chama antes
+/// de gravar a chave dele, para encolher a janela a partir da geometria normal.
+pub fn leave(app: &AppHandle) -> Result<(), String> {
+    if !is_fullscreen(app)? {
+        return Ok(());
+    }
+    main_window(app)?.set_fullscreen(false).map_err(|e| e.to_string())?;
+    crate::state::config_store(app)?.set(CONFIG_PATH, json!(false))
 }
 
 /// Boot: a janela só aparece em `reveal_main`, e é ali que a preferência salva é reaplicada.

@@ -281,6 +281,7 @@ pub fn reveal_main(app: &AppHandle) {
     let _ = window.set_ignore_cursor_events(false);
     let _ = window.set_focus();
     crate::fullscreen::restore(app);
+    crate::mini_mode::restore(app);
     start_cursor_polling(app);
 }
 
