@@ -125,6 +125,11 @@ pub fn is_mini() -> bool {
     ACTIVE.load(Ordering::Relaxed)
 }
 
+/// A janela está em mini no estilo dock de borda — o que o modo discreto (`dock_discreet.rs`) esconde.
+pub fn is_dock(app: &AppHandle) -> bool {
+    is_mini() && style(app) != Style::Head
+}
+
 fn saved(app: &AppHandle) -> bool {
     crate::state::config_store(app)
         .ok()

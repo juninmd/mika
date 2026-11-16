@@ -201,6 +201,24 @@ a janela do mini (`miniOverlayOpen`) e a faixa inferior de 80 px do click-throug
 transparente da coluna deixa o clique passar. Trocar o estilo com o mini ligado só reposiciona a
 janela; a geometria devolvida ao sair continua a de antes do mini.
 
+**MUST**: o dock de borda é útil sem roubar a tela do jogo:
+- **Esconde sozinho** (`app.dockAutoHide`, padrão ligado): parado por 5 s, sem chat, sem fala e sem
+  nada flutuando, vira uma faixa fina na borda; o mouse sobre ela traz a coluna de volta
+  (`dockVisibility`).
+- **Modo discreto** (`app.dockDiscreet`, padrão ligado): com um app em tela cheia na frente
+  (`dock_discreet.rs` sobre `active_window::foreground_fullscreen` — `SHQueryUserNotificationState`
+  no Windows, `_NET_WM_STATE_FULLSCREEN` no X11, app em primeiro plano com cara de jogo no macOS;
+  Wayland sem sonda fica como está), o dock some por inteiro e todo clique atravessa a janela.
+- **Atalho global** `Ctrl+Shift+Space` (`shortcuts.rs`, `DockTalk`): abre o chat compacto e o
+  microfone sem trazer a janela para a frente; abrir, nunca alternar. Chat aberto vence o discreto.
+- **Bolha e cartões** (`DockFeed`): com o chat fechado, a última fala da Mika (inclusive a proativa)
+  e os pensamentos proativos aparecem numa bolha ao lado da coluna; resultados de `reminder`,
+  `game_knowledge` (com o degrau da escada de ajuda) e `game_session` describe viram cartões
+  (`dockCard`). Qualquer um deles tira o dock da faixa.
+- **Ações rápidas** na coluna: "Onde paramos?" e "Dica sem spoiler" vão como mensagem do usuário
+  (quem responde é o LLM, com a retomada da sessão e a escada de ajuda), e o modo passageiro
+  alterna `privacy.passengerMode`.
+
 ## Onboarding
 
 **MUST**: o primeiro uso pede o mínimo: um provedor, uma credencial, um modelo. Persona e

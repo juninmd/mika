@@ -79,6 +79,31 @@ pub fn register_app_shortcuts(app: &AppHandle) {
     register_mute_shortcut(app);
     register_vision_screenshot_shortcut(app);
     register_push_to_talk_shortcut(app);
+    register_dock_talk_shortcut(app);
+}
+
+/// Conversa rápida pelo dock de borda: abre o chat compacto E o microfone, sem trazer a janela para a
+/// frente — quem está no jogo fala sem perder o foco. O renderer decide o resto
+/// (`useGlobalShortcuts::onDockTalk`); também tira o dock do modo discreto (`dock_discreet.rs`).
+const DOCK_TALK_ACCELERATOR: &str = "CommandOrControl+Shift+Space";
+const DOCK_TALK: &str = "shortcut:dock-talk";
+
+fn register_dock_talk_shortcut(app: &AppHandle) {
+    use tauri::{Emitter, Manager};
+
+    let handle = app.clone();
+    let result = app.global_shortcut().on_shortcut(DOCK_TALK_ACCELERATOR, move |_app, _shortcut, event| {
+        if event.state() != ShortcutState::Pressed {
+            return;
+        }
+        if let Some(window) = handle.get_webview_window(crate::windows::MAIN) {
+            let _ = window.emit(DOCK_TALK, ());
+        }
+    });
+
+    if let Err(error) = result {
+        log::warn!("atalho {DOCK_TALK_ACCELERATOR} (conversa pelo dock) recusado pelo sistema: {error}");
+    }
 }
 
 /// F8 segurado = microfone aberto; soltou, fecha — o mesmo caminho de segurar o botão de mic do dock
@@ -263,7 +288,7 @@ mod tests {
     }
 
     use super::{AppShortcut, APP_SHORTCUTS, MUTE_ACCELERATOR, TOGGLE_INPUT, TOGGLE_MIC, VISION_SCREENSHOT_ACCELERATOR};
-    use super::{push_to_talk_edge, PUSH_TO_TALK, PUSH_TO_TALK_ACCELERATOR};
+    use super::{push_to_talk_edge, DOCK_TALK, DOCK_TALK_ACCELERATOR, PUSH_TO_TALK, PUSH_TO_TALK_ACCELERATOR};
     use tauri_plugin_global_shortcut::ShortcutState;
 
     /// Auto-repeat do SO manda `Pressed` várias vezes com a tecla baixa: só a primeira abre o mic, e
@@ -283,6 +308,13 @@ mod tests {
         assert!(contract.contains(&format!("ShortcutPushToTalk: '{PUSH_TO_TALK}'")), "canal {PUSH_TO_TALK} fora de desktop-ipc-channels.ts");
     }
 
+    /// Mesmo para o atalho de conversa pelo dock: sem o canal no contrato, abre chat e mic de ninguém.
+    #[test]
+    fn dock_talk_channel_is_in_the_desktop_ipc_contract() {
+        let contract = include_str!("../../../../packages/sdk/src/contracts/desktop-ipc-channels.ts");
+        assert!(contract.contains(&format!("ShortcutDockTalk: '{DOCK_TALK}'")), "canal {DOCK_TALK} fora de desktop-ipc-channels.ts");
+    }
+
     /// O card "Atalhos" (e o wizard) listam `GLOBAL_SHORTCUTS` de `app-shortcuts.ts`: a lista tem de
     /// ser EXATAMENTE o que este arquivo registra no SO — nem tecla anunciada que não funciona, nem
     /// atalho real escondido do usuário.
@@ -295,7 +327,7 @@ mod tests {
             .and_then(|rest| rest.split("export const WINDOW_SHORTCUTS").next()).expect("bloco GLOBAL_SHORTCUTS");
         let mut listed: Vec<&str> = block.split("accelerator: '").skip(1).filter_map(|rest| rest.split('\'').next()).collect();
         let mut registered: Vec<&str> = APP_SHORTCUTS.iter().map(|(accelerator, _)| *accelerator).collect();
-        registered.extend([MUTE_ACCELERATOR, VISION_SCREENSHOT_ACCELERATOR, PUSH_TO_TALK_ACCELERATOR]);
+        registered.extend([MUTE_ACCELERATOR, VISION_SCREENSHOT_ACCELERATOR, PUSH_TO_TALK_ACCELERATOR, DOCK_TALK_ACCELERATOR]);
         listed.sort_unstable();
         registered.sort_unstable();
         assert_eq!(listed, registered);
