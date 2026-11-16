@@ -46,6 +46,10 @@ impl MouseButton {
 pub trait InputBackend: Send + Sync {
     fn move_to(&self, x: i32, y: i32) -> Result<(), String>;
     fn click(&self, button: MouseButton) -> Result<(), String>;
+    /// Holds (`down = true`) or releases a button — `drag` is press, move, release.
+    fn button(&self, button: MouseButton, down: bool) -> Result<(), String>;
+    /// Wheel notches; positive `dy` scrolls down, positive `dx` scrolls right (enigo's convention).
+    fn scroll(&self, dx: i32, dy: i32) -> Result<(), String>;
     fn type_text(&self, text: &str) -> Result<(), String>;
     fn send_key_combo(&self, combo: &KeyCombo) -> Result<(), String>;
 }
@@ -65,6 +69,24 @@ impl InputBackend for EnigoBackend {
     fn click(&self, button: MouseButton) -> Result<(), String> {
         use enigo::Mouse;
         open()?.button(button.to_enigo(), Direction::Click).map_err(|error| error.to_string())
+    }
+
+    fn button(&self, button: MouseButton, down: bool) -> Result<(), String> {
+        use enigo::Mouse;
+        let direction = if down { Direction::Press } else { Direction::Release };
+        open()?.button(button.to_enigo(), direction).map_err(|error| error.to_string())
+    }
+
+    fn scroll(&self, dx: i32, dy: i32) -> Result<(), String> {
+        use enigo::{Axis, Mouse};
+        let mut enigo = open()?;
+        if dy != 0 {
+            enigo.scroll(dy, Axis::Vertical).map_err(|error| error.to_string())?;
+        }
+        if dx != 0 {
+            enigo.scroll(dx, Axis::Horizontal).map_err(|error| error.to_string())?;
+        }
+        Ok(())
     }
 
     fn type_text(&self, text: &str) -> Result<(), String> {
@@ -99,6 +121,8 @@ pub(crate) mod fake {
     pub enum Recorded {
         MoveTo(i32, i32),
         Click(MouseButton),
+        Button(MouseButton, bool),
+        Scroll(i32, i32),
         TypeText(String),
         KeyCombo(KeyCombo),
     }
@@ -147,6 +171,18 @@ pub(crate) mod fake {
         fn click(&self, button: MouseButton) -> Result<(), String> {
             self.maybe_fail()?;
             self.calls.lock().unwrap().push(Recorded::Click(button));
+            Ok(())
+        }
+
+        fn button(&self, button: MouseButton, down: bool) -> Result<(), String> {
+            self.maybe_fail()?;
+            self.calls.lock().unwrap().push(Recorded::Button(button, down));
+            Ok(())
+        }
+
+        fn scroll(&self, dx: i32, dy: i32) -> Result<(), String> {
+            self.maybe_fail()?;
+            self.calls.lock().unwrap().push(Recorded::Scroll(dx, dy));
             Ok(())
         }
 
