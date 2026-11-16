@@ -894,7 +894,7 @@ export const frFR: TranslationDict = {
   'settings.computerUse.tab.label': "Contrôle de l'ordinateur",
   'settings.computerUse.field.enabled.label': "Autoriser le contrôle de l'ordinateur",
   'settings.computerUse.field.enabled.description':
-    'Désactivé par défaut. Activé, Mika peut déplacer la souris, cliquer et saisir du texte sur votre ordinateur. Chaque action demande toujours votre approbation.',
+    'Désactivé par défaut. Activé, Mika peut bouger la souris, cliquer, taper, régler le volume et changer de fenêtre. Les clics et la saisie demandent votre accord.',
   'settings.computerUse.panel.description':
     'Mika pilote la souris et le clavier dans ce qui est déjà ouvert, toujours après votre accord.',
   'settings.computerUse.panel.statusOn': 'Actif',
@@ -905,7 +905,7 @@ export const frFR: TranslationDict = {
   'settings.computerUse.panel.guardSwitchText': "Désactivé, l'outil n'exécute rien, pas même une recherche à l'écran.",
   'settings.computerUse.panel.guardApprovalTitle': 'Approbation par action',
   'settings.computerUse.panel.guardApprovalText':
-    'Chaque appel ouvre une boîte de dialogue. Sans votre décision, rien ne se passe.',
+    'Les clics, la saisie et les raccourcis demandent une approbation à chaque fois. Le volume et le changement de fenêtre non.',
   'settings.computerUse.panel.guardWindowTitle': 'Cibles refusées',
   'settings.computerUse.panel.guardWindowText':
     "Même approuvée, elle refuse d'agir sur les fenêtres de Mika ou de taper dans un champ mot de passe (Windows).",
@@ -921,6 +921,18 @@ export const frFR: TranslationDict = {
   'settings.computerUse.panel.actionTypeText': 'Tape du texte dans le champ actif.',
   'settings.computerUse.panel.actionKey': 'Raccourcis',
   'settings.computerUse.panel.actionKeyText': 'Appuie sur des combinaisons comme ctrl+c ou entrée.',
+  'settings.computerUse.panel.guardStopTitle': "Arrêt d'urgence",
+  'settings.computerUse.panel.guardStopText':
+    "Ctrl+Alt+End coupe le contrôle immédiatement, de n'importe où. Réactivez-le ici.",
+  'settings.computerUse.panel.guardCursorTitle': 'Curseur de Mika',
+  'settings.computerUse.panel.guardCursorText': 'Un pointeur rose apparaît là où elle va agir, avant le clic.',
+  'settings.computerUse.panel.actionMouse': 'Souris',
+  'settings.computerUse.panel.actionMouseText':
+    "Déplace, double-clique, fait défiler et glisse à une position de l'écran.",
+  'settings.computerUse.panel.actionVolume': 'Volume',
+  'settings.computerUse.panel.actionVolumeText': 'Monte, baisse ou coupe le son du système à la voix.',
+  'settings.computerUse.panel.actionWindow': 'Changer de fenêtre',
+  'settings.computerUse.panel.actionWindowText': 'Met au premier plan une fenêtre ouverte par son nom (Windows).',
   'settings.mcp.panel.timeoutLabel': "Délai d'attente par serveur",
   'settings.browser.tab.label': 'Navigateur',
   'settings.browser.tab.group': 'Outils',
