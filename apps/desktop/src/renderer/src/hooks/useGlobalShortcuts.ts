@@ -10,6 +10,8 @@ interface GlobalShortcutsOptions {
   onHide?: () => void
   /** Hold-to-talk (F8, OS-level). Only passed in push-to-talk mode — in continuous mode a release would cut the open mic. */
   onPushToTalk?: (pressed: boolean) => void
+  /** Ctrl+Shift+Space (OS-level): chat and mic open, focus stays with the game. */
+  onDockTalk?: () => void
 }
 
 function isEditableTarget(target: EventTarget | null): boolean {
@@ -54,7 +56,7 @@ function shellApi(): ReturnType<typeof getElectronApi> | null {
 }
 
 export function useGlobalShortcuts(opts: GlobalShortcutsOptions) {
-  const { onToggleInput, onToggleMic, onToggleHistory, onToggleFullscreen, onHide, onPushToTalk } = opts
+  const { onToggleInput, onToggleMic, onToggleHistory, onToggleFullscreen, onHide, onPushToTalk, onDockTalk } = opts
 
   useEffect(() => {
     const hasShell = Boolean(shellApi()?.shell.shortcuts)
@@ -69,8 +71,10 @@ export function useGlobalShortcuts(opts: GlobalShortcutsOptions) {
     if (!shortcuts) return
     const unsubs = [shortcuts.onToggleInput(() => onToggleInput()), shortcuts.onToggleMic(() => onToggleMic())]
     if (onPushToTalk) unsubs.push(shortcuts.onPushToTalk((pressed) => onPushToTalk(pressed)))
+    const unsubDock = onDockTalk ? shortcuts.onDockTalk?.(() => onDockTalk()) : undefined
+    if (unsubDock) unsubs.push(unsubDock)
     return () => {
       for (const unsub of unsubs) unsub()
     }
-  }, [onToggleInput, onToggleMic, onPushToTalk])
+  }, [onToggleInput, onToggleMic, onPushToTalk, onDockTalk])
 }

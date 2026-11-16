@@ -54,3 +54,10 @@ export function useMiniModeGuard(mini: boolean, blocking: boolean, overlayOpen: 
     else if (action === 'close-overlays') closeOverlays()
   }, [mini, blocking, overlayOpen, closeOverlays])
 }
+
+/** Edge dock over a fullscreen app (`dock_discreet.rs`, `app.dockDiscreet`): hidden, every click goes through. */
+export function useDockDiscreet(): boolean {
+  const [discreet, setDiscreet] = useState(false)
+  useEffect(() => getElectronApi().shell.window?.onDiscreetChange?.(({ discreet }) => setDiscreet(discreet)), [])
+  return discreet
+}

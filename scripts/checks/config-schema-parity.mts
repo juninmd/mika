@@ -65,6 +65,14 @@ const EXEMPT: ReadonlyMap<string, string> = new Map([
     'renderizado por WindowModeCard.tsx (aba Resumo, GlassSelect de estilo) e pelo menu ⋯ do EdgeDock.tsx; fora do dicionário de HANDLED_FIELDS',
   ],
   [
+    'app.dockAutoHide',
+    'renderizado por WindowModeCard.tsx (aba Resumo, GlassToggle do dock); fora do dicionário de HANDLED_FIELDS',
+  ],
+  [
+    'app.dockDiscreet',
+    'renderizado por WindowModeCard.tsx (aba Resumo, GlassToggle do dock); fora do dicionário de HANDLED_FIELDS',
+  ],
+  [
     'app.autoUpdate',
     'renderizado por UpdatePanel.tsx (aba Atualizações, AutoUpdateSection), fora do dicionário de HANDLED_FIELDS',
   ],

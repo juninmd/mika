@@ -157,6 +157,12 @@ fn app() -> Namespace {
             // Onde a janela mini mora (`mini_mode.rs`): `head` é o quadrado da cabeça no canto;
             // `dock-right`/`dock-left` é o dock de borda com o ícone e o chat compacto (`EdgeDock.tsx`).
             choice("miniModeStyle", "head", &["head", "dock-right", "dock-left"]),
+            // Dock de borda (`EdgeDock.tsx`): parado e sem conversa, vira uma faixa fina na borda e
+            // volta ao passar o mouse.
+            boolean("dockAutoHide", true),
+            // Dock de borda: com um app em tela cheia na frente (jogo), some de vez e deixa todo
+            // clique passar (`dock_discreet.rs`); só o atalho global ou o chat aberto o trazem de volta.
+            boolean("dockDiscreet", true),
             // Atualização automática (`modules/update/auto.rs`): só avisa, ou baixa e instala sozinha
             // quando o PC fica ocioso. Padrão `notify`: quem decide instalar é o dono do PC, e o
             // aviso chega no mesmo boot em que a versão nova é encontrada. Controle em

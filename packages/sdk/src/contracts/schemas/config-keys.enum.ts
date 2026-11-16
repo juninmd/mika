@@ -34,6 +34,8 @@ export enum ConfigKey {
   AppFullscreen = 'app.fullscreen',
   AppMiniMode = 'app.miniMode',
   AppMiniModeStyle = 'app.miniModeStyle',
+  AppDockAutoHide = 'app.dockAutoHide',
+  AppDockDiscreet = 'app.dockDiscreet',
 
   SystemLogLevel = 'system.logLevel',
 
