@@ -2291,6 +2291,24 @@ export type TranslationDict = {
   'settings.window.style.head': string
   'settings.window.style.dockRight': string
   'settings.window.style.dockLeft': string
+  'shell.edgeDock.reveal': string
+  'shell.edgeDock.openChat': string
+  'shell.edgeDock.quick.recap': string
+  'shell.edgeDock.quick.recapPrompt': string
+  'shell.edgeDock.quick.hint': string
+  'shell.edgeDock.quick.hintPrompt': string
+  'shell.edgeDock.quick.passenger': string
+  'shell.edgeDock.card.reminder': string
+  'shell.edgeDock.card.recap': string
+  'shell.edgeDock.card.level.hint': string
+  'shell.edgeDock.card.level.tip': string
+  'shell.edgeDock.card.level.solution': string
+  'settings.window.dockAutoHide.label': string
+  'settings.window.dockAutoHide.hint': string
+  'settings.window.dockDiscreet.label': string
+  'settings.window.dockDiscreet.hint': string
+  'settings.shortcuts.dockTalk.label': string
+  'settings.shortcuts.dockTalk.description': string
   'settings.performance.profileLabel': string
   'settings.performance.profile.auto': string
   'settings.performance.profile.autoHint': string

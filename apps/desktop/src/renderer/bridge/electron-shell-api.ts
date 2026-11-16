@@ -45,6 +45,11 @@ export function createElectronShellApi(mika: MikaRuntimeApi): ElectronShellApi {
           ipcRenderer.on(DESKTOP_RENDERER_EVENT_CHANNELS.WindowMiniMode, listener)
           return () => ipcRenderer.off(DESKTOP_RENDERER_EVENT_CHANNELS.WindowMiniMode, listener)
         },
+        onDiscreetChange: (callback: (payload: { discreet: boolean }) => void) => {
+          const listener = (_event: unknown, payload: { discreet: boolean }) => callback(payload)
+          ipcRenderer.on(DESKTOP_RENDERER_EVENT_CHANNELS.WindowDiscreet, listener)
+          return () => ipcRenderer.off(DESKTOP_RENDERER_EVENT_CHANNELS.WindowDiscreet, listener)
+        },
         setIgnoreMouseEvents: (ignore: boolean) => ipcRenderer.send(DESKTOP_SHELL_CHANNELS.WindowIgnoreMouse, ignore),
         moveBy: (deltaX: number, deltaY: number) =>
           ipcRenderer.send(DESKTOP_SHELL_CHANNELS.WindowMove, { deltaX, deltaY }),
@@ -79,6 +84,11 @@ export function createElectronShellApi(mika: MikaRuntimeApi): ElectronShellApi {
           const listener = (_event: unknown, payload: { pressed?: unknown }) => callback(payload?.pressed === true)
           ipcRenderer.on(DESKTOP_EVENT_CHANNELS.ShortcutPushToTalk, listener)
           return () => ipcRenderer.off(DESKTOP_EVENT_CHANNELS.ShortcutPushToTalk, listener)
+        },
+        onDockTalk: (callback: () => void) => {
+          const listener = () => callback()
+          ipcRenderer.on(DESKTOP_EVENT_CHANNELS.ShortcutDockTalk, listener)
+          return () => ipcRenderer.off(DESKTOP_EVENT_CHANNELS.ShortcutDockTalk, listener)
         },
       },
       pluginViews: {

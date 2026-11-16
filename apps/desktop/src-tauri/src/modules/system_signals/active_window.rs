@@ -84,6 +84,15 @@ pub fn is_supported() -> bool {
     super::probe::unsupported_here().is_none()
 }
 
+/// The app in front covers the screen (fullscreen game, presentation) — see `probe.rs`. `None` where
+/// the platform can't tell (Wayland, see [`is_supported`]).
+pub fn foreground_fullscreen() -> Option<bool> {
+    if !is_supported() {
+        return None;
+    }
+    super::probe::foreground_fullscreen()
+}
+
 pub(crate) fn remember(snapshot: ActiveWindowSnapshot) {
     *snapshot_slot().lock().unwrap_or_else(|e| e.into_inner()) = Some(snapshot);
 }
