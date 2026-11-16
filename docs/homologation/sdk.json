@@ -5,8 +5,8 @@
     "perfil": "contract"
   },
   "artefato": {
-    "commit": "056acc1d75c1810bd9c6dc844e4a70ff48680715+dirty",
-    "tree": "8dff7198b043d418",
+    "commit": "f6d7b8c927342b5a76534788f863ac40ab3c7239+dirty",
+    "tree": "25afe336fcb0bdc0",
     "contract": "65d0586d5991ee80",
     "deps": {
       "zod": "catalog:"

@@ -159,6 +159,7 @@ export const App = memo(function App() {
             onSend={handleSend}
             onToggleChat={handleOpenInput}
             onToggleMic={handleToggleMic}
+            onAsk={sendMessage}
           />
         ) : (
           <AppAvatarLayer shell={shell} headOnly={mini} />

@@ -221,7 +221,8 @@ windows-core = "0.62"
 # a árvore de dependências, só declara uma aresta que já existia. Crate oficial da Microsoft, dual
 # MIT/Apache-2.0, sem RUSTSEC aberto (checado em 2026-09-22 contra a advisory-db).
 # `Win32_Foundation`: tipo `HWND`. `Win32_UI_WindowsAndMessaging`: as três funções acima.
-windows = { version = "0.62", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging"] }
+# `Win32_UI_Shell`: `SHQueryUserNotificationState`, o "app em tela cheia na frente" do dock discreto.
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging", "Win32_UI_Shell"] }
 # GPU para STT/TTS (`modules/inference/session.rs`). O binário do ONNX Runtime que o `ort` baixa para
 # Windows JÁ é o build DirectML — a feature só expõe o EP, não troca o download. DirectML roda em
 # NVIDIA, AMD e Intel sem CUDA instalado; CUDA fica de fora por exigir o toolkit no PC do usuário.

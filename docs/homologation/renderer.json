@@ -5,8 +5,8 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "fb434ccfb8fda7fb2e6e2a9b50eba3cd524e2194+dirty",
-    "tree": "895e160e0f441b84",
+    "commit": "f6d7b8c927342b5a76534788f863ac40ab3c7239+dirty",
+    "tree": "2f9012ad1bd78855",
     "contract": "6a303d7b5c636319",
     "deps": {
       "@fontsource-variable/inter": "^5.3.0",
@@ -57,7 +57,7 @@
     {
       "id": "contrato",
       "status": "ok",
-      "detail": "101 arquivo(s) de teste"
+      "detail": "103 arquivo(s) de teste"
     }
   ],
   "estado": "aprovado",

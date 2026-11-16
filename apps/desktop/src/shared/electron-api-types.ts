@@ -24,6 +24,8 @@ export type ElectronShellNamespace = {
     setMiniMode?: (on: boolean) => Promise<void>
     isMiniMode?: () => Promise<boolean>
     onMiniModeChange?: (callback: (payload: { mini: boolean }) => void) => () => void
+    /** Edge dock over a fullscreen app (`dock_discreet.rs`): hide and let every click through. */
+    onDiscreetChange?: (callback: (payload: { discreet: boolean }) => void) => () => void
     setIgnoreMouseEvents: (ignore: boolean) => void
     moveBy: (deltaX: number, deltaY: number) => void
     startDrag?: () => void
@@ -40,6 +42,8 @@ export type ElectronShellNamespace = {
     onToggleMic: (callback: () => void) => () => void
     /** F8 held (`true`) / released (`false`), from `shortcuts.rs` — no focus needed. */
     onPushToTalk: (callback: (pressed: boolean) => void) => () => void
+    /** Ctrl+Shift+Space: open the compact chat and the mic without taking focus (`shortcuts.rs`). */
+    onDockTalk?: (callback: () => void) => () => void
   }
   pluginViews?: {
     open: (payload: { pluginId: string; viewId: string }) => Promise<void>

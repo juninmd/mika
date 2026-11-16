@@ -1,8 +1,9 @@
 import { Maximize } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { saveConfigFlag, useConfigFlag } from '../../hooks/useConfigFlag'
 import { useI18n } from '../../hooks/useI18n'
 import { setMiniModeStyle, useMiniMode, useMiniModeStyle } from '../../hooks/useMiniMode'
-import { parseMiniModeStyle } from '../../lib/mini-mode'
+import { isDockStyle, parseMiniModeStyle } from '../../lib/mini-mode'
 import { getElectronApi } from '../../lib/shell-api'
 import { subscribeFullscreen } from '../../lib/window-fullscreen'
 import { GlassSection, GlassSelect, GlassToggle, StatusPill } from './ds'
@@ -19,6 +20,8 @@ export function WindowModeCard() {
   const [fullscreen, setFullscreen] = useState<boolean | null>(null)
   const mini = useMiniMode()
   const style = useMiniModeStyle()
+  const dockAutoHide = useConfigFlag('app.dockAutoHide', true)
+  const dockDiscreet = useConfigFlag('app.dockDiscreet', true)
   const windowApi = getElectronApi().shell.window
   const state = mini ? 'mini' : fullscreen ? 'fullscreen' : 'windowed'
 
@@ -53,6 +56,22 @@ export function WindowModeCard() {
             { value: 'dock-left', label: t('settings.window.style.dockLeft') },
           ]}
         />
+        {isDockStyle(style) && (
+          <>
+            <GlassToggle
+              label={t('settings.window.dockAutoHide.label')}
+              description={t('settings.window.dockAutoHide.hint')}
+              value={dockAutoHide}
+              onChange={() => saveConfigFlag('app.dockAutoHide', !dockAutoHide)}
+            />
+            <GlassToggle
+              label={t('settings.window.dockDiscreet.label')}
+              description={t('settings.window.dockDiscreet.hint')}
+              value={dockDiscreet}
+              onChange={() => saveConfigFlag('app.dockDiscreet', !dockDiscreet)}
+            />
+          </>
+        )}
         <div role="status" aria-live="polite" className="flex flex-wrap items-center gap-2">
           <span className="text-caption font-semibold uppercase tracking-[0.12em] text-text-muted">
             {t('settings.window.stateLabel')}
