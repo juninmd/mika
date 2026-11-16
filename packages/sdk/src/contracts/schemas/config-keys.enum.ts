@@ -33,6 +33,7 @@ export enum ConfigKey {
   AppInferenceAcceleration = 'app.inferenceAcceleration',
   AppFullscreen = 'app.fullscreen',
   AppMiniMode = 'app.miniMode',
+  AppMiniModeStyle = 'app.miniModeStyle',
 
   SystemLogLevel = 'system.logLevel',
 

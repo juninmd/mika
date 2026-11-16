@@ -19,6 +19,11 @@ describe('useClickThrough — pollIgnoreDecision', () => {
     expect(pollIgnoreDecision({ isInside: true, insideX: 5, insideY: 600 }, 640, false, overTransparent)).toBe(false)
   })
 
+  // The edge dock has no bottom strip: its transparent bottom must let clicks reach the app below.
+  it('lets clicks through the bottom of the edge dock window', () => {
+    expect(pollIgnoreDecision({ isInside: true, insideX: 5, insideY: 600 }, 640, false, overTransparent, 0)).toBe(true)
+  })
+
   it('leaves the state alone outside the window or mid-drag', () => {
     expect(pollIgnoreDecision({ isInside: false, insideX: -5, insideY: 300 }, 640, false, overAvatar)).toBeNull()
     expect(pollIgnoreDecision({ isInside: true, insideX: 200, insideY: 300 }, 640, true, overTransparent)).toBeNull()

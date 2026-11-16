@@ -1,10 +1,11 @@
 import { Maximize } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useI18n } from '../../hooks/useI18n'
-import { useMiniMode } from '../../hooks/useMiniMode'
+import { setMiniModeStyle, useMiniMode, useMiniModeStyle } from '../../hooks/useMiniMode'
+import { parseMiniModeStyle } from '../../lib/mini-mode'
 import { getElectronApi } from '../../lib/shell-api'
 import { subscribeFullscreen } from '../../lib/window-fullscreen'
-import { GlassSection, GlassToggle, StatusPill } from './ds'
+import { GlassSection, GlassSelect, GlassToggle, StatusPill } from './ds'
 
 const STATE_LABEL = {
   windowed: 'settings.window.state.windowed',
@@ -17,6 +18,7 @@ export function WindowModeCard() {
   const { t } = useI18n()
   const [fullscreen, setFullscreen] = useState<boolean | null>(null)
   const mini = useMiniMode()
+  const style = useMiniModeStyle()
   const windowApi = getElectronApi().shell.window
   const state = mini ? 'mini' : fullscreen ? 'fullscreen' : 'windowed'
 
@@ -38,6 +40,18 @@ export function WindowModeCard() {
           value={mini === true}
           disabled={!windowApi?.setMiniMode}
           onChange={() => void windowApi?.setMiniMode?.(!mini)}
+        />
+        <GlassSelect
+          label={t('settings.window.style.label')}
+          description={t('settings.window.style.hint')}
+          value={style}
+          onChange={(next) => setMiniModeStyle(parseMiniModeStyle(next))}
+          variant="dropdown"
+          options={[
+            { value: 'head', label: t('settings.window.style.head') },
+            { value: 'dock-right', label: t('settings.window.style.dockRight') },
+            { value: 'dock-left', label: t('settings.window.style.dockLeft') },
+          ]}
         />
         <div role="status" aria-live="polite" className="flex flex-wrap items-center gap-2">
           <span className="text-caption font-semibold uppercase tracking-[0.12em] text-text-muted">

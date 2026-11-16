@@ -39,6 +39,10 @@ const ALLOWLIST: Record<string, { count: number; reason: string }> = {
     count: 1,
     reason: 'composer de chat — texto livre da conversa, não um campo de configuração',
   },
+  'apps/desktop/src/renderer/src/components/dock/EdgeDock.tsx': {
+    count: 1,
+    reason: 'composer do chat compacto do dock de borda — texto livre da conversa, não um campo de configuração',
+  },
   'apps/desktop/src/renderer/src/components/settings/BackupPanel.tsx': {
     count: 1,
     reason: 'seletor de arquivo .json para importar configurações — não é campo de configuração',
