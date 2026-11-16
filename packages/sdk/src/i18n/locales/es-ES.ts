@@ -2007,6 +2007,14 @@ export const esES: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': 'Ningún dato listado contiene',
   'settings.memory.panel.factsEmptyDefault': 'Aún no se ha aprendido ningún dato.',
   'settings.memory.panel.deleteFactAriaPrefix': 'Eliminar dato:',
+  'settings.memory.panel.editFactAriaPrefix': 'Editar dato:',
+  'settings.memory.panel.editFactLabel': 'Editar dato',
+  'settings.memory.panel.saveFactAriaLabel': 'Guardar dato',
+  'settings.memory.panel.cancelEditAriaLabel': 'Cancelar edición',
+  'settings.memory.panel.passengerNotice':
+    'Modo pasajero activado: Mika no guarda ni cambia recuerdos en esta sesión. Aún puedes verlos y borrarlos.',
+  'settings.memory.panel.recordingOffNotice':
+    'Grabación de memoria desactivada: Mika no guarda ni cambia recuerdos. Aún puedes verlos y borrarlos.',
   'settings.memory.panel.peopleTitle': 'Personas conocidas',
   'settings.memory.panel.peopleEmpty': 'Aún no hay personas catalogadas.',
   'settings.memory.panel.forgetButton': 'Olvidar',

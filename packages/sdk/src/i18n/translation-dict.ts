@@ -1817,6 +1817,12 @@ export type TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': string
   'settings.memory.panel.factsEmptyDefault': string
   'settings.memory.panel.deleteFactAriaPrefix': string
+  'settings.memory.panel.editFactAriaPrefix': string
+  'settings.memory.panel.editFactLabel': string
+  'settings.memory.panel.saveFactAriaLabel': string
+  'settings.memory.panel.cancelEditAriaLabel': string
+  'settings.memory.panel.passengerNotice': string
+  'settings.memory.panel.recordingOffNotice': string
   'settings.memory.panel.peopleTitle': string
   'settings.memory.panel.peopleEmpty': string
   'settings.memory.panel.forgetButton': string

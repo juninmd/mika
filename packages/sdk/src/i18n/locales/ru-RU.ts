@@ -2000,6 +2000,14 @@ export const ruRU: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': 'Нет факта в списке, содержащего',
   'settings.memory.panel.factsEmptyDefault': 'Фактов пока не узнано.',
   'settings.memory.panel.deleteFactAriaPrefix': 'Удалить факт:',
+  'settings.memory.panel.editFactAriaPrefix': 'Изменить факт:',
+  'settings.memory.panel.editFactLabel': 'Изменить факт',
+  'settings.memory.panel.saveFactAriaLabel': 'Сохранить факт',
+  'settings.memory.panel.cancelEditAriaLabel': 'Отменить изменение',
+  'settings.memory.panel.passengerNotice':
+    'Режим пассажира включён: в этом сеансе Мика не сохраняет и не меняет воспоминания. Смотреть и удалять по-прежнему можно.',
+  'settings.memory.panel.recordingOffNotice':
+    'Запись памяти выключена: Мика не сохраняет и не меняет воспоминания. Смотреть и удалять по-прежнему можно.',
   'settings.memory.panel.peopleTitle': 'Известные люди',
   'settings.memory.panel.peopleEmpty': 'Людей в каталоге пока нет.',
   'settings.memory.panel.forgetButton': 'Забыть',
