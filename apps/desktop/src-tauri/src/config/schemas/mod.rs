@@ -154,6 +154,9 @@ fn app() -> Namespace {
             // Modo mini da janela do avatar (`mini_mode.rs`): só a cabeça, no canto inferior esquerdo.
             // Mesma rota da tela cheia — a UI grava a chave e o observador aplica na janela.
             boolean("miniMode", false),
+            // Onde a janela mini mora (`mini_mode.rs`): `head` é o quadrado da cabeça no canto;
+            // `dock-right`/`dock-left` é o dock de borda com o ícone e o chat compacto (`EdgeDock.tsx`).
+            choice("miniModeStyle", "head", &["head", "dock-right", "dock-left"]),
             // Atualização automática (`modules/update/auto.rs`): só avisa, ou baixa e instala sozinha
             // quando o PC fica ocioso. Padrão `notify`: quem decide instalar é o dono do PC, e o
             // aviso chega no mesmo boot em que a versão nova é encontrada. Controle em
