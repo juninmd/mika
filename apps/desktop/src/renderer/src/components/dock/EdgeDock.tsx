@@ -164,7 +164,7 @@ function CompactChat(props: EdgeDockProps & { state: Presence }) {
       <header className="flex items-center gap-2.5 border-b border-border-subtle py-2.5 pl-3.5 pr-2">
         <MikaFace state={state} size={28} />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-text-main">Mika</p>
+          <p className="text-sm font-semibold text-text-main">{t('shell.bubble.mika')}</p>
           <p className="text-caption text-text-muted">{t(`shell.edgeDock.state.${state}`)}</p>
         </div>
         <button
