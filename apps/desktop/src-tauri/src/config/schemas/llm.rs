@@ -40,9 +40,22 @@ const PROVIDER_OPTIONS: &[UiOption] = &[
     },
 ];
 
-const PROVIDER_IDS: &[&str] = &["google", "openrouter", "ollama", "openaiCompatible", "unsloth"];
-/// Embeddings add `local` (in-process e5, `inference::embedder`): semantic memory with no server.
-const EMBEDDING_PROVIDER_IDS: &[&str] = &["local", "google", "openrouter", "ollama", "openaiCompatible", "unsloth"];
+const PROVIDER_IDS: &[&str] = &[
+    "google",
+    "openrouter",
+    "ollama",
+    "openaiCompatible",
+    "unsloth",
+];
+/// Embeddings add `local` (in-process granite, `inference::embedder`): semantic memory with no server.
+const EMBEDDING_PROVIDER_IDS: &[&str] = &[
+    "local",
+    "google",
+    "openrouter",
+    "ollama",
+    "openaiCompatible",
+    "unsloth",
+];
 
 /// `llm.schema.ts` (grupo `connection`) + `llm-model-config.schema.ts` + `llm-behavior-config.schema.ts`
 /// + `embedding.schema.ts` (mesmo prefixo `llm`).

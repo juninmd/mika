@@ -100,6 +100,10 @@ const AVATAR: Size = Size {
     min_height: 400.0,
 };
 
+/// O modo mini (`mini_mode.rs`) baixa o piso para encolher e devolve estes valores ao sair.
+pub const AVATAR_SIZE: (f64, f64) = (AVATAR.width, AVATAR.height);
+pub const AVATAR_MIN_SIZE: (f64, f64) = (AVATAR.min_width, AVATAR.min_height);
+
 struct Size {
     width: f64,
     height: f64,

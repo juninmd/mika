@@ -5,7 +5,7 @@ import { rendererLog } from '../lib/renderer-logger'
 import type { getElectronApi } from '../lib/shell-api'
 import { prependPreRoll, preRollDurationMs } from './speech-preroll'
 
-type TranscribeResponse = {
+export type TranscribeResponse = {
   success: boolean
   data?: { text: string }
   error?: string
@@ -135,6 +135,65 @@ export function shouldFinishUtterance(
   return endpointingEnabled && silentForMs >= hangoverMs
 }
 
+/** Sends PCM16 to the backend STT. Split from delivery so a transcript can start during the
+ * hangover (`useSpeechRecognition.media.ts`) and be handed over — or dropped — when it ends. */
+export function requestTranscript(pcm: Uint8Array, context: MediaRecorderContext): Promise<TranscribeResponse> {
+  const startedAt = performance.now()
+  const pending = (
+    context.runtime.transcribeAudio({
+      audioBase64: bytesToBase64(pcm),
+      mimeType: PCM_MIME_TYPE,
+      language: context.lang,
+    }) as Promise<TranscribeResponse>
+  ).then((result) => {
+    logSttMilestone(context.runtime, 'transcript-latency', {
+      latencyMs: Math.round(performance.now() - startedAt),
+      provider: context.asrProvider,
+    })
+    return result
+  })
+  // A discarded early transcript is never awaited; its failure must not surface as unhandled.
+  pending.catch(() => {})
+  return pending
+}
+
+export async function deliverTranscript(
+  pending: Promise<TranscribeResponse>,
+  context: MediaRecorderContext,
+  totalDurationMs: number,
+): Promise<void> {
+  if (context.closed) return
+  context.onProcessingChange?.(true)
+  try {
+    const result = await pending
+    if (result.success) {
+      const transcript = result.data?.text?.trim()
+      rendererLog.debug('[STT] transcrição concluida', { chars: transcript?.length ?? 0, durationMs: totalDurationMs })
+      // Audio window travels with the transcript so later checks can ask if the text plausibly came from that sound.
+      if (transcript) context.onTranscript(transcript, { durationMs: totalDurationMs })
+      return
+    }
+    const error = result.error ?? 'transcription-failed'
+    rendererLog.warn('[STT] transcrição falhou', { error })
+    if (!isIgnorableTranscribeError(error)) context.onError?.(error)
+  } catch (error) {
+    if (!context.closed) context.onError?.(toDisplayError(error, 'transcription-failed'))
+  } finally {
+    context.onProcessingChange?.(false)
+  }
+}
+
+/** PCM captured by the worklet tap (already 16 kHz mono), pre-roll first — no container decode. */
+export function capturedPcm16(chunks: Float32Array[], preRoll?: Float32Array): Uint8Array {
+  const merged = new Float32Array(chunks.reduce((n, c) => n + c.length, 0))
+  let at = 0
+  for (const chunk of chunks) {
+    merged.set(chunk, at)
+    at += chunk.length
+  }
+  return prependPreRoll(new Uint8Array(float32ArrayToInt16(merged).buffer), preRoll)
+}
+
 export async function transcribeUtterance(
   blob: Blob,
   context: MediaRecorderContext,
@@ -142,44 +201,15 @@ export async function transcribeUtterance(
   preRoll?: Float32Array,
 ): Promise<void> {
   if (context.closed || blob.size === 0) return
-
-  context.onProcessingChange?.(true)
+  let pcm: Uint8Array
   try {
-    const pcm = await blobToPcm16(blob)
-    const combined = prependPreRoll(pcm, preRoll)
-    // The window sent for transcription now includes the pre-roll — the syllable that tripped the
-    // gate ships with it, so the reported window covers what was actually transcribed.
-    const totalDurationMs = durationMs + preRollDurationMs(preRoll)
-    const startedAt = performance.now()
-    const result = (await context.runtime.transcribeAudio({
-      audioBase64: bytesToBase64(combined),
-      mimeType: PCM_MIME_TYPE,
-      language: context.lang,
-    })) as TranscribeResponse
-    const latencyMs = Math.round(performance.now() - startedAt)
-    logSttMilestone(context.runtime, 'transcript-latency', { latencyMs, provider: context.asrProvider })
-
-    if (result.success) {
-      const transcript = result.data?.text?.trim()
-
-      rendererLog.debug('[STT] transcrição concluida', { chars: transcript?.length ?? 0, durationMs: totalDurationMs })
-      // Audio window travels with the transcript so later checks can ask if the text plausibly came from that sound.
-      if (transcript) context.onTranscript(transcript, { durationMs: totalDurationMs })
-      return
-    }
-
-    const error = result.error ?? 'transcription-failed'
-    rendererLog.warn('[STT] transcrição falhou', { error })
-    if (!isIgnorableTranscribeError(error)) {
-      context.onError?.(error)
-    }
+    pcm = prependPreRoll(await blobToPcm16(blob), preRoll)
   } catch (error) {
-    if (!context.closed) {
-      context.onError?.(toDisplayError(error, 'transcription-failed'))
-    }
-  } finally {
-    context.onProcessingChange?.(false)
+    if (!context.closed) context.onError?.(toDisplayError(error, 'transcription-failed'))
+    return
   }
+  // The window sent for transcription includes the pre-roll — the syllable that tripped the gate.
+  await deliverTranscript(requestTranscript(pcm, context), context, durationMs + preRollDurationMs(preRoll))
 }
 
 export function scaleVadGates(threshold: number | undefined): { start: number; stop: number } {

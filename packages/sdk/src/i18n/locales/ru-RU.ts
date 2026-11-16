@@ -26,6 +26,7 @@ export const ruRU: TranslationDict = {
   'shell.palette.openChat': 'Открыть чат',
   'shell.palette.history': 'Посмотреть историю',
   'shell.palette.fullscreen': 'Переключить полноэкранный режим',
+  'shell.palette.miniMode': 'Включить мини-режим',
   'shell.palette.settings': 'Настройки',
   'shell.palette.reopenWizard': 'Пройти первичную настройку заново',
   'shell.palette.reopenWizardHint': 'Снова открывает мастер первого запуска: язык, приватность, модель и голос',
@@ -71,15 +72,15 @@ export const ruRU: TranslationDict = {
   'shell.composer.micDenied': 'Доступ к микрофону запрещён.',
   'shell.composer.micError': 'Сбой распознавания речи:',
   'shell.composer.micNotFound': 'Микрофон не найден. Подключи его и проверь «Аудиоустройства».',
-  'shell.composer.quick.screen': '👀 Экран',
+  'shell.composer.quick.screen': 'Экран',
   'shell.composer.quick.screenMsg': 'Что сейчас у меня на экране?',
-  'shell.composer.quick.game': '🎮 Игра',
+  'shell.composer.quick.game': 'Игра',
   'shell.composer.quick.gameMsg': 'Расскажи мне про игру, в которую я сейчас играю.',
-  'shell.composer.quick.who': '🧍 Кто это?',
+  'shell.composer.quick.who': 'Кто это?',
   'shell.composer.quick.whoMsg': 'Кто на экране? Расскажи про этого человека или персонажа.',
-  'shell.composer.quick.react': '💬 Реакция',
+  'shell.composer.quick.react': 'Реакция',
   'shell.composer.quick.reactMsg': 'Отреагируй на то, что у меня на экране!',
-  'shell.composer.quick.surprise': '🎲 Сюрприз',
+  'shell.composer.quick.surprise': 'Сюрприз',
   'shell.composer.quick.surpriseMsg':
     'Удиви меня чем-нибудь случайным — фактом, гиковской шуткой, любопытной мелочью, чем угодно.',
   'shell.composer.ph1': 'Поговори со мной...',
@@ -257,6 +258,8 @@ export const ruRU: TranslationDict = {
   'shell.senses.memory.label': 'Память: {{status}}',
   'shell.senses.memory.active': 'активна',
   'shell.senses.memory.off': 'выключена',
+  'shell.passenger.chip.label': 'Режим пассажира',
+  'shell.passenger.chip.hint': 'Ничего из этой сессии не сохраняется. Нажмите, чтобы выйти.',
   'shell.senses.ago': '{{s}} с назад',
   'shell.senses.ocr': 'Читаю текст на экране',
   'shell.palette.toolError': 'Не удалось выполнить «{{label}}»',
@@ -282,6 +285,7 @@ export const ruRU: TranslationDict = {
   'shell.menu.pinOff': 'Открепить',
   'shell.menu.mic': 'Микрофон',
   'shell.menu.pin': 'Поверх всех окон',
+  'shell.menu.miniMode': 'Мини-режим',
   'shell.menu.settings': 'Настройки',
   'shell.menu.clearHistory': 'Очистить историю',
   'shell.tray.show': 'Показать',
@@ -947,6 +951,9 @@ export const ruRU: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Итоги при закрытии игры',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika комментирует итоги сессии, когда игра закрывается.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Подсказки по шагам, без спойлеров',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'Если вы застряли на одном месте, Мика сначала даёт намёк, потом совет и только затем решение. Выключено: сразу даёт решение.',
   'settings.gamerCompanion.field.steamPath.label': 'Папка Steam',
   'settings.gamerCompanion.field.steamPath.description':
     'Необязательно. Оставь пустым для автоопределения Program Files/Steam.',
@@ -1085,7 +1092,7 @@ export const ruRU: TranslationDict = {
   'settings.llm.panel.embeddingModelLabel': 'Модель эмбеддингов',
   'settings.llm.panel.embeddingModelDescription':
     'Каталог выбранного провайдера. Смена модели делает векторный индекс недействительным.',
-  'settings.embeddings.field.embeddingProvider.option.local': 'Локально (e5, офлайн)',
+  'settings.embeddings.field.embeddingProvider.option.local': 'Локально (granite, офлайн)',
   'settings.llm.panel.localEmbeddingHint':
     'Работает на твоём ПК, без сервера и бесплатно. При первом запуске скачай модель.',
   'settings.llm.panel.localEmbeddingReady': 'Модель эмбеддингов готова',
@@ -1466,6 +1473,9 @@ export const ruRU: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'Офлайн-режим',
   'settings.privacy.field.offlineMode.description':
     'Блокирует все запросы за пределы компьютера — LLM, TTS, STT и интеграции. Локальные провайдеры (Ollama, Whisper) продолжают работать.',
+  'settings.privacy.field.passengerMode.label': 'Режим пассажира',
+  'settings.privacy.field.passengerMode.description':
+    'Только эта сессия: Мика общается как обычно, но не сохраняет разговор, память и визуальный дневник. Выключается при перезапуске.',
   'settings.status.ready': 'Готово',
   'settings.status.changed': 'Изменено',
   'settings.status.saving': 'Сохраняю',
@@ -1581,8 +1591,12 @@ export const ruRU: TranslationDict = {
   'settings.voiceTts.language.es': 'Español',
   'settings.voiceTts.language.en': 'English',
   'settings.voiceTts.language.pt': 'Português',
+  'settings.voiceTts.language.de': 'Deutsch',
+  'settings.voiceTts.language.it': 'Italiano',
+  'settings.voiceTts.language.ja': '日本語',
+  'settings.voiceTts.language.ru': 'Русский',
   'settings.voiceTts.field.supertonicSteps.helperText':
-    'Больше шагов — лучше звук. Стоит почти ничего: по замерам, 2 шага дают RTF 0.14, а 20 шагов — 0.17.',
+    'Больше шагов — лучше звук, но медленнее: по замерам, 8 шагов дают RTF 0.24, а 20 шагов — 0.54.',
   'settings.voiceTts.field.elevenLabsVoiceId.label': 'ID голоса',
   'settings.voiceTts.field.azureTtsSubscriptionKey.label': 'Ключ подписки Azure',
   'settings.voiceTts.field.azureTtsRegion.label': 'Регион Azure',
@@ -1604,7 +1618,7 @@ export const ruRU: TranslationDict = {
     'Скачивается один раз (~60 МБ) и используется повторно. Полный каталог — на rhasspy/piper-voices.',
   'settings.voiceTts.field.piperBinaryPath.label': 'Путь к исполняемому файлу',
   'settings.voiceTts.field.piperBinaryPath.helperText':
-    'Установи Piper с github.com/rhasspy/piper. Пусто = ищет «piper» в системном PATH.',
+    'Установи Piper с github.com/OHF-Voice/piper1-gpl. Пусто = ищет «piper» в системном PATH.',
   'settings.voiceTts.field.supertonicVoice.label': 'Голос Supertonic',
   'settings.voiceTts.field.supertonicVoice.option.f1': 'F1 (женский)',
   'settings.voiceTts.field.supertonicVoice.option.f2': 'F2 (женский)',
@@ -1654,7 +1668,7 @@ export const ruRU: TranslationDict = {
   'settings.voiceTts.panel.executablePathLabel': 'Путь к исполняемому файлу',
   'settings.voiceTts.panel.piperPathPlaceholder': 'пусто = ищет «piper» в PATH',
   'settings.voiceTts.panel.piperHint':
-    'Голос скачивается один раз (~60 МБ) и остаётся на компьютере. Исполняемый файл нужно установить отдельно — github.com/rhasspy/piper.',
+    'Голос скачивается один раз (~60 МБ) и остаётся на компьютере. Исполняемый файл нужно установить отдельно — github.com/OHF-Voice/piper1-gpl.',
   'settings.voiceTts.panel.refinementSteps': 'Шаги уточнения',
   'settings.voiceTts.panel.stepsSuffix': 'шагов',
   'settings.voiceTts.panel.supertonicHint':
@@ -2506,6 +2520,10 @@ export const ruRU: TranslationDict = {
     'Окно аватара занимает весь монитор. Нажмите F11 в окне для переключения; прежние размер и положение вернутся при выходе.',
   'settings.window.stateLabel': 'Сейчас',
   'settings.window.state.fullscreen': 'Полный экран',
+  'settings.window.state.mini': 'Мини',
+  'settings.window.mini.label': 'Мини-режим',
+  'settings.window.mini.hint':
+    'Сжимает окно до небольшого квадрата в левом нижнем углу, где видна только её голова. Чат, история или запрос на подтверждение возвращают полное окно.',
   'settings.window.state.windowed': 'В окне',
   'settings.performance.profileLabel': 'Профиль производительности',
   'settings.performance.profile.auto': 'Автоматически',
@@ -2543,7 +2561,7 @@ export const ruRU: TranslationDict = {
   'settings.performance.accel.model.nemotron': 'Nemotron',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
-  'settings.performance.accel.model.e5': 'Эмбеддинги e5',
+  'settings.performance.accel.model.e5': 'Эмбеддинги granite',
   'settings.performance.accel.reason.userCpu': 'CPU выбран в настройках',
   'settings.performance.accel.reason.tinyModel': 'крошечная модель: отправка на GPU обходится дороже самих вычислений',
   'settings.performance.accel.reason.perToken': 'генерирует по одному токену: копирование на GPU на каждом шаге',
@@ -3275,8 +3293,10 @@ export const ruRU: TranslationDict = {
     'Supertonic не умеет говорить на языке «{{language}}», а локального голоса с проверенной лицензией для него нет. Выберите облачного провайдера (Azure Speech, Google Cloud или ElevenLabs) в разделе Настройки > Голос.',
   'voice.tts.piper.emptyText': 'Piper: текст пуст.',
   'voice.tts.piper.configuredPathMissing': 'Piper: указанный путь не существует: "{{path}}".',
+  'voice.tts.piper.outdated':
+    'Ваш Piper версии {{version}}; голосам Mika нужен Piper 1.5 или новее. Обновите Piper (github.com/OHF-Voice/piper1-gpl).',
   'voice.tts.piper.binaryNotFound':
-    'Piper не найден. Установите бинарный файл (github.com/rhasspy/piper) или укажите путь к нему в настройках голоса.',
+    'Piper не найден. Установите бинарный файл (github.com/OHF-Voice/piper1-gpl) или укажите путь к нему в настройках голоса.',
   'voice.tts.piper.invalidVoiceKey': 'Piper: недопустимый ключ голоса: "{{voice}}".',
   'voice.tts.piper.voiceNotInCatalog':
     'Piper: голоса "{{voice}}" нет в каталоге проверенных голосов, поэтому он не будет загружен.',

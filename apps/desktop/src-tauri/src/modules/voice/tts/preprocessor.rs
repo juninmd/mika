@@ -197,7 +197,7 @@ fn strip_extended_pictographic(text: &str) -> String {
 // Teto de 300 linhas do AGENTS.md: o corte em sentenças mora em `preprocessor/sentence_split.rs`,
 // re-exportado para o caminho público de sempre (`speaker/mod.rs` já importa `split_into_sentences`).
 mod sentence_split;
-pub use sentence_split::split_into_sentences;
+pub use sentence_split::{split_first_clause, split_into_sentences};
 
 #[cfg(test)]
 mod tests {

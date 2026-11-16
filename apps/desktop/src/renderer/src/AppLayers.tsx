@@ -15,7 +15,9 @@ import { layerStyle } from './lib/layer-styles'
 const Live2DCanvas = lazy(() => import('./components/Live2DCanvas').then((m) => ({ default: m.Live2DCanvas })))
 const VrmCanvas = lazy(() => import('./components/VrmCanvas').then((m) => ({ default: m.VrmCanvas })))
 
-export function AppAvatarLayer({ shell }: { shell: ReturnType<typeof useAppShell> }) {
+type AvatarLayerProps = { shell: ReturnType<typeof useAppShell>; headOnly: boolean }
+
+export function AppAvatarLayer({ shell, headOnly }: AvatarLayerProps) {
   const {
     appStatus,
     expression,
@@ -49,6 +51,7 @@ export function AppAvatarLayer({ shell }: { shell: ReturnType<typeof useAppShell
               vowelsRef={vowelsRef}
               mouseRef={mouseTracking ? mousePosRef : undefined}
               onAvatarInteract={handleAvatarInteract}
+              headOnly={headOnly}
             />
           </Suspense>
         </AvatarStageBoundary>

@@ -68,6 +68,9 @@ mod silence_command;
 mod speak_guard;
 mod speak_tool;
 mod speech_gate;
+mod stt_cleanup;
+#[cfg(test)]
+mod stt_smoke;
 // `pub(crate)` só por causa de `stt_cloud::validate_credentials`, que a tela de Configurações
 // chama para o botão "testar conexão" — o resto do módulo continua interno a `voice`.
 pub(crate) mod stt_cloud;

@@ -100,11 +100,9 @@ pub fn config_store(app: &AppHandle) -> Result<Arc<ConfigStore>, String> {
     // Numa corrida, `set` guarda o primeiro e descarta o resto — e é justamente por isso que se
     // lê de volta do `OnceLock`: todo mundo sai com a MESMA instância, que é a invariante aqui.
     let _ = state.config.set(Arc::new(store));
-    state
-        .config
-        .get()
-        .map(Arc::clone)
-        .ok_or_else(|| "config store não inicializou".to_string())
+    let store = state.config.get().map(Arc::clone).ok_or_else(|| "config store não inicializou".to_string())?;
+    crate::modules::privacy::passenger::start_clean(&store);
+    Ok(store)
 }
 
 pub fn always_on_top(app: &AppHandle) -> bool {

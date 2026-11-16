@@ -151,9 +151,14 @@ fn app() -> Namespace {
             // Tela cheia da janela do avatar (`fullscreen.rs`): o interruptor de Configurações, o F11 e a
             // paleta gravam esta chave, e o observador aplica na janela. Reaplicada no boot.
             boolean("fullscreen", false),
+            // Modo mini da janela do avatar (`mini_mode.rs`): só a cabeça, no canto inferior esquerdo.
+            // Mesma rota da tela cheia — a UI grava a chave e o observador aplica na janela.
+            boolean("miniMode", false),
             // Atualização automática (`modules/update/auto.rs`): só avisa, ou baixa e instala sozinha
-            // quando o PC fica ocioso. Controle em Configurações → Atualizações.
-            choice("autoUpdate", "install", &["off", "notify", "install"]),
+            // quando o PC fica ocioso. Padrão `notify`: quem decide instalar é o dono do PC, e o
+            // aviso chega no mesmo boot em que a versão nova é encontrada. Controle em
+            // Configurações → Atualizações.
+            choice("autoUpdate", "notify", &["off", "notify", "install"]),
         ],
     }
 }

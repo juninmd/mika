@@ -86,6 +86,11 @@ fn gamer_companion() -> Namespace {
                 FieldUi::new("settings.gamerCompanion.field.sessionSummaryEnabled.label")
                     .described("settings.gamerCompanion.field.sessionSummaryEnabled.description"),
             ),
+            // `gamer::game_knowledge_tool::HelpLadder`: pista → dica → solução no mesmo travamento.
+            boolean("helpLadderEnabled", true).with_ui(
+                FieldUi::new("settings.gamerCompanion.field.helpLadderEnabled.label")
+                    .described("settings.gamerCompanion.field.helpLadderEnabled.description"),
+            ),
             // "Jogos personalizados": `{ "processo.exe": "Título" }`, lido por
             // `gamer::game_detection::custom_games` a cada passada do watcher.
             map("customGames").with_ui(

@@ -199,6 +199,6 @@ export const jaJP: WizardCopy = {
     ttsCloud: 'クラウドプロバイダーを選択済み',
     llmLabel: '言語モデル（LLM）',
     embeddingLabel: 'ベクトル記憶（Embeddings）',
-    embeddingDetail: 'ローカル e5（約135 MB）：サーバー不要・オフラインで記憶を意味検索',
+    embeddingDetail: 'ローカル granite（約125 MB）：サーバー不要・オフラインで記憶を意味検索',
   },
 }

@@ -1,6 +1,7 @@
 import type { SupportedLocale } from '@mika/sdk/contracts'
 import { LOCALE_OPTIONS } from '@mika/sdk/i18n'
 import { BentoGrid } from '@mika/sdk-ui/settings'
+import { Languages } from 'lucide-react'
 import { ErrorBanner, OptionCard, PrimaryButton, StepHeader } from './WizardPrimitives'
 import type { WizardCopy } from './wizard-copy'
 
@@ -25,6 +26,7 @@ export function LanguageStep({ copy, error, locale, onLocaleChange, onNext }: La
               selected={locale === option.locale}
               title={option.nativeName}
               description={option.englishName}
+              icon={<Languages size={16} />}
               onClick={() => onLocaleChange(option.locale)}
             />
           ))}

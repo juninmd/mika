@@ -1,9 +1,10 @@
 import { t } from '@mika/sdk/i18n'
 import { toErrorMessage } from '@mika/sdk/utils/object'
 import { toDisplayError } from '@mika/sdk-ui'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { rendererLog } from '../lib/renderer-logger'
 import { getElectronApi } from '../lib/shell-api'
+import { useUIStore } from '../store/useUIStore'
 
 type UpdateState = {
   checking: boolean
@@ -49,6 +50,7 @@ async function resolveUpdateChannel(): Promise<UpdateChannel> {
 
 export function useUpdateChecker() {
   const [state, setState] = useState<UpdateState>(initialState)
+  const notifiedVersion = useRef<string | null>(null)
 
   const runUpdateAction = useCallback(
     async <T>(
@@ -151,6 +153,21 @@ export function useUpdateChecker() {
     const timer = setInterval(() => void refreshStatus(), 1000)
     return () => clearInterval(timer)
   }, [state.downloading, refreshStatus])
+
+  // O laço de fundo do backend checa a cada 6 h e baixa/instala fora desta janela: sem reler o
+  // status, um update achado depois do check do boot nunca acenderia o badge nem avisaria ninguém.
+  useEffect(() => {
+    if (state.channel !== 'direct') return
+    const timer = setInterval(() => void refreshStatus(), 60_000)
+    return () => clearInterval(timer)
+  }, [state.channel, refreshStatus])
+
+  // Aviso humano, uma vez por versão: o badge do dock sozinho passa despercebido no boot.
+  useEffect(() => {
+    if (!state.available || !state.version || notifiedVersion.current === state.version) return
+    notifiedVersion.current = state.version
+    useUIStore.getState().addNotification('info', `${t('settings.update.status.available')} v${state.version}`)
+  }, [state.available, state.version])
 
   return {
     ...state,

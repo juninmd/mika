@@ -1,6 +1,6 @@
 import { ConfigKey } from '@mika/sdk/contracts'
 import { toDisplayError } from '@mika/sdk-ui'
-import { Compass, History, Maximize, MessageSquare, Mic, Pin, Settings } from 'lucide-react'
+import { Compass, History, Maximize, MessageSquare, Mic, Minimize2, Pin, Settings } from 'lucide-react'
 import { type PaletteDeps, type PaletteItem, toolFailureMessage } from './command-palette-items'
 
 export interface StaticPaletteDeps extends PaletteDeps {
@@ -101,6 +101,16 @@ export function buildStaticItems({
       onSelect: () => {
         close()
         void eAPI?.shell?.window?.toggleFullscreen?.()
+      },
+    },
+    {
+      id: 'mini-mode',
+      label: t('shell.palette.miniMode'),
+      icon: Minimize2,
+      group: t('shell.palette.group.system'),
+      onSelect: () => {
+        close()
+        void eAPI?.shell?.window?.setMiniMode?.(true)
       },
     },
     {

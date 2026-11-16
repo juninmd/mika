@@ -33,7 +33,7 @@ pub async fn on_game_changed(engine: &ProactiveEngine, payload: &Value, now_ms: 
         .get("previousSessionSummary")
         .and_then(Value::as_str)
         .filter(|s| !s.trim().is_empty())
-        .map(|summary| format!(" Ele ja jogou isso antes; da ultima vez: {summary}"))
+        .map(|recap| format!(" He played it before. Where you left off:\n{recap}"))
         .unwrap_or_default();
 
     let prompt = match prompts::steam_game_reaction(game, &recall_ctx) {
