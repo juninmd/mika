@@ -1,10 +1,33 @@
 import { useEffect, useRef, useState } from 'react'
-import { miniModeAction } from '../lib/mini-mode'
+import { type MiniModeStyle, miniModeAction, parseMiniModeStyle } from '../lib/mini-mode'
 import { getElectronApi } from '../lib/shell-api'
 import { subscribeWindowFlag } from '../lib/window-fullscreen'
 
 export function setMiniMode(on: boolean): void {
   void getElectronApi().shell.window?.setMiniMode?.(on)
+}
+
+const STYLE_PATH = 'app.miniModeStyle'
+
+export function setMiniModeStyle(style: MiniModeStyle): void {
+  void getElectronApi().runtime.saveSetting(STYLE_PATH, style)
+}
+
+/** Estilo do modo mini (`app.miniModeStyle`): quadrado da cabeça ou dock de borda. */
+export function useMiniModeStyle(): MiniModeStyle {
+  const [style, setStyle] = useState<MiniModeStyle>('head')
+  useEffect(() => {
+    const runtime = getElectronApi()?.runtime
+    if (!runtime) return
+    runtime
+      .getSettingsConfig()
+      .then(({ config }) => setStyle(parseMiniModeStyle((config.app as { miniModeStyle?: unknown })?.miniModeStyle)))
+      .catch(() => {})
+    return runtime.onConfigChanged((change) => {
+      if (change.path === STYLE_PATH) setStyle(parseMiniModeStyle(change.value))
+    })
+  }, [])
+  return style
 }
 
 /** Modo mini REAL da janela do avatar (só a cabeça, canto inferior esquerdo); `null` até o backend responder. */

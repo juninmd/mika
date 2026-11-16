@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { AppAvatarLayer, AppDialogs } from './AppLayers'
 import { BootOverlay } from './components/app/BootOverlay'
 import { ChatComposer } from './components/app/ChatComposer'
@@ -7,6 +7,7 @@ import { PanelLayer } from './components/app/PanelLayer'
 import { StageBackdrop } from './components/app/StageBackdrop'
 import { CommandPalette } from './components/CommandPalette'
 import { DockContainer } from './components/DockContainer'
+import { EdgeDock } from './components/dock/EdgeDock'
 import { EffectOverlay } from './components/effects/EffectOverlay'
 import { LegalGate } from './components/LegalGate'
 import { MikaContextMenu } from './components/MikaContextMenu'
@@ -19,7 +20,7 @@ import { useHudLayout } from './hooks/useHudLayout'
 import { useLegalGate } from './hooks/useLegalGate'
 import { useMikaContextMenu } from './hooks/useMikaContextMenu'
 import { useMikaMenuItems } from './hooks/useMikaMenuItems'
-import { useMiniMode, useMiniModeGuard } from './hooks/useMiniMode'
+import { useMiniMode, useMiniModeGuard, useMiniModeStyle } from './hooks/useMiniMode'
 import { useNeuralWheel } from './hooks/useNeuralWheel'
 import { useProviderHealthIndicator } from './hooks/useProviderHealthIndicator'
 import { useRuntimeEvents } from './hooks/useRuntimeEvents'
@@ -27,6 +28,7 @@ import { useTheme } from './hooks/useTheme'
 import { useToolApprovalGate } from './hooks/useToolApprovalGate'
 import { useUpdateChecker } from './hooks/useUpdateChecker'
 import { layerStyle } from './lib/layer-styles'
+import { isDockStyle, miniOverlayOpen } from './lib/mini-mode'
 import { handleWindowDragPointerDown } from './lib/window-drag'
 import { useChatStore } from './store/useChatStore'
 import { useUIStore } from './store/useUIStore'
@@ -91,6 +93,13 @@ export const App = memo(function App() {
 
   // Mini: só a cabeça num quadrado pequeno — HUD, dock e painéis não cabem e saem de cena.
   const mini = useMiniMode() === true
+  // Dock de borda: o mesmo modo mini, mas uma coluna na lateral com o ícone e o chat compacto.
+  const miniStyle = useMiniModeStyle()
+  const dockSide = mini && isDockStyle(miniStyle) ? miniStyle : null
+  useEffect(() => {
+    if (dockSide) document.body.dataset.edgeDock = 'true'
+    else delete document.body.dataset.edgeDock
+  }, [dockSide])
   const crisisOpen = useChatStore((s) => s.crisisRegion !== null)
   // The store's own close: the shell's `closeOverlays` also switches the mic off, and mini is voice-first.
   const closeForMini = useCallback(() => {
@@ -100,7 +109,7 @@ export const App = memo(function App() {
   useMiniModeGuard(
     mini,
     approvalPending !== null || showTelemetryOptIn || crisisOpen || legalGate.needed || legalGate.failed,
-    showInput || showHistory || wheelOpen,
+    miniOverlayOpen({ style: miniStyle, showInput, showHistory, wheelOpen }),
     closeForMini,
   )
 
@@ -136,7 +145,24 @@ export const App = memo(function App() {
 
         {!mikaReady && !isTransparentMode && <BootOverlay />}
 
-        <AppAvatarLayer shell={shell} headOnly={mini} />
+        {dockSide ? (
+          <EdgeDock
+            side={dockSide}
+            appStatus={appStatus}
+            speaking={ttsIsPlaying}
+            micEnabled={micEnabled}
+            vadIsSpeaking={vadIsSpeaking}
+            chatOpen={showInput}
+            messages={messages}
+            input={input}
+            setInput={setInput}
+            onSend={handleSend}
+            onToggleChat={handleOpenInput}
+            onToggleMic={handleToggleMic}
+          />
+        ) : (
+          <AppAvatarLayer shell={shell} headOnly={mini} />
+        )}
 
         {!mini && (
           <>

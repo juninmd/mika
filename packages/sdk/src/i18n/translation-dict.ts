@@ -2271,6 +2271,26 @@ export type TranslationDict = {
   'settings.window.mini.label': string
   'settings.window.mini.hint': string
   'settings.window.state.windowed': string
+  'shell.edgeDock.label': string
+  'shell.edgeDock.talk': string
+  'shell.edgeDock.mic': string
+  'shell.edgeDock.expand': string
+  'shell.edgeDock.options': string
+  'shell.edgeDock.close': string
+  'shell.edgeDock.switchSide': string
+  'shell.edgeDock.headStyle': string
+  'shell.edgeDock.placeholder': string
+  'shell.edgeDock.send': string
+  'shell.edgeDock.empty': string
+  'shell.edgeDock.state.speaking': string
+  'shell.edgeDock.state.listening': string
+  'shell.edgeDock.state.thinking': string
+  'shell.edgeDock.state.idle': string
+  'settings.window.style.label': string
+  'settings.window.style.hint': string
+  'settings.window.style.head': string
+  'settings.window.style.dockRight': string
+  'settings.window.style.dockLeft': string
   'settings.performance.profileLabel': string
   'settings.performance.profile.auto': string
   'settings.performance.profile.autoHint': string

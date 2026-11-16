@@ -8,6 +8,12 @@
 //! própria chave ([`set`] aqui, `fullscreen::toggle` lá): o Tauri guarda a geometria "de antes da
 //! tela cheia" no instante do `set_fullscreen`, e ela tem de ser a normal, nunca o quadrado mini.
 //!
+//! Estilo (`app.miniModeStyle`): `head` é o quadrado da cabeça; `dock-right`/`dock-left` é o dock
+//! de borda — uma coluna alta presa à lateral da área útil, centrada na vertical, com o ícone da Mika,
+//! atalhos e o chat compacto (`EdgeDock.tsx`). A área transparente da coluna deixa o clique passar
+//! (`useClickThrough`). Trocar o estilo com o mini ligado só reposiciona: a geometria guardada em
+//! [`BEFORE`] continua a de antes do mini.
+//!
 //! Wayland não deixa o cliente posicionar a janela: lá o quadrado encolhe onde o compositor puser.
 
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -17,6 +23,7 @@ use serde_json::{json, Value};
 use tauri::{AppHandle, LogicalSize, Manager, PhysicalPosition, PhysicalSize, WebviewWindow};
 
 pub const CONFIG_PATH: &str = "app.miniMode";
+pub const STYLE_PATH: &str = "app.miniModeStyle";
 
 /// Espelha `DESKTOP_RENDERER_EVENT_CHANNELS.WindowMiniMode` (`packages/sdk/src/contracts/desktop-ipc-channels.ts`).
 pub const EVENT: &str = "window:mini-mode";
@@ -25,6 +32,37 @@ pub const EVENT: &str = "window:mini-mode";
 const SIDE: f64 = 240.0;
 /// Folga até as bordas da área útil, em px lógicos.
 const MARGIN: f64 = 16.0;
+/// Dock de borda, em px lógicos: coluna de ícones (72) + chat compacto (340) + respiro.
+const DOCK_WIDTH: f64 = 432.0;
+const DOCK_HEIGHT: f64 = 600.0;
+/// Folga do dock até a borda lateral: colado, como o dock do sistema.
+const DOCK_MARGIN: f64 = 8.0;
+
+/// Onde a janela mini mora. Valor desconhecido na config cai no quadrado da cabeça.
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum Style {
+    Head,
+    DockRight,
+    DockLeft,
+}
+
+impl Style {
+    fn parse(value: Option<&str>) -> Self {
+        match value {
+            Some("dock-right") => Self::DockRight,
+            Some("dock-left") => Self::DockLeft,
+            _ => Self::Head,
+        }
+    }
+
+    fn name(self) -> &'static str {
+        match self {
+            Self::Head => "head",
+            Self::DockRight => "dock-right",
+            Self::DockLeft => "dock-left",
+        }
+    }
+}
 
 type Bounds = (PhysicalPosition<i32>, PhysicalSize<u32>);
 
@@ -34,15 +72,43 @@ static ACTIVE: AtomicBool = AtomicBool::new(false);
 /// (janela ainda saindo da tela cheia), e a saída volta ao tamanho padrão, centralizado.
 static BEFORE: Mutex<Option<Bounds>> = Mutex::new(None);
 
-/// O que o observador de config pede à janela: só `bool` na chave certa.
-fn requested(path: &str, value: &Value) -> Option<bool> {
-    if path == CONFIG_PATH { value.as_bool() } else { None }
+/// O observador de config só reage a `bool` em `app.miniMode` ou a texto em `app.miniModeStyle`.
+fn requested(path: &str, value: &Value) -> bool {
+    (path == CONFIG_PATH && value.is_boolean()) || (path == STYLE_PATH && value.is_string())
 }
 
 /// Canto inferior esquerdo da área útil (a barra de tarefas fica de fora), em px físicos.
 fn corner(area: (i32, i32, u32, u32), side: u32, margin: i32) -> (i32, i32) {
     let (x, y, _, height) = area;
     (x + margin, y + height as i32 - side as i32 - margin)
+}
+
+/// Dock de borda: altura limitada à área útil, centrado na vertical, colado na lateral. Retorna
+/// `(x, y, largura, altura)` em px físicos.
+fn edge(area: (i32, i32, u32, u32), size: (u32, u32), margin: i32, right: bool) -> (i32, i32, u32, u32) {
+    let (x, y, width, height) = area;
+    let h = size.1.min(height.saturating_sub(2 * margin.max(0) as u32));
+    let w = size.0.min(width);
+    let left = if right { x + width as i32 - w as i32 - margin } else { x + margin };
+    (left, y + (height as i32 - h as i32) / 2, w, h)
+}
+
+/// Retângulo da janela mini no estilo pedido, em px físicos.
+fn rect(style: Style, area: (i32, i32, u32, u32), scale: f64) -> (i32, i32, u32, u32) {
+    let px = |v: f64| (v * scale).round();
+    match style {
+        Style::Head => {
+            let side = px(SIDE) as u32;
+            let (x, y) = corner(area, side, px(MARGIN) as i32);
+            (x, y, side, side)
+        }
+        dock => edge(
+            area,
+            (px(DOCK_WIDTH) as u32, px(DOCK_HEIGHT) as u32),
+            px(DOCK_MARGIN) as i32,
+            dock == Style::DockRight,
+        ),
+    }
 }
 
 /// A janela cobre o monitor inteiro: é a geometria da tela cheia (ainda em transição no macOS e no
@@ -67,15 +133,20 @@ fn saved(app: &AppHandle) -> bool {
         .unwrap_or(false)
 }
 
+fn style(app: &AppHandle) -> Style {
+    let value = crate::state::config_store(app).ok().and_then(|store| store.get(STYLE_PATH));
+    Style::parse(value.as_ref().and_then(Value::as_str))
+}
+
 /// O que a janela deve ser AGORA, lido da config e não do valor que disparou o observador: dois
 /// pedidos seguidos convergem para o último, em qualquer ordem de chegada. A tela cheia vence.
 fn wanted(mini: bool, fullscreen: bool) -> bool {
     mini && !fullscreen
 }
 
-fn enter(window: &WebviewWindow) -> tauri::Result<()> {
+fn enter(window: &WebviewWindow, style: Style) -> tauri::Result<()> {
     if is_mini() {
-        return Ok(());
+        return place(window, style);
     }
     // Leituras que podem falhar ANTES de marcar o estado: um erro aqui não deixa `ACTIVE` ligado
     // com a janela ainda no tamanho normal.
@@ -85,18 +156,24 @@ fn enter(window: &WebviewWindow) -> tauri::Result<()> {
     let trusted = !monitor.as_ref().is_some_and(|m| covers(size, *m.size()));
     *BEFORE.lock().unwrap_or_else(|e| e.into_inner()) = trusted.then_some((position, size));
     ACTIVE.store(true, Ordering::Relaxed);
+    place(window, style)
+}
 
+/// Encolhe e posiciona no estilo pedido. Sem monitor conhecido, só o tamanho muda.
+fn place(window: &WebviewWindow, style: Style) -> tauri::Result<()> {
     // O piso da janela normal (300x400) é maior que o quadrado: baixa o piso antes de encolher.
     window.set_min_size(Some(LogicalSize::new(SIDE, SIDE)))?;
-    window.set_size(LogicalSize::new(SIDE, SIDE))?;
-    let Some(monitor) = monitor else { return Ok(()) };
-    let scale = monitor.scale_factor();
+    let Some(monitor) = window.current_monitor()? else {
+        let (w, h) = if style == Style::Head { (SIDE, SIDE) } else { (DOCK_WIDTH, DOCK_HEIGHT) };
+        return window.set_size(LogicalSize::new(w, h));
+    };
     let area = monitor.work_area();
-    let (x, y) = corner(
+    let (x, y, w, h) = rect(
+        style,
         (area.position.x, area.position.y, area.size.width, area.size.height),
-        (SIDE * scale).round() as u32,
-        (MARGIN * scale).round() as i32,
+        monitor.scale_factor(),
     );
+    window.set_size(PhysicalSize::new(w, h))?;
     window.set_position(PhysicalPosition::new(x, y))
 }
 
@@ -120,10 +197,11 @@ fn leave_window(window: &WebviewWindow) -> tauri::Result<()> {
 }
 
 fn apply(app: &AppHandle, on: bool) {
+    let style = style(app);
     let moved = main_window(app)
-        .and_then(|window| if on { enter(&window) } else { leave_window(&window) }.map_err(|e| e.to_string()));
+        .and_then(|window| if on { enter(&window, style) } else { leave_window(&window) }.map_err(|e| e.to_string()));
     match moved {
-        Ok(()) => crate::shell_actions::notify(app, EVENT, json!({ "mini": on })),
+        Ok(()) => crate::shell_actions::notify(app, EVENT, json!({ "mini": on, "style": style.name() })),
         Err(error) => log::warn!("modo mini ({on}) não aplicado: {error}"),
     }
 }
@@ -169,7 +247,7 @@ pub fn spawn(app: &AppHandle) {
     };
     let app = app.clone();
     store.watch(Box::new(move |path, value| {
-        if requested(path, value).is_none() {
+        if !requested(path, value) {
             return;
         }
         // Fora da pilha de `set()` (mexer na janela dentro do callback do store prenderia quem
@@ -186,11 +264,32 @@ mod tests {
     use super::*;
 
     #[test]
-    fn only_a_boolean_on_the_mini_mode_key_reaches_the_window() {
-        assert_eq!(requested("app.miniMode", &json!(true)), Some(true));
-        assert_eq!(requested("app.miniMode", &json!(false)), Some(false));
-        assert_eq!(requested("app.miniMode", &json!("true")), None);
-        assert_eq!(requested("app.fullscreen", &json!(true)), None);
+    fn only_a_boolean_mini_mode_or_a_text_style_reaches_the_window() {
+        assert!(requested("app.miniMode", &json!(true)));
+        assert!(requested("app.miniMode", &json!(false)));
+        assert!(!requested("app.miniMode", &json!("true")));
+        assert!(requested("app.miniModeStyle", &json!("dock-right")));
+        assert!(!requested("app.miniModeStyle", &json!(true)));
+        assert!(!requested("app.fullscreen", &json!(true)));
+    }
+
+    #[test]
+    fn an_unknown_style_falls_back_to_the_head_square() {
+        assert_eq!(Style::parse(Some("dock-left")), Style::DockLeft);
+        assert_eq!(Style::parse(Some("dock-right")).name(), "dock-right");
+        assert_eq!(Style::parse(Some("dock-top")), Style::Head);
+        assert_eq!(Style::parse(None), Style::Head);
+    }
+
+    #[test]
+    fn the_dock_hugs_the_chosen_side_centered_in_the_work_area() {
+        // 1920x1040 de área útil, escala 1: 432x600 colado à direita com 8 px de folga.
+        assert_eq!(rect(Style::DockRight, (0, 0, 1920, 1040), 1.0), (1480, 220, 432, 600));
+        assert_eq!(rect(Style::DockLeft, (0, 0, 1920, 1040), 1.0), (8, 220, 432, 600));
+        // Escala 2 numa área baixa (1366x768 físicos → altura cortada para caber com a folga).
+        assert_eq!(rect(Style::DockRight, (0, 0, 1366, 768), 2.0), (486, 16, 864, 736));
+        // O quadrado da cabeça não mudou.
+        assert_eq!(rect(Style::Head, (0, 0, 1920, 1040), 1.0), (16, 784, 240, 240));
     }
 
     #[test]
