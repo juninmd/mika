@@ -1351,6 +1351,13 @@ export const itIT: TranslationDict = {
   'settings.user.panel.completionFields': 'campi',
   'settings.user.panel.completionHint':
     'Più è completo, meno Mika deve indovinare preferenze, contesto e limiti personali.',
+  'settings.vision.panel.mediaReactionsHeader': 'Reazioni in tempo reale',
+  'settings.vision.field.mediaReactions.label': 'Reagisci a ciò che sto guardando',
+  'settings.vision.field.mediaReactions.description':
+    'Mika ogni tanto commenta il video, la diretta o la canzone in primo piano. Video e diretta usano un fotogramma dello schermo; la musica solo il titolo della finestra. Nessun audio viene registrato.',
+  'settings.vision.field.mediaReactionCooldownSec.label': 'Intervallo minimo tra reazioni',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    'Tempo minimo tra due commenti. Lo stesso video o canzone torna solo dopo tre intervalli.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Intervallo del diario visivo (cicli)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Ogni N cicli di acquisizione, scrive una voce nel diario visivo.',
@@ -2537,6 +2544,9 @@ export const itIT: TranslationDict = {
   'shell.edgeDock.quick.passenger': 'Modalità passeggero: niente di questa sessione viene salvato',
   'shell.edgeDock.card.reminder': 'Promemoria',
   'shell.edgeDock.card.recap': 'Riepilogo della sessione',
+  'shell.edgeDock.card.media.video': 'Guardando',
+  'shell.edgeDock.card.media.live': 'In diretta',
+  'shell.edgeDock.card.media.music': 'Ascoltando',
   'shell.edgeDock.card.level.hint': 'Indizio',
   'shell.edgeDock.card.level.tip': 'Suggerimento',
   'shell.edgeDock.card.level.solution': 'Soluzione',

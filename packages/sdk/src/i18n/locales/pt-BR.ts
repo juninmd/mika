@@ -1338,6 +1338,13 @@ export const ptBR: TranslationDict = {
   'settings.user.panel.completionFields': 'campos',
   'settings.user.panel.completionHint':
     'Quanto mais completo, menos a Mika precisa adivinhar preferências, contexto e limites pessoais.',
+  'settings.vision.panel.mediaReactionsHeader': 'Reações em tempo real',
+  'settings.vision.field.mediaReactions.label': 'Reagir ao que estou assistindo',
+  'settings.vision.field.mediaReactions.description':
+    'A Mika comenta de vez em quando o vídeo, a live ou a música em foco. Vídeo e live usam um quadro da tela; música, só o título da janela. Nenhum áudio é gravado.',
+  'settings.vision.field.mediaReactionCooldownSec.label': 'Intervalo mínimo entre reações',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    'Tempo mínimo entre dois comentários. O mesmo vídeo ou música só volta depois de três intervalos.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Intervalo do Diário Visual (ciclos)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'A cada N ciclos de captura, grava uma entrada no diário visual.',
@@ -2516,6 +2523,9 @@ export const ptBR: TranslationDict = {
   'shell.edgeDock.quick.passenger': 'Modo passageiro: nada desta sessão é guardado',
   'shell.edgeDock.card.reminder': 'Lembrete',
   'shell.edgeDock.card.recap': 'Resumo da sessão',
+  'shell.edgeDock.card.media.video': 'Assistindo',
+  'shell.edgeDock.card.media.live': 'Na live',
+  'shell.edgeDock.card.media.music': 'Ouvindo',
   'shell.edgeDock.card.level.hint': 'Pista',
   'shell.edgeDock.card.level.tip': 'Dica',
   'shell.edgeDock.card.level.solution': 'Solução',

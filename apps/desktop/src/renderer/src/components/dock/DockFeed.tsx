@@ -1,9 +1,9 @@
 import type { ChatMessage } from '@mika/sdk'
-import { BellRing, BookOpen, Lightbulb, X } from 'lucide-react'
+import { BellRing, BookOpen, Lightbulb, Tv, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { bubbleDwellMs } from '../../hooks/mika-events-helpers'
 import { useI18n } from '../../hooks/useI18n'
-import { type DockCardContent, dockCard } from '../../lib/dock-cards'
+import { type DockCardContent, dockCard, mediaCard } from '../../lib/dock-cards'
 import { getElectronApi } from '../../lib/shell-api'
 import { isForegroundToolEvent } from '../../lib/tool-call-origin'
 import { BUBBLE_MIN_TAIL_MS } from '../hud/bubble-timing'
@@ -54,14 +54,20 @@ function useDockBubble(chatOpen: boolean, messages: ChatMessage[], hold: boolean
 
 function useDockCards(hovered: boolean) {
   const [cards, setCards] = useState<Card[]>([])
-  useEffect(
-    () =>
-      getElectronApi()?.runtime?.onToolResult?.(({ name, result, origin }) => {
-        const card = isForegroundToolEvent(origin) ? dockCard(name, result) : null
-        if (card) setCards((prev) => [...prev, { ...card, id: crypto.randomUUID() }].slice(-MAX_CARDS))
-      }),
-    [],
-  )
+  useEffect(() => {
+    const push = (card: DockCardContent | null) => {
+      if (card) setCards((prev) => [...prev, { ...card, id: crypto.randomUUID() }].slice(-MAX_CARDS))
+    }
+    const runtime = getElectronApi()?.runtime
+    const offTool = runtime?.onToolResult?.(({ name, result, origin }) => {
+      push(isForegroundToolEvent(origin) ? dockCard(name, result) : null)
+    })
+    const offMedia = runtime?.onBrainProactiveThought?.((payload) => push(mediaCard(payload)))
+    return () => {
+      offTool?.()
+      offMedia?.()
+    }
+  }, [])
   useEffect(() => {
     if (cards.length === 0 || hovered) return
     const timer = setTimeout(() => setCards((prev) => prev.slice(1)), CARD_MS)
@@ -85,12 +91,13 @@ const ITEM =
 const DISMISS =
   'absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg text-text-muted hover:bg-surface-raise-strong hover:text-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-focus'
 
-const CARD_ICON = { reminder: BellRing, hint: Lightbulb, recap: BookOpen } as const
+const CARD_ICON = { reminder: BellRing, hint: Lightbulb, recap: BookOpen, media: Tv } as const
 
 function CardTitle({ card }: { card: Card }) {
   const { t, locale } = useI18n()
   if (card.kind === 'hint') return <>{t(`shell.edgeDock.card.level.${card.level ?? 'tip'}`)}</>
   if (card.kind === 'recap') return <>{t('shell.edgeDock.card.recap')}</>
+  if (card.kind === 'media') return <>{t(`shell.edgeDock.card.media.${card.media ?? 'video'}`)}</>
   const at = card.at ? new Date(card.at).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : ''
   return <>{[t('shell.edgeDock.card.reminder'), at].filter(Boolean).join(' · ')}</>
 }
