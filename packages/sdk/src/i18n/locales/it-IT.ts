@@ -2537,6 +2537,12 @@ export const itIT: TranslationDict = {
   'shell.edgeDock.quick.passenger': 'Modalità passeggero: niente di questa sessione viene salvato',
   'shell.edgeDock.card.reminder': 'Promemoria',
   'shell.edgeDock.card.recap': 'Riepilogo della sessione',
+  'shell.edgeDock.quick.today': 'Cosa abbiamo fatto oggi?',
+  'shell.edgeDock.quick.todayPrompt':
+    'Cosa abbiamo fatto oggi? Dammi il riepilogo della giornata: giochi, tempo di gioco e obiettivi.',
+  'shell.edgeDock.card.daily': 'Riepilogo del giorno',
+  'shell.edgeDock.card.dailyPassenger': 'solo statistiche (modalità passeggero)',
+  'shell.edgeDock.card.dailyStats': 'Sessioni: {{sessions}} · Morti: {{deaths}} · Serie: {{streak}} g',
   'shell.edgeDock.card.level.hint': 'Indizio',
   'shell.edgeDock.card.level.tip': 'Suggerimento',
   'shell.edgeDock.card.level.solution': 'Soluzione',

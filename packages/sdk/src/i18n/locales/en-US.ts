@@ -2495,6 +2495,12 @@ export const enUS: TranslationDict = {
   'shell.edgeDock.quick.passenger': 'Passenger mode: nothing from this session is saved',
   'shell.edgeDock.card.reminder': 'Reminder',
   'shell.edgeDock.card.recap': 'Session recap',
+  'shell.edgeDock.quick.today': 'What did we do today?',
+  'shell.edgeDock.quick.todayPrompt':
+    "What did we do today? Give me the day's summary: games, play time and achievements.",
+  'shell.edgeDock.card.daily': "Today's summary",
+  'shell.edgeDock.card.dailyPassenger': 'stats only (passenger mode)',
+  'shell.edgeDock.card.dailyStats': 'Sessions: {{sessions}} · Deaths: {{deaths}} · Streak: {{streak}} d',
   'shell.edgeDock.card.level.hint': 'Clue',
   'shell.edgeDock.card.level.tip': 'Hint',
   'shell.edgeDock.card.level.solution': 'Solution',

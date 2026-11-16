@@ -2300,6 +2300,11 @@ export type TranslationDict = {
   'shell.edgeDock.quick.passenger': string
   'shell.edgeDock.card.reminder': string
   'shell.edgeDock.card.recap': string
+  'shell.edgeDock.quick.today': string
+  'shell.edgeDock.quick.todayPrompt': string
+  'shell.edgeDock.card.daily': string
+  'shell.edgeDock.card.dailyPassenger': string
+  'shell.edgeDock.card.dailyStats': string
   'shell.edgeDock.card.level.hint': string
   'shell.edgeDock.card.level.tip': string
   'shell.edgeDock.card.level.solution': string

@@ -2563,6 +2563,12 @@ export const deDE: TranslationDict = {
   'shell.edgeDock.quick.passenger': 'Passagiermodus: Nichts aus dieser Sitzung wird gespeichert',
   'shell.edgeDock.card.reminder': 'Erinnerung',
   'shell.edgeDock.card.recap': 'Sitzungszusammenfassung',
+  'shell.edgeDock.quick.today': 'Was haben wir heute gemacht?',
+  'shell.edgeDock.quick.todayPrompt':
+    'Was haben wir heute gemacht? Gib mir die Tageszusammenfassung: Spiele, Spielzeit und Erfolge.',
+  'shell.edgeDock.card.daily': 'Tageszusammenfassung',
+  'shell.edgeDock.card.dailyPassenger': 'nur Statistiken (Beifahrermodus)',
+  'shell.edgeDock.card.dailyStats': 'Sitzungen: {{sessions}} · Tode: {{deaths}} · Serie: {{streak}} T',
   'shell.edgeDock.card.level.hint': 'Hinweis',
   'shell.edgeDock.card.level.tip': 'Tipp',
   'shell.edgeDock.card.level.solution': 'Lösung',
