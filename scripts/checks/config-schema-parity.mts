@@ -61,6 +61,10 @@ const EXEMPT: ReadonlyMap<string, string> = new Map([
     'renderizado por WindowModeCard.tsx (aba Resumo) pelo canal window-set-mini-mode, que grava a chave; fora do dicionário de HANDLED_FIELDS',
   ],
   [
+    'app.miniModeStyle',
+    'renderizado por WindowModeCard.tsx (aba Resumo, GlassSelect de estilo) e pelo menu ⋯ do EdgeDock.tsx; fora do dicionário de HANDLED_FIELDS',
+  ],
+  [
     'app.autoUpdate',
     'renderizado por UpdatePanel.tsx (aba Atualizações, AutoUpdateSection), fora do dicionário de HANDLED_FIELDS',
   ],

@@ -191,6 +191,16 @@ crise), e ao entrar fecha o que estava aberto em vez de voltar atrás (`miniMode
 **MUST NOT**: mini e tela cheia ao mesmo tempo. Quem entra desfaz o outro antes de gravar a própria
 chave (`mini_mode::set` → `fullscreen::leave`; `fullscreen::toggle` → `mini_mode::leave`).
 
+**MUST**: o estilo do mini é outra preferência (`app.miniModeStyle`: `head`, `dock-right`,
+`dock-left`), escolhida em `WindowModeCard` ou no menu ⋯ do dock. `head` é o quadrado acima. Os dois
+`dock-*` são o dock de borda (inspirado no Agent Dock do OpenBot): uma coluna de 432x600 px lógicos
+colada à lateral da área útil e centrada na vertical, com o ícone oficial da Mika (anel que pulsa
+quando ela fala e fica verde quando ouve), o microfone, um botão de volta à janela inteira e um chat
+compacto que abre ao lado (`EdgeDock.tsx`). No dock o VRM não é renderizado, o chat compacto não tira
+a janela do mini (`miniOverlayOpen`) e a faixa inferior de 80 px do click-through não existe: o
+transparente da coluna deixa o clique passar. Trocar o estilo com o mini ligado só reposiciona a
+janela; a geometria devolvida ao sair continua a de antes do mini.
+
 ## Onboarding
 
 **MUST**: o primeiro uso pede o mínimo: um provedor, uma credencial, um modelo. Persona e
