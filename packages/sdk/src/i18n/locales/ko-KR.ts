@@ -851,7 +851,7 @@ export const koKR: TranslationDict = {
   'settings.computerUse.tab.label': '컴퓨터 제어',
   'settings.computerUse.field.enabled.label': '컴퓨터 제어 허용',
   'settings.computerUse.field.enabled.description':
-    '기본값은 꺼짐입니다. 켜면 Mika가 내 컴퓨터에서 마우스를 움직이고 클릭하고 입력할 수 있습니다. 모든 동작은 여전히 내 승인을 요청합니다.',
+    '기본값은 꺼짐. 켜면 Mika가 마우스 이동, 클릭, 입력, 볼륨 조절, 창 전환을 할 수 있어요. 클릭과 입력은 승인을 요청해요.',
   'settings.computerUse.panel.description':
     'Mika는 이미 열려 있는 것 안에서만 마우스와 키보드를 조작해요. 언제나 내 승인을 받은 뒤에요.',
   'settings.computerUse.panel.statusOn': '켜짐',
@@ -862,7 +862,7 @@ export const koKR: TranslationDict = {
   'settings.computerUse.panel.guardSwitchText': '꺼져 있으면 도구는 아무것도 실행하지 않아요. 화면 검색조차도요.',
   'settings.computerUse.panel.guardApprovalTitle': '동작별 승인',
   'settings.computerUse.panel.guardApprovalText':
-    '호출할 때마다 대화상자가 열려요. 내가 결정하지 않으면 아무 일도 일어나지 않아요.',
+    '클릭, 입력, 단축키는 매번 승인을 요청해요. 볼륨과 창 전환은 요청하지 않아요.',
   'settings.computerUse.panel.guardWindowTitle': '거부되는 대상',
   'settings.computerUse.panel.guardWindowText':
     '승인된 경우에도 Mika 자신의 창에는 동작하지 않고 비밀번호 입력란에도 입력하지 않아요 (Windows).',
@@ -876,6 +876,16 @@ export const koKR: TranslationDict = {
   'settings.computerUse.panel.actionTypeText': '포커스된 입력란에 텍스트를 입력해요.',
   'settings.computerUse.panel.actionKey': '단축키',
   'settings.computerUse.panel.actionKeyText': 'ctrl+c나 enter 같은 조합을 눌러요.',
+  'settings.computerUse.panel.guardStopTitle': '비상 정지',
+  'settings.computerUse.panel.guardStopText': 'Ctrl+Alt+End로 어디서든 즉시 제어를 꺼요. 다시 켜려면 여기서 켜세요.',
+  'settings.computerUse.panel.guardCursorTitle': 'Mika의 커서',
+  'settings.computerUse.panel.guardCursorText': '클릭 전에 행동할 위치에 분홍색 포인터가 나타나요.',
+  'settings.computerUse.panel.actionMouse': '마우스',
+  'settings.computerUse.panel.actionMouseText': '화면 위치에서 이동, 더블 클릭, 스크롤, 드래그해요.',
+  'settings.computerUse.panel.actionVolume': '볼륨',
+  'settings.computerUse.panel.actionVolumeText': '목소리로 시스템 소리를 키우거나 줄이거나 음소거해요.',
+  'settings.computerUse.panel.actionWindow': '창 전환',
+  'settings.computerUse.panel.actionWindowText': '열린 창을 이름으로 앞으로 가져와요(Windows).',
   'settings.mcp.panel.timeoutLabel': '서버별 대기 시간',
   'settings.browser.tab.label': '브라우저',
   'settings.browser.tab.group': '도구',

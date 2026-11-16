@@ -33,13 +33,13 @@ fn handler_with_fake(enabled: bool) -> (ComputerToolHandler, Arc<FakeInputBacken
 }
 
 #[test]
-fn tool_definition_declares_the_five_actions_and_only_requires_action() {
+fn tool_definition_declares_the_pointer_and_keyboard_actions_and_only_requires_action() {
     let definition = tool_definition();
     assert_eq!(definition.name, "computer");
     assert_eq!(definition.input_schema["required"], json!(["action"]));
     assert_eq!(
         definition.input_schema["properties"]["action"]["enum"],
-        json!(["find", "click_element", "click", "type_text", "key"])
+        json!(["find", "click_element", "click", "double_click", "move", "scroll", "drag", "type_text", "key"])
     );
 }
 

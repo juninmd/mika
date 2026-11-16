@@ -14,7 +14,7 @@ use std::sync::Mutex;
 use super::{TurnEvent, TurnObserver, TurnResult};
 
 /// Tools cujo sucesso é o efeito que o usuário pediu e que a resposta poderia afirmar.
-const EFFECT_TOOLS: [&str; 7] = ["reminder", "memory_console", "person_catalog", "user_profile", "desktop", "computer", "code"];
+const EFFECT_TOOLS: [&str; 8] = ["reminder", "memory_console", "person_catalog", "user_profile", "desktop", "computer", "pc_control", "code"];
 
 /// As ações de LEITURA dessas tools (enum do schema de cada uma): ler e não achar (`person_catalog
 /// get` → `not_found`) não é "a ação que o usuário pediu falhou", e a resposta honesta ("não
@@ -198,7 +198,7 @@ mod tests {
         let writes = [
             ("person_catalog", Some("upsert")), ("person_catalog", Some("delete")), ("person_catalog", Some("add_fact")), ("user_profile", Some("learn")),
             ("user_profile", Some("forget")), ("desktop", Some("launch")), ("reminder", Some("schedule")), ("reminder", Some("cancel")),
-            ("memory_console", Some("add_fact")), ("computer", Some("click")), ("code", Some("run_js")), ("person_catalog", Some("acao_nova")), ("reminder", None),
+            ("memory_console", Some("add_fact")), ("computer", Some("click")), ("pc_control", Some("volume")), ("code", Some("run_js")), ("person_catalog", Some("acao_nova")), ("reminder", None),
         ];
         for (tool, action) in writes {
             let events = vec![TurnEvent::ThinkingStart, finished_action(tool, action, false), chunk("Pronto, feito!"), TurnEvent::ThinkingStop];
