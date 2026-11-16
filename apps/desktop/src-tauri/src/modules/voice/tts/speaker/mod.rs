@@ -29,7 +29,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use crate::config::store::ConfigStore;
 use crate::modules::voice::tts::abort_registry::{self, CancelHandle};
 use crate::modules::voice::tts::cache::TtsCache;
-use crate::modules::voice::tts::preprocessor::{has_speakable_text, split_into_sentences};
+use crate::modules::voice::tts::preprocessor::{has_speakable_text, split_first_clause, split_into_sentences};
 use crate::modules::voice::tts::state::TtsState;
 
 use chunk::{produces_no_speech, speak_chunk};
@@ -120,7 +120,11 @@ async fn speak_all_chunks(
     let candidates = if sentences.len() > 1 { sentences } else { vec![trimmed.to_string()] };
     let speakable: Vec<String> =
         candidates.into_iter().filter(|c| has_speakable_text(c) && !produces_no_speech(state, c)).collect();
-    let chunks = if speakable.is_empty() { vec![trimmed.to_string()] } else { speakable };
+    let mut chunks = if speakable.is_empty() { vec![trimmed.to_string()] } else { speakable };
+    // O primeiro áudio espera a síntese inteira do primeiro trecho: cortá-lo na primeira vírgula
+    // adianta a fala, e o resto sintetiza enquanto ele toca (ver `split_first_clause`).
+    let rest = chunks.split_off(1);
+    chunks = split_first_clause(&chunks[0]).into_iter().chain(rest).collect();
 
     let mut chunks_spoken = 0usize;
     let mut error = None;
@@ -311,5 +315,45 @@ mod tests {
                 .await;
         assert!(result.success, "system devia terminar com sucesso: {:?}", result.error);
         assert_eq!(result.error, None);
+    }
+
+    struct TimingSink(std::time::Instant, Mutex<Vec<f64>>);
+    impl SpeechSink for TimingSink {
+        fn on_chunk_ready(&self, _chunk: TtsChunkAudio) {
+            self.1.lock().unwrap().push(self.0.elapsed().as_secs_f64() * 1000.0);
+        }
+    }
+
+    /// Tempo até o primeiro áudio de uma resposta típica pelo `speak()` de produção (Supertonic
+    /// real, cache vazio a cada rodada). Grava JSON em `MIKA_TTS_BENCH_OUT`.
+    ///   MIKA_SUPERTONIC_DIR=... MIKA_TTS_BENCH_OUT=ttfa.json cargo test --release --lib speak_ttfa_bench -- --ignored --nocapture
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore = "precisa do modelo Supertonic baixado"]
+    async fn speak_ttfa_bench() {
+        let (store, _dir) = store();
+        let cache_dir: std::path::PathBuf = std::env::var("MIKA_SUPERTONIC_DIR").expect("defina MIKA_SUPERTONIC_DIR").into();
+        let reply = "Se você pegar o atalho pela esquerda, passando pela ponte quebrada, chega no chefe antes do tempo acabar. Boa sorte! Eu fico de olho no mapa.";
+        let state = TtsState::default();
+        let mut rounds = Vec::new();
+        for round in 0..5 {
+            let sink = TimingSink(std::time::Instant::now(), Mutex::new(Vec::new()));
+            let result = speak(reply, &state, &Mutex::new(TtsCache::new()), &cache_dir, &store, &NoopObserver, &sink).await;
+            assert!(result.success, "{:?}", result.error);
+            let times = sink.1.into_inner().unwrap();
+            if round > 0 {
+                rounds.push(times);
+            }
+        }
+        let mean = |i: fn(&Vec<f64>) -> f64| (rounds.iter().map(i).sum::<f64>() / rounds.len() as f64).round();
+        let report = serde_json::json!({
+            "chunks": rounds[0].len(),
+            "ttfaMeanMs": mean(|t| t[0]),
+            "totalMeanMs": mean(|t| *t.last().unwrap()),
+            "rounds": rounds,
+        });
+        println!("{report:#}");
+        if let Ok(out) = std::env::var("MIKA_TTS_BENCH_OUT") {
+            std::fs::write(out, serde_json::to_string_pretty(&report).unwrap()).unwrap();
+        }
     }
 }

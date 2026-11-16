@@ -26,6 +26,7 @@ export const deDE: TranslationDict = {
   'shell.palette.openChat': 'Chat öffnen',
   'shell.palette.history': 'Verlauf ansehen',
   'shell.palette.fullscreen': 'Vollbild umschalten',
+  'shell.palette.miniMode': 'Mini-Modus aktivieren',
   'shell.palette.settings': 'Einstellungen',
   'shell.palette.reopenWizard': 'Willkommens-Einrichtung wiederholen',
   'shell.palette.reopenWizardHint':
@@ -72,15 +73,15 @@ export const deDE: TranslationDict = {
   'shell.composer.micDenied': 'Mikrofonzugriff verweigert.',
   'shell.composer.micError': 'Spracherkennung fehlgeschlagen:',
   'shell.composer.micNotFound': 'Mikrofon nicht gefunden. Schließe eines an und prüfe die Audiogeräte.',
-  'shell.composer.quick.screen': '👀 Bildschirm',
+  'shell.composer.quick.screen': 'Bildschirm',
   'shell.composer.quick.screenMsg': 'Was ist gerade auf meinem Bildschirm zu sehen?',
-  'shell.composer.quick.game': '🎮 Spiel',
+  'shell.composer.quick.game': 'Spiel',
   'shell.composer.quick.gameMsg': 'Erzähl mir etwas über das Spiel, das ich gerade spiele.',
-  'shell.composer.quick.who': '🧍 Wer ist das?',
+  'shell.composer.quick.who': 'Wer ist das?',
   'shell.composer.quick.whoMsg': 'Wer ist auf dem Bildschirm zu sehen? Erzähl mir etwas über diese Person oder Figur.',
-  'shell.composer.quick.react': '💬 Reagieren',
+  'shell.composer.quick.react': 'Reagieren',
   'shell.composer.quick.reactMsg': 'Reagiere auf das, was auf meinem Bildschirm zu sehen ist!',
-  'shell.composer.quick.surprise': '🎲 Überraschung',
+  'shell.composer.quick.surprise': 'Überraschung',
   'shell.composer.quick.surpriseMsg':
     'Überrasch mich mit etwas Zufälligem — einem Fakt, einem Nerd-Witz, Wissenswertem, irgendwas.',
   'shell.composer.ph1': 'Sprich mit mir...',
@@ -252,6 +253,8 @@ export const deDE: TranslationDict = {
   'shell.senses.memory.label': 'Gedächtnis: {{status}}',
   'shell.senses.memory.active': 'aktiv',
   'shell.senses.memory.off': 'aus',
+  'shell.passenger.chip.label': 'Beifahrermodus',
+  'shell.passenger.chip.hint': 'Aus dieser Sitzung wird nichts gespeichert. Klicken zum Beenden.',
   'shell.senses.ago': 'vor {{s}} s',
   'shell.senses.ocr': 'Liest Text auf dem Bildschirm',
   'shell.palette.toolError': '„{{label}}“ konnte nicht ausgeführt werden',
@@ -277,6 +280,7 @@ export const deDE: TranslationDict = {
   'shell.menu.pinOff': 'Von oben lösen',
   'shell.menu.mic': 'Mikrofon',
   'shell.menu.pin': 'Im Vordergrund halten',
+  'shell.menu.miniMode': 'Mini-Modus',
   'shell.menu.settings': 'Einstellungen',
   'shell.menu.clearHistory': 'Verlauf löschen',
   'shell.tray.show': 'Anzeigen',
@@ -958,6 +962,9 @@ export const deDE: TranslationDict = {
   'settings.gamerCompanion.field.sessionSummaryEnabled.label': 'Zusammenfassung beim Spielende',
   'settings.gamerCompanion.field.sessionSummaryEnabled.description':
     'Mika kommentiert eine Sitzungszusammenfassung, wenn das Spiel geschlossen wird.',
+  'settings.gamerCompanion.field.helpLadderEnabled.label': 'Hinweise in Stufen, ohne Spoiler',
+  'settings.gamerCompanion.field.helpLadderEnabled.description':
+    'Hängst du an derselben Stelle, gibt Mika zuerst einen Hinweis, dann einen Tipp und erst danach die Lösung. Aus: Sie nennt direkt die Lösung.',
   'settings.gamerCompanion.field.steamPath.label': 'Steam-Ordner',
   'settings.gamerCompanion.field.steamPath.description':
     'Optional. Leer lassen, um Program Files/Steam automatisch zu erkennen.',
@@ -1098,7 +1105,7 @@ export const deDE: TranslationDict = {
   'settings.llm.panel.embeddingModelLabel': 'Embedding-Modell',
   'settings.llm.panel.embeddingModelDescription':
     'Katalog des gewählten Anbieters. Ein Modellwechsel macht den Vektorindex ungültig.',
-  'settings.embeddings.field.embeddingProvider.option.local': 'Lokal (e5, offline)',
+  'settings.embeddings.field.embeddingProvider.option.local': 'Lokal (granite, offline)',
   'settings.llm.panel.localEmbeddingHint':
     'Läuft auf deinem PC, ohne Server und kostenlos. Lade das Modell beim ersten Mal herunter.',
   'settings.llm.panel.localEmbeddingReady': 'Embedding-Modell bereit',
@@ -1477,6 +1484,9 @@ export const deDE: TranslationDict = {
   'settings.privacy.field.offlineMode.label': 'Offline-Modus',
   'settings.privacy.field.offlineMode.description':
     'Blockiert jede Anfrage, die den Rechner verlässt — LLM, TTS, STT und Integrationen. Lokale Anbieter (Ollama, Whisper) funktionieren weiter.',
+  'settings.privacy.field.passengerMode.label': 'Beifahrermodus',
+  'settings.privacy.field.passengerMode.description':
+    'Nur diese Sitzung: Mika plaudert wie gewohnt, speichert aber weder Gespräch noch Erinnerung noch visuelles Tagebuch. Schaltet sich beim Neustart ab.',
   'settings.status.ready': 'Bereit',
   'settings.status.changed': 'Geändert',
   'settings.status.saving': 'Speichert',
@@ -1596,8 +1606,12 @@ export const deDE: TranslationDict = {
   'settings.voiceTts.language.es': 'Español',
   'settings.voiceTts.language.en': 'English',
   'settings.voiceTts.language.pt': 'Português',
+  'settings.voiceTts.language.de': 'Deutsch',
+  'settings.voiceTts.language.it': 'Italiano',
+  'settings.voiceTts.language.ja': '日本語',
+  'settings.voiceTts.language.ru': 'Русский',
   'settings.voiceTts.field.supertonicSteps.helperText':
-    'Mehr Schritte = besseres Audio. Kostet fast nichts: gemessen ergeben 2 Schritte RTF 0.14 und 20 Schritte 0.17.',
+    'Mehr Schritte = besseres Audio, aber langsamer: gemessen ergeben 8 Schritte RTF 0.24 und 20 Schritte 0.54.',
   'settings.voiceTts.field.elevenLabsVoiceId.label': 'Stimmen-ID',
   'settings.voiceTts.field.azureTtsSubscriptionKey.label': 'Azure-Abonnementschlüssel',
   'settings.voiceTts.field.azureTtsRegion.label': 'Azure-Region',
@@ -1619,7 +1633,7 @@ export const deDE: TranslationDict = {
     'Wird einmal heruntergeladen (~60 MB) und wiederverwendet. Den vollständigen Katalog findest du unter rhasspy/piper-voices.',
   'settings.voiceTts.field.piperBinaryPath.label': 'Pfad der ausführbaren Datei',
   'settings.voiceTts.field.piperBinaryPath.helperText':
-    'Installiere Piper von github.com/rhasspy/piper. Leer = sucht „piper“ im System-PATH.',
+    'Installiere Piper von github.com/OHF-Voice/piper1-gpl. Leer = sucht „piper“ im System-PATH.',
   'settings.voiceTts.field.supertonicVoice.label': 'Supertonic-Stimme',
   'settings.voiceTts.field.supertonicVoice.option.f1': 'F1 (weiblich)',
   'settings.voiceTts.field.supertonicVoice.option.f2': 'F2 (weiblich)',
@@ -1669,7 +1683,7 @@ export const deDE: TranslationDict = {
   'settings.voiceTts.panel.executablePathLabel': 'Pfad der ausführbaren Datei',
   'settings.voiceTts.panel.piperPathPlaceholder': 'leer = sucht „piper“ im PATH',
   'settings.voiceTts.panel.piperHint':
-    'Die Stimme wird einmal heruntergeladen (~60 MB) und bleibt auf dem Rechner. Die ausführbare Datei muss separat installiert werden — github.com/rhasspy/piper.',
+    'Die Stimme wird einmal heruntergeladen (~60 MB) und bleibt auf dem Rechner. Die ausführbare Datei muss separat installiert werden — github.com/OHF-Voice/piper1-gpl.',
   'settings.voiceTts.panel.refinementSteps': 'Verfeinerungsschritte',
   'settings.voiceTts.panel.stepsSuffix': 'Schritte',
   'settings.voiceTts.panel.supertonicHint':
@@ -2514,6 +2528,10 @@ export const deDE: TranslationDict = {
     'Füllt den ganzen Monitor mit dem Avatar-Fenster. Drücken Sie F11 im Fenster zum Umschalten; Größe und Position von vorher kehren beim Verlassen zurück.',
   'settings.window.stateLabel': 'Jetzt',
   'settings.window.state.fullscreen': 'Vollbild',
+  'settings.window.state.mini': 'Mini',
+  'settings.window.mini.label': 'Mini-Modus',
+  'settings.window.mini.hint':
+    'Verkleinert das Fenster auf ein kleines Quadrat unten links, das nur ihren Kopf zeigt. Chat, Verlauf oder eine Freigabeanfrage holen das volle Fenster zurück.',
   'settings.window.state.windowed': 'Im Fenster',
   'settings.performance.profileLabel': 'Leistungsprofil',
   'settings.performance.profile.auto': 'Automatisch',
@@ -2551,7 +2569,7 @@ export const deDE: TranslationDict = {
   'settings.performance.accel.model.nemotron': 'Nemotron',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
-  'settings.performance.accel.model.e5': 'e5-Embeddings',
+  'settings.performance.accel.model.e5': 'granite-Embeddings',
   'settings.performance.accel.reason.userCpu': 'In den Einstellungen gewählte CPU',
   'settings.performance.accel.reason.tinyModel':
     'winziges Modell: es auf die GPU zu schicken kostet mehr, als es zu berechnen',
@@ -3290,8 +3308,10 @@ export const deDE: TranslationDict = {
     'Supertonic spricht {{language}} nicht, und für diese Sprache gibt es keine lokale Stimme mit geprüfter Lizenz. Wähle in Einstellungen > Stimme einen Cloud-Anbieter (Azure Speech, Google Cloud oder ElevenLabs).',
   'voice.tts.piper.emptyText': 'Piper: Der Text ist leer.',
   'voice.tts.piper.configuredPathMissing': 'Piper: Der konfigurierte Pfad existiert nicht: "{{path}}".',
+  'voice.tts.piper.outdated':
+    'Ihr Piper hat Version {{version}}; Mikas Stimmen brauchen Piper 1.5 oder neuer. Aktualisieren Sie Piper (github.com/OHF-Voice/piper1-gpl).',
   'voice.tts.piper.binaryNotFound':
-    'Piper wurde nicht gefunden. Installiere die Binärdatei (github.com/rhasspy/piper) oder gib ihren Pfad in den Spracheinstellungen an.',
+    'Piper wurde nicht gefunden. Installiere die Binärdatei (github.com/OHF-Voice/piper1-gpl) oder gib ihren Pfad in den Spracheinstellungen an.',
   'voice.tts.piper.invalidVoiceKey': 'Piper: Ungültiger Stimmschlüssel: "{{voice}}".',
   'voice.tts.piper.voiceNotInCatalog':
     'Piper: Die Stimme "{{voice}}" ist nicht im Katalog geprüfter Stimmen und wird nicht heruntergeladen.',

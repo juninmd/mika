@@ -203,6 +203,6 @@ export const enUS: WizardCopy = {
     ttsCloud: 'Cloud provider selected',
     llmLabel: 'Language model (LLM)',
     embeddingLabel: 'Vector memory (Embeddings)',
-    embeddingDetail: 'Local e5 (~135 MB): semantic memory search offline, no server',
+    embeddingDetail: 'Local granite (~125 MB): semantic memory search offline, no server',
   },
 }

@@ -1,5 +1,5 @@
 import type { TranslationDict } from '@mika/sdk/i18n'
-import { BrainIcon, HistoryIcon, MessageIcon, MicrophoneIcon, SettingsIcon, StopIcon } from '../Icons'
+import { BrainCircuit, History, MessageCircle, Mic, Settings2, Square } from 'lucide-react'
 
 export type DockKey = 'stop' | 'mic' | 'chat' | 'history' | 'wheel' | 'settings'
 
@@ -23,11 +23,12 @@ export const DOCK_SHORT_LABEL: Record<DockKey, keyof TranslationDict> = {
 /** `useNeuralWheel` binds ctrlKey+Shift+Space on every OS (not Cmd on macOS), so it is not an accelerator of the catalog. */
 export const WHEEL_KEY = 'Ctrl+Shift+Space'
 
+/** Lucide, the same set as the wheel and settings: one stroke weight across every Mika surface. */
 export const DOCK_ICONS: Record<DockKey, () => React.ReactNode> = {
-  stop: () => <StopIcon className="h-3.5 w-3.5" aria-hidden="true" />,
-  mic: () => <MicrophoneIcon className="h-4 w-4" aria-hidden="true" />,
-  chat: () => <MessageIcon className="h-4 w-4" aria-hidden="true" />,
-  history: () => <HistoryIcon className="h-4 w-4" aria-hidden="true" />,
-  wheel: () => <BrainIcon className="h-4 w-4" aria-hidden="true" />,
-  settings: () => <SettingsIcon className="h-4 w-4" aria-hidden="true" />,
+  stop: () => <Square size={14} strokeWidth={2.4} fill="currentColor" aria-hidden="true" />,
+  mic: () => <Mic size={17} strokeWidth={1.8} aria-hidden="true" />,
+  chat: () => <MessageCircle size={17} strokeWidth={1.8} aria-hidden="true" />,
+  history: () => <History size={17} strokeWidth={1.8} aria-hidden="true" />,
+  wheel: () => <BrainCircuit size={17} strokeWidth={1.8} aria-hidden="true" />,
+  settings: () => <Settings2 size={17} strokeWidth={1.8} aria-hidden="true" />,
 }

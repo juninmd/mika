@@ -1,6 +1,30 @@
 import { memo, useCallback } from 'react'
 import type { DockButtonProps } from './dock-types'
 
+/** Three bars that bounce while the mic is hearing — the "she is listening" cue lives on the button itself. */
+function MicLevel() {
+  return (
+    <span aria-hidden="true" className="pointer-events-none absolute right-1 top-1 flex h-2.5 items-end gap-px">
+      <span className="dock-level h-full w-0.5 rounded-full bg-ok" />
+      <span className="dock-level h-full w-0.5 rounded-full bg-ok [animation-delay:120ms]" />
+      <span className="dock-level h-full w-0.5 rounded-full bg-ok [animation-delay:240ms]" />
+    </span>
+  )
+}
+
+/** Open/on dot under the icon (state readable without color alone) and the live mic level. */
+function DockMarkers({ pulse, active }: { pulse: boolean; active: boolean }) {
+  return (
+    <>
+      {pulse && <MicLevel />}
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-accent transition-opacity duration-150 ${active ? 'opacity-100' : 'opacity-0'}`}
+      />
+    </>
+  )
+}
+
 export const DockButton = memo(function DockButton({
   children,
   onClick,
@@ -47,7 +71,8 @@ export const DockButton = memo(function DockButton({
       onPointerDown={holdMode && !disabled ? onHoldStart : undefined}
       onPointerUp={holdMode && !disabled ? onHoldEnd : undefined}
       onPointerLeave={holdMode && !disabled ? onHoldEnd : undefined}
-      className={`relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border transition-[transform,background-color,border-color,color,box-shadow] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] enabled:hover:-translate-y-0.5 active:scale-95 active:translate-y-0 motion-reduce:enabled:hover:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ${tone}`}
+      data-dock-button
+      className={`relative flex h-9 w-9 origin-bottom cursor-pointer items-center justify-center rounded-xl border transition-[transform,scale,background-color,border-color,color,box-shadow] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] enabled:hover:-translate-y-0.5 active:scale-95 active:translate-y-0 motion-reduce:enabled:hover:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ${tone}`}
     >
       {pulse && !disabled && (
         <span
@@ -56,6 +81,7 @@ export const DockButton = memo(function DockButton({
         />
       )}
       {children}
+      <DockMarkers pulse={Boolean(pulse && !disabled)} active={Boolean(active)} />
     </button>
   )
 })

@@ -19,6 +19,7 @@ import { useHudLayout } from './hooks/useHudLayout'
 import { useLegalGate } from './hooks/useLegalGate'
 import { useMikaContextMenu } from './hooks/useMikaContextMenu'
 import { useMikaMenuItems } from './hooks/useMikaMenuItems'
+import { useMiniMode, useMiniModeGuard } from './hooks/useMiniMode'
 import { useNeuralWheel } from './hooks/useNeuralWheel'
 import { useProviderHealthIndicator } from './hooks/useProviderHealthIndicator'
 import { useRuntimeEvents } from './hooks/useRuntimeEvents'
@@ -28,6 +29,7 @@ import { useUpdateChecker } from './hooks/useUpdateChecker'
 import { layerStyle } from './lib/layer-styles'
 import { handleWindowDragPointerDown } from './lib/window-drag'
 import { useChatStore } from './store/useChatStore'
+import { useUIStore } from './store/useUIStore'
 
 export const App = memo(function App() {
   useTheme()
@@ -87,8 +89,24 @@ export const App = memo(function App() {
   const handleOpenInput = useCallback(() => toggleOverlay('input'), [toggleOverlay])
   const handleOpenHistory = useCallback(() => toggleOverlay('history'), [toggleOverlay])
 
+  // Mini: só a cabeça num quadrado pequeno — HUD, dock e painéis não cabem e saem de cena.
+  const mini = useMiniMode() === true
+  const crisisOpen = useChatStore((s) => s.crisisRegion !== null)
+  // The store's own close: the shell's `closeOverlays` also switches the mic off, and mini is voice-first.
+  const closeForMini = useCallback(() => {
+    useUIStore.getState().closeOverlays()
+    closeWheel()
+  }, [closeWheel])
+  useMiniModeGuard(
+    mini,
+    approvalPending !== null || showTelemetryOptIn || crisisOpen || legalGate.needed || legalGate.failed,
+    showInput || showHistory || wheelOpen,
+    closeForMini,
+  )
+
   const { anchor: menuAnchor, open: openContextMenu, close: closeContextMenu } = useMikaContextMenu()
   const menuItems = useMikaMenuItems({
+    mini,
     pinned,
     micEnabled,
     onTogglePin: handleTogglePin,
@@ -118,90 +136,94 @@ export const App = memo(function App() {
 
         {!mikaReady && !isTransparentMode && <BootOverlay />}
 
-        <AppAvatarLayer shell={shell} />
+        <AppAvatarLayer shell={shell} headOnly={mini} />
 
-        <HudLayer
-          layout={hudLayout}
-          backgroundMode={backgroundMode}
-          appStatus={appStatus}
-          activeTool={activeTool}
-          micEnabled={micEnabled}
-          vadIsSpeaking={vadIsSpeaking}
-          speechHeld={speechHeld}
-          ttsIsPlaying={ttsIsPlaying}
-          volumeRef={volumeRef}
-          expression={expression}
-          providerDown={providerDown}
-          visionEnabled={capabilities.canSeeScreen}
-          memoryEnabled={capabilities.canLearn}
-          mikaReady={mikaReady}
-          onToggleMic={handleToggleMic}
-          retryLastMessage={retryLastMessage}
-        />
+        {!mini && (
+          <>
+            <HudLayer
+              layout={hudLayout}
+              backgroundMode={backgroundMode}
+              appStatus={appStatus}
+              activeTool={activeTool}
+              micEnabled={micEnabled}
+              vadIsSpeaking={vadIsSpeaking}
+              speechHeld={speechHeld}
+              ttsIsPlaying={ttsIsPlaying}
+              volumeRef={volumeRef}
+              expression={expression}
+              providerDown={providerDown}
+              visionEnabled={capabilities.canSeeScreen}
+              memoryEnabled={capabilities.canLearn}
+              mikaReady={mikaReady}
+              onToggleMic={handleToggleMic}
+              retryLastMessage={retryLastMessage}
+            />
 
-        <PanelLayer
-          showHistory={showHistory}
-          messages={messages}
-          closeOverlays={closeOverlays}
-          handleClearHistory={handleClearHistory}
-          onRegenerateLast={retryLastMessage}
-        />
+            <PanelLayer
+              showHistory={showHistory}
+              messages={messages}
+              closeOverlays={closeOverlays}
+              handleClearHistory={handleClearHistory}
+              onRegenerateLast={retryLastMessage}
+            />
 
-        {showInput && (
-          <div className="absolute inset-0 pointer-events-none" style={layerStyle('chat')}>
-            <div className="pointer-events-auto">
-              <ChatComposer
-                value={input}
-                onChange={setInput}
-                onSend={handleSend}
-                onClose={closeOverlays}
-                speechLang={voiceLang}
+            {showInput && (
+              <div className="absolute inset-0 pointer-events-none" style={layerStyle('chat')}>
+                <div className="pointer-events-auto">
+                  <ChatComposer
+                    value={input}
+                    onChange={setInput}
+                    onSend={handleSend}
+                    onClose={closeOverlays}
+                    speechLang={voiceLang}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="absolute inset-x-0 bottom-0 flex justify-center" style={layerStyle('dock')}>
+              <DockContainer
+                backgroundMode={backgroundMode}
+                appStatus={appStatus}
+                micEnabled={micEnabled}
+                vadIsSpeaking={vadIsSpeaking}
+                pinned={pinned}
+                showInput={showInput}
+                showHistory={showHistory}
+                onToggleMic={handleToggleMic}
+                onSetMic={handleSetMic}
+                onOpenInput={handleOpenInput}
+                onOpenHistory={handleOpenHistory}
+                onOpenWheel={() => openWheel()}
+                ttsIsPlaying={ttsIsPlaying}
+                onStopSpeech={stopTTS}
+                sttEnabled={sttEnabled}
+                inputMode={inputMode}
+                updateAvailable={updateAvailable}
+                providerDown={providerDown}
               />
             </div>
-          </div>
+
+            <NotificationContainer notifications={notifications} onDismiss={dismiss} anchor={hudLayout.toasts} />
+            <ProactiveThoughtBubble anchor={hudLayout.toasts} />
+            <CommandPalette />
+
+            <NeuralWheel
+              isOpen={wheelOpen}
+              onClose={closeWheel}
+              position={wheelPos}
+              onCommand={sendMessage}
+              micEnabled={micEnabled}
+              onToggleMic={handleToggleMic}
+              pinned={pinned}
+              onTogglePin={handleTogglePin}
+              onOpenChat={handleOpenInput}
+              onClearChat={handleClearHistory}
+              ttsIsPlaying={ttsIsPlaying}
+              onStopTTS={stopTTS}
+            />
+          </>
         )}
-
-        <div className="absolute inset-x-0 bottom-0 flex justify-center" style={layerStyle('dock')}>
-          <DockContainer
-            backgroundMode={backgroundMode}
-            appStatus={appStatus}
-            micEnabled={micEnabled}
-            vadIsSpeaking={vadIsSpeaking}
-            pinned={pinned}
-            showInput={showInput}
-            showHistory={showHistory}
-            onToggleMic={handleToggleMic}
-            onSetMic={handleSetMic}
-            onOpenInput={handleOpenInput}
-            onOpenHistory={handleOpenHistory}
-            onOpenWheel={() => openWheel()}
-            ttsIsPlaying={ttsIsPlaying}
-            onStopSpeech={stopTTS}
-            sttEnabled={sttEnabled}
-            inputMode={inputMode}
-            updateAvailable={updateAvailable}
-            providerDown={providerDown}
-          />
-        </div>
-
-        <NotificationContainer notifications={notifications} onDismiss={dismiss} anchor={hudLayout.toasts} />
-        <ProactiveThoughtBubble anchor={hudLayout.toasts} />
-        <CommandPalette />
-
-        <NeuralWheel
-          isOpen={wheelOpen}
-          onClose={closeWheel}
-          position={wheelPos}
-          onCommand={sendMessage}
-          micEnabled={micEnabled}
-          onToggleMic={handleToggleMic}
-          pinned={pinned}
-          onTogglePin={handleTogglePin}
-          onOpenChat={handleOpenInput}
-          onClearChat={handleClearHistory}
-          ttsIsPlaying={ttsIsPlaying}
-          onStopTTS={stopTTS}
-        />
 
         <MikaContextMenu anchor={menuAnchor} items={menuItems} onClose={closeContextMenu} />
 

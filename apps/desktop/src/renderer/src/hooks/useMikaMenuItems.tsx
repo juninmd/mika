@@ -1,18 +1,15 @@
+import { History, MessageCircle, MessageCirclePlus, Mic, Minimize2, Pin, Settings2, Trash2 } from 'lucide-react'
 import { useMemo } from 'react'
-import {
-  HistoryIcon,
-  MessageIcon,
-  MicrophoneIcon,
-  PinIcon,
-  SettingsIcon,
-  SparkIcon,
-  TrashIcon,
-} from '../components/Icons'
 import type { ContextMenuItem } from '../components/MikaContextMenu'
 import { useDockActions } from './useDockActions'
 import { useI18n } from './useI18n'
+import { setMiniMode } from './useMiniMode'
+
+/** The mini window is 240 px tall: only what fits, and the way back out. */
+const MINI_MENU = new Set(['mini', 'mic', 'settings'])
 
 interface MikaMenuActions {
+  mini: boolean
   pinned: boolean
   micEnabled: boolean
   onTogglePin: () => void
@@ -26,28 +23,37 @@ interface MikaMenuActions {
 export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
   const { t } = useI18n()
   const { openSettings } = useDockActions()
-  const { pinned, micEnabled, onTogglePin, onOpenChat, onOpenHistory, onToggleMic, onClearHistory, onSendMessage } =
-    actions
+  const {
+    mini,
+    pinned,
+    micEnabled,
+    onTogglePin,
+    onOpenChat,
+    onOpenHistory,
+    onToggleMic,
+    onClearHistory,
+    onSendMessage,
+  } = actions
 
-  return useMemo(
-    () => [
+  const items = useMemo(
+    (): ContextMenuItem[] => [
       {
         id: 'chat',
         label: t('shell.menu.chat'),
         hint: 'Ctrl+Space',
-        icon: <MessageIcon className="h-3.5 w-3.5" />,
+        icon: <MessageCircle size={14} />,
         onSelect: onOpenChat,
       },
       {
         id: 'topic',
         label: t('shell.menu.topic'),
-        icon: <SparkIcon className="h-3.5 w-3.5" />,
+        icon: <MessageCirclePlus size={14} />,
         onSelect: () => onSendMessage(t('shell.menu.topicPrompt')),
       },
       {
         id: 'history',
         label: t('shell.menu.history'),
-        icon: <HistoryIcon className="h-3.5 w-3.5" />,
+        icon: <History size={14} />,
         onSelect: onOpenHistory,
         separatorBefore: true,
       },
@@ -56,33 +62,41 @@ export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
         label: t('shell.menu.mic'),
         hint: 'F9',
         checked: micEnabled,
-        icon: <MicrophoneIcon className="h-3.5 w-3.5" />,
+        icon: <Mic size={14} />,
         onSelect: onToggleMic,
       },
       {
         id: 'pin',
         label: t('shell.menu.pin'),
         checked: pinned,
-        icon: <PinIcon className="h-3.5 w-3.5" />,
+        icon: <Pin size={14} />,
         onSelect: onTogglePin,
+      },
+      {
+        id: 'mini',
+        label: t('shell.menu.miniMode'),
+        checked: mini,
+        icon: <Minimize2 size={14} />,
+        onSelect: () => setMiniMode(!mini),
       },
       {
         id: 'settings',
         label: t('shell.menu.settings'),
-        icon: <SettingsIcon className="h-3.5 w-3.5" />,
+        icon: <Settings2 size={14} />,
         onSelect: () => void openSettings(),
         separatorBefore: true,
       },
       {
         id: 'clear',
         label: t('shell.menu.clearHistory'),
-        icon: <TrashIcon className="h-3.5 w-3.5" />,
+        icon: <Trash2 size={14} />,
         onSelect: onClearHistory,
         confirmLabel: t('shell.menu.clearHistoryArmed'),
         destructive: true,
       },
     ],
     [
+      mini,
       micEnabled,
       pinned,
       onOpenChat,
@@ -95,4 +109,5 @@ export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
       t,
     ],
   )
+  return useMemo(() => (mini ? items.filter((item) => MINI_MENU.has(item.id)) : items), [mini, items])
 }

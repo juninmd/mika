@@ -19,6 +19,7 @@ mod shell_actions;
 mod log_level;
 mod shutdown;
 mod fullscreen;
+mod mini_mode;
 mod wizard_watch;
 mod shortcuts;
 mod state;
@@ -192,6 +193,7 @@ pub fn run() {
             shell_actions::decide_boot(&handle);
             wizard_watch::spawn(&handle);
             fullscreen::spawn(&handle);
+            mini_mode::spawn(&handle);
             log_level::spawn(&handle);
             modules::system::log_stream::spawn(&handle);
 

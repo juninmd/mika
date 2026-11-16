@@ -13,23 +13,15 @@ const LOCALES = ['en-US', 'pt-BR', 'es-ES', 'fr-FR', 'it-IT', 'ja-JP', 'zh-CN', 
 const t = (key: string) => key
 
 describe('ttsCoverageNotice', () => {
-  it('Supertonic speaks en/pt/es/fr/ko with no notice', () => {
-    for (const locale of ['en-US', 'pt-BR', 'es-ES', 'fr-FR', 'ko-KR']) {
+  it('Supertonic 3 speaks every interface language but Chinese with no notice', () => {
+    for (const locale of LOCALES.filter((l) => l !== 'zh-CN')) {
       expect(ttsCoverageNotice('supertonic', locale, 'pt_BR-faber-medium')).toBeNull()
     }
   })
 
-  it('Supertonic with de/it/ru announces the Piper fallback (a verified voice exists)', () => {
-    for (const locale of ['de-DE', 'it-IT', 'ru-RU']) {
-      expect(ttsCoverageNotice('supertonic', locale, 'pt_BR-faber-medium')).toBe(
-        'settings.voiceTts.coverage.piperFallback',
-      )
-    }
-  })
-
-  it('ja/zh have no local voice with a verified license: the notice sends the user to the cloud', () => {
+  it('zh has no local voice with a verified license: the notice sends the user to the cloud', () => {
+    expect(ttsCoverageNotice('supertonic', 'zh-CN', 'x')).toBe('settings.voiceTts.coverage.unsupported')
     for (const locale of ['ja-JP', 'zh-CN']) {
-      expect(ttsCoverageNotice('supertonic', locale, 'x')).toBe('settings.voiceTts.coverage.unsupported')
       expect(ttsCoverageNotice('piper', locale, 'pt_BR-faber-medium')).toBe('settings.voiceTts.coverage.unsupported')
     }
   })

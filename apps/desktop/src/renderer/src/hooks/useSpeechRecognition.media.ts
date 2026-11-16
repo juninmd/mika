@@ -4,8 +4,10 @@ import { stopStream } from '../lib/mic-stream'
 import { rendererLog } from '../lib/renderer-logger'
 import { getElectronApi } from '../lib/shell-api'
 import { logVadSetupFailure, VAD_WORKLET_PATH } from './audio-playback-vad'
-import { createPreRollBuffer, type PreRollBuffer } from './speech-preroll'
+import { createPreRollBuffer, preRollDurationMs } from './speech-preroll'
 import {
+  capturedPcm16,
+  deliverTranscript,
   dropReason,
   logSttMilestone,
   MAX_NOISE_FLOOR,
@@ -14,9 +16,11 @@ import {
   type MediaRecorderSession,
   NOISE_FLOOR_RISE_PER_TICK,
   NOISE_MARGIN,
+  requestTranscript,
   SILENCE_HANGOVER_MS,
   scaleVadGates,
   shouldFinishUtterance,
+  type TranscribeResponse,
   transcribeUtterance,
   VAD_POLL_MS,
 } from './speech-transcribe'
@@ -25,11 +29,25 @@ export type { SpeechTranscriptHandler } from './speech-transcribe'
 
 type MicMeter = ReturnType<typeof createMicLevelMeter>
 
+/** The utterance being recorded. `pcm` is the worklet tap's audio since the gate opened (`null`
+ * without a worklet: then the MediaRecorder blob is decoded instead). `early` is the transcript
+ * started during the hangover, valid only while no voice came after `voiceAt`. */
+type Utterance = {
+  preRoll: Float32Array
+  pcm: Float32Array[] | null
+  early: { voiceAt: number; result: Promise<TranscribeResponse> } | null
+}
+
+/** Fraction of the hangover after which the transcript starts: at 1200 ms, STT runs from 400 ms of
+ * silence on, so up to 800 ms of it is hidden inside the wait instead of added after it. Speaking
+ * again only costs a discarded STT call. */
+const EARLY_TRANSCRIPT_HANGOVER_FRACTION = 1 / 3
+
 /** Continuous 16kHz mono tap, same worklet the barge-in path already loads — feeds the pre-roll
  * ring buffer so onset clipping (the gate-opening syllable) doesn't lose audio while nothing is
  * "recording" yet. Best-effort: a webview without AudioWorklet support just runs without pre-roll,
  * same as today. */
-async function setupPreRollTap(mediaStream: MediaStream, preRoll: PreRollBuffer): Promise<() => void> {
+async function setupPreRollTap(mediaStream: MediaStream, onAudio: (chunk: Float32Array) => void): Promise<() => void> {
   const ctx = new AudioContext()
   try {
     await ctx.audioWorklet.addModule(VAD_WORKLET_PATH())
@@ -45,7 +63,7 @@ async function setupPreRollTap(mediaStream: MediaStream, preRoll: PreRollBuffer)
   })
   node.port.onmessage = (event: MessageEvent) => {
     const { type, audio } = event.data as { type?: string; audio?: Float32Array }
-    if (type === 'audio' && audio) preRoll.push(audio)
+    if (type === 'audio' && audio) onAudio(audio)
   }
   ctx.createMediaStreamSource(mediaStream).connect(node)
   return () => {
@@ -121,8 +139,15 @@ export async function startMediaRecorderTranscription({
   const preRoll = createPreRollBuffer()
   let preRollTapCancelled = false
   let stopPreRollTap: (() => void) | null = null
-  setupPreRollTap(stream, preRoll)
+  let tapLive = false
+  let current: Utterance | null = null
+  const onTapAudio = (chunk: Float32Array) => {
+    preRoll.push(chunk)
+    current?.pcm?.push(chunk)
+  }
+  setupPreRollTap(stream, onTapAudio)
     .then((stop) => {
+      tapLive = true
       if (preRollTapCancelled) {
         stop()
         return
@@ -143,6 +168,9 @@ export async function startMediaRecorderTranscription({
     if (!recorder) return
     const active = recorder
     recorder = null
+    // Ended by the ceiling or a pause, not by silence: an early transcript may predate the last words.
+    if (current?.early && current.early.voiceAt !== lastVoiceAt) current.early = null
+    current = null
     // The ring buffer keeps rolling through the whole recording, so right after an utterance ends
     // it still holds that utterance's own trailing audio. Reset here so a next onset that opens the
     // gate again before PRE_ROLL_MS of fresh silence accumulates never replays already-sent audio.
@@ -165,7 +193,8 @@ export async function startMediaRecorderTranscription({
     verdict = mine
     // Snapshotted here, not read later: the ring buffer keeps rolling once the recorder takes over,
     // so this closure — not `preRoll` at emit time — is the onset audio for THIS utterance.
-    const preRollSnapshot = preRoll.snapshot()
+    const utterance: Utterance = { preRoll: preRoll.snapshot(), pcm: tapLive ? [] : null, early: null }
+    current = utterance
     logSttMilestone(runtime, 'utterance-start')
 
     rec.ondataavailable = (event) => {
@@ -192,19 +221,43 @@ export async function startMediaRecorderTranscription({
         }
         return
       }
-      const blob = new Blob(chunks, { type: rec.mimeType })
       rendererLog.debug('[STT] enviando utterance', {
         durationMs: Math.round(durationMs),
-        bytes: blob.size,
+        early: utterance.early !== null,
         peakLevel: Number(mine.peak.toFixed(3)),
       })
-      void transcribeUtterance(blob, context, durationMs, preRollSnapshot)
+      sendUtterance(utterance, new Blob(chunks, { type: rec.mimeType }), durationMs)
     }
     rec.onerror = () => {
       if (!context.closed) context.onError?.('media-recorder-error')
     }
 
     rec.start()
+  }
+
+  const sendUtterance = (utterance: Utterance, blob: Blob, durationMs: number) => {
+    const totalMs = durationMs + preRollDurationMs(utterance.preRoll)
+    if (utterance.early) return void deliverTranscript(utterance.early.result, context, totalMs)
+    if (utterance.pcm?.length) {
+      return void deliverTranscript(
+        requestTranscript(capturedPcm16(utterance.pcm, utterance.preRoll), context),
+        context,
+        totalMs,
+      )
+    }
+    void transcribeUtterance(blob, context, durationMs, utterance.preRoll)
+  }
+
+  // Voice after the early transcript makes it stale: drop it and let the next pause start another.
+  const transcribeEarly = (silentFor: number) => {
+    const utterance = current
+    if (!utterance?.pcm?.length || !verdict.confirmed) return
+    if (utterance.early && utterance.early.voiceAt !== lastVoiceAt) utterance.early = null
+    if (utterance.early || !vadEndpointingEnabled || silentFor < hangoverMs * EARLY_TRANSCRIPT_HANGOVER_FRACTION) return
+    utterance.early = {
+      voiceAt: lastVoiceAt,
+      result: requestTranscript(capturedPcm16(utterance.pcm, utterance.preRoll), context),
+    }
   }
 
   const effectiveGates = () => ({
@@ -243,7 +296,9 @@ export async function startMediaRecorderTranscription({
     const elapsed = now - utteranceStart
     if (shouldFinishUtterance(silentFor, elapsed, hangoverMs, vadEndpointingEnabled)) {
       finishUtterance()
+      return
     }
+    transcribeEarly(silentFor)
   }, VAD_POLL_MS)
 
   rendererLog.info('[STT] escuta iniciada', {

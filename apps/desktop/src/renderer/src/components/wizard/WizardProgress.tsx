@@ -4,56 +4,51 @@ import type { WizardCopy } from './wizard-copy'
 // Same order as `WIZARD_STEPS`: body, brain, voice, memory, eyes/ears.
 const STEP_ICONS = [GlobeIcon, PaletteIcon, BrainIcon, SpeakerIcon, HistoryIcon, EyeIcon, UserIcon, CheckIcon] as const
 
-const BADGE_TONE = {
-  completed: 'border-ok-rim bg-ok-soft text-ok',
-  active: 'border-accent-rim bg-accent-soft text-accent',
-  upcoming: 'border-border-subtle bg-surface-raise text-text-muted',
+const BAR_TONE = {
+  completed: 'bg-ok/70',
+  active: 'bg-accent shadow-[0_0_10px_var(--accent-glow)]',
+  upcoming: 'bg-border-subtle',
 } as const
 
-function StepBadge({ index, state }: { index: number; state: keyof typeof BADGE_TONE }) {
-  const Icon = STEP_ICONS[index] ?? CheckIcon
-  return (
-    <span
-      aria-hidden="true"
-      className={`relative flex size-7 shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color,color] duration-300 ${BADGE_TONE[state]}`}
-    >
-      {state === 'active' && <span className="ping-soft absolute inset-0 rounded-full border border-accent-rim" />}
-      {state === 'completed' ? <CheckIcon className="pop-in size-3.5" /> : <Icon className="size-3.5" />}
-    </span>
-  )
-}
+const LABEL_TONE = {
+  completed: 'text-ok',
+  active: 'text-text-main',
+  upcoming: 'text-text-muted',
+} as const
 
-/** Trilho entre dois passos: enche da esquerda para a direita quando o passo anterior conclui. */
-function StepConnector({ filled }: { filled: boolean }) {
+type StepState = keyof typeof BAR_TONE
+
+/** One segment of the progress bar: the bar fills as the step completes, the label names the step. */
+function StepSegment({ index, state, name }: { index: number; state: StepState; name: string }) {
+  const Icon = state === 'completed' ? CheckIcon : (STEP_ICONS[index] ?? CheckIcon)
   return (
-    <span aria-hidden="true" className="relative h-px w-4 shrink-0 overflow-hidden bg-border-subtle sm:w-6">
+    <>
+      <span aria-hidden="true" className="relative block h-1 overflow-hidden rounded-full bg-border-subtle">
+        <span
+          className={`absolute inset-0 origin-left rounded-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${BAR_TONE[state]}`}
+          style={{ transform: `scaleX(${state === 'upcoming' ? 0 : 1})` }}
+        />
+      </span>
       <span
-        className="absolute inset-0 origin-left bg-ok transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-        style={{ transform: `scaleX(${filled ? 1 : 0})` }}
-      />
-    </span>
+        className={`mt-1.5 flex min-w-0 items-center gap-1 text-micro font-semibold uppercase tracking-[0.08em] transition-colors duration-300 ${LABEL_TONE[state]}`}
+      >
+        <Icon aria-hidden="true" className={`size-3 shrink-0 ${state === 'completed' ? 'pop-in' : ''}`} />
+        {/* Narrow cards keep only the active name; wider ones show every step. */}
+        <span className={`truncate ${state === 'active' ? '' : 'max-sm:sr-only'}`}>{name}</span>
+      </span>
+    </>
   )
 }
 
 export function WizardProgress({ activeStepIndex, copy }: { activeStepIndex: number; copy: WizardCopy }) {
   return (
-    <ol className="flex items-center gap-2">
+    <ol className="grid w-full gap-1.5" style={{ gridTemplateColumns: `repeat(${copy.steps.length}, minmax(0, 1fr))` }}>
       {copy.steps.map((item, index) => {
         const isActive = index === activeStepIndex
-        const isCompleted = index < activeStepIndex
-        const state = isCompleted ? 'completed' : isActive ? 'active' : 'upcoming'
-
+        const state: StepState = index < activeStepIndex ? 'completed' : isActive ? 'active' : 'upcoming'
         return (
-          <li
-            key={item.name}
-            title={item.description}
-            aria-current={isActive ? 'step' : undefined}
-            className="flex min-w-0 items-center gap-2"
-          >
-            <StepBadge index={index} state={state} />
-            {/* Eight labels overflow the 720px card: only the active step keeps its name. */}
-            <span className={isActive ? 'truncate text-xs font-semibold text-text-main' : 'sr-only'}>{item.name}</span>
-            {index < copy.steps.length - 1 && <StepConnector filled={isCompleted} />}
+          <li key={item.name} title={item.description} aria-current={isActive ? 'step' : undefined} className="min-w-0">
+            <StepSegment index={index} state={state} name={item.name} />
           </li>
         )
       })}

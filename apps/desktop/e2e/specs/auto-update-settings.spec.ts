@@ -13,13 +13,13 @@ const savedMode = (page: Page) =>
   })
 
 test.describe('atualização automática', () => {
-  test('nasce em "instalar sozinha" e o modo escolhido em Atualizações é o que o backend lê', async ({ app }) => {
+  test('nasce em "só avisar" e o modo escolhido em Atualizações é o que o backend lê', async ({ app }) => {
     const page = await app.firstWindow()
     await page.waitForLoadState('domcontentloaded')
     await expect
       .poll(() => page.evaluate(() => Boolean((window as unknown as { electronAPI?: unknown }).electronAPI)))
       .toBe(true)
-    expect(await savedMode(page)).toBe('install')
+    expect(await savedMode(page)).toBe('notify')
 
     const settingsPromise = page.context().waitForEvent('page')
     await clickDockButton(page, 'Configurações')
@@ -30,16 +30,16 @@ test.describe('atualização automática', () => {
     await expect(settings.getByRole('heading', { name: 'Atualização automática' })).toBeVisible()
 
     const modes = settings.getByRole('radiogroup', { name: 'Como atualizar' })
-    await expect(modes.getByRole('radio', { name: /Instalar sozinha/ })).toHaveAttribute('aria-checked', 'true')
-
-    await modes.getByRole('radio', { name: /Só avisar/ }).click()
     await expect(modes.getByRole('radio', { name: /Só avisar/ })).toHaveAttribute('aria-checked', 'true')
-    await expect.poll(() => savedMode(page)).toBe('notify')
+
+    await modes.getByRole('radio', { name: /Instalar sozinha/ }).click()
+    await expect(modes.getByRole('radio', { name: /Instalar sozinha/ })).toHaveAttribute('aria-checked', 'true')
+    await expect.poll(() => savedMode(page)).toBe('install')
 
     await waitForUiIdle(settings)
     await modes.scrollIntoViewIfNeeded()
     await settings.screenshot({ path: artifactPath('auto-update-settings.png') })
-    writeArtifact('auto-update-settings', { defaultMode: 'install', savedAfterChoosingNotify: await savedMode(page) })
+    writeArtifact('auto-update-settings', { defaultMode: 'notify', savedAfterChoosingInstall: await savedMode(page) })
     await settings.close()
   })
 })

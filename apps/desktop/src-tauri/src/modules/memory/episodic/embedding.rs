@@ -438,12 +438,62 @@ fn finish(store: &MemoryStore, settings: &EmbeddingSettings, cache: &EmbeddingCa
         log::warn!("memória episódica: falha ao gerar embedding via {} — caindo para busca por palavra-chave", settings.provider);
         return None;
     };
-    let signature = format!("{}:{}:{}", settings.provider, settings.model, vector.len());
+    let signature = signature(settings, vector.len());
     if let Err(error) = invalidate_index_if_embedding_changed(store, None, &signature) {
         log::warn!("memória episódica: falha ao checar assinatura de embedding: {error}");
     }
     cache.put(cache_key, vector.clone());
     Some(vector)
+}
+
+/// `"{provider}:{modelo}:{dimensão}"`. No `local` o modelo é o que o app embute
+/// (`inference::embedder::MODEL_ID`), não o texto da config: trocar o e5 pelo granite mantém
+/// `llm.embeddingModel` igual e a mesma dimensão (384), e sem isto os dois espaços vetoriais se
+/// misturariam na busca sem nenhuma invalidação.
+fn signature(settings: &EmbeddingSettings, dimensions: usize) -> String {
+    let model = if settings.provider == "local" {
+        crate::modules::inference::embedder::MODEL_ID
+    } else {
+        settings.model.as_str()
+    };
+    format!("{}:{model}:{dimensions}", settings.provider)
+}
+
+/// Assinatura do embedder local — a que [`reembed_missing`] grava depois de recalcular.
+pub(crate) fn local_signature() -> String {
+    format!(
+        "local:{}:{}",
+        crate::modules::inference::embedder::MODEL_ID,
+        crate::modules::inference::embedder::DIMENSIONS
+    )
+}
+
+/// Recalcula, com o embedder local, o vetor de toda memória que ficou sem um — o caso de trocar de
+/// modelo (o vetor antigo vai para `embedding@<assinatura antiga>`, ver
+/// [`invalidate_index_if_embedding_changed`]). Só para o `local`: é grátis e offline; provedor pago
+/// não recebe chamadas que o usuário não pediu. Devolve quantas entradas ganharam vetor.
+pub fn reembed_missing(
+    store: &MemoryStore,
+    signature: &str,
+    embed: impl Fn(&str) -> Option<Vec<f64>>,
+) -> Result<usize, String> {
+    invalidate_index_if_embedding_changed(store, None, signature)?;
+    let mut done = 0;
+    for tier in [MemoryTier::Short, MemoryTier::Long] {
+        for entry in load_tier(store, tier, None)?
+            .into_iter()
+            .filter(|e| e.embedding.is_none() && !e.content.trim().is_empty())
+        {
+            let Some(vector) = embed(&entry.content) else {
+                continue;
+            };
+            let serialized =
+                serde_json::to_string(&vector).map_err(|e| format!("serializar embedding: {e}"))?;
+            store.h_set(&key(tier, &entry.id), "embedding", &serialized)?;
+            done += 1;
+        }
+    }
+    Ok(done)
 }
 
 /// Corpo testável de [`generate_embedding`] (resolvedor e cache injetados, sem servidor real no ar).
@@ -624,6 +674,75 @@ fn negation_differs(a: &str, b: &str) -> bool {
 mod tests {
     use super::*;
     use super::super::store::write_entry;
+
+    /// Trocar o e5 pelo granite não muda `llm.embeddingModel` nem a dimensão: a assinatura do `local`
+    /// tem de mudar mesmo assim, senão vetores de dois espaços se comparam na busca.
+    #[test]
+    fn the_local_signature_names_the_embedded_model_not_the_config_text() {
+        let mut local = settings("local", false, "");
+        local.model = "multilingual-e5-small".to_string();
+        assert_eq!(signature(&local, 384), local_signature());
+        assert!(local_signature().contains(crate::modules::inference::embedder::MODEL_ID));
+        assert_eq!(
+            signature(&settings("ollama", false, ""), 3),
+            "ollama:nomic-embed-text:3"
+        );
+    }
+
+    /// Depois da troca de modelo, toda memória volta a ter vetor (do modelo novo); o antigo fica
+    /// guardado sob a assinatura velha, e uma entrada já com vetor novo não é recalculada.
+    #[test]
+    fn reembed_missing_gives_every_memory_a_vector_of_the_new_model() {
+        let store = MemoryStore::open_in_memory().unwrap();
+        store
+            .h_set(EMBEDDING_META_KEY, "signature", "local:old-e5:2")
+            .unwrap();
+        write_entry(
+            &store,
+            MemoryTier::Short,
+            "a",
+            "gosta de RPG",
+            "conversation",
+            1,
+            "{}",
+            3600,
+            Some(&[1.0, 0.0]),
+        )
+        .unwrap();
+        write_entry(
+            &store,
+            MemoryTier::Long,
+            "b",
+            "joga à noite",
+            "summary",
+            2,
+            "{}",
+            3600,
+            Some(&[0.0, 1.0]),
+        )
+        .unwrap();
+        let calls = std::cell::Cell::new(0);
+        let done = reembed_missing(&store, "local:granite:3", |_| {
+            calls.set(calls.get() + 1);
+            Some(vec![0.5, 0.5, 0.5])
+        })
+        .unwrap();
+        assert_eq!((done, calls.get()), (2, 2));
+        let a = store.h_get_all(&key(MemoryTier::Short, "a")).unwrap();
+        assert_eq!(
+            a.get("embedding").map(String::as_str),
+            Some("[0.5,0.5,0.5]")
+        );
+        assert!(
+            a.contains_key("embedding@local:old-e5:2"),
+            "o vetor antigo fica guardado: {a:?}"
+        );
+        assert_eq!(
+            reembed_missing(&store, "local:granite:3", |_| Some(vec![9.0])).unwrap(),
+            0,
+            "nada a refazer"
+        );
+    }
 
     #[test]
     fn generate_embedding_degrades_to_none_honestly() {
