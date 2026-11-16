@@ -134,12 +134,12 @@ async fn handle_download(app: &AppHandle) -> Value {
 /// (`if (!status.available) return { success: false, error: 'No update available' }`). Sem
 /// download prévio, `updater::install` ainda recusa por falta de bytes, então a trava aqui é
 /// só o caso comum (evita a chamada e a mensagem genérica do plugin).
-fn handle_quit_and_install(app: &AppHandle) -> Value {
+async fn handle_quit_and_install(app: &AppHandle) -> Value {
     if !STATUS.lock().unwrap_or_else(|e| e.into_inner()).available {
         return json!({ "success": false, "error": "No update available" });
     }
 
-    match updater::install(app) {
+    match updater::install(app).await {
         Ok(_) => json!({ "success": true }),
         Err(error) => json!({ "success": false, "error": error }),
     }
@@ -173,7 +173,7 @@ impl NativeModule for UpdateModule {
         match channel {
             "mika:update-check" => Ok(handle_check(app).await),
             "mika:update-download" => Ok(handle_download(app).await),
-            "mika:update-quit-and-install" => Ok(handle_quit_and_install(app)),
+            "mika:update-quit-and-install" => Ok(handle_quit_and_install(app).await),
             "mika:update-status" => Ok(STATUS.lock().unwrap_or_else(|e| e.into_inner()).to_value()),
             other => Err(format!("canal '{other}' declarado em `update` mas não tratado")),
         }
@@ -231,7 +231,7 @@ pub fn spawn_auto(store: Arc<ConfigStore>, app: AppHandle) {
                 }
                 auto::Step::Install => {
                     log::info!("atualização automática: PC ocioso, instalando");
-                    let result = handle_quit_and_install(&app);
+                    let result = handle_quit_and_install(&app).await;
                     if result.get("success").and_then(Value::as_bool) != Some(true) {
                         log::warn!("atualização automática: instalação falhou -> {result}");
                         forget_pending();
