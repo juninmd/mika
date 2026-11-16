@@ -91,7 +91,7 @@ pub async fn download(app: AppHandle) -> Result<Value, String> {
 
 /// `updateInstall` — roda o instalador e encerra o app. Chega sem `id` (o shim usa
 /// `transport.shell()`, sem esperar resposta), então o erro só pode ir para o canal de erro.
-pub fn install(app: &AppHandle) -> Result<Value, String> {
+pub async fn install(app: &AppHandle) -> Result<Value, String> {
     let taken = PENDING.lock().unwrap_or_else(|e| e.into_inner()).take();
     let Some((update, Some(bytes))) = taken else {
         let message = "nenhum pacote baixado — chame updateDownload antes";
@@ -100,6 +100,8 @@ pub fn install(app: &AppHandle) -> Result<Value, String> {
     };
 
     backup_data_before_install(app, &update.version);
+    #[cfg(windows)]
+    release_children_before_install().await;
 
     if let Err(error) = update.install(bytes) {
         let message = error.to_string();
@@ -114,6 +116,16 @@ pub fn install(app: &AppHandle) -> Result<Value, String> {
     app.request_restart();
 
     Ok(Value::Null)
+}
+
+/// No Windows o plugin chama `std::process::exit` logo após lançar o instalador, pulando o
+/// `ExitRequested` de `lib.rs`: loops de fundo e servidores MCP (processos filhos) seguiam vivos
+/// enquanto o NSIS tentava matar a Mika ("Failed to kill Mika"). Mesmas etapas do "Sair".
+#[cfg(windows)]
+async fn release_children_before_install() {
+    crate::shutdown::trigger();
+    crate::shutdown::within("desconectar MCP", crate::shutdown::STEP_TIMEOUT, crate::modules::mcp::disconnect_all()).await;
+    let _ = tauri::async_runtime::spawn_blocking(crate::modules::system::log_files::flush).await;
 }
 
 /// Cópia de segurança dos dados antes do instalador (ver `modules/update_backup.rs`). Best-effort:
