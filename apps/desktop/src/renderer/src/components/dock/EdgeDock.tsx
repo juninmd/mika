@@ -1,15 +1,22 @@
 import type { ChatMessage } from '@mika/sdk'
 import { Maximize2, Mic, MicOff, MoreHorizontal, Send, X } from 'lucide-react'
 import { memo, useEffect, useRef, useState } from 'react'
+import { useConfigFlag } from '../../hooks/useConfigFlag'
 import { useI18n } from '../../hooks/useI18n'
-import { setMiniMode, setMiniModeStyle } from '../../hooks/useMiniMode'
+import { setMiniMode, setMiniModeStyle, useDockDiscreet } from '../../hooks/useMiniMode'
+import { dockVisibility } from '../../lib/dock-visibility'
 import type { MiniModeStyle } from '../../lib/mini-mode'
 import type { AppStatus } from '../app/app-shell.types'
+import { DockFeed, useDockFeed } from './DockFeed'
+import { DockQuickActions } from './DockQuickActions'
+import { RAIL_BUTTON, RAIL_ON } from './dock-ui'
 
 /** Official app icon (`apps/desktop/build/icon.png`, cropped to the face) — the dock's face of Mika. */
 const ICON_URL = '/mika-icon.webp'
 /** The compact chat shows only the tail of the conversation; history keeps the rest. */
 const VISIBLE_MESSAGES = 30
+/** Idle this long (no pointer, no speech, nothing floating) and the dock tucks into the edge strip. */
+const IDLE_MS = 5000
 
 type Side = 'dock-right' | 'dock-left'
 
@@ -26,6 +33,8 @@ export type EdgeDockProps = {
   onSend: () => void | Promise<void>
   onToggleChat: () => void
   onToggleMic: () => void
+  /** Sends a quick ask as the user's message (`DockQuickActions`). */
+  onAsk: (text: string) => void
 }
 
 type Presence = 'speaking' | 'listening' | 'thinking' | 'idle'
@@ -53,12 +62,9 @@ function MikaFace({ state, size }: { state: Presence; size: number }) {
   )
 }
 
-const RAIL_BUTTON =
-  'pointer-events-auto flex h-11 w-11 items-center justify-center rounded-2xl border text-text-muted transition hover:border-border-strong hover:bg-surface-raise-strong hover:text-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-focus'
-
 function Rail(props: EdgeDockProps & { state: Presence }) {
   const { t } = useI18n()
-  const { chatOpen, micEnabled, vadIsSpeaking, state, onToggleChat, onToggleMic } = props
+  const { chatOpen, micEnabled, vadIsSpeaking, state, onToggleChat, onToggleMic, onAsk } = props
   return (
     <nav
       aria-label={t('shell.edgeDock.label')}
@@ -79,10 +85,11 @@ function Rail(props: EdgeDockProps & { state: Presence }) {
         onClick={onToggleMic}
         aria-pressed={micEnabled}
         title={t('shell.edgeDock.mic')}
-        className={`${RAIL_BUTTON} ${micEnabled ? (vadIsSpeaking ? 'border-ok-rim bg-ok-soft text-ok' : 'border-accent-rim bg-accent-soft text-accent-text') : 'border-transparent'}`}
+        className={`${RAIL_BUTTON} ${micEnabled ? (vadIsSpeaking ? 'border-ok-rim bg-ok-soft text-ok' : RAIL_ON) : 'border-transparent'}`}
       >
         {micEnabled ? <Mic size={18} /> : <MicOff size={18} />}
       </button>
+      <DockQuickActions onAsk={onAsk} />
       <button
         type="button"
         onClick={() => setMiniMode(false)}
@@ -220,19 +227,76 @@ function CompactChat(props: EdgeDockProps & { state: Presence }) {
   )
 }
 
+/** Thin strip on the screen edge while the dock is tucked away; the pointer brings the rail back. */
+function EdgeStrip({ state, onReveal }: { state: Presence; onReveal: () => void }) {
+  const { t } = useI18n()
+  return (
+    <button
+      type="button"
+      aria-label={t('shell.edgeDock.reveal')}
+      title={t('shell.edgeDock.reveal')}
+      onMouseEnter={onReveal}
+      onFocus={onReveal}
+      onClick={onReveal}
+      className="pointer-events-auto flex h-36 w-4 items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+    >
+      <span
+        aria-hidden="true"
+        className={`h-full w-1.5 rounded-full shadow-sm ${state === 'idle' ? 'bg-accent-rim' : 'edge-dock-ring bg-accent'}`}
+      />
+    </button>
+  )
+}
+
+/** `true` once `active` has been off for `ms` straight. */
+function useIdle(active: boolean, ms: number): boolean {
+  const [idle, setIdle] = useState(false)
+  useEffect(() => {
+    setIdle(false)
+    if (active) return
+    const timer = setTimeout(() => setIdle(true), ms)
+    return () => clearTimeout(timer)
+  }, [active, ms])
+  return idle
+}
+
 /**
  * Edge dock (mini mode style `dock-right`/`dock-left`): Mika's official icon on a rail glued to the side
- * of the screen, the mic and a way back to the full window, plus a compact chat that opens beside it.
- * Everything else in the window is transparent and lets clicks through (`useClickThrough`).
+ * of the screen, the mic, quick asks and a way back to the full window, plus a compact chat that opens
+ * beside it. With the chat closed, her words and result cards float beside the rail (`DockFeed`).
+ * Idle, it tucks into a thin strip (`app.dockAutoHide`); over a fullscreen app it disappears
+ * (`app.dockDiscreet`). Everything transparent lets clicks through (`useClickThrough`).
  */
 export const EdgeDock = memo(function EdgeDock(props: EdgeDockProps) {
   const state = presence(props.appStatus, props.speaking, props.micEnabled && props.vadIsSpeaking)
+  const autoHide = useConfigFlag('app.dockAutoHide', true)
+  const discreet = useDockDiscreet()
+  const [hovered, setHovered] = useState(false)
+  const feed = useDockFeed({ chatOpen: props.chatOpen, messages: props.messages, busy: state !== 'idle', hovered })
+  const active = hovered || props.chatOpen || state !== 'idle' || feed.bubble !== null || feed.cards.length > 0
+  const idle = useIdle(active, IDLE_MS)
+  const visibility = dockVisibility({ autoHide, discreet, chatOpen: props.chatOpen, active, idle })
+  const right = props.side === 'dock-right'
+  const hoverProps = { onMouseEnter: () => setHovered(true), onMouseLeave: () => setHovered(false) }
+
+  if (visibility === 'hidden') return null
   return (
     <div
-      className={`pointer-events-none absolute inset-0 flex items-center gap-3 p-2 ${props.side === 'dock-right' ? 'flex-row-reverse' : 'flex-row'}`}
+      className={`pointer-events-none absolute inset-0 flex items-center gap-3 ${right ? 'flex-row-reverse' : 'flex-row'} ${visibility === 'open' ? (right ? 'py-2 pl-2' : 'py-2 pr-2') : ''}`}
     >
-      <Rail {...props} state={state} />
-      {props.chatOpen && <CompactChat {...props} state={state} />}
+      {visibility === 'strip' ? (
+        <EdgeStrip state={state} onReveal={() => setHovered(true)} />
+      ) : (
+        // The edge-side padding catches the pointer too: arriving from the strip, it lands on the rail.
+        <div className={`pointer-events-auto ${right ? 'pr-2' : 'pl-2'}`} {...hoverProps}>
+          <Rail {...props} state={state} />
+        </div>
+      )}
+      {props.chatOpen ? (
+        <CompactChat {...props} state={state} />
+      ) : (
+        visibility === 'open' && <DockFeed feed={feed} onOpenChat={props.onToggleChat} hoverProps={hoverProps} />
+      )}
     </div>
   )
 })

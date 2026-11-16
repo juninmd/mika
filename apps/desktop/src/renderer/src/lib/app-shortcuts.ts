@@ -36,6 +36,12 @@ export const GLOBAL_SHORTCUTS: readonly AppShortcut[] = [
     description: 'settings.shortcuts.toggleInput.description',
   },
   {
+    id: 'dockTalk',
+    accelerator: 'CommandOrControl+Shift+Space',
+    label: 'settings.shortcuts.dockTalk.label',
+    description: 'settings.shortcuts.dockTalk.description',
+  },
+  {
     id: 'toggleVisibility',
     accelerator: 'CommandOrControl+Shift+M',
     label: 'settings.shortcuts.toggleVisibility.label',
