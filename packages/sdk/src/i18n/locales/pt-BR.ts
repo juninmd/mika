@@ -942,6 +942,9 @@ export const ptBR: TranslationDict = {
   'settings.gamerCompanion.field.gameWatcherEnabled.description':
     'Monitora processos ativos para detectar quando você está jogando.',
   'settings.gamerCompanion.field.gameWatcherIntervalSeconds.label': 'Intervalo de Verificação (s)',
+  'settings.gamerCompanion.field.copilotEnabled.label': 'Modo co-piloto',
+  'settings.gamerCompanion.field.copilotEnabled.description':
+    'Durante o jogo, a Mika avisa por voz, em uma frase curta, de perigos e itens que ficaram para trás, sem repetir nem falar por cima nos momentos tensos.',
   'settings.gamerCompanion.field.backseatGamingEnabled.label': 'Modo Backseat (Dicas)',
   'settings.gamerCompanion.field.backseatGamingEnabled.description':
     'Mika dará dicas e avisos sobre o jogo que você está jogando em tempo real.',
