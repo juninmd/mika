@@ -23,6 +23,8 @@ interface UseSpeechRecognitionOptions {
   vadEndpointingEnabled?: boolean
 
   offlineMode?: boolean
+  /** Stream partial transcripts to the live-transcript bus while the user speaks. */
+  livePartials?: boolean
   onTranscript: SpeechTranscriptHandler
   onError?: (error: string) => void
 }
@@ -38,6 +40,7 @@ export function useSpeechRecognition({
   vadSilenceMs,
   vadEndpointingEnabled,
   offlineMode = false,
+  livePartials = false,
   onTranscript,
   onError,
 }: UseSpeechRecognitionOptions) {
@@ -61,8 +64,18 @@ export function useSpeechRecognition({
     vadSilenceMs,
     vadEndpointingEnabled,
     offlineMode,
+    livePartials,
   })
-  optionsRef.current = { asrProvider, lang, deviceId, vadThreshold, vadSilenceMs, vadEndpointingEnabled, offlineMode }
+  optionsRef.current = {
+    asrProvider,
+    lang,
+    deviceId,
+    vadThreshold,
+    vadSilenceMs,
+    vadEndpointingEnabled,
+    offlineMode,
+    livePartials,
+  }
   // One controller per hook, created once: guards a single mic session even against stop→start mid-getUserMedia.
   const fallbackRef = useRef<SpeechSessionController<CaptureOptions> | null>(null)
   if (!fallbackRef.current) {
@@ -117,6 +130,7 @@ export function useSpeechRecognition({
       vadThreshold: captureVadThreshold,
       vadSilenceMs: captureVadSilenceMs,
       vadEndpointingEnabled: captureVadEndpointingEnabled,
+      livePartials: capturePartials,
     } = optionsRef.current
     const prefersBrowser = provider === 'browser'
 
@@ -141,6 +155,7 @@ export function useSpeechRecognition({
           vadSilenceMs: captureVadSilenceMs,
           vadEndpointingEnabled: captureVadEndpointingEnabled,
           asrProvider: provider,
+          livePartials: capturePartials,
         }) === true
       activeRef.current = opened
       setListening(opened)
@@ -160,7 +175,14 @@ export function useSpeechRecognition({
     rec.interimResults = true
     recognitionRef.current = rec
 
-    wireBrowserRecognition(rec, { activeRef, processedRef, onTranscriptRef, onErrorRef, setListening })
+    wireBrowserRecognition(rec, {
+      activeRef,
+      processedRef,
+      onTranscriptRef,
+      onErrorRef,
+      setListening,
+      livePartials: capturePartials,
+    })
 
     try {
       rec.start()

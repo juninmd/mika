@@ -5,8 +5,8 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "e1e84c8b32cde6f8bcc4a0b2008fd36140a239cc+dirty",
-    "tree": "875f4bf15fa07fc8",
+    "commit": "5af54d694bd4e27d0d35400e74da3677871daca1+dirty",
+    "tree": "9f9273617b4ad927",
     "contract": "6a303d7b5c636319",
     "deps": {
       "@fontsource-variable/inter": "^5.3.0",
@@ -47,7 +47,7 @@
     {
       "id": "vivo",
       "status": "ok",
-      "detail": "62 arquivo(s) fora do módulo o referenciam"
+      "detail": "63 arquivo(s) fora do módulo o referenciam"
     },
     {
       "id": "headless",
@@ -57,7 +57,7 @@
     {
       "id": "contrato",
       "status": "ok",
-      "detail": "104 arquivo(s) de teste"
+      "detail": "105 arquivo(s) de teste"
     }
   ],
   "estado": "aprovado",

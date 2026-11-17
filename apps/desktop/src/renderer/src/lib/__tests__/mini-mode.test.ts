@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { miniModeAction, miniOverlayOpen, parseMiniModeStyle } from '../mini-mode'
+import { menuWindowMode, miniModeAction, miniOverlayOpen, parseMiniModeStyle } from '../mini-mode'
 
 const quiet = { mini: true, entered: true, blocking: false, overlayOpen: false }
 
@@ -44,5 +44,25 @@ describe('miniOverlayOpen', () => {
   it('still counts history and the wheel in the dock', () => {
     expect(miniOverlayOpen({ ...closed, style: 'dock-left', showHistory: true })).toBe(true)
     expect(miniOverlayOpen({ ...closed, style: 'dock-left', wheelOpen: true })).toBe(true)
+  })
+})
+
+// "Modo mini" and "Dock de borda" sit side by side in the context menu: each one enters its own
+// shape, and picking the one already on leaves back to the full window.
+describe('menuWindowMode', () => {
+  it('enters the edge dock on the remembered side, or the right edge by default', () => {
+    expect(menuWindowMode('dock', false, 'head')).toEqual({ mini: true, style: 'dock-right' })
+    expect(menuWindowMode('dock', false, 'dock-left')).toEqual({ mini: true, style: 'dock-left' })
+  })
+  it('enters the head square even when the saved style is a dock', () => {
+    expect(menuWindowMode('head', false, 'dock-right')).toEqual({ mini: true, style: 'head' })
+  })
+  it('switches shape directly while already mini', () => {
+    expect(menuWindowMode('dock', true, 'head')).toEqual({ mini: true, style: 'dock-right' })
+    expect(menuWindowMode('head', true, 'dock-left')).toEqual({ mini: true, style: 'head' })
+  })
+  it('leaves to the full window when the active shape is picked again, keeping the style', () => {
+    expect(menuWindowMode('dock', true, 'dock-left')).toEqual({ mini: false, style: 'dock-left' })
+    expect(menuWindowMode('head', true, 'head')).toEqual({ mini: false, style: 'head' })
   })
 })

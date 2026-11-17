@@ -1,6 +1,6 @@
 //! Conecta a servidores MCP declarados em `mcp.json` e descobre as tools de cada um — port de
 //! `apps/desktop/src/features/mcp/mcp-client.ts` (`connect`/`connectAll`/`closeAll`), sobre a crate
-//! `rmcp` (papel de cliente + transporte stdio por processo filho).
+//! `rmcp` (papel de cliente + transporte stdio por processo filho, ou Streamable HTTP para `url`).
 //!
 //! `rmcp::transport::which_command` substitui `isRunnable` (`where`/`which` via `execFile`):
 //! resolve o executável pelo PATH do SO e falha ANTES de qualquer spawn se ele não existir — mesmo
@@ -13,7 +13,9 @@ use std::time::Duration;
 
 use rmcp::model::Tool;
 use rmcp::service::RunningService;
-use rmcp::transport::{ConfigureCommandExt, IntoTransport, TokioChildProcess, which_command};
+use reqwest::header::{HeaderName, HeaderValue};
+use rmcp::transport::streamable_http_client::StreamableHttpClientTransportConfig;
+use rmcp::transport::{ConfigureCommandExt, IntoTransport, StreamableHttpClientTransport, TokioChildProcess, which_command};
 use rmcp::{RoleClient, ServiceExt};
 
 use super::config::{ServerSpec, sanitize};
@@ -135,15 +137,36 @@ fn build_command(spec: &ServerSpec) -> std::io::Result<tokio::process::Command> 
     }))
 }
 
+/// Servidor remoto (Streamable HTTP). Só `http`/`https`; cabeçalho inválido é erro nomeando a CHAVE,
+/// nunca o valor (costuma ser `Authorization: Bearer ...`).
+fn http_transport(url: &str, headers: &BTreeMap<String, String>) -> Result<StreamableHttpClientTransport<reqwest::Client>, String> {
+    let parsed = reqwest::Url::parse(url).map_err(|error| format!("url inválida: {error}"))?;
+    if !matches!(parsed.scheme(), "http" | "https") {
+        return Err("url tem de ser http:// ou https://".into());
+    }
+    let mut custom = HashMap::new();
+    for (key, value) in headers {
+        let header = HeaderName::from_bytes(key.as_bytes()).map_err(|_| format!("cabeçalho inválido: {key}"))?;
+        let value = HeaderValue::from_str(value).map_err(|_| format!("valor inválido no cabeçalho {key}"))?;
+        custom.insert(header, value);
+    }
+    let config = StreamableHttpClientTransportConfig::with_uri(url).custom_headers(custom);
+    Ok(StreamableHttpClientTransport::from_config(config))
+}
+
 /// Port de `connect()`: spawna o processo, faz o handshake e descobre as tools sob o MESMO prazo
 /// que o TS aplica às duas etapas somadas (`timeoutMs`). Colisão de nome de tool depois do
 /// `sanitize`, dentro do MESMO servidor, mantém a primeira e descarta a segunda com log — mesma
 /// política de `connect()`.
 pub(super) async fn connect_one(name: &str, spec: &ServerSpec, timeout: Duration) -> Result<ConnectedServer, String> {
-    let command = build_command(spec).map_err(|error| format!("command '{}' not on PATH: {error}", spec.command))?;
-    let transport = TokioChildProcess::new(command).map_err(|error| format!("spawn failed: {error}"))?;
-
-    let (service, discovered) = handshake_and_discover(transport, timeout).await?;
+    let (service, discovered) = match &spec.url {
+        Some(url) => handshake_and_discover(http_transport(url, &spec.headers)?, timeout).await?,
+        None => {
+            let command = build_command(spec).map_err(|error| format!("command '{}' not on PATH: {error}", spec.command))?;
+            let transport = TokioChildProcess::new(command).map_err(|error| format!("spawn failed: {error}"))?;
+            handshake_and_discover(transport, timeout).await?
+        }
+    };
 
     let prefix = sanitize(name);
     let mut seen = BTreeSet::new();
@@ -368,7 +391,7 @@ mod tests {
     /// coberto pelos próprios testes da crate `rmcp` (`TokioChildProcess`) e pelo teste acima
     /// (`which_command`).
     #[derive(Clone)]
-    struct FakeMcpServer;
+    pub(super) struct FakeMcpServer;
 
     impl rmcp::ServerHandler for FakeMcpServer {
         async fn list_tools(
@@ -419,3 +442,7 @@ mod tests {
         assert_eq!(result.structured_content, Some(json!({ "echoed": { "text": "oi" } })));
     }
 }
+
+#[cfg(test)]
+#[path = "client_http_tests.rs"]
+mod http_tests;

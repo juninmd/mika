@@ -86,12 +86,37 @@ type EnvEditorProps = {
   onChange: (rows: EnvRow[]) => void
   errors: McpFormErrors
   keyUrl?: string
+  /** `headers`: cabeçalhos HTTP do servidor remoto — mesma UI, chave sem forçar maiúsculas. */
+  kind?: 'env' | 'headers'
   t: T
 }
 
 let rowSeq = 0
 
-export function EnvEditor({ rows, onChange, errors, keyUrl, t }: EnvEditorProps) {
+const ROW_LABELS = {
+  env: {
+    section: 'settings.mcp.form.env',
+    add: 'settings.mcp.form.addEnv',
+    empty: 'settings.mcp.form.envEmpty',
+    key: 'settings.mcp.form.envKey',
+    keyPlaceholder: 'settings.mcp.form.envKeyPlaceholder',
+    remove: 'settings.mcp.form.removeEnv',
+  },
+  headers: {
+    section: 'settings.mcp.form.headers',
+    add: 'settings.mcp.form.addHeader',
+    empty: 'settings.mcp.form.headersEmpty',
+    key: 'settings.mcp.form.headerKey',
+    keyPlaceholder: 'settings.mcp.form.headerKeyPlaceholder',
+    remove: 'settings.mcp.form.removeHeader',
+  },
+} as const
+
+const normalizeKey = (kind: 'env' | 'headers', key: string): string =>
+  kind === 'env' ? key.toUpperCase().replace(/\s/g, '_') : key.replace(/\s/g, '-')
+
+export function EnvEditor({ rows, onChange, errors, keyUrl, kind = 'env', t }: EnvEditorProps) {
+  const labels = ROW_LABELS[kind]
   const patch = (id: string, change: Partial<EnvRow>) =>
     onChange(rows.map((row) => (row.id === id ? { ...row, ...change } : row)))
   const addRow = () => {
@@ -102,7 +127,7 @@ export function EnvEditor({ rows, onChange, errors, keyUrl, t }: EnvEditorProps)
     <div className="space-y-2.5">
       <div className="flex items-center justify-between gap-2">
         <SectionLabel icon={KeyRound} count={rows.length}>
-          {t('settings.mcp.form.env')}
+          {t(labels.section)}
         </SectionLabel>
         <div className="flex items-center gap-2">
           {keyUrl && (
@@ -117,11 +142,11 @@ export function EnvEditor({ rows, onChange, errors, keyUrl, t }: EnvEditorProps)
           )}
           <button type="button" className={BTN.subtle} onClick={addRow}>
             <Plus size={12} aria-hidden="true" />
-            {t('settings.mcp.form.addEnv')}
+            {t(labels.add)}
           </button>
         </div>
       </div>
-      {rows.length === 0 && <p className="text-caption text-text-subtle">{t('settings.mcp.form.envEmpty')}</p>}
+      {rows.length === 0 && <p className="text-caption text-text-subtle">{t(labels.empty)}</p>}
       <AnimatePresence initial={false}>
         {rows.map((row) => (
           <motion.div
@@ -130,13 +155,13 @@ export function EnvEditor({ rows, onChange, errors, keyUrl, t }: EnvEditorProps)
             className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-start gap-2"
           >
             <AuroraField
-              label={t('settings.mcp.form.envKey')}
+              label={t(labels.key)}
               hideLabel
               value={row.key}
-              onChange={(key) => patch(row.id, { key: key.toUpperCase().replace(/\s/g, '_'), saved: false })}
-              placeholder={t('settings.mcp.form.envKeyPlaceholder')}
-              warning={errorText(t, errors[`env.${row.id}`])}
-              invalid={Boolean(errors[`env.${row.id}`])}
+              onChange={(key) => patch(row.id, { key: normalizeKey(kind, key), saved: false })}
+              placeholder={t(labels.keyPlaceholder)}
+              warning={errorText(t, errors[`${kind}.${row.id}`])}
+              invalid={Boolean(errors[`${kind}.${row.id}`])}
             />
             <AuroraField
               label={t('settings.mcp.form.envValue').replace('{{key}}', row.key)}
@@ -150,7 +175,7 @@ export function EnvEditor({ rows, onChange, errors, keyUrl, t }: EnvEditorProps)
               type="button"
               className={`${BTN.icon} mt-0.5`}
               onClick={() => onChange(rows.filter((r) => r.id !== row.id))}
-              aria-label={t('settings.mcp.form.removeEnv').replace('{{key}}', row.key || '—')}
+              aria-label={t(labels.remove).replace('{{key}}', row.key || '—')}
             >
               <X size={14} aria-hidden="true" />
             </button>
