@@ -65,5 +65,14 @@ describe('dockCard', () => {
     expect(dockCard('game_knowledge', { success: true, data: { places: [] } })).toBeNull()
     expect(dockCard('get_time', { success: true, data: { time: '12:00' } })).toBeNull()
     expect(dockCard('game_session', 'not json')).toBeNull()
+    const malformed = {
+      day: '2026-11-16',
+      byGame: [null, 3, { game: 'Hades' }],
+      achievements: [null, { description: 'A' }, { description: 'A' }],
+    }
+    expect(dockCard('game_session', { success: true, data: malformed })).toMatchObject({
+      subject: 'Hades',
+      daily: { achievements: ['A'] },
+    })
   })
 })

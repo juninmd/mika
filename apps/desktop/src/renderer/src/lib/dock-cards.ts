@@ -29,10 +29,13 @@ function successData(result: unknown): Data | null {
 
 const text = (value: unknown): string => (typeof value === 'string' ? value.trim() : '')
 const count = (value: unknown): number => (typeof value === 'number' ? value : 0)
-const list = (value: unknown): Data[] => (Array.isArray(value) ? (value as Data[]) : [])
+const list = (value: unknown): Data[] =>
+  Array.isArray(value) ? value.filter((item): item is Data => typeof item === 'object' && item !== null) : []
 
 function dailyCard(data: Data): DockCardContent {
-  const games = list(data.byGame).map((g) => text(g.game))
+  const games = list(data.byGame)
+    .map((g) => text(g.game))
+    .filter(Boolean)
   return {
     kind: 'daily',
     subject: [text(data.totalDuration), games.join(', ')].filter(Boolean).join(' · '),
@@ -41,7 +44,8 @@ function dailyCard(data: Data): DockCardContent {
       sessions: count(data.sessionCount),
       deaths: count(data.deaths),
       streak: count(data.currentStreakDays),
-      achievements: list(data.achievements).map((a) => text(a.description)),
+      // Unique and non-empty: the card keys its rows by text.
+      achievements: [...new Set(list(data.achievements).map((a) => text(a.description)))].filter(Boolean),
       passenger: data.passengerMode === true,
     },
   }

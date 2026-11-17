@@ -5,11 +5,13 @@
 //! Os momentos (`EventKey::GameMoment`, da visão) entram na sessão aberta por [`spawn_moment_recorder`]:
 //! antes dele nenhum caminho de produção gravava evento de sessão, e conquistas/mortes eram sempre zero.
 
+use std::collections::BTreeMap;
+
 use chrono::{DateTime, TimeZone};
 use serde_json::{json, Value};
 
 use super::session_memory::SessionMemory;
-use super::session_stats::{day_key, format_duration_ms, playtime_by_game, streak};
+use super::session_stats::{format_duration_ms, streak};
 use super::session_types::{fallback_summary, GameEvent, GameSession};
 use crate::config::store::ConfigStore;
 use crate::events::EventKey;
@@ -18,6 +20,7 @@ use crate::events::EventKey;
 const MAX_ACHIEVEMENTS: usize = 10;
 /// Teto de eventos por sessão: uma maratona de horas não cresce a linha do SQLite sem limite.
 const MAX_SESSION_EVENTS: usize = 500;
+/// A visão só emite `boss|cutscene|death|victory|defeat` (`vision/watcher.rs`); `achievement` fica para eventos de outra origem.
 const ACHIEVEMENT_KINDS: &[&str] = &["achievement", "victory"];
 
 /// Momento de visão como evento de sessão. O mini-game é a Mika contra o usuário, não o jogo aberto.
@@ -40,15 +43,32 @@ pub(super) fn record_moment(memory: &SessionMemory, store: &ConfigStore, payload
     if crate::modules::privacy::passenger::is_passenger_mode(store) {
         return false;
     }
-    moment_event(payload, at_ms).is_some_and(|event| memory.push_event(event, MAX_SESSION_EVENTS))
+    let Some(session) = memory.current_session() else { return false };
+    let game = payload.get("game").and_then(Value::as_str).unwrap_or_default().trim();
+    if !game.is_empty() && !game.eq_ignore_ascii_case(&session.game_name) {
+        return false; // tick atrasado depois de um alt-tab: não é deste jogo.
+    }
+    let Some(event) = moment_event(payload, at_ms) else { return false };
+    // A visão republica a mesma tela de morte a cada passada: um momento conta uma vez.
+    if session.events.iter().any(|e| e.kind == event.kind && e.description == event.description) {
+        return false;
+    }
+    memory.push_event(event, MAX_SESSION_EVENTS)
 }
 
 pub fn spawn_moment_recorder(memory: std::sync::Arc<SessionMemory>, store: std::sync::Arc<ConfigStore>) {
     let mut sub = crate::events::bus().subscribe();
     tauri::async_runtime::spawn(async move {
-        while let Some(envelope) = sub.recv().await {
-            if envelope.key == EventKey::GameMoment {
-                record_moment(&memory, &store, &envelope.payload, envelope.at_ms);
+        let mut shutdown_rx = crate::shutdown::subscribe();
+        loop {
+            tokio::select! {
+                _ = crate::shutdown::until_triggered(&mut shutdown_rx) => break,
+                envelope = sub.recv() => {
+                    let Some(envelope) = envelope else { break };
+                    if envelope.key == EventKey::GameMoment {
+                        record_moment(&memory, &store, &envelope.payload, envelope.at_ms);
+                    }
+                }
             }
         }
     });
@@ -56,13 +76,27 @@ pub fn spawn_moment_recorder(memory: std::sync::Arc<SessionMemory>, store: std::
 
 /// Histórico do banco com a sessão em andamento (eventos ainda só na memória) fechada em `now_ms`.
 fn with_current(history: &[GameSession], current: Option<&GameSession>, now_ms: u64) -> Vec<GameSession> {
-    let mut sessions: Vec<GameSession> = history.iter().filter(|s| current.is_none_or(|c| c.id != s.id)).cloned().collect();
+    // Sessão sem fim que não é a viva é órfã de um crash: não conta como sessão de 0 min.
+    let closed = history.iter().filter(|s| s.end_time_ms.is_some() && current.is_none_or(|c| c.id != s.id));
+    let mut sessions: Vec<GameSession> = closed.cloned().collect();
     if let Some(live) = current {
         let mut live = live.clone();
         live.end_time_ms.get_or_insert(now_ms);
         sessions.push(live);
     }
     sessions
+}
+
+/// Meia-noite local de hoje em epoch ms (`earliest` cobre o dia de troca de horário de verão).
+fn day_start_ms<Tz: TimeZone>(now_ms: u64, tz: &Tz) -> u64 {
+    let Some(now) = DateTime::from_timestamp_millis(now_ms as i64) else { return now_ms };
+    let midnight = now.with_timezone(tz).date_naive().and_hms_opt(0, 0, 0).and_then(|n| tz.from_local_datetime(&n).earliest());
+    midnight.map_or(now_ms, |m| m.timestamp_millis().max(0) as u64)
+}
+
+/// Parte da sessão que caiu hoje: a que virou a meia-noite conta só a partir dela.
+fn ms_today(session: &GameSession, start_ms: u64, now_ms: u64) -> u64 {
+    session.end_time_ms.unwrap_or(now_ms).min(now_ms).saturating_sub(session.start_time_ms.max(start_ms))
 }
 
 fn achievements(today: &[&GameSession]) -> Vec<Value> {
@@ -91,9 +125,14 @@ pub fn today_summary<Tz: TimeZone>(
     passenger: bool,
 ) -> Value {
     let sessions = with_current(history, current, now_ms);
-    let today_key = day_key(now_ms, tz);
-    let today: Vec<&GameSession> = sessions.iter().filter(|s| day_key(s.start_time_ms, tz) == today_key).collect();
-    let by_game = playtime_by_game(&sessions, today_key, 0, tz);
+    let start_ms = day_start_ms(now_ms, tz);
+    let today: Vec<&GameSession> = sessions.iter().filter(|s| s.start_time_ms >= start_ms || s.end_time_ms.unwrap_or(now_ms) > start_ms).collect();
+    let mut totals: BTreeMap<&str, u64> = BTreeMap::new();
+    for session in &today {
+        *totals.entry(&session.game_name).or_insert(0) += ms_today(session, start_ms, now_ms);
+    }
+    let mut by_game: Vec<(&str, u64)> = totals.into_iter().collect();
+    by_game.sort_by(|a, b| b.1.cmp(&a.1));
     let total_ms: u64 = by_game.iter().map(|(_, ms)| ms).sum();
     let deaths = today.iter().flat_map(|s| &s.events).filter(|e| e.kind == "death").count();
     let day = DateTime::from_timestamp_millis(now_ms as i64).map(|d| d.with_timezone(tz).date_naive().to_string());
@@ -206,12 +245,26 @@ mod tests {
         assert!(record_moment(&memory, &store, &death, 1));
         let minigame = json!({ "game": "Jogo da Velha", "type": "victory", "description": "x", "source": "minigame" });
         assert!(!record_moment(&memory, &store, &minigame, 2));
+        assert!(!record_moment(&memory, &store, &death, 2), "a mesma tela de morte repetida conta uma vez");
+        let other_game = json!({ "game": "Celeste", "type": "death", "description": "espinhos" });
+        assert!(!record_moment(&memory, &store, &other_game, 2), "momento de outro jogo não entra nesta sessão");
         store.set("privacy.passengerMode", json!(true)).unwrap();
         assert!(!record_moment(&memory, &store, &death, 3));
 
         let ended = memory.end_session().unwrap().unwrap();
         let _ = std::fs::remove_dir_all(&dir);
         assert_eq!(ended.events.iter().map(|e| e.description.as_str()).collect::<Vec<_>>(), ["Megera"]);
+    }
+
+    #[test]
+    fn a_session_across_midnight_counts_only_its_part_of_today_and_crash_orphans_do_not_count() {
+        // Começou 23h BRT de ontem (02h UTC do dia 10), segue viva às 00h30 BRT.
+        let live = session("live", "Hades", 10 * DAY + 2 * HOUR, None, vec![], None);
+        let orphan = session("crash", "Celeste", 10 * DAY + 3 * HOUR + HOUR / 4, None, vec![], None);
+        let now = 10 * DAY + 3 * HOUR + HOUR / 2;
+        let data = &today_summary(&[orphan, live.clone()], Some(&live), now, &brt(), false)["data"];
+        assert_eq!(data["sessionCount"], 1);
+        assert_eq!(data["totalMs"], HOUR / 2, "só a meia hora depois da meia-noite é de hoje");
     }
 
     #[test]
