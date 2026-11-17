@@ -1,6 +1,7 @@
 import { appendFileSync } from 'node:fs'
 import { createServer, type Server } from 'node:http'
 import type { AddressInfo } from 'node:net'
+import { handleElevenLabs } from './fake-elevenlabs'
 
 export interface FakeOllama {
   baseUrl: string
@@ -316,6 +317,8 @@ export async function startFakeOllama(): Promise<FakeOllama> {
           `${path} tools=${tools.length} hasUpsert=${names.includes('person_catalog')} format=${body.format ? 'yes' : 'no'} roles=${(Array.isArray(body.messages) ? body.messages : []).map((m) => (m as { role?: string }).role).join(',')}\n  turn=${turnPreview}\n`,
         )
       }
+
+      if (handleElevenLabs(path, req, res)) return
 
       const model = typeof body.model === 'string' ? body.model : 'fake-model'
 
