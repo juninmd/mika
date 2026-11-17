@@ -14,6 +14,7 @@ Ela escuta, olha a tela, conversa por voz ou texto, usa ferramentas — e diz o 
 ![Local-first](https://img.shields.io/badge/100%25-local--first-A855F7)
 
 [O que ela faz](#-o-que-ela-faz) ·
+[Telas](#-telas) ·
 [Arquitetura](#-arquitetura) ·
 [Começando](#-começando) ·
 [Qualidade](#-qualidade) ·
@@ -28,9 +29,9 @@ ou voz sai do seu PC a menos que você escolha um provedor remoto.
 
 <table>
   <tr>
-    <td align="center" width="33%"><img src="docs/assets/mika-avatar.png" alt="Avatar com o dock de controles" height="300" /><br/><sub>Avatar VRM + dock</sub></td>
-    <td align="center" width="33%"><img src="docs/assets/mika-neural-wheel.png" alt="Roda neural de ações aberta sobre o avatar" height="300" /><br/><sub>Roda neural de ações</sub></td>
-    <td align="center" width="33%"><img src="docs/assets/mika-settings.png" alt="Configurações de personalidade da personagem" height="300" /><br/><sub>Personalidade configurável</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/shell/avatar.png" alt="Avatar VRM da Mika na área de trabalho" height="300" /><br/><sub>Avatar VRM na área de trabalho</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/shell/chat.png" alt="Chat aberto sobre o avatar com ações rápidas" height="300" /><br/><sub>Chat com ações rápidas</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/features/reacao-tempo-real.png" alt="Dock de borda com cartão de reação a um vídeo em foco" height="300" /><br/><sub>Dock de borda + reação em tempo real</sub></td>
   </tr>
 </table>
 
@@ -110,6 +111,178 @@ no `.vrm` são carregadas por `<img>`, e não por `fetch`: na origem `file://` o
 > [!NOTE]
 > O instalador embarca só o VRM próprio da Mika. Os modelos Live2D são amostras de terceiros sob a
 > Live2D Free Material License e **não** são distribuídos — ver [`LICENSE-ASSETS.md`](LICENSE-ASSETS.md).
+
+</details>
+
+## 📸 Telas
+
+Capturas do app real (binário Tauri com a feature `e2e`, LLM dublê e perfil isolado), geradas pela
+suíte Playwright em Linux. Os textos das falas vêm do LLM dublê dos testes, não de um modelo de verdade.
+
+### 🧍 Avatar, chat e comandos
+
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/shell/ouvindo.png" alt="Microfone aberto com o selo Ouvindo você" height="300" /><br/><sub>Ouvindo você (STT)</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/shell/pensando.png" alt="Sinais de atividade: pensando e consultando memória" height="300" /><br/><sub>Sinais de atividade e humor</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/shell/efeito-matrix.png" alt="Efeito Matrix ativo com o chip do efeito" height="300" /><br/><sub>Efeitos de tela (/matrix)</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/shell/chat-comandos.png" alt="Composer com sugestão de comando /help" height="300" /><br/><sub>Comandos com barra</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/shell/paleta-de-comandos.png" alt="Paleta de comandos e ferramentas aberta" height="300" /><br/><sub>Paleta de comandos (Ctrl+K)</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/shell/menu-de-contexto.png" alt="Menu de contexto do avatar" height="300" /><br/><sub>Menu de contexto</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/shell/historico.png" alt="Painel de histórico de conversas" height="300" /><br/><sub>Histórico de conversas</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/features/resumo-diario.png" alt="Cartões de resumo do dia no dock de borda" height="300" /><br/><sub>Resumo diário no dock</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/features/resumo-diario-passageiro.png" alt="Resumo do dia só com estatísticas no modo passageiro" height="300" /><br/><sub>Resumo no modo passageiro</sub></td>
+  </tr>
+</table>
+
+### 🆕 Funcionalidades recentes
+
+| Funcionalidade | Tela |
+| --- | --- |
+| **Controle do PC por voz e mouse** — permissão explícita, cursor visível, aprovação por ação e parada de emergência | <img src="docs/screenshots/readme/features/controle-do-pc.png" alt="Configurações do controle do computador com as proteções" width="480" /> |
+| **Painel de memória** — ver, buscar, editar e apagar o que ela lembra | <img src="docs/screenshots/readme/features/painel-memoria.png" alt="Painel de memória com fatos aprendidos editáveis" width="480" /> |
+| **Painel de memória no modo passageiro** — só leitura e apagar | <img src="docs/screenshots/readme/features/painel-memoria-passageiro.png" alt="Painel de memória travado no modo passageiro" width="480" /> |
+| **Co-piloto de jogo** — avisos de perigo e de item perdido durante a partida | <img src="docs/screenshots/readme/features/co-piloto-de-jogo.png" alt="Gamer Companion com o modo co-piloto ligado" width="480" /> |
+| **Reações em tempo real** — comenta o vídeo, a live ou a música em foco | <img src="docs/screenshots/readme/features/reacao-tempo-real.png" alt="Cartão Assistindo no dock de borda" width="480" /> |
+
+### 🪟 Widgets flutuantes
+
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/features/widget-hud-jogo.png" alt="Widget HUD do jogo" height="220" /><br/><sub>HUD do jogo</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/features/widget-mini-games.png" alt="Widget de mini games" height="220" /><br/><sub>Mini games (Truco, Pong, Velha…)</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/features/widget-catalogo-pessoas.png" alt="Widget do catálogo de pessoas" height="220" /><br/><sub>Catálogo de pessoas</sub></td>
+  </tr>
+</table>
+
+<details>
+<summary><b>🧭 Primeiro uso: assistente de configuração (9 etapas)</b></summary>
+
+<br/>
+
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/wizard/01-language.png" alt="Etapa 1: idioma" height="200" /><br/><sub>1. Idioma</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/wizard/02-avatar.png" alt="Etapa 2: avatar" height="200" /><br/><sub>2. Avatar</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/wizard/03-llm.png" alt="Etapa 3: LLM" height="200" /><br/><sub>3. LLM</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/wizard/04-tts.png" alt="Etapa 4: voz" height="200" /><br/><sub>4. Voz (TTS)</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/wizard/05-stt.png" alt="Etapa 5: escuta" height="200" /><br/><sub>5. Escuta (STT)</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/wizard/06-embedding.png" alt="Etapa 6: embeddings" height="200" /><br/><sub>6. Embeddings</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/wizard/07-privacy.png" alt="Etapa 7: privacidade" height="200" /><br/><sub>7. Privacidade</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/wizard/08-identity.png" alt="Etapa 8: identidade" height="200" /><br/><sub>8. Identidade</sub></td>
+    <td align="center" width="33%"><img src="docs/screenshots/readme/wizard/09-done.png" alt="Setup concluído" height="200" /><br/><sub>Pronto</sub></td>
+  </tr>
+</table>
+
+</details>
+
+<details>
+<summary><b>⚙️ Configurações: todas as abas</b></summary>
+
+<br/>
+
+**Mika**
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/00-mika-personagem.png" alt="Configurações: Mika › Personagem" width="100%" /><br/><sub>Personagem</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/00-mika-skin.png" alt="Configurações: Mika › Skin" width="100%" /><br/><sub>Skin</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/00-mika-humor-e-afinidade.png" alt="Configurações: Mika › Humor e afinidade" width="100%" /><br/><sub>Humor e afinidade</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/00-mika-usuario.png" alt="Configurações: Mika › Usuário" width="100%" /><br/><sub>Usuário</sub></td>
+  </tr>
+</table>
+
+**Cognição**
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/01-cognicao-nucleo-llm.png" alt="Configurações: Cognição › Núcleo LLM" width="100%" /><br/><sub>Núcleo LLM</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/01-cognicao-embeddings.png" alt="Configurações: Cognição › Embeddings" width="100%" /><br/><sub>Embeddings</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/01-cognicao-memoria.png" alt="Configurações: Cognição › Memória" width="100%" /><br/><sub>Memória</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/01-cognicao-visao.png" alt="Configurações: Cognição › Visão" width="100%" /><br/><sub>Visão</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/01-cognicao-prompts.png" alt="Configurações: Cognição › Prompts" width="100%" /><br/><sub>Prompts</sub></td>
+  </tr>
+</table>
+
+**Voz**
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/02-voz-fala-tts.png" alt="Configurações: Voz › Fala (TTS)" width="100%" /><br/><sub>Fala (TTS)</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/02-voz-escuta-stt.png" alt="Configurações: Voz › Escuta (STT)" width="100%" /><br/><sub>Escuta (STT)</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/02-voz-dispositivos-de-audio.png" alt="Configurações: Voz › Dispositivos de áudio" width="100%" /><br/><sub>Dispositivos de áudio</sub></td>
+  </tr>
+</table>
+
+**Interação**
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/03-interacao-gamer-companion.png" alt="Configurações: Interação › Gamer Companion" width="100%" /><br/><sub>Gamer Companion</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/03-interacao-catalogo-de-pessoas.png" alt="Configurações: Interação › Catálogo de pessoas" width="100%" /><br/><sub>Catálogo de pessoas</sub></td>
+  </tr>
+</table>
+
+**Ferramentas**
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/04-ferramentas-catalogo.png" alt="Configurações: Ferramentas › Catálogo de ferramentas" width="100%" /><br/><sub>Catálogo de ferramentas</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/04-ferramentas-controle-do-computador.png" alt="Configurações: Ferramentas › Controle do computador" width="100%" /><br/><sub>Controle do computador</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/04-ferramentas-navegador.png" alt="Configurações: Ferramentas › Navegador" width="100%" /><br/><sub>Navegador</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/04-ferramentas-lembretes.png" alt="Configurações: Ferramentas › Lembretes" width="100%" /><br/><sub>Lembretes</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/04-ferramentas-mcp.png" alt="Configurações: Ferramentas › MCP" width="100%" /><br/><sub>MCP</sub></td>
+  </tr>
+</table>
+
+**Conta**
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/05-conta-credenciais.png" alt="Configurações: Conta › Credenciais" width="100%" /><br/><sub>Credenciais</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/05-conta-privacidade.png" alt="Configurações: Conta › Privacidade" width="100%" /><br/><sub>Privacidade</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/05-conta-backup.png" alt="Configurações: Conta › Backup" width="100%" /><br/><sub>Backup</sub></td>
+  </tr>
+</table>
+
+**Sistema**
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/06-sistema-resumo.png" alt="Configurações: Sistema › Resumo" width="100%" /><br/><sub>Resumo</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/06-sistema-modulos.png" alt="Configurações: Sistema › Módulos" width="100%" /><br/><sub>Módulos</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/06-sistema-diagnostico.png" alt="Configurações: Sistema › Diagnóstico" width="100%" /><br/><sub>Diagnóstico</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/06-sistema-logs.png" alt="Configurações: Sistema › Logs" width="100%" /><br/><sub>Logs</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/06-sistema-atualizacoes.png" alt="Configurações: Sistema › Atualizações" width="100%" /><br/><sub>Atualizações</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/readme/settings/06-sistema-sobre-e-licencas.png" alt="Configurações: Sistema › Sobre e licenças" width="100%" /><br/><sub>Sobre e licenças</sub></td>
+  </tr>
+</table>
 
 </details>
 
