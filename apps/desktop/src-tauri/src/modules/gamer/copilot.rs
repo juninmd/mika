@@ -83,9 +83,12 @@ impl CopilotState {
     }
 }
 
-/// Mudo, ou o usuário falando agora (VAD): ela não fala por cima.
+/// Mudo, o usuário falando agora (VAD), ou vídeo/live/música em foco — o jogo de uma live não é o
+/// dele: ela não fala por cima.
 fn silenced(now_ms: u64) -> bool {
-    is_muted(now_ms as i64) || crate::modules::voice::user_speech_activity::global().should_defer_proactive_speech(now_ms)
+    is_muted(now_ms as i64)
+        || crate::modules::voice::user_speech_activity::global().should_defer_proactive_speech(now_ms)
+        || crate::modules::vision::is_watching(crate::modules::system_signals::active_window::last_known().as_ref())
 }
 
 fn enabled(store: &ConfigStore) -> bool {

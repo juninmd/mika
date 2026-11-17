@@ -167,6 +167,7 @@ use crate::modules::tools::ToolDefinition;
 use crate::native::NativeModule;
 
 pub use clipboard_analysis::spawn_clipboard_image_analysis;
+pub(crate) use media_classify::is_watching;
 pub use clipboard_watch::spawn_clipboard_watch;
 pub use feature::register_feature;
 pub use media_reaction::spawn_media_reactions;
