@@ -214,6 +214,7 @@ export const koKR: TranslationDict = {
   'shell.bubble.openHistory': '기록 열기',
   'shell.dock.history': '기록',
   'shell.dock.stopSpeech': '말 멈추기',
+  'shell.dock.stopThinking': '답변 취소',
   'shell.dock.short.stop': '정지',
   'shell.dock.short.mic': '마이크',
   'shell.dock.short.chat': '채팅',

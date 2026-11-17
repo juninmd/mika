@@ -234,6 +234,7 @@ export type TranslationDict = {
   'shell.bubble.openHistory': string
   'shell.dock.history': string
   'shell.dock.stopSpeech': string
+  'shell.dock.stopThinking': string
   'shell.dock.short.stop': string
   'shell.dock.short.mic': string
   'shell.dock.short.chat': string

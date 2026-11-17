@@ -1,5 +1,6 @@
 import { Fragment, memo, useCallback, useRef, useState } from 'react'
-import { useI18n } from '../hooks/useI18n'
+import { canStopTurn } from '../hooks/shell-status-transitions'
+import { type Translate, useI18n } from '../hooks/useI18n'
 import { formatAccelerator, shortcutById } from '../lib/app-shortcuts'
 import { isMacPlatform } from '../lib/keyboard-shortcuts'
 import type { AppStatus } from './app/app-shell.types'
@@ -20,7 +21,8 @@ type T = {
   onOpenHistory: () => void
   onOpenSettings: () => void
   onOpenWheel?: () => void
-  onStopSpeech: () => void
+  /** Cuts the turn in flight and any speech — the same button covers a stuck "thinking". */
+  onStop: () => void
   ttsIsPlaying: boolean
   showInput: boolean
   showHistory: boolean
@@ -42,6 +44,11 @@ type ItemState = {
   badge?: 'warn' | 'danger'
 }
 
+function stopItem(p: T, t: Translate): ItemState | undefined {
+  if (!canStopTurn(p.ttsIsPlaying, p.status)) return undefined
+  return { title: t(p.ttsIsPlaying ? 'shell.dock.stopSpeech' : 'shell.dock.stopThinking'), onClick: p.onStop }
+}
+
 function useDockItems(p: T): Partial<Record<DockKey, ItemState>> {
   const { t } = useI18n()
   const mac = isMacPlatform()
@@ -58,8 +65,8 @@ function useDockItems(p: T): Partial<Record<DockKey, ItemState>> {
       ? t('shell.dock.updateAvailable')
       : null
   return {
-    // Contextual: only while she is actually talking — a stop button with nothing to stop is a dead button.
-    stop: p.ttsIsPlaying ? { title: t('shell.dock.stopSpeech'), onClick: p.onStopSpeech } : undefined,
+    // Contextual: only while she talks or thinks — a stop button with nothing to stop is a dead button.
+    stop: stopItem(p, t),
     mic: {
       title: micTitle,
       kbd: pttMode ? keyOf('pushToTalk') : keyOf('toggleMic'),

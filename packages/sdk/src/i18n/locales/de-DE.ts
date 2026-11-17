@@ -219,6 +219,7 @@ export const deDE: TranslationDict = {
   'shell.bubble.openHistory': 'Verlauf öffnen',
   'shell.dock.history': 'Verlauf',
   'shell.dock.stopSpeech': 'Sprechen beenden',
+  'shell.dock.stopThinking': 'Antwort abbrechen',
   'shell.dock.short.stop': 'Stopp',
   'shell.dock.short.mic': 'Mikrofon',
   'shell.dock.short.chat': 'Chat',
