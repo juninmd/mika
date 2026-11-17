@@ -1945,6 +1945,14 @@ export const koKR: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': '다음이 들어간 사실이 없어요:',
   'settings.memory.panel.factsEmptyDefault': '아직 알게 된 사실이 없어요.',
   'settings.memory.panel.deleteFactAriaPrefix': '사실 삭제:',
+  'settings.memory.panel.editFactAriaPrefix': '사실 편집:',
+  'settings.memory.panel.editFactLabel': '사실 편집',
+  'settings.memory.panel.saveFactAriaLabel': '사실 저장',
+  'settings.memory.panel.cancelEditAriaLabel': '편집 취소',
+  'settings.memory.panel.passengerNotice':
+    '승객 모드 켜짐: 이번 세션에서 미카는 기억을 저장하거나 바꾸지 않습니다. 보기와 삭제는 계속 가능합니다.',
+  'settings.memory.panel.recordingOffNotice':
+    '기억 저장 꺼짐: 미카는 기억을 저장하거나 바꾸지 않습니다. 보기와 삭제는 계속 가능합니다.',
   'settings.memory.panel.peopleTitle': '아는 사람들',
   'settings.memory.panel.peopleEmpty': '아직 카탈로그에 등록된 사람이 없어요.',
   'settings.memory.panel.forgetButton': '잊기',

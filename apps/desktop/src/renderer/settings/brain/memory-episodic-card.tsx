@@ -1,6 +1,6 @@
 import { formatRelativeTime } from '@mika/sdk/utils/time-format'
 import { AuroraField, EmptyState, GlassCard, SectionLabel } from '@mika/sdk-ui/settings'
-import { History, Loader2, RefreshCw, Search, Trash2 } from 'lucide-react'
+import { Ghost, History, Loader2, RefreshCw, Search, Trash2 } from 'lucide-react'
 import { ConfirmButton } from '../../src/components/settings/RichSettingBlocks'
 import { truncate } from '../../src/components/settings/settings-utils'
 import { useI18n } from '../../src/hooks/useI18n'
@@ -10,6 +10,21 @@ import type { EpisodicMemory } from './memory-types'
 export function ErrorNote({ message }: { message: string }) {
   return (
     <p className="rounded-lg border border-danger-rim bg-danger-soft px-3 py-2 text-caption text-danger">{message}</p>
+  )
+}
+
+/** Passenger mode / `memory.enabled=false`: the backend refuses writes, so say it instead of failing on click. */
+export function WriteBlockedNote({ passenger }: { passenger: boolean }) {
+  const { t } = useI18n()
+  const key = passenger ? 'settings.memory.panel.passengerNotice' : 'settings.memory.panel.recordingOffNotice'
+  return (
+    <p
+      role="status"
+      className="flex items-center gap-2 rounded-lg border border-accent-rim bg-accent-soft px-3 py-2 text-caption text-text-main"
+    >
+      <Ghost size={14} aria-hidden="true" className="shrink-0 text-accent" />
+      {t(key)}
+    </p>
   )
 }
 

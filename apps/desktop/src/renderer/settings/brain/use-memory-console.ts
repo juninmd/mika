@@ -110,6 +110,12 @@ export function useMemoryConsole() {
     setBusyFact(false)
   }
 
+  const updateFact = async (id: string, fact: string): Promise<boolean> => {
+    const ok = await runTool('memory_console', { action: 'update_fact', id, fact })
+    if (ok) await load()
+    return ok
+  }
+
   const deleteFact = async (id: string) => {
     const ok = await runTool('memory_console', { action: 'delete_fact', id })
     if (ok) await load()
@@ -162,7 +168,8 @@ export function useMemoryConsole() {
   const graph = snapshot?.graph
   const people = graph?.people ?? []
   const relationships = (graph?.relationships ?? []).filter((r) => r.direction === 'user_to_person')
-  const facts = graph?.facts ?? []
+  // Superseded facts stay on disk for undo-on-delete but are no longer what she remembers.
+  const facts = (graph?.facts ?? []).filter((f) => f.active !== false)
   const hasData = episodic.length > 0 || people.length > 0 || relationships.length > 0 || facts.length > 0
 
   return {
@@ -186,6 +193,7 @@ export function useMemoryConsole() {
     searchEpisodic,
     deleteEpisodic,
     addFact,
+    updateFact,
     deleteFact,
     saveName,
     forgetName,
