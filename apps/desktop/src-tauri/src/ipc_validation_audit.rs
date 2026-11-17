@@ -78,7 +78,7 @@ const ROUTE_AUDIT: &[(&str, RouteAudit)] = &[
     ),
     // -- modules/llm.rs -------------------------------------------------------------------------------
     ("mika:llm-models", RouteAudit::Validated("provider por match fechado; baseUrl explícito passa por privacy::assert_user_endpoint_allowed (SSRF + offline)")),
-    ("mika:elevenlabs-voices", RouteAudit::Validated("apiKey obrigatória e não vazia; URL é const fixa")),
+    ("mika:elevenlabs-voices", RouteAudit::Validated("apiKey do payload, ou a salva se vier vazia/mascarada; URL é const fixa")),
     ("llm:getProviderHealth", RouteAudit::Allowlisted("sem payload; lê estado interno do circuit breaker")),
     (
         "llm:resetProviderCircuit",

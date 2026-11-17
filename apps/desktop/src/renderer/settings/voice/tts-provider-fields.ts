@@ -100,7 +100,8 @@ export function resolveTtsFields(props: TTSProviderPanelProps, rawCfg: Record<st
       configBool(rawCfg, 'voice.ttsIgnoreAngleBrackets', true),
     ),
     ttsRemoveEmoji: pick(props.ttsRemoveEmoji, () => configBool(rawCfg, 'voice.ttsRemoveEmoji', true)),
-    elevenLabsApiKey: props.elevenLabsApiKey ?? '',
+    // Mascarada (`[REDACTED]`) quando salva: só sinaliza "há chave"; o backend usa a real.
+    elevenLabsApiKey: pick(props.elevenLabsApiKey, () => configStr(rawCfg, 'apiKeys.elevenLabs')),
     elevenLabsVoiceId: pick(props.elevenLabsVoiceId, () =>
       configStr(rawCfg, 'voice.elevenLabsVoiceId', 'EXAVITQu4vr4xnSDxMaL'),
     ),
