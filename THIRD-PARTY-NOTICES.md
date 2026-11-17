@@ -9,7 +9,7 @@ atribuição dessas licenças. Nada aqui concede direitos sobre o Mika em si —
 Arquivo gerado por `scripts/generators/third-party-notices.mts` (`pnpm notices:gen`). Não edite à
 mão: a próxima geração apaga a edição.
 
-<!-- mika-notices-input-sha256: bc82db570e1efd180dd3854b9b874c196c8423b106f82e03dbe859d04fb240b8 -->
+<!-- mika-notices-input-sha256: a18efa5567b31f055c58497154b65d969afd33153ebeaa04ae4cf02015592233 -->
 
 ## 1. Assets, modelos e runtimes
 
@@ -191,7 +191,7 @@ Usados sem modificação e vinculados como bibliotecas. O código-fonte original
 - selectors 0.41.0 (MPL-2.0) — código-fonte: https://github.com/servo/stylo
 - elkjs 0.12.1 (EPL-2.0 OR GPL-3.0-or-later) — código-fonte: https://github.com/kieler/elkjs#readme
 
-## 3. Dependências Rust (898)
+## 3. Dependências Rust (899)
 
 | Pacote | Versão | Licença |
 |---|---|---|
@@ -818,6 +818,7 @@ Usados sem modificação e vinculados como bibliotecas. O código-fonte original
 | soup3-sys | 0.5.0 | MIT |
 | spm_precompiled | 0.1.4 | Apache-2.0 |
 | sqlite-wasm-rs | 0.6.3 | MIT |
+| sse-stream | 0.2.6 | MIT OR Apache-2.0 |
 | stable_deref_trait | 1.2.1 | MIT OR Apache-2.0 |
 | starship-battery | 0.12.0 | ISC |
 | static_assertions | 1.1.0 | MIT OR Apache-2.0 |
@@ -3885,7 +3886,7 @@ SOFTWARE.
 
 ### Texto 40
 
-Aplica-se a: @chevrotain/cst-dts-gen 13.2.0, @chevrotain/gast 13.2.0, @chevrotain/regexp-to-ast 13.2.0, @chevrotain/types 13.2.0, @chevrotain/utils 13.2.0, arbitrary-chunks 0.4.1, block-pseudorand 0.1.2, chevrotain 13.2.0, chiapos-chacha8 0.1.0, ciborium 0.2.2, ciborium-io 0.2.2, ciborium-ll 0.2.2, cmov 0.5.4, ctutils 0.4.8, dompurify 3.4.18, embed_plist 1.2.2, encode_unicode 1.0.0, encoding_rs 0.8.44, esaxx-rs 0.1.10, hound 3.5.1, lru-slab 0.1.3, lzma-rust2 0.25.0, multiversion_no_op 1.0.0, ntapi 0.4.3, ort 2.0.0-rc.15, ort-sys 2.0.0-rc.15, quinn 0.11.12, quinn-proto 0.11.19, quinn-udp 0.5.16, rdst 0.20.14, rustls-platform-verifier 0.7.1, serialize-to-javascript 0.1.2, serialize-to-javascript-impl 0.1.2, siphasher 1.0.4, spm_precompiled 0.1.4, static_assertions 1.1.0, steamworks 0.13.1, sys-locale 0.3.2, tinyvec 1.13.3, tokenizers 1.0.0-rc.4, ureq 3.5.2, ureq-proto 0.7.1, utf16_iter 1.1.0, utf8_iter 1.1.0, utf_types 1.0.0, write16 1.0.0, x11rb 0.13.2, x11rb-protocol 0.13.2, zeroize 1.9.1, zeroize_derive 1.5.0, zune-core 0.5.3, zune-jpeg 0.5.15
+Aplica-se a: @chevrotain/cst-dts-gen 13.2.0, @chevrotain/gast 13.2.0, @chevrotain/regexp-to-ast 13.2.0, @chevrotain/types 13.2.0, @chevrotain/utils 13.2.0, arbitrary-chunks 0.4.1, block-pseudorand 0.1.2, chevrotain 13.2.0, chiapos-chacha8 0.1.0, ciborium 0.2.2, ciborium-io 0.2.2, ciborium-ll 0.2.2, cmov 0.5.4, ctutils 0.4.8, dompurify 3.4.18, embed_plist 1.2.2, encode_unicode 1.0.0, encoding_rs 0.8.44, esaxx-rs 0.1.10, hound 3.5.1, lru-slab 0.1.3, lzma-rust2 0.25.0, multiversion_no_op 1.0.0, ntapi 0.4.3, ort 2.0.0-rc.15, ort-sys 2.0.0-rc.15, quinn 0.11.12, quinn-proto 0.11.19, quinn-udp 0.5.16, rdst 0.20.14, rustls-platform-verifier 0.7.1, serialize-to-javascript 0.1.2, serialize-to-javascript-impl 0.1.2, siphasher 1.0.4, spm_precompiled 0.1.4, sse-stream 0.2.6, static_assertions 1.1.0, steamworks 0.13.1, sys-locale 0.3.2, tinyvec 1.13.3, tokenizers 1.0.0-rc.4, ureq 3.5.2, ureq-proto 0.7.1, utf16_iter 1.1.0, utf8_iter 1.1.0, utf_types 1.0.0, write16 1.0.0, x11rb 0.13.2, x11rb-protocol 0.13.2, zeroize 1.9.1, zeroize_derive 1.5.0, zune-core 0.5.3, zune-jpeg 0.5.15
 
 ```text
 Apache License
@@ -24356,6 +24357,34 @@ SOFTWARE.
 
 ### Texto 429
 
+Aplica-se a: sse-stream 0.2.6
+
+```text
+MIT License
+
+Copyright (c) 2024 4t145
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### Texto 430
+
 Aplica-se a: stable_deref_trait 1.2.1
 
 ```text
@@ -24386,7 +24415,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 430
+### Texto 431
 
 Aplica-se a: starship-battery 0.12.0
 
@@ -24408,7 +24437,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### Texto 431
+### Texto 432
 
 Aplica-se a: static_assertions 1.1.0
 
@@ -24436,7 +24465,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 432
+### Texto 433
 
 Aplica-se a: steamworks 0.13.1
 
@@ -24462,7 +24491,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 433
+### Texto 434
 
 Aplica-se a: strsim 0.11.1
 
@@ -24492,7 +24521,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 434
+### Texto 435
 
 Aplica-se a: strum 0.28.0, strum_macros 0.28.0
 
@@ -24520,7 +24549,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 435
+### Texto 436
 
 Aplica-se a: stylis 4.4.0
 
@@ -24548,7 +24577,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 436
+### Texto 437
 
 Aplica-se a: subtle 2.6.1
 
@@ -24584,7 +24613,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 437
+### Texto 438
 
 Aplica-se a: Supertonic 3 (ONNX)
 
@@ -24800,7 +24829,7 @@ relationships between assertions made in documents, indiscriminate and
 arbitrarily-targeted use).
 ```
 
-### Texto 438
+### Texto 439
 
 Aplica-se a: swift-rs 1.0.9
 
@@ -25008,7 +25037,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 439
+### Texto 440
 
 Aplica-se a: swift-rs 1.0.9
 
@@ -25034,7 +25063,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 440
+### Texto 441
 
 Aplica-se a: synstructure 0.14.0
 
@@ -25048,7 +25077,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 441
+### Texto 442
 
 Aplica-se a: sys-locale 0.3.2
 
@@ -25076,7 +25105,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 442
+### Texto 443
 
 Aplica-se a: sysinfo 0.39.6
 
@@ -25104,7 +25133,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 443
+### Texto 444
 
 Aplica-se a: system-configuration 0.7.0, system-configuration-sys 0.6.0
 
@@ -25136,7 +25165,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 444
+### Texto 445
 
 Aplica-se a: tailwind-merge 3.7.0
 
@@ -25164,7 +25193,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 445
+### Texto 446
 
 Aplica-se a: tao 0.37.2
 
@@ -25189,7 +25218,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tao.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 446
+### Texto 447
 
 Aplica-se a: tao-macros 0.1.4
 
@@ -25217,7 +25246,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 447
+### Texto 448
 
 Aplica-se a: tao-macros 0.1.4
 
@@ -25243,7 +25272,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tao.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 448
+### Texto 449
 
 Aplica-se a: tap 1.0.1
 
@@ -25271,7 +25300,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 449
+### Texto 450
 
 Aplica-se a: tar 0.4.46
 
@@ -25303,7 +25332,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 450
+### Texto 451
 
 Aplica-se a: @tauri-apps/api 2.12.4, tauri 2.12.5, tauri-codegen 2.7.4, tauri-macros 2.7.4, tauri-plugin-clipboard-manager 2.5.0, tauri-plugin-dialog 2.8.4, tauri-plugin-fs 2.7.1, tauri-plugin-global-shortcut 2.4.1, tauri-plugin-log 2.10.2, tauri-plugin-notification 2.8.1, tauri-plugin-shell 2.6.0, tauri-plugin-updater 2.14.1, tauri-runtime 2.12.2, tauri-runtime-wry 2.12.3, tauri-utils 2.10.2, tauri-winrt-notification 0.8.1
 
@@ -25331,7 +25360,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 451
+### Texto 452
 
 Aplica-se a: tauri-plugin-clipboard-manager 2.5.0, tauri-plugin-dialog 2.8.4, tauri-plugin-fs 2.7.1, tauri-plugin-global-shortcut 2.4.1, tauri-plugin-log 2.10.2, tauri-plugin-notification 2.8.1, tauri-plugin-shell 2.6.0, tauri-plugin-single-instance 2.5.5, tauri-plugin-updater 2.14.1
 
@@ -25358,7 +25387,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tauri.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 452
+### Texto 453
 
 Aplica-se a: tauri-plugin-single-instance 2.5.5
 
@@ -25386,7 +25415,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 453
+### Texto 454
 
 Aplica-se a: tauri-winrt-notification 0.8.1
 
@@ -25412,7 +25441,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/winrt-notification.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 454
+### Texto 455
 
 Aplica-se a: tempfile 3.27.0, xattr 1.7.0
 
@@ -25444,7 +25473,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 455
+### Texto 456
 
 Aplica-se a: temporal_rs 0.2.6, timezone_provider 0.2.6
 
@@ -25652,7 +25681,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 456
+### Texto 457
 
 Aplica-se a: temporal_rs 0.2.6, timezone_provider 0.2.6
 
@@ -25680,7 +25709,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 457
+### Texto 458
 
 Aplica-se a: tendril 0.5.1
 
@@ -25712,7 +25741,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 458
+### Texto 459
 
 Aplica-se a: three 0.187.0
 
@@ -25740,7 +25769,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 459
+### Texto 460
 
 Aplica-se a: tiff 0.11.3
 
@@ -25768,7 +25797,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 460
+### Texto 461
 
 Aplica-se a: time 0.3.55, time-core 0.1.9, time-macros 0.2.32
 
@@ -25794,7 +25823,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 461
+### Texto 462
 
 Aplica-se a: tinyexec 1.3.1
 
@@ -25822,7 +25851,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 462
+### Texto 463
 
 Aplica-se a: tinytemplate 1.2.1
 
@@ -25854,7 +25883,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 463
+### Texto 464
 
 Aplica-se a: to-regex-range 5.0.1
 
@@ -25882,7 +25911,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 464
+### Texto 465
 
 Aplica-se a: tokio 1.54.1, tokio-stream 0.1.19, tokio-util 0.7.20
 
@@ -25910,7 +25939,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 465
+### Texto 466
 
 Aplica-se a: tokio-macros 2.7.2
 
@@ -25939,7 +25968,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 466
+### Texto 467
 
 Aplica-se a: tokio-rustls 0.26.6
 
@@ -26147,7 +26176,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 467
+### Texto 468
 
 Aplica-se a: tokio-rustls 0.26.6
 
@@ -26179,7 +26208,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 468
+### Texto 469
 
 Aplica-se a: tokio-tungstenite 0.29.0
 
@@ -26206,7 +26235,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 469
+### Texto 470
 
 Aplica-se a: tower 0.5.3, tower-layer 0.3.3, tower-service 0.3.3
 
@@ -26238,7 +26267,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 470
+### Texto 471
 
 Aplica-se a: tower-http 0.6.11
 
@@ -26270,7 +26299,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 471
+### Texto 472
 
 Aplica-se a: tracing 0.1.44, tracing-attributes 0.1.31, tracing-core 0.1.36, tracing-log 0.2.0, tracing-subscriber 0.3.23
 
@@ -26302,7 +26331,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 472
+### Texto 473
 
 Aplica-se a: transpose 0.2.3
 
@@ -26510,7 +26539,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 473
+### Texto 474
 
 Aplica-se a: transpose 0.2.3
 
@@ -26542,7 +26571,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 474
+### Texto 475
 
 Aplica-se a: tray-icon 0.25.1
 
@@ -26568,7 +26597,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tray-icon.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 475
+### Texto 476
 
 Aplica-se a: tree_magic_mini 3.2.2
 
@@ -26596,7 +26625,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 476
+### Texto 477
 
 Aplica-se a: try-lock 0.2.5
 
@@ -26623,7 +26652,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 477
+### Texto 478
 
 Aplica-se a: ts-dedent 2.3.0
 
@@ -26651,7 +26680,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 478
+### Texto 479
 
 Aplica-se a: tslib 2.9.1
 
@@ -26670,7 +26699,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### Texto 479
+### Texto 480
 
 Aplica-se a: tungstenite 0.29.0
 
@@ -26697,7 +26726,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 480
+### Texto 481
 
 Aplica-se a: typenum 1.20.1
 
@@ -26705,7 +26734,7 @@ Aplica-se a: typenum 1.20.1
 MIT OR Apache-2.0
 ```
 
-### Texto 481
+### Texto 482
 
 Aplica-se a: typenum 1.20.1
 
@@ -26913,7 +26942,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 482
+### Texto 483
 
 Aplica-se a: typenum 1.20.1
 
@@ -26941,7 +26970,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 483
+### Texto 484
 
 Aplica-se a: uds_windows 1.2.1
 
@@ -26969,7 +26998,7 @@ MIT License
     SOFTWARE
 ```
 
-### Texto 484
+### Texto 485
 
 Aplica-se a: unicode_categories 0.1.1
 
@@ -26995,7 +27024,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 485
+### Texto 486
 
 Aplica-se a: unicode-ident 1.0.27
 
@@ -27041,7 +27070,7 @@ dealings in these Data Files or Software without prior written
 authorization of the copyright holder.
 ```
 
-### Texto 486
+### Texto 487
 
 Aplica-se a: unit-prefix 0.5.2
 
@@ -27069,7 +27098,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 487
+### Texto 488
 
 Aplica-se a: universal-hash 0.6.1
 
@@ -27101,7 +27130,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 488
+### Texto 489
 
 Aplica-se a: universalify 2.0.1
 
@@ -27128,7 +27157,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 489
+### Texto 490
 
 Aplica-se a: untrusted 0.9.0
 
@@ -27148,7 +27177,7 @@ Aplica-se a: untrusted 0.9.0
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### Texto 490
+### Texto 491
 
 Aplica-se a: uom 0.38.0
 
@@ -27356,7 +27385,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 491
+### Texto 492
 
 Aplica-se a: uom 0.38.0
 
@@ -27384,7 +27413,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 492
+### Texto 493
 
 Aplica-se a: ureq 3.5.2
 
@@ -27412,7 +27441,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 493
+### Texto 494
 
 Aplica-se a: ureq-proto 0.7.1
 
@@ -27426,7 +27455,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 494
+### Texto 495
 
 Aplica-se a: url 0.11.4
 
@@ -27454,7 +27483,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 495
+### Texto 496
 
 Aplica-se a: urlpattern 0.6.0
 
@@ -27482,7 +27511,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 496
+### Texto 497
 
 Aplica-se a: uuid 1.29.2
 
@@ -27515,7 +27544,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 497
+### Texto 498
 
 Aplica-se a: voracious_radix_sort 1.2.0
 
@@ -27543,7 +27572,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 498
+### Texto 499
 
 Aplica-se a: want 0.3.2
 
@@ -27569,7 +27598,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 499
+### Texto 500
 
 Aplica-se a: wayland-backend 0.3.17, wayland-client 0.31.15, wayland-protocols 0.32.13, wayland-protocols-wlr 0.3.12, wayland-scanner 0.31.11, wayland-server 0.31.14, wayland-sys 0.31.11
 
@@ -27595,7 +27624,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 500
+### Texto 501
 
 Aplica-se a: web-time 1.1.0
 
@@ -27803,7 +27832,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 501
+### Texto 502
 
 Aplica-se a: web-time 1.1.0
 
@@ -27831,7 +27860,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 502
+### Texto 503
 
 Aplica-se a: webkit2gtk 2.0.2
 
@@ -27858,7 +27887,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 503
+### Texto 504
 
 Aplica-se a: webkit2gtk-sys 2.0.2
 
@@ -27883,7 +27912,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 504
+### Texto 505
 
 Aplica-se a: webpki-root-certs 1.0.12, webpki-roots 0.26.11, webpki-roots 1.0.12
 
@@ -27951,7 +27980,7 @@ of Data, including for example machine learning models and models'
 insights.
 ```
 
-### Texto 505
+### Texto 506
 
 Aplica-se a: weezl 0.1.12
 
@@ -27979,7 +28008,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 506
+### Texto 507
 
 Aplica-se a: which 8.0.6
 
@@ -28005,7 +28034,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 507
+### Texto 508
 
 Aplica-se a: wide 1.7.1
 
@@ -28213,7 +28242,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 508
+### Texto 509
 
 Aplica-se a: wide 1.7.1
 
@@ -28241,7 +28270,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 509
+### Texto 510
 
 Aplica-se a: wide 1.7.1
 
@@ -28265,7 +28294,7 @@ misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Texto 510
+### Texto 511
 
 Aplica-se a: winapi 0.3.9
 
@@ -28291,7 +28320,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 511
+### Texto 512
 
 Aplica-se a: window-vibrancy 0.8.1
 
@@ -28319,7 +28348,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 512
+### Texto 513
 
 Aplica-se a: window-vibrancy 0.8.1
 
@@ -28345,7 +28374,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/window-vibrancy.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 513
+### Texto 514
 
 Aplica-se a: windows 0.61.3, windows 0.62.2, windows-collections 0.2.0, windows-collections 0.3.2, windows-core 0.61.2, windows-core 0.62.2, windows-future 0.2.1, windows-future 0.3.2, windows-implement 0.60.2, windows-interface 0.59.3, windows-link 0.1.3, windows-link 0.2.1, windows-numerics 0.2.0, windows-numerics 0.3.1, windows-registry 0.6.1, windows-result 0.3.4, windows-result 0.4.1, windows-strings 0.4.2, windows-strings 0.5.1, windows-sys 0.45.0, windows-sys 0.48.0, windows-sys 0.52.0, windows-sys 0.59.0, windows-sys 0.60.2, windows-sys 0.61.2, windows-targets 0.42.2, windows-targets 0.48.5, windows-targets 0.52.6, windows-targets 0.53.5, windows-threading 0.1.0, windows-threading 0.2.1, windows-version 0.1.7, windows_aarch64_gnullvm 0.42.2, windows_aarch64_gnullvm 0.48.5, windows_aarch64_gnullvm 0.52.6, windows_aarch64_gnullvm 0.53.1, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.48.5, windows_aarch64_msvc 0.52.6, windows_aarch64_msvc 0.53.1, windows_i686_gnu 0.42.2, windows_i686_gnu 0.48.5, windows_i686_gnu 0.52.6, windows_i686_gnu 0.53.1, windows_i686_gnullvm 0.52.6, windows_i686_gnullvm 0.53.1, windows_i686_msvc 0.42.2, windows_i686_msvc 0.48.5, windows_i686_msvc 0.52.6, windows_i686_msvc 0.53.1, windows_x86_64_gnu 0.42.2, windows_x86_64_gnu 0.48.5, windows_x86_64_gnu 0.52.6, windows_x86_64_gnu 0.53.1, windows_x86_64_gnullvm 0.42.2, windows_x86_64_gnullvm 0.48.5, windows_x86_64_gnullvm 0.52.6, windows_x86_64_gnullvm 0.53.1, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.48.5, windows_x86_64_msvc 0.52.6, windows_x86_64_msvc 0.53.1
 
@@ -28553,7 +28582,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 514
+### Texto 515
 
 Aplica-se a: @types/d3 7.4.3, @types/d3-array 3.2.2, @types/d3-axis 3.0.6, @types/d3-brush 3.0.6, @types/d3-chord 3.0.6, @types/d3-color 3.1.3, @types/d3-contour 3.0.6, @types/d3-delaunay 6.0.4, @types/d3-dispatch 3.0.7, @types/d3-drag 3.0.7, @types/d3-dsv 3.0.7, @types/d3-ease 3.0.2, @types/d3-fetch 3.0.7, @types/d3-force 3.0.10, @types/d3-format 3.0.4, @types/d3-geo 3.1.1, @types/d3-hierarchy 3.1.7, @types/d3-interpolate 3.0.4, @types/d3-path 3.1.1, @types/d3-polygon 3.0.2, @types/d3-quadtree 3.0.6, @types/d3-random 3.0.4, @types/d3-scale 4.0.9, @types/d3-scale-chromatic 3.1.0, @types/d3-selection 3.0.12, @types/d3-shape 3.2.0, @types/d3-time 3.0.4, @types/d3-time-format 4.0.3, @types/d3-timer 3.0.2, @types/d3-transition 3.0.9, @types/d3-zoom 3.0.9, @types/earcut 2.1.4, @types/geojson 7946.0.16, @types/offscreencanvas 2019.7.3, @types/react 19.3.0, @types/trusted-types 2.0.7, windows 0.61.3, windows 0.62.2, windows-collections 0.2.0, windows-collections 0.3.2, windows-core 0.61.2, windows-core 0.62.2, windows-future 0.2.1, windows-future 0.3.2, windows-implement 0.60.2, windows-interface 0.59.3, windows-link 0.1.3, windows-link 0.2.1, windows-numerics 0.2.0, windows-numerics 0.3.1, windows-registry 0.6.1, windows-result 0.3.4, windows-result 0.4.1, windows-strings 0.4.2, windows-strings 0.5.1, windows-sys 0.45.0, windows-sys 0.48.0, windows-sys 0.52.0, windows-sys 0.59.0, windows-sys 0.60.2, windows-sys 0.61.2, windows-targets 0.42.2, windows-targets 0.48.5, windows-targets 0.52.6, windows-targets 0.53.5, windows-threading 0.1.0, windows-threading 0.2.1, windows-version 0.1.7, windows_aarch64_gnullvm 0.42.2, windows_aarch64_gnullvm 0.48.5, windows_aarch64_gnullvm 0.52.6, windows_aarch64_gnullvm 0.53.1, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.48.5, windows_aarch64_msvc 0.52.6, windows_aarch64_msvc 0.53.1, windows_i686_gnu 0.42.2, windows_i686_gnu 0.48.5, windows_i686_gnu 0.52.6, windows_i686_gnu 0.53.1, windows_i686_gnullvm 0.52.6, windows_i686_gnullvm 0.53.1, windows_i686_msvc 0.42.2, windows_i686_msvc 0.48.5, windows_i686_msvc 0.52.6, windows_i686_msvc 0.53.1, windows_x86_64_gnu 0.42.2, windows_x86_64_gnu 0.48.5, windows_x86_64_gnu 0.52.6, windows_x86_64_gnu 0.53.1, windows_x86_64_gnullvm 0.42.2, windows_x86_64_gnullvm 0.48.5, windows_x86_64_gnullvm 0.52.6, windows_x86_64_gnullvm 0.53.1, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.48.5, windows_x86_64_msvc 0.52.6, windows_x86_64_msvc 0.53.1
 
@@ -28581,7 +28610,7 @@ MIT License
     SOFTWARE
 ```
 
-### Texto 515
+### Texto 516
 
 Aplica-se a: winnow 0.5.40, winnow 1.0.5
 
@@ -28606,7 +28635,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 516
+### Texto 517
 
 Aplica-se a: wl-clipboard-rs 0.9.5
 
@@ -28638,7 +28667,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 517
+### Texto 518
 
 Aplica-se a: wry 0.57.2
 
@@ -28666,7 +28695,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 518
+### Texto 519
 
 Aplica-se a: wry 0.57.2
 
@@ -28693,7 +28722,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/wry.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 519
+### Texto 520
 
 Aplica-se a: x11rb 0.13.2, x11rb-protocol 0.13.2
 
@@ -28725,7 +28754,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 520
+### Texto 521
 
 Aplica-se a: xcap 0.9.10
 
@@ -28933,7 +28962,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 521
+### Texto 522
 
 Aplica-se a: xcb 1.7.1
 
@@ -28966,7 +28995,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 522
+### Texto 523
 
 Aplica-se a: xkbcommon 0.9.0
 
@@ -28998,7 +29027,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 523
+### Texto 524
 
 Aplica-se a: xkeysym 0.2.1
 
@@ -29206,7 +29235,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 524
+### Texto 525
 
 Aplica-se a: xkeysym 0.2.1
 
@@ -29232,7 +29261,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 525
+### Texto 526
 
 Aplica-se a: xkeysym 0.2.1
 
@@ -29250,7 +29279,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Texto 526
+### Texto 527
 
 Aplica-se a: xsum 0.1.6
 
@@ -29281,7 +29310,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 527
+### Texto 528
 
 Aplica-se a: zbus 5.19.0, zbus 6.3.0, zbus_macros 5.19.0, zbus_macros 6.3.0, zbus_names 4.3.5, zbus_utils 6.1.0, zvariant 5.15.1, zvariant_derive 5.15.1
 
@@ -29313,7 +29342,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 528
+### Texto 529
 
 Aplica-se a: zcheapstr 1.2.0
 
@@ -29345,7 +29374,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 529
+### Texto 530
 
 Aplica-se a: zerocopy 0.8.63, zerocopy-derive 0.8.63
 
@@ -29553,7 +29582,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 530
+### Texto 531
 
 Aplica-se a: zerocopy 0.8.63, zerocopy-derive 0.8.63
 
@@ -29584,7 +29613,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 531
+### Texto 532
 
 Aplica-se a: zerocopy 0.8.63, zerocopy-derive 0.8.63
 
@@ -29616,7 +29645,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 532
+### Texto 533
 
 Aplica-se a: zeroize 1.9.1
 
@@ -29648,7 +29677,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 533
+### Texto 534
 
 Aplica-se a: zip 9.5.1
 
@@ -29676,7 +29705,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 534
+### Texto 535
 
 Aplica-se a: zlib-rs 0.6.8
 
@@ -29702,7 +29731,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Texto 535
+### Texto 536
 
 Aplica-se a: zod 4.6.7
 
@@ -29730,7 +29759,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 536
+### Texto 537
 
 Aplica-se a: zopfli 0.8.4
 
@@ -29938,7 +29967,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 537
+### Texto 538
 
 Aplica-se a: zruntime 0.2.3
 
@@ -29976,7 +30005,7 @@ benchmark (`benches/broadcast.rs`) come from the async-broadcast crate
 Copyright (c) 2020 Yoshua Wuyts, Stjepan Glavina & Zeeshan Ali Khan
 ```
 
-### Texto 538
+### Texto 539
 
 Aplica-se a: zstd 0.14.4, zstd-safe 8.3.0, zstd-sys 2.1.3+zstd.1.5.7
 
@@ -30011,7 +30040,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 539
+### Texto 540
 
 Aplica-se a: zstd-sys 2.1.3+zstd.1.5.7
 
@@ -30047,7 +30076,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 540
+### Texto 541
 
 Aplica-se a: zstd-sys 2.1.3+zstd.1.5.7
 
@@ -30086,7 +30115,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 541
+### Texto 542
 
 Aplica-se a: zune-core 0.5.3, zune-jpeg 0.5.15
 
@@ -30114,7 +30143,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 542
+### Texto 543
 
 Aplica-se a: zune-core 0.5.3, zune-jpeg 0.5.15
 
@@ -30140,7 +30169,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Texto 543
+### Texto 544
 
 Aplica-se a: zustand 5.1.0
 

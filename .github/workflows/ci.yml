@@ -1,10 +1,18 @@
-# Validação de todo pull request: lint, gates, tipos, unidade e `cargo check` nos três sistemas.
+# Validação de todo pull request (e da `main`, que grava os caches): lint, gates, tipos, unidade e `cargo check` nos três sistemas.
 # Mesmas actions (e mesmos SHAs) de release.yml; sem secrets, sem escrita.
 name: CI
 
 on:
   pull_request:
     # PR só de documentação não compila nada.
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE*"
+  # Cache de PR só serve ao próprio PR; o da `main` é o único que todo PR novo enxerga. Sem este
+  # gatilho nenhum cache de Rust era salvo na `main`, e todo PR compilava as dependências do zero.
+  push:
+    branches: [main]
     paths-ignore:
       - "**.md"
       - "docs/**"
@@ -22,6 +30,9 @@ env:
   # Sem debuginfo em dev/test: compila e linka mais rápido e o cache do Rust fica menor.
   CARGO_PROFILE_DEV_DEBUG: 0
   CARGO_PROFILE_TEST_DEBUG: 0
+  # Só a `main` grava cache de Rust: o rust-cache guarda as dependências, iguais entre PRs, e cada
+  # PR gravando o seu (GBs por job) estourava os 10 GB do repositório e expulsava o da `main`.
+  SAVE_RUST_CACHE: ${{ github.ref == 'refs/heads/main' }}
   # Dependências nativas do Tauri no Linux (webkit, tray, áudio, captura, X11) — igual a release.yml.
   LINUX_DEPS: >-
     libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf libssl-dev libasound2-dev
@@ -74,9 +85,10 @@ jobs:
         with:
           shared-key: ci-verify
           cache-on-failure: true
+          save-if: ${{ env.SAVE_RUST_CACHE }}
 
       - name: Dependências do sistema (Linux)
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS
+        run: ./.github/scripts/apt-install.sh $LINUX_DEPS
 
       - run: pnpm install --frozen-lockfile
 
@@ -113,10 +125,11 @@ jobs:
         with:
           shared-key: ci-check-${{ matrix.os }}
           cache-on-failure: true
+          save-if: ${{ env.SAVE_RUST_CACHE }}
 
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS
+        run: ./.github/scripts/apt-install.sh $LINUX_DEPS
 
       - run: pnpm install --frozen-lockfile
 
@@ -158,15 +171,33 @@ jobs:
         with:
           shared-key: ci-e2e-${{ matrix.os }}
           cache-on-failure: true
+          save-if: ${{ env.SAVE_RUST_CACHE }}
 
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS xvfb dbus-x11
+        run: ./.github/scripts/apt-install.sh $LINUX_DEPS xvfb dbus-x11
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Versão do Playwright
+        id: pw
+        run: echo "version=$(pnpm --filter @mika/desktop exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      # O download do Chromium (~150 MB) só muda com a versão do Playwright.
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        id: pw-cache
+        with:
+          path: ${{ runner.os == 'macOS' && '~/Library/Caches/ms-playwright' || '~/.cache/ms-playwright' }}
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
       - name: Chromium do Playwright
-        run: pnpm --filter @mika/desktop exec playwright install --with-deps chromium
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: pnpm --filter @mika/desktop exec playwright install chromium
+
+      # Libs de sistema do Chromium não vão no cache; no macOS não há o que instalar.
+      - name: Dependências do Chromium (Linux)
+        if: runner.os == 'Linux'
+        run: pnpm --filter @mika/desktop exec playwright install-deps chromium
 
       - name: Build do binário E2E
         run: pnpm --filter @mika/desktop build:e2e
