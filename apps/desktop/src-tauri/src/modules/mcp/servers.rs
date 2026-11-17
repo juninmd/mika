@@ -90,11 +90,12 @@ fn list(app: &AppHandle, data_dir: &std::path::Path) -> Value {
 fn row(name: &str, spec: Result<config::ServerSpec, String>, store: Option<&crate::config::store::ConfigStore>) -> Value {
     let spec = match spec {
         Ok(spec) => spec,
-        Err(error) => return json!({ "name": name, "status": "error", "error": error, "tools": [], "envKeys": [], "unreadableEnv": [], "args": [], "enabled": false, "command": "", "cwd": null }),
+        Err(error) => return json!({ "name": name, "status": "error", "error": error, "tools": [], "envKeys": [], "unreadableEnv": [], "args": [], "enabled": false, "command": "", "cwd": null, "url": null, "headerKeys": [] }),
     };
     let unreadable = store.map(|store| env_secrets::unreadable_env(&spec, store)).unwrap_or_default();
     let mut described = editor::describe(name, &spec);
     described["envKeys"] = json!(spec.env.keys().filter(|key| !unreadable.contains(key)).collect::<Vec<_>>());
+    described["headerKeys"] = json!(spec.headers.keys().filter(|key| !unreadable.contains(key)).collect::<Vec<_>>());
     described["unreadableEnv"] = json!(unreadable);
     if let (Some(target), Value::Object(runtime)) = (described.as_object_mut(), lifecycle::live_status(name)) {
         target.extend(runtime);
@@ -162,9 +163,8 @@ async fn test(app: &AppHandle, data_dir: &std::path::Path, payload: &Value) -> R
     }
 
     let doc = if original.is_some() { env_secrets::load_plain_document(data_dir, &store)? } else { json!({}) };
-    let previous_env = original.as_deref().and_then(|name| editor::find_entry(&doc, name)).and_then(|entry| entry.get("env"));
-    let env = editor::resolve_env(&input, previous_env)?;
-    let spec = config::ServerSpec { command: input.command, args: input.args, env, cwd: input.cwd, disabled: false };
+    let previous = original.as_deref().and_then(|name| editor::find_entry(&doc, name));
+    let spec = editor::resolve_spec(&input, previous)?;
 
     let connected = client::connect_one("test", &spec, lifecycle::timeout_from(&store)).await?;
     let tools: Vec<Value> = connected
