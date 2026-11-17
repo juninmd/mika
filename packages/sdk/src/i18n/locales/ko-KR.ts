@@ -923,6 +923,9 @@ export const koKR: TranslationDict = {
   'settings.gamerCompanion.field.gameWatcherEnabled.description':
     '실행 중인 프로세스를 지켜보며 내가 게임을 하는 때를 감지해요.',
   'settings.gamerCompanion.field.gameWatcherIntervalSeconds.label': '확인 간격 (초)',
+  'settings.gamerCompanion.field.copilotEnabled.label': '코파일럿 모드',
+  'settings.gamerCompanion.field.copilotEnabled.description':
+    '플레이 중 위험이나 놓친 아이템을 미카가 짧은 한마디 음성으로 알려 줍니다. 같은 경고를 반복하지 않고 긴박한 순간에는 끼어들지 않습니다.',
   'settings.gamerCompanion.field.backseatGamingEnabled.label': '훈수 모드 (팁)',
   'settings.gamerCompanion.field.backseatGamingEnabled.description':
     'Mika가 내가 하는 게임에 대해 실시간으로 팁과 경고를 줘요.',

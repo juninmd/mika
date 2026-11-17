@@ -8,6 +8,7 @@ export function GamerCompanionDetection({
   watcherIntervalSeconds,
   backseatEnabled,
   backseatAggressiveness,
+  copilotEnabled,
   onSave,
 }: {
   t: Translate
@@ -15,6 +16,7 @@ export function GamerCompanionDetection({
   watcherIntervalSeconds: number
   backseatEnabled: boolean
   backseatAggressiveness: number
+  copilotEnabled: boolean
   onSave: FeatureComponentProps['onSave']
 }) {
   return (
@@ -58,6 +60,14 @@ export function GamerCompanionDetection({
             onSave={onSave}
           />
         )}
+        <SectionDivider />
+        <GlassToggle
+          label={t('settings.gamerCompanion.field.copilotEnabled.label')}
+          description={t('settings.gamerCompanion.field.copilotEnabled.description')}
+          configPath="gamer-companion.copilotEnabled"
+          value={copilotEnabled}
+          onSave={onSave}
+        />
       </div>
     </GlassCard>
   )

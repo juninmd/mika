@@ -59,6 +59,11 @@ fn gamer_companion() -> Namespace {
                 FieldUi::new("settings.gamerCompanion.field.backseatGamingEnabled.label")
                     .described("settings.gamerCompanion.field.backseatGamingEnabled.description"),
             ),
+            // `gamer::copilot`: avisos curtos de perigo/item perdido vindos da visão.
+            boolean("copilotEnabled", false).with_ui(
+                FieldUi::new("settings.gamerCompanion.field.copilotEnabled.label")
+                    .described("settings.gamerCompanion.field.copilotEnabled.description"),
+            ),
             // `z.number()` sem `.int()` no original — Float, não Int.
             float_range("backseatAggressiveness", 40.0, 0.0, 100.0).with_ui(
                 FieldUi::new("settings.gamerCompanion.field.backseatAggressiveness.label")

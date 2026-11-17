@@ -922,6 +922,9 @@ export const jaJP: TranslationDict = {
   'settings.gamerCompanion.field.gameWatcherEnabled.description':
     'アクティブなプロセスを監視して、プレイ中かどうかを検出します。',
   'settings.gamerCompanion.field.gameWatcherIntervalSeconds.label': '確認間隔(秒)',
+  'settings.gamerCompanion.field.copilotEnabled.label': 'コパイロットモード',
+  'settings.gamerCompanion.field.copilotEnabled.description':
+    'プレイ中、危険や取り忘れたアイテムをミカが短い一言の音声で知らせます。同じ警告を繰り返さず、緊迫した場面では割り込みません。',
   'settings.gamerCompanion.field.backseatGamingEnabled.label': 'バックシートモード(ヒント)',
   'settings.gamerCompanion.field.backseatGamingEnabled.description':
     'Mikaがプレイ中のゲームについてリアルタイムでヒントや注意をくれます。',

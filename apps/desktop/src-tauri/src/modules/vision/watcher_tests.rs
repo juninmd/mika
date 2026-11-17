@@ -625,3 +625,22 @@ fn usage_reported_is_true_when_any_token_count_is_positive() {
     usage.output_tokens = Some(12);
     assert!(usage_reported(&usage));
 }
+
+/// Co-piloto: o bloco `copilot` do modelo vira o payload do `GameCopilotAlert` — só com jogo
+/// confirmado, só tipo conhecido, e nada com `vision.gameAwareness` desligado.
+#[test]
+fn a_copilot_flag_becomes_an_alert_only_inside_a_confirmed_game() {
+    let raw = |game: bool, kind: &str| {
+        format!(
+            "Boss na tela.\nGAME_SIGNAL: {{\"isLikelyGame\":{game},\"game\":\"Elden Ring\",\"copilot\":{{\"kind\":\"{kind}\",\"detail\":\"archer on the roof\"}}}}"
+        )
+    };
+    let (_, signal) = split_game_signal(&raw(true, "danger"));
+    assert_eq!(
+        copilot_alert_payload(&signal),
+        Some(serde_json::json!({ "game": "Elden Ring", "kind": "danger", "detail": "archer on the roof", "tense": false }))
+    );
+    assert_eq!(copilot_alert_payload(&split_game_signal(&raw(false, "danger")).1), None, "sem jogo confirmado");
+    assert_eq!(copilot_alert_payload(&split_game_signal(&raw(true, "boss")).1), None, "tipo desconhecido");
+    assert_eq!(copilot_alert_payload(&apply_game_awareness(signal, false)), None, "gameAwareness desligado");
+}
