@@ -102,7 +102,7 @@ export function useAppShell() {
     inputDeviceId,
   )
 
-  const { sendMessage, doClearHistory, isSendingRef, speechHeld, holdSpeech } = useShellMessaging({
+  const { sendMessage, cancelTurn, doClearHistory, isSendingRef, speechHeld, holdSpeech } = useShellMessaging({
     eAPI,
     messages,
     setMessages,
@@ -133,6 +133,12 @@ export function useAppShell() {
   const uiActionsParams = { ...uiActionsParamsA, ...uiActionsParamsB, scheduleExpressionReset, mousePosRef }
   const { closeOverlaysWrapper, handleSend, handleTogglePin, handleAvatarInteract, handleMouseTrack } =
     useShellUiActions(uiActionsParams)
+
+  // Dock stop: silences her and cuts the turn in flight, so a stuck "thinking" is never a dead end.
+  const stopTurn = useCallback(() => {
+    stopTTS()
+    cancelTurn()
+  }, [stopTTS, cancelTurn])
 
   useShellStatusSync({
     appStatus,
@@ -192,7 +198,7 @@ export function useAppShell() {
   // Grouped so the final return stays a single spread instead of one 40-line property list.
   const composerApi = { input, setInput, sendMessage, handleSend }
   const voiceApi = { micEnabled, sttEnabled, inputMode, inputDeviceId, vadIsSpeaking, speechHeld, voiceLang }
-  const voiceHandlers = { handleToggleMic, handleSetMic, ttsIsPlaying, stopTTS }
+  const voiceHandlers = { handleToggleMic, handleSetMic, ttsIsPlaying, stopTTS, stopTurn }
   const chatApi = { appStatus, expression, expressionIntensity, messages, activeTool, sessionUsage }
   const overlayApi = { mouseTracking, pinned, showInput, setShowInput, showHistory, setShowHistory, toggleOverlay }
   const avatarApi = { mikaReady, live2dModelPath, backgroundMode, backgroundSolidColor, capabilities, live2dReady }
