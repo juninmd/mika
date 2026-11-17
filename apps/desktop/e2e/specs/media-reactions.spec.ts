@@ -9,7 +9,8 @@ import { callE2eHook, expect, test } from '../fixtures/tauri-app'
 type Runtime = { saveSetting(path: string, value: unknown): Promise<unknown> }
 
 const VIDEO = { title: 'Trailer GTA VI - YouTube — Mozilla Firefox', owner: 'firefox' }
-const REACTION = 'The user is watching a video: "Trailer GTA VI"'
+// The request body is JSON, so the quote arrives escaped.
+const REACTION = 'The user is watching a video: \\"Trailer GTA VI'
 const FRAME = 'This is a frame of a video the user is watching'
 // The watcher polls every 20 s and needs two polls on the same video.
 const REACTION_BUDGET_MS = 75_000
@@ -42,6 +43,7 @@ test('reacts to the video in focus only after the opt-in, and shows it on the do
   await expect(card).toBeVisible({ timeout: 15_000 })
   await expect(card).toContainText('Assistindo')
   await page.screenshot({ path: artifactPath('media-reaction-dock-card.png') })
+  const dockCard = (await card.innerText()).split('\n').filter(Boolean)
 
   // Cooldown (default 5 min): the same video in focus brings no second reaction.
   await page.waitForTimeout(45_000)
@@ -52,6 +54,6 @@ test('reacts to the video in focus only after the opt-in, and shows it on the do
     reactionsWithOptInOff: 0,
     reactionsWithOptInOn: sent(llm, REACTION),
     frameDescribedByVisionModel: sent(llm, FRAME) > 0,
-    dockCard: (await card.innerText()).split('\n').filter(Boolean),
+    dockCard,
   })
 })
