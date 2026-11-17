@@ -37,7 +37,7 @@ use async_trait::async_trait;
 use serde_json::{json, Value};
 use tauri::AppHandle;
 
-use crate::config::store::ConfigStore;
+use crate::config::store::{ConfigStore, MASKED_SECRET};
 use crate::modules::privacy;
 use crate::native::NativeModule;
 use crate::protocol::InvokeContext;
@@ -695,8 +695,18 @@ fn annotate_elevenlabs_voices(voices: Vec<Value>) -> Vec<Value> {
     annotated
 }
 
+/// Chave digitada > credencial salva. O renderer só tem o config mascarado, então `[REDACTED]`
+/// significa "use a que está salva", nunca uma chave a enviar.
+fn elevenlabs_key(store: &ConfigStore, payload: &Value) -> Option<String> {
+    let explicit = payload.get("apiKey").and_then(Value::as_str).filter(|k| !k.is_empty() && *k != MASKED_SECRET);
+    if let Some(key) = explicit {
+        return Some(key.to_string());
+    }
+    store.get("apiKeys.elevenLabs").and_then(|v| v.as_str().map(str::to_string)).filter(|k| !k.is_empty())
+}
+
 async fn list_elevenlabs_voices(store: &ConfigStore, payload: &Value) -> Value {
-    let Some(api_key) = payload.get("apiKey").and_then(Value::as_str).filter(|k| !k.is_empty()) else {
+    let Some(api_key) = elevenlabs_key(store, payload) else {
         return json!({ "ok": false, "error": "apiKey ausente" });
     };
 
@@ -704,9 +714,12 @@ async fn list_elevenlabs_voices(store: &ConfigStore, payload: &Value) -> Value {
         return json!({ "ok": false, "error": error });
     }
 
+    // Só no binário `e2e` (dupla trava): o catálogo vem do dublê local, sem a nuvem nem chave real.
+    let url = crate::modules::brain::llm_provider::e2e_cloud_base()
+        .map_or_else(|| ELEVENLABS_VOICES_URL.to_string(), |base| format!("{base}/v1/voices"));
     let response = match http_client()
-        .get(ELEVENLABS_VOICES_URL)
-        .header("xi-api-key", api_key)
+        .get(url)
+        .header("xi-api-key", &api_key)
         .timeout(CATALOG_TIMEOUT)
         .send()
         .await
@@ -1204,5 +1217,18 @@ mod tests {
         .await;
         assert_eq!(response["models"], json!([]));
         assert!(!response.to_string().contains("chave-secreta-de-teste"));
+    }
+    /// O renderer só enxerga o config mascarado: a chave salva chega aqui como `[REDACTED]` (ou
+    /// vazia). Tratar isso como chave explícita mandava o literal para a ElevenLabs e a aba TTS
+    /// nunca listava as vozes de quem já tinha salvo a credencial.
+    #[test]
+    fn elevenlabs_key_falls_back_to_the_stored_credential_when_the_payload_is_masked() {
+        let (store, _dir) = store();
+        assert_eq!(elevenlabs_key(&store, &json!({ "apiKey": "[REDACTED]" })), None);
+        store.set("apiKeys.elevenLabs", json!("sk-salva")).unwrap();
+        for payload in [json!({ "apiKey": "[REDACTED]" }), json!({ "apiKey": "" }), json!({})] {
+            assert_eq!(elevenlabs_key(&store, &payload).as_deref(), Some("sk-salva"));
+        }
+        assert_eq!(elevenlabs_key(&store, &json!({ "apiKey": "sk-digitada" })).as_deref(), Some("sk-digitada"));
     }
 }
