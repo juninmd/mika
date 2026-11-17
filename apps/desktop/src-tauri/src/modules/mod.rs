@@ -138,7 +138,7 @@ pub fn register_config_bound_tools(app: &tauri::AppHandle) {
     // dentro (`features::computer_use::tool::register`), não `register` simples: toda chamada
     // passa pelo gate de aprovação, inclusive vinda do loop de tools do LLM (`brain::turn`), que
     // nunca passa pelo `mika:tool-execute` (o único caminho que o padrão de `desktop` cobriria).
-    features::computer_use::register(Arc::clone(&store));
+    features::computer_use::register(app, Arc::clone(&store));
 
     // A tool `person_catalog` passou a ter store de verdade (`catalog.json`, mesmo arquivo que o TS
     // já grava) nesta rodada. Precisa do `AppHandle` para achar o arquivo

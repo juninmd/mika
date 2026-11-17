@@ -860,7 +860,7 @@ export const enUS: TranslationDict = {
   'settings.computerUse.tab.label': 'Computer Control',
   'settings.computerUse.field.enabled.label': 'Allow computer control',
   'settings.computerUse.field.enabled.description':
-    'Off by default. When on, Mika can move the mouse, click and type on your computer. Every action still asks for your approval.',
+    'Off by default. When on, Mika can move the mouse, click, type, change the volume and switch windows. Clicks and typing ask for your approval.',
   'settings.computerUse.panel.description':
     'Mika drives the mouse and keyboard inside what is already open — always after your approval.',
   'settings.computerUse.panel.statusOn': 'On',
@@ -870,7 +870,8 @@ export const enUS: TranslationDict = {
   'settings.computerUse.panel.guardSwitchTitle': 'Master switch',
   'settings.computerUse.panel.guardSwitchText': 'When off, the tool runs nothing — not even an on-screen search.',
   'settings.computerUse.panel.guardApprovalTitle': 'Per-action approval',
-  'settings.computerUse.panel.guardApprovalText': 'Every call opens a dialog. Without your decision, nothing happens.',
+  'settings.computerUse.panel.guardApprovalText':
+    'Clicks, typing and shortcuts ask for approval every time. Volume and window switching do not.',
   'settings.computerUse.panel.guardWindowTitle': 'Refused targets',
   'settings.computerUse.panel.guardWindowText':
     "Even when approved, it refuses to act on Mika's own windows or type into password fields (Windows).",
@@ -885,6 +886,17 @@ export const enUS: TranslationDict = {
   'settings.computerUse.panel.actionTypeText': 'Types text into the focused field.',
   'settings.computerUse.panel.actionKey': 'Shortcuts',
   'settings.computerUse.panel.actionKeyText': 'Presses combos like ctrl+c or enter.',
+  'settings.computerUse.panel.guardStopTitle': 'Emergency stop',
+  'settings.computerUse.panel.guardStopText':
+    'Ctrl+Alt+End turns control off at once, from anywhere. Turn it back on here.',
+  'settings.computerUse.panel.guardCursorTitle': "Mika's cursor",
+  'settings.computerUse.panel.guardCursorText': 'A pink pointer shows where she is about to act, before the click.',
+  'settings.computerUse.panel.actionMouse': 'Mouse',
+  'settings.computerUse.panel.actionMouseText': 'Moves, double-clicks, scrolls and drags at a screen position.',
+  'settings.computerUse.panel.actionVolume': 'Volume',
+  'settings.computerUse.panel.actionVolumeText': 'Raises, lowers or mutes the system sound by voice.',
+  'settings.computerUse.panel.actionWindow': 'Switch window',
+  'settings.computerUse.panel.actionWindowText': 'Brings an open window to the front by its name (Windows).',
   'settings.mcp.panel.timeoutLabel': 'Wait time per server',
   'settings.browser.tab.label': 'Browser',
   'settings.browser.tab.group': 'Tools',

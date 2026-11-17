@@ -30,7 +30,14 @@ fn declare_settings(schema: &crate::config::registry::SchemaRegistry) -> Option<
 /// Registers the `computer` tool (destructive — see `tool.rs`) and the settings tab in one call,
 /// the same shape as `features::mood::persistence::register`. Called once, from
 /// `modules::register_config_bound_tools`.
-pub(crate) fn register(store: Arc<ConfigStore>) {
+pub(crate) fn register(app: &tauri::AppHandle, store: Arc<ConfigStore>) {
+    super::cursor_overlay::arm(app);
+    super::emergency_stop::register(app, Arc::clone(&store));
+    super::pc_control::register(Arc::clone(&store));
+    register_tool_and_tab(store);
+}
+
+fn register_tool_and_tab(store: Arc<ConfigStore>) {
     super::tool::register(Arc::clone(&store));
 
     if let Some(settings) = declare_settings(store.schema()) {
@@ -72,8 +79,10 @@ mod tests {
         std::fs::create_dir_all(&dir).unwrap();
         let store = Arc::new(ConfigStore::open(&dir, crate::config::schemas::registry()).unwrap());
 
-        register(Arc::clone(&store));
+        register_tool_and_tab(Arc::clone(&store));
+        super::super::pc_control::register(Arc::clone(&store));
 
+        assert!(crate::modules::tools::registry().get("pc_control").is_some());
         assert!(crate::modules::tools::registry().get("computer").is_some());
         let registered = crate::feature_registry::shared().get(&PLUGIN_ID.into()).expect("mika.computer-use registrado");
         assert_eq!(registered.settings[0]["tabId"], serde_json::json!("computer-use"));

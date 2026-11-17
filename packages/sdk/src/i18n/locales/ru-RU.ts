@@ -873,7 +873,7 @@ export const ruRU: TranslationDict = {
   'settings.computerUse.tab.label': 'Управление компьютером',
   'settings.computerUse.field.enabled.label': 'Разрешить управление компьютером',
   'settings.computerUse.field.enabled.description':
-    'По умолчанию выключено. Если включить, Mika сможет двигать мышь, нажимать и вводить текст на твоём компьютере. Каждое действие по-прежнему требует твоего подтверждения.',
+    'По умолчанию выключено. Включив, Мика может двигать мышь, кликать, печатать, менять громкость и окна. Клики и ввод требуют твоего одобрения.',
   'settings.computerUse.panel.description':
     'Mika управляет мышью и клавиатурой внутри уже открытого — и всегда только после твоего одобрения.',
   'settings.computerUse.panel.statusOn': 'Вкл.',
@@ -886,7 +886,7 @@ export const ruRU: TranslationDict = {
     'Когда выключен, инструмент ничего не выполняет — даже поиск на экране.',
   'settings.computerUse.panel.guardApprovalTitle': 'Одобрение каждого действия',
   'settings.computerUse.panel.guardApprovalText':
-    'Каждый вызов открывает диалог. Без твоего решения ничего не происходит.',
+    'Клики, ввод и сочетания клавиш каждый раз требуют одобрения. Громкость и смена окна — нет.',
   'settings.computerUse.panel.guardWindowTitle': 'Запрещённые цели',
   'settings.computerUse.panel.guardWindowText':
     'Даже при одобрении она отказывается действовать в собственных окнах Mika и вводить текст в поля паролей (Windows).',
@@ -901,6 +901,18 @@ export const ruRU: TranslationDict = {
   'settings.computerUse.panel.actionTypeText': 'Вводит текст в поле в фокусе.',
   'settings.computerUse.panel.actionKey': 'Сочетания клавиш',
   'settings.computerUse.panel.actionKeyText': 'Нажимает комбинации вроде ctrl+c или enter.',
+  'settings.computerUse.panel.guardStopTitle': 'Экстренная остановка',
+  'settings.computerUse.panel.guardStopText':
+    'Ctrl+Alt+End сразу отключает управление откуда угодно. Включить снова можно здесь.',
+  'settings.computerUse.panel.guardCursorTitle': 'Курсор Мики',
+  'settings.computerUse.panel.guardCursorText': 'Розовый указатель показывает, где она будет действовать, до клика.',
+  'settings.computerUse.panel.actionMouse': 'Мышь',
+  'settings.computerUse.panel.actionMouseText':
+    'Перемещает, делает двойной клик, прокручивает и перетаскивает в точке экрана.',
+  'settings.computerUse.panel.actionVolume': 'Громкость',
+  'settings.computerUse.panel.actionVolumeText': 'Повышает, понижает или выключает системный звук голосом.',
+  'settings.computerUse.panel.actionWindow': 'Смена окна',
+  'settings.computerUse.panel.actionWindowText': 'Выводит открытое окно на передний план по названию (Windows).',
   'settings.mcp.panel.timeoutLabel': 'Время ожидания на сервер',
   'settings.browser.tab.label': 'Браузер',
   'settings.browser.tab.group': 'Инструменты',

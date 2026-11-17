@@ -875,7 +875,7 @@ export const esES: TranslationDict = {
   'settings.computerUse.tab.label': 'Control del equipo',
   'settings.computerUse.field.enabled.label': 'Permitir control del equipo',
   'settings.computerUse.field.enabled.description':
-    'Desactivado por defecto. Activado, Mika puede mover el ratón, hacer clic y escribir en tu ordenador. Cada acción sigue pidiendo tu aprobación.',
+    'Apagado por defecto. Activado, Mika puede mover el ratón, hacer clic, escribir, cambiar el volumen y la ventana. Los clics y la escritura piden tu aprobación.',
   'settings.computerUse.panel.description':
     'Mika maneja el ratón y el teclado dentro de lo que ya está abierto, siempre tras tu aprobación.',
   'settings.computerUse.panel.statusOn': 'Activo',
@@ -887,7 +887,8 @@ export const esES: TranslationDict = {
   'settings.computerUse.panel.guardSwitchText':
     'Apagado, la herramienta no ejecuta nada, ni busca elementos en pantalla.',
   'settings.computerUse.panel.guardApprovalTitle': 'Aprobación por acción',
-  'settings.computerUse.panel.guardApprovalText': 'Cada llamada abre un diálogo. Sin tu decisión, no pasa nada.',
+  'settings.computerUse.panel.guardApprovalText':
+    'Clics, escritura y atajos piden aprobación cada vez. El volumen y el cambio de ventana no.',
   'settings.computerUse.panel.guardWindowTitle': 'Objetivos rechazados',
   'settings.computerUse.panel.guardWindowText':
     'Aun aprobada, se niega a actuar en las ventanas de Mika o escribir en campos de contraseña (Windows).',
@@ -903,6 +904,18 @@ export const esES: TranslationDict = {
   'settings.computerUse.panel.actionTypeText': 'Escribe texto en el campo con foco.',
   'settings.computerUse.panel.actionKey': 'Atajos',
   'settings.computerUse.panel.actionKeyText': 'Pulsa combinaciones como ctrl+c o enter.',
+  'settings.computerUse.panel.guardStopTitle': 'Parada de emergencia',
+  'settings.computerUse.panel.guardStopText':
+    'Ctrl+Alt+End apaga el control al instante, desde cualquier lugar. Vuelve a activarlo aquí.',
+  'settings.computerUse.panel.guardCursorTitle': 'Cursor de Mika',
+  'settings.computerUse.panel.guardCursorText': 'Un puntero rosa aparece donde va a actuar, antes del clic.',
+  'settings.computerUse.panel.actionMouse': 'Ratón',
+  'settings.computerUse.panel.actionMouseText':
+    'Mueve, hace doble clic, desplaza y arrastra en una posición de la pantalla.',
+  'settings.computerUse.panel.actionVolume': 'Volumen',
+  'settings.computerUse.panel.actionVolumeText': 'Sube, baja o silencia el sonido del sistema por voz.',
+  'settings.computerUse.panel.actionWindow': 'Cambiar de ventana',
+  'settings.computerUse.panel.actionWindowText': 'Trae al frente una ventana abierta por su nombre (Windows).',
   'settings.mcp.panel.timeoutLabel': 'Tiempo de espera por servidor',
   'settings.browser.tab.label': 'Navegador',
   'settings.browser.tab.group': 'Herramientas',

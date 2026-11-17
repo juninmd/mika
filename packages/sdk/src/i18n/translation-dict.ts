@@ -848,6 +848,16 @@ export type TranslationDict = {
   'settings.computerUse.panel.actionTypeText': string
   'settings.computerUse.panel.actionKey': string
   'settings.computerUse.panel.actionKeyText': string
+  'settings.computerUse.panel.guardStopTitle': string
+  'settings.computerUse.panel.guardStopText': string
+  'settings.computerUse.panel.guardCursorTitle': string
+  'settings.computerUse.panel.guardCursorText': string
+  'settings.computerUse.panel.actionMouse': string
+  'settings.computerUse.panel.actionMouseText': string
+  'settings.computerUse.panel.actionVolume': string
+  'settings.computerUse.panel.actionVolumeText': string
+  'settings.computerUse.panel.actionWindow': string
+  'settings.computerUse.panel.actionWindowText': string
   'settings.mcp.field.timeoutSeconds.description': string
   'settings.mcp.panel.timeoutLabel': string
   'settings.browser.tab.label': string

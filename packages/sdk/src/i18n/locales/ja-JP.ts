@@ -849,7 +849,7 @@ export const jaJP: TranslationDict = {
   'settings.computerUse.tab.label': 'パソコン操作',
   'settings.computerUse.field.enabled.label': 'パソコンの操作を許可',
   'settings.computerUse.field.enabled.description':
-    'デフォルトではオフです。オンにすると、Mika があなたのコンピューターでマウス操作、クリック、入力を行えます。すべての操作は引き続きあなたの承認が必要です。',
+    '既定ではオフ。オンにすると、Mikaはマウス操作・クリック・入力・音量変更・ウィンドウ切り替えができます。クリックと入力はあなたの承認が必要です。',
   'settings.computerUse.panel.description':
     'Mikaは開いているアプリ内でマウスとキーボードを操作します。必ずあなたの承認後に。',
   'settings.computerUse.panel.statusOn': 'オン',
@@ -859,7 +859,8 @@ export const jaJP: TranslationDict = {
   'settings.computerUse.panel.guardSwitchTitle': 'マスタースイッチ',
   'settings.computerUse.panel.guardSwitchText': 'オフの間は画面上の検索も含め何も実行しません。',
   'settings.computerUse.panel.guardApprovalTitle': 'アクションごとの承認',
-  'settings.computerUse.panel.guardApprovalText': '呼び出しごとにダイアログが開き、あなたが決めるまで何も起きません。',
+  'settings.computerUse.panel.guardApprovalText':
+    'クリック・入力・ショートカットは毎回承認が必要です。音量とウィンドウ切り替えは不要です。',
   'settings.computerUse.panel.guardWindowTitle': '拒否される対象',
   'settings.computerUse.panel.guardWindowText':
     '承認後でも、Mika自身のウィンドウ操作やパスワード欄への入力は拒否します(Windows)。',
@@ -873,6 +874,17 @@ export const jaJP: TranslationDict = {
   'settings.computerUse.panel.actionTypeText': 'フォーカス中の欄に文字を入力。',
   'settings.computerUse.panel.actionKey': 'ショートカット',
   'settings.computerUse.panel.actionKeyText': 'ctrl+c や enter などを押す。',
+  'settings.computerUse.panel.guardStopTitle': '緊急停止',
+  'settings.computerUse.panel.guardStopText':
+    'Ctrl+Alt+End でどこからでも即座に操作をオフにします。再開はここでオンに。',
+  'settings.computerUse.panel.guardCursorTitle': 'Mikaのカーソル',
+  'settings.computerUse.panel.guardCursorText': 'クリックの前に、操作する場所にピンクのポインターが表示されます。',
+  'settings.computerUse.panel.actionMouse': 'マウス',
+  'settings.computerUse.panel.actionMouseText': '画面上の位置で移動・ダブルクリック・スクロール・ドラッグします。',
+  'settings.computerUse.panel.actionVolume': '音量',
+  'settings.computerUse.panel.actionVolumeText': '声でシステムの音量を上げ下げ・ミュートします。',
+  'settings.computerUse.panel.actionWindow': 'ウィンドウ切り替え',
+  'settings.computerUse.panel.actionWindowText': '開いているウィンドウを名前で前面に出します(Windows)。',
   'settings.mcp.panel.timeoutLabel': 'サーバーごとの待機時間',
   'settings.browser.tab.label': 'ブラウザ',
   'settings.browser.tab.group': 'ツール',
