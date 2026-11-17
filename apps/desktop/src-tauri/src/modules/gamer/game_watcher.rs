@@ -339,6 +339,7 @@ pub fn start(
     let db = super::session_db::SessionDb::open(&path)?;
     let session_memory = Arc::new(SessionMemory::new(db));
     super::register_session_tools(Arc::clone(&session_memory), Arc::clone(&config));
+    super::daily_summary::spawn_moment_recorder(Arc::clone(&session_memory), Arc::clone(&config));
     let handle = spawn_watcher(session_memory.clone(), config, app.clone());
     Ok((session_memory, handle))
 }
