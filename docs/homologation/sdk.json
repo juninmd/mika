@@ -5,8 +5,8 @@
     "perfil": "contract"
   },
   "artefato": {
-    "commit": "cd73856a6f08c330f7cf02b38d103e0498159239+dirty",
-    "tree": "e510828ff661bcb2",
+    "commit": "c5b16e4d03e3235857d68c9bb2271d625a7e0a4e",
+    "tree": "03ea8422d5ae4624",
     "contract": "65d0586d5991ee80",
     "deps": {
       "zod": "catalog:"
@@ -16,7 +16,7 @@
   "ambiente": {
     "plataforma": "linux",
     "node": "v22.23.4",
-    "data": "2026-11-16"
+    "data": "2026-11-17"
   },
   "criterios": [
     {
@@ -27,7 +27,7 @@
     {
       "id": "vivo",
       "status": "ok",
-      "detail": "131 arquivo(s) fora do módulo o referenciam"
+      "detail": "132 arquivo(s) fora do módulo o referenciam"
     },
     {
       "id": "headless",
