@@ -1,6 +1,7 @@
 import { BentoGrid, choiceOption, GlassCard, GlassSection, TestResultNote, usePluginTest } from '@mika/sdk-ui/settings'
 import { Gauge, Hand, Mic, Rabbit, Radio, Target } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
+import { ProviderBillingCard } from '../../src/components/settings/ProviderBillingCard'
 import { configBool, configNum, configStr, pick } from '../../src/components/settings/settings-utils'
 import { useI18n } from '../../src/hooks/useI18n'
 import { useReportedSave } from '../../src/hooks/useReportedSave'
@@ -169,6 +170,8 @@ export function STTProviderPanel(props: STTProviderPanelProps) {
           INPUT_MODE_OPTIONS={INPUT_MODE_OPTIONS}
           WHISPER_MODEL_OPTIONS={WHISPER_MODEL_OPTIONS}
         />
+
+        <ProviderBillingCard provider={asrProviderDraft} />
       </BentoGrid>
 
       {sttEnabled && (

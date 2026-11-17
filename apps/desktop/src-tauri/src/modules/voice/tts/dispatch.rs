@@ -128,10 +128,16 @@ async fn generate_elevenlabs_with_fallback(
         return fallback_to_local(state, text, cache_dir, store, cancel).await;
     }
     match generate_elevenlabs(text, &state.eleven_labs, store, cancel).await {
-        Ok(audio) => Ok(Some(GeneratedAudio { audio, mime_type: REMOTE_MIME_TYPE })),
+        Ok(audio) => Ok(Some(remote_audio("elevenlabs", text, audio))),
         Err(error) if is_elevenlabs_permanent_failure(&error) => fallback_to_local(state, text, cache_dir, store, cancel).await,
         Err(error) => Err(error),
     }
+}
+
+/// Síntese paga que deu certo: conta os caracteres cobrados (o "valor atual" da tela de TTS).
+fn remote_audio(provider: &'static str, text: &str, audio: Vec<u8>) -> GeneratedAudio {
+    crate::modules::provider_billing::usage::record(provider, text.chars().count() as f64);
+    GeneratedAudio { audio, mime_type: REMOTE_MIME_TYPE }
 }
 
 fn piper_options(state: &TtsState, cache_dir: &std::path::Path) -> PiperOptions {
@@ -170,18 +176,9 @@ pub async fn generate_with_provider(
             Ok(Some(GeneratedAudio { audio, mime_type: "audio/wav" }))
         }
         "elevenlabs" => generate_elevenlabs_with_fallback(state, text, cache_dir, store, cancel).await,
-        "openai-tts" => {
-            let audio = generate_openai(text, &state.openai_tts, store, cancel).await?;
-            Ok(Some(GeneratedAudio { audio, mime_type: REMOTE_MIME_TYPE }))
-        }
-        "azure-tts" => {
-            let audio = generate_azure(text, &state.azure_tts, store, cancel).await?;
-            Ok(Some(GeneratedAudio { audio, mime_type: REMOTE_MIME_TYPE }))
-        }
-        "google-tts" => {
-            let audio = generate_google(text, &state.google_tts, store, cancel).await?;
-            Ok(Some(GeneratedAudio { audio, mime_type: REMOTE_MIME_TYPE }))
-        }
+        "openai-tts" => Ok(Some(remote_audio("openai-tts", text, generate_openai(text, &state.openai_tts, store, cancel).await?))),
+        "azure-tts" => Ok(Some(remote_audio("azure-tts", text, generate_azure(text, &state.azure_tts, store, cancel).await?))),
+        "google-tts" => Ok(Some(remote_audio("google-tts", text, generate_google(text, &state.google_tts, store, cancel).await?))),
         other if CUT_PROVIDERS.contains(&other) => Err(format!(
             "provedor de TTS '{other}' ainda não foi portado para Rust — ver o cabeçalho de dispatch.rs \
              para o porquê do corte. Selecione 'supertonic' para voz local."

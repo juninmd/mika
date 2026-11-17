@@ -2023,6 +2023,36 @@ export type TranslationDict = {
   'settings.toolExecution.error': string
   'settings.toolExecution.executionHistory': string
   'shell.providerHealth.noSpendCap': string
+  'settings.providerBilling.title': string
+  'settings.providerBilling.description': string
+  'settings.providerBilling.remaining': string
+  'settings.providerBilling.used': string
+  'settings.providerBilling.limit': string
+  'settings.providerBilling.resets': string
+  'settings.providerBilling.noCap': string
+  'settings.providerBilling.localUsage': string
+  'settings.providerBilling.requests': string
+  'settings.providerBilling.cost': string
+  'settings.providerBilling.costUnknown': string
+  'settings.providerBilling.lastUsed': string
+  'settings.providerBilling.never': string
+  'settings.providerBilling.apiUnavailable': string
+  'settings.providerBilling.notApplicable': string
+  'settings.providerBilling.missingKey': string
+  'settings.providerBilling.error': string
+  'settings.providerBilling.refresh': string
+  'settings.providerBilling.unit.usd': string
+  'settings.providerBilling.unit.tokens': string
+  'settings.providerBilling.unit.characters': string
+  'settings.providerBilling.unit.seconds': string
+  'settings.providerBilling.verdict.ok': string
+  'settings.providerBilling.verdict.low': string
+  'settings.providerBilling.verdict.exhausted': string
+  'settings.providerBilling.verdict.unknown': string
+  'settings.providerBilling.verdict.free': string
+  'settings.providerBilling.verdict.missingKey': string
+  'settings.providerBilling.verdict.error': string
+  'settings.providerBilling.verdict.loading': string
   'shell.providerHealth.used': string
   'shell.providerHealth.of': string
   'shell.providerHealth.remaining': string

@@ -18,6 +18,8 @@ pub(crate) const OPENROUTER_KEY_URL: &str = "https://openrouter.ai/api/v1/key";
 
 pub(crate) const ELEVENLABS_ORIGIN: &str = "https://api.elevenlabs.io";
 pub(crate) const ELEVENLABS_VOICES_URL: &str = "https://api.elevenlabs.io/v1/voices";
+/// Cota de caracteres do plano (`character_count`/`character_limit`); exige a permissão `user_read`.
+pub(crate) const ELEVENLABS_SUBSCRIPTION_URL: &str = "https://api.elevenlabs.io/v1/user/subscription";
 
 pub(crate) const GOOGLE_TTS_ORIGIN: &str = "https://texttospeech.googleapis.com";
 pub(crate) const GOOGLE_TTS_VOICES_URL: &str = "https://texttospeech.googleapis.com/v1/voices";
@@ -33,7 +35,7 @@ mod tests {
         let families: [(&str, &[&str]); 4] = [
             (GOOGLE_AI_ORIGIN, &[GOOGLE_AI_V1BETA, GOOGLE_AI_MODELS_URL, GOOGLE_AI_MODEL_BASE]),
             (OPENROUTER_ORIGIN, &[OPENROUTER_API_V1, OPENROUTER_MODELS_URL, OPENROUTER_ZDR_MODELS_URL, OPENROUTER_KEY_URL]),
-            (ELEVENLABS_ORIGIN, &[ELEVENLABS_VOICES_URL]),
+            (ELEVENLABS_ORIGIN, &[ELEVENLABS_VOICES_URL, ELEVENLABS_SUBSCRIPTION_URL]),
             (GOOGLE_TTS_ORIGIN, &[GOOGLE_TTS_VOICES_URL]),
         ];
         for (origin, urls) in families {

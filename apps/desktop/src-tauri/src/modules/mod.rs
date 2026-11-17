@@ -25,6 +25,7 @@ pub mod mcp;
 pub mod memory;
 pub mod plugins;
 pub mod privacy;
+pub mod provider_billing;
 pub mod settings;
 pub mod sqlite_migrate;
 pub mod tools;
@@ -61,6 +62,7 @@ pub fn all() -> Vec<Box<dyn NativeModule>> {
     modules.extend(memory::modules());
     modules.extend(plugins::modules());
     modules.extend(privacy::modules());
+    modules.extend(provider_billing::modules());
     modules.extend(settings::modules());
     modules.extend(tools::modules());
     modules.extend(system::modules());

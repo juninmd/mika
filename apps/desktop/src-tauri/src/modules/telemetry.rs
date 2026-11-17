@@ -271,7 +271,7 @@ fn token_usage_reset_with(conn: &Connection) -> Result<Value, String> {
 /// intacto e a migração é reversível com um `DROP TABLE token_usage_by_provider` sem perda alguma
 /// do total já gravado.
 pub(super) fn create_token_usage_table(conn: &Connection) -> Result<(), String> {
-    super::sqlite_migrate::migrate(conn, &[TOKEN_USAGE_MIGRATION_1]).map_err(|e| format!("token_usage.db: {e}"))
+    super::sqlite_migrate::migrate(conn, &[TOKEN_USAGE_MIGRATION_1, TOKEN_USAGE_MIGRATION_2]).map_err(|e| format!("token_usage.db: {e}"))
 }
 
 const TOKEN_USAGE_MIGRATION_1: &str = "
@@ -299,6 +299,18 @@ const TOKEN_USAGE_MIGRATION_1: &str = "
         first_used_at INTEGER NOT NULL DEFAULT 0,
         last_used_at INTEGER NOT NULL DEFAULT 0,
         PRIMARY KEY (surface, provider, model)
+    )
+";
+
+/// Uso medido de TTS (caracteres) e STT (segundos) de provedor pago, por provedor — o "valor atual"
+/// das telas de provider (`provider_billing`). Aditiva e reversível com `DROP TABLE provider_usage`.
+const TOKEN_USAGE_MIGRATION_2: &str = "
+    CREATE TABLE IF NOT EXISTS provider_usage (
+        provider TEXT PRIMARY KEY,
+        amount REAL NOT NULL DEFAULT 0,
+        requests INTEGER NOT NULL DEFAULT 0,
+        first_used_at INTEGER NOT NULL DEFAULT 0,
+        last_used_at INTEGER NOT NULL DEFAULT 0
     )
 ";
 
@@ -524,7 +536,8 @@ mod tests {
 
         assert_eq!(token_usage_get_with(&conn).unwrap()["totalTokens"], json!(5000));
         conn.query_row("SELECT COUNT(*) FROM token_usage_by_provider", [], |r| r.get::<_, i64>(0)).unwrap();
+        conn.query_row("SELECT COUNT(*) FROM provider_usage", [], |r| r.get::<_, i64>(0)).unwrap();
         let version: i64 = conn.pragma_query_value(None, "user_version", |r| r.get(0)).unwrap();
-        assert_eq!(version, 1);
+        assert_eq!(version, 2);
     }
 }
