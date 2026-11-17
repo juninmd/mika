@@ -1,11 +1,14 @@
+import { hasLiveTranscriptListeners, publishLiveTranscript } from '../lib/live-transcript-bus'
 import { createMicLevelMeter, getUserMediaWithFallback } from '../lib/mic-analyser'
 import { publishMicLevel, resetMicLevel } from '../lib/mic-level-bus'
 import { stopStream } from '../lib/mic-stream'
 import { rendererLog } from '../lib/renderer-logger'
 import { getElectronApi } from '../lib/shell-api'
 import { logVadSetupFailure, VAD_WORKLET_PATH } from './audio-playback-vad'
+import { createPartialTranscriber } from './speech-partials'
 import { createPreRollBuffer, preRollDurationMs } from './speech-preroll'
 import {
+  bytesToBase64,
   capturedPcm16,
   deliverTranscript,
   dropReason,
@@ -16,6 +19,7 @@ import {
   type MediaRecorderSession,
   NOISE_FLOOR_RISE_PER_TICK,
   NOISE_MARGIN,
+  PCM_MIME_TYPE,
   requestTranscript,
   SILENCE_HANGOVER_MS,
   scaleVadGates,
@@ -42,6 +46,9 @@ type Utterance = {
  * silence on, so up to 800 ms of it is hidden inside the wait instead of added after it. Speaking
  * again only costs a discarded STT call. */
 const EARLY_TRANSCRIPT_HANGOVER_FRACTION = 1 / 3
+
+/** Silence shorter than this still counts as talking for partials (gaps between words). */
+const PARTIAL_VOICE_WINDOW_MS = 300
 
 /** Continuous 16kHz mono tap, same worklet the barge-in path already loads — feeds the pre-roll
  * ring buffer so onset clipping (the gate-opening syllable) doesn't lose audio while nothing is
@@ -105,6 +112,7 @@ export async function startMediaRecorderTranscription({
   vadSilenceMs,
   vadEndpointingEnabled = true,
   asrProvider,
+  livePartials = false,
   onTranscript,
   onError,
   onProcessingChange,
@@ -135,6 +143,23 @@ export async function startMediaRecorderTranscription({
   const { runtime, context, meter } = setup
   const gates = scaleVadGates(vadThreshold)
   const hangoverMs = vadSilenceMs ?? SILENCE_HANGOVER_MS
+
+  // Partials skip `requestTranscript`: its latency milestone measures the final transcript only.
+  const partials = livePartials
+    ? createPartialTranscriber({
+        transcribe: (pcm) =>
+          runtime.transcribeAudio({
+            audioBase64: bytesToBase64(pcm),
+            mimeType: PCM_MIME_TYPE,
+            language: lang,
+          }) as Promise<TranscribeResponse>,
+        publish: publishLiveTranscript,
+        enabled: hasLiveTranscriptListeners,
+      })
+    : null
+  const endLiveTranscript = () => {
+    if (livePartials) publishLiveTranscript(null)
+  }
 
   const preRoll = createPreRollBuffer()
   let preRollTapCancelled = false
@@ -171,6 +196,7 @@ export async function startMediaRecorderTranscription({
     // Ended by the ceiling or a pause, not by silence: an early transcript may predate the last words.
     if (current?.early && current.early.voiceAt !== lastVoiceAt) current.early = null
     current = null
+    partials?.endUtterance()
     // The ring buffer keeps rolling through the whole recording, so right after an utterance ends
     // it still holds that utterance's own trailing audio. Reset here so a next onset that opens the
     // gate again before PRE_ROLL_MS of fresh silence accumulates never replays already-sent audio.
@@ -219,6 +245,7 @@ export async function startMediaRecorderTranscription({
             noiseFloor: Number(noiseFloor.toFixed(3)),
           })
         }
+        endLiveTranscript()
         return
       }
       rendererLog.debug('[STT] enviando utterance', {
@@ -237,15 +264,16 @@ export async function startMediaRecorderTranscription({
 
   const sendUtterance = (utterance: Utterance, blob: Blob, durationMs: number) => {
     const totalMs = durationMs + preRollDurationMs(utterance.preRoll)
-    if (utterance.early) return void deliverTranscript(utterance.early.result, context, totalMs)
-    if (utterance.pcm?.length) {
-      return void deliverTranscript(
-        requestTranscript(capturedPcm16(utterance.pcm, utterance.preRoll), context),
-        context,
-        totalMs,
-      )
-    }
-    void transcribeUtterance(blob, context, durationMs, utterance.preRoll)
+    const delivered = utterance.early
+      ? deliverTranscript(utterance.early.result, context, totalMs)
+      : utterance.pcm?.length
+        ? deliverTranscript(
+            requestTranscript(capturedPcm16(utterance.pcm, utterance.preRoll), context),
+            context,
+            totalMs,
+          )
+        : transcribeUtterance(blob, context, durationMs, utterance.preRoll)
+    void delivered.finally(endLiveTranscript)
   }
 
   // Voice after the early transcript makes it stale: drop it and let the next pause start another.
@@ -258,6 +286,14 @@ export async function startMediaRecorderTranscription({
       voiceAt: lastVoiceAt,
       result: requestTranscript(capturedPcm16(utterance.pcm, utterance.preRoll), context),
     }
+  }
+
+  const tickPartials = (now: number, silentFor: number) => {
+    if (!partials || !verdict.confirmed || !current) return
+    const { pcm, preRoll: onset } = current
+    partials.tick(now, silentFor < PARTIAL_VOICE_WINDOW_MS && Boolean(pcm?.length), () =>
+      capturedPcm16(pcm ?? [], onset),
+    )
   }
 
   const effectiveGates = () => ({
@@ -298,6 +334,7 @@ export async function startMediaRecorderTranscription({
       finishUtterance()
       return
     }
+    tickPartials(now, silentFor)
     transcribeEarly(silentFor)
   }, VAD_POLL_MS)
 
@@ -314,6 +351,7 @@ export async function startMediaRecorderTranscription({
     clearInterval(vadTimer)
     finishUtterance()
     resetMicLevel()
+    endLiveTranscript()
     preRollTapCancelled = true
     stopPreRollTap?.()
 

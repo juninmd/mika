@@ -1,5 +1,6 @@
 import { Fragment, memo, useCallback, useRef, useState } from 'react'
-import { useI18n } from '../hooks/useI18n'
+import { canStopTurn } from '../hooks/shell-status-transitions'
+import { type Translate, useI18n } from '../hooks/useI18n'
 import { formatAccelerator, shortcutById } from '../lib/app-shortcuts'
 import { isMacPlatform } from '../lib/keyboard-shortcuts'
 import type { AppStatus } from './app/app-shell.types'
@@ -20,7 +21,8 @@ type T = {
   onOpenHistory: () => void
   onOpenSettings: () => void
   onOpenWheel?: () => void
-  onStopSpeech: () => void
+  /** Cuts the turn in flight and any speech — the same button covers a stuck "thinking". */
+  onStop: () => void
   ttsIsPlaying: boolean
   showInput: boolean
   showHistory: boolean
@@ -40,6 +42,13 @@ type ItemState = {
   pulse?: boolean
   hold?: boolean
   badge?: 'warn' | 'danger'
+  disabled?: boolean
+}
+
+// Always beside the mic so it never jumps around; disabled while there is nothing to stop.
+function stopItem(p: T, t: Translate): ItemState {
+  const title = t(p.ttsIsPlaying ? 'shell.dock.stopSpeech' : 'shell.dock.stopThinking')
+  return { title, onClick: p.onStop, disabled: !canStopTurn(p.ttsIsPlaying, p.status) }
 }
 
 function useDockItems(p: T): Partial<Record<DockKey, ItemState>> {
@@ -58,8 +67,7 @@ function useDockItems(p: T): Partial<Record<DockKey, ItemState>> {
       ? t('shell.dock.updateAvailable')
       : null
   return {
-    // Contextual: only while she is actually talking — a stop button with nothing to stop is a dead button.
-    stop: p.ttsIsPlaying ? { title: t('shell.dock.stopSpeech'), onClick: p.onStopSpeech } : undefined,
+    stop: stopItem(p, t),
     mic: {
       title: micTitle,
       kbd: pttMode ? keyOf('pushToTalk') : keyOf('toggleMic'),
@@ -184,6 +192,7 @@ export const CommandDock = memo(function CommandDock(p: T) {
                 key={key}
                 onClick={item.onClick}
                 active={item.active}
+                disabled={item.disabled}
                 pulse={item.pulse}
                 title={item.title}
                 onPeek={() => setPeek(key)}

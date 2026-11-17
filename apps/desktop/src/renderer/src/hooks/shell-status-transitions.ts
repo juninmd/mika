@@ -20,3 +20,8 @@ export function nextStatusOnVad(vadIsSpeaking: boolean, micEnabled: boolean, app
   if ((!vadIsSpeaking || !micEnabled) && appStatus === 'listening') return 'idle'
   return null
 }
+
+/** Stop is offered while she talks or while a turn is in flight — a stuck "thinking" needs a way out too. */
+export function canStopTurn(ttsIsPlaying: boolean, appStatus: AppStatus): boolean {
+  return ttsIsPlaying || appStatus === 'thinking' || appStatus === 'acting'
+}

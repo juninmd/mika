@@ -27,6 +27,8 @@ export type MediaRecorderFallbackOptions = {
   // Not used to pick the engine (the backend resolves that from its own config) — only to label
   // the durable milestone log with which one config asked for at capture time.
   asrProvider?: string
+  /** Stream what is being said to the live-transcript bus (shell voice → open chat). */
+  livePartials?: boolean
   onTranscript: SpeechTranscriptHandler
   onError?: (error: string) => void
   onProcessingChange?: (processing: boolean) => void

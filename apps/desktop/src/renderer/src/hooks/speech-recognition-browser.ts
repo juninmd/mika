@@ -1,3 +1,4 @@
+import { publishLiveTranscript } from '../lib/live-transcript-bus'
 import { rendererLog } from '../lib/renderer-logger'
 import type { SpeechTranscriptHandler } from './useSpeechRecognition.media'
 
@@ -36,6 +37,7 @@ export type CaptureOptions = {
   vadSilenceMs?: number
   vadEndpointingEnabled?: boolean
   asrProvider?: string
+  livePartials?: boolean
 }
 
 /** `getUserMedia` names for a microphone that is momentarily busy or whose capture was interrupted. */
@@ -75,14 +77,18 @@ type BrowserRecognitionRefs = {
   onTranscriptRef: { current: SpeechTranscriptHandler }
   onErrorRef: { current: ((error: string) => void) | undefined }
   setListening: (listening: boolean) => void
+  livePartials?: boolean
 }
 
 export function wireBrowserRecognition(
   rec: SpeechRecognitionInstance,
-  { activeRef, processedRef, onTranscriptRef, onErrorRef, setListening }: BrowserRecognitionRefs,
+  { activeRef, processedRef, onTranscriptRef, onErrorRef, setListening, livePartials }: BrowserRecognitionRefs,
 ): void {
   let silenceTimer: NodeJS.Timeout | null = null
   let lastPartialTranscript = ''
+  const showPartial = (text: string | null) => {
+    if (livePartials) publishLiveTranscript(text)
+  }
 
   const processFinalResult = (_r: SpeechRecognitionResult, i: number, text: string) => {
     if (processedRef.current.has(i)) return
@@ -91,6 +97,7 @@ export function wireBrowserRecognition(
     if (silenceTimer) clearTimeout(silenceTimer)
     lastPartialTranscript = ''
     onTranscriptRef.current(text, {})
+    showPartial(null)
   }
 
   const scheduleSilenceTimer = () => {
@@ -100,6 +107,7 @@ export function wireBrowserRecognition(
       if (!lastPartialTranscript.trim()) return
       rendererLog.debug('[STT] Silence detected, sending partial transcript:', lastPartialTranscript)
       onTranscriptRef.current(lastPartialTranscript.trim(), {})
+      showPartial(null)
       lastPartialTranscript = ''
       try {
         rec.abort()
@@ -124,12 +132,14 @@ export function wireBrowserRecognition(
 
     if (interimTranscript && interimTranscript !== lastPartialTranscript) {
       lastPartialTranscript = interimTranscript
+      showPartial(interimTranscript.trim())
       scheduleSilenceTimer()
     }
   }
 
   rec.onerror = (e: SpeechRecognitionErrorEvent) => {
     if (silenceTimer) clearTimeout(silenceTimer)
+    showPartial(null)
     if (e.error !== 'aborted' && e.error !== 'no-speech') {
       onErrorRef.current?.(e.error)
       rendererLog.warn('[STT] Error:', e.error)

@@ -442,6 +442,9 @@ fn write_path(root: &mut Value, path: &str, value: Value) {
         .insert(last.to_string(), value);
 }
 
+/// O que `get_all` devolve no lugar de um segredo — o renderer reenvia isto, nunca a chave real.
+pub(crate) const MASKED_SECRET: &str = "[REDACTED]";
+
 /// Substitui por `[REDACTED]` todo valor cujo caminho seja sensível.
 ///
 /// Percorre a árvore INTEIRA em vez de consultar uma lista de caminhos conhecidos. Sob `apiKeys.` as
@@ -461,7 +464,7 @@ fn mask_sensitive(node: &mut Value, path: &str) {
         };
 
         if is_sensitive(&full) && !child.is_object() {
-            *child = Value::String("[REDACTED]".into());
+            *child = Value::String(MASKED_SECRET.into());
         } else {
             mask_sensitive(child, &full);
         }

@@ -1,4 +1,4 @@
-//! `env` dos servidores de `mcp.json` cifrado em repouso. É onde o usuário cola a chave de API que
+//! `env` (e `headers` de servidor remoto, ex. `Authorization`) de `mcp.json` cifrados em repouso. É onde o usuário cola a chave de API que
 //! o servidor MCP precisa (`GITHUB_TOKEN`, `BRAVE_API_KEY`...) — antes ficava em texto claro num
 //! arquivo que o `config.json` jamais teria (as chaves de provedor lá são `enc:aes256:`).
 //!
@@ -22,7 +22,7 @@ use super::config::ServerSpec;
 use super::editor;
 use crate::config::store::ConfigStore;
 
-/// Todo `env` (objeto) de todo servidor, com o nome do servidor para o log.
+/// Todo `env`/`headers` (objeto) de todo servidor, com o nome do servidor para o log.
 fn env_maps(doc: &mut Value) -> Vec<(String, &mut serde_json::Map<String, Value>)> {
     let Some(root) = doc.as_object_mut() else { return Vec::new() };
     let mut maps = Vec::new();
@@ -32,8 +32,11 @@ fn env_maps(doc: &mut Value) -> Vec<(String, &mut serde_json::Map<String, Value>
         }
         let Some(servers) = servers.as_object_mut() else { continue };
         for (server, entry) in servers.iter_mut() {
-            if let Some(env) = entry.get_mut("env").and_then(Value::as_object_mut) {
-                maps.push((server.clone(), env));
+            let Some(entry) = entry.as_object_mut() else { continue };
+            for (field, value) in entry.iter_mut() {
+                if let Some(map) = value.as_object_mut().filter(|_| field == "env" || field == "headers") {
+                    maps.push((server.clone(), map));
+                }
             }
         }
     }
@@ -108,22 +111,24 @@ pub fn seal_file_in_place(data_dir: &Path, store: &ConfigStore) -> Result<bool, 
 /// Nomes do `env` (valores como estão no ARQUIVO) que a `master.key` atual não decifra — o que a UI
 /// avisa. Texto claro (arquivo legado) é legível.
 pub fn unreadable_env(spec: &ServerSpec, store: &ConfigStore) -> Vec<String> {
-    spec.env.iter().filter(|(_, value)| store.open_secret(value).is_err()).map(|(name, _)| name.clone()).collect()
+    spec.env.iter().chain(&spec.headers).filter(|(_, value)| store.open_secret(value).is_err()).map(|(name, _)| name.clone()).collect()
 }
 
 /// `ServerSpec`s lidos por `config::read_servers` têm o `env` como está no arquivo; abre os cifrados.
 pub fn open_specs(servers: &mut BTreeMap<String, ServerSpec>, store: &ConfigStore) {
     for (name, spec) in servers.iter_mut() {
-        spec.env.retain(|var, value| match store.open_secret(value) {
-            Ok(plain) => {
-                *value = plain;
-                true
-            }
-            Err(error) => {
-                log::warn!("mcp: env {var} do servidor {name} não decifrou ({error}) — não passado ao processo");
-                false
-            }
-        });
+        for map in [&mut spec.env, &mut spec.headers] {
+            map.retain(|var, value| match store.open_secret(value) {
+                Ok(plain) => {
+                    *value = plain;
+                    true
+                }
+                Err(error) => {
+                    log::warn!("mcp: {var} do servidor {name} não decifrou ({error}) — não passado ao servidor");
+                    false
+                }
+            });
+        }
     }
 }
 

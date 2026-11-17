@@ -41,3 +41,14 @@ export function miniOverlayOpen(state: {
 }): boolean {
   return state.showHistory || state.wheelOpen || (state.showInput && !isDockStyle(state.style))
 }
+
+/** Context menu shapes: picking the active one leaves to the full window, the other one switches to it. */
+export function menuWindowMode(
+  target: 'head' | 'dock',
+  mini: boolean,
+  style: MiniModeStyle,
+): { mini: boolean; style: MiniModeStyle } {
+  if (mini && isDockStyle(style) === (target === 'dock')) return { mini: false, style }
+  if (target === 'head') return { mini: true, style: 'head' }
+  return { mini: true, style: isDockStyle(style) ? style : 'dock-right' }
+}

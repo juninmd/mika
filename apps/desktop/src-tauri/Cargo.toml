@@ -136,8 +136,9 @@ rig-reqwest = "0.46"
 # lado servidor (default). `transport-child-process`: spawna o servidor MCP como processo do SO
 # falando stdio, via `TokioChildProcess`. `which-command`: resolve o executável pelo PATH ANTES do
 # spawn (equivalente a `isRunnable`/`where`/`which` do lado TS), inclusive shims `.cmd` do Windows
-# (`npx.cmd`) que `tokio::process::Command` sozinho não acha. Ver `modules/mcp/`.
-rmcp = { version = "3.10", features = ["client", "transport-child-process", "which-command"] }
+# (`npx.cmd`) que `tokio::process::Command` sozinho não acha. `transport-streamable-http-client-reqwest`:
+# servidor MCP remoto (`"url"` no `mcp.json`) sobre o `reqwest` que já está no grafo. Ver `modules/mcp/`.
+rmcp = { version = "3.10", features = ["client", "transport-child-process", "which-command", "transport-streamable-http-client-reqwest"] }
 ort = "2.0.0-rc.15"
 realfft = "3.5"
 tokenizers = { version = "1.0.0-rc.4", features = ["regex"] }
@@ -256,5 +257,12 @@ rig-core = { version = "0.46", features = ["test-utils"] }
 # `start_paused`: testes que dependem de tempo (fila do LLM, abort no meio do stream) rodam em relógio
 # virtual — deterministas, sem `sleep` real que vira flaky em CI lento. Só `cargo test`.
 tokio = { version = "1", features = ["test-util"] }
+# Servidor MCP remoto de verdade em loopback para provar o cliente Streamable HTTP
+# (`modules/mcp/client_http_tests.rs`): o lado servidor do `rmcp` e o host `hyper` que já estão no grafo.
+rmcp = { version = "3.10", features = ["server", "transport-streamable-http-server"] }
+hyper = { version = "1", features = ["server", "http1"] }
+hyper-util = { version = "0.1", features = ["tokio", "service"] }
+http-body-util = "0.1"
+tower-service = "0.3"
 
 # Perfis de build moram no `Cargo.toml` da raiz do workspace: o Cargo ignora `[profile]` de membro.

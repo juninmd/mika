@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { subscribeLiveTranscript } from '../../lib/live-transcript-bus'
 import { startMediaRecorderTranscription } from '../useSpeechRecognition.media'
 
 const transcribeAudio = vi.fn()
@@ -280,6 +281,31 @@ describe('startMediaRecorderTranscription', () => {
       expect(sentBytes(1)).toBeGreaterThan(sentBytes(0))
       expect(onTranscript).toHaveBeenCalledTimes(1)
       expect(onTranscript).toHaveBeenCalledWith('mika, abre o youtube', expect.anything())
+      session.stop()
+    })
+
+    // The open chat shows the sentence growing while it is spoken, then hands over to the real turn.
+    it('streams partials to the open chat and clears them once the turn is delivered', async () => {
+      transcribeAudio
+        .mockResolvedValueOnce({ success: true, data: { text: 'mika abre' } })
+        .mockResolvedValue({ success: true, data: { text: 'mika abre o youtube' } })
+      const seen: Array<string | null> = []
+      const unsubscribe = subscribeLiveTranscript((text) => seen.push(text))
+      const onTranscript = vi.fn()
+      const session = await startMediaRecorderTranscription({
+        lang: 'pt-BR',
+        vadSilenceMs: 300,
+        livePartials: true,
+        onTranscript,
+      })
+      await vi.waitFor(() => expect(workletPort).not.toBeNull())
+      await silence(50)
+      await speak(1300)
+      await silence(400)
+
+      expect(seen).toEqual([null, '', 'mika abre', null])
+      expect(onTranscript).toHaveBeenCalledWith('mika abre o youtube', expect.anything())
+      unsubscribe()
       session.stop()
     })
   })

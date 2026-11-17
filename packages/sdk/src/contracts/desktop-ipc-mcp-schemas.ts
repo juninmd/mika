@@ -22,11 +22,18 @@ const mcpExistingServerNameSchema = z.string().min(1).max(4096)
  * devolve valores de env, só as chaves, então editar um servidor com segredo reenvia `null`.
  */
 export const mcpServerSpecInputSchema = z.object({
-  command: z.string().trim().min(1).max(1024),
+  /** Vazio quando `url` vem preenchida — `editor::parse_spec` exige exatamente um dos dois. */
+  command: z.string().trim().max(1024),
   args: z.array(z.string().max(4096)).max(64).optional(),
   env: z.record(z.string().regex(/^[A-Za-z_][A-Za-z0-9_]{0,127}$/), z.string().max(8192).nullable()).optional(),
   /** Caminho absoluto; vazio = diretório herdado. */
   cwd: z.string().max(4096).nullable().optional(),
+  /** Servidor remoto (Streamable HTTP), http:// ou https://. */
+  url: z.string().trim().max(2048).nullable().optional(),
+  /** Cabeçalhos do servidor remoto; `null` = mantenha o salvo (mesma regra de `env`). */
+  headers: z
+    .record(z.string().regex(/^[A-Za-z0-9!#$%&'*+.^_`|~-]{1,128}$/), z.string().max(8192).nullable())
+    .optional(),
   /** Ausente = true. `false` grava `"disabled": true` no mcp.json. */
   enabled: z.boolean().optional(),
 })
@@ -47,6 +54,9 @@ export const mcpServerSummarySchema = z.object({
   /** Variáveis cujo valor salvo a `master.key` atual não decifra: seguem no arquivo, não vão ao servidor. */
   unreadableEnv: z.array(z.string()).optional(),
   cwd: z.string().nullable(),
+  url: z.string().nullable().optional(),
+  /** Só os nomes dos cabeçalhos, nunca os valores. */
+  headerKeys: z.array(z.string()).optional(),
   enabled: z.boolean(),
   status: mcpServerStatusSchema,
   error: z.string().optional(),
