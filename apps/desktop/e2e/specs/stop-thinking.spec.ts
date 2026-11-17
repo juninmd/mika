@@ -6,7 +6,7 @@ import { expect, test } from '../fixtures/tauri-app'
 const THINKING = /PENSANDO/i
 
 // A provider that accepts the request and never streams left her "pensando" with no way out: the dock's
-// stop only existed while TTS played. The stop must show while thinking, end it, and free the next turn.
+// stop only existed while TTS played. It now sits beside the mic, works while thinking, and frees the next turn.
 test('parar durante "pensando" cancela o turno travado e libera o próximo', async ({ app, llm }) => {
   test.setTimeout(120_000)
   const page = await app.firstWindow()
@@ -14,7 +14,7 @@ test('parar durante "pensando" cancela o turno travado e libera o próximo', asy
   await expect(page.getByTestId('voice-waveform')).toBeVisible({ timeout: 20_000 })
   await expect(page.getByText(THINKING)).toHaveCount(0, { timeout: 15_000 })
   const stop = page.getByRole('button', { name: 'Cancelar resposta', exact: true })
-  await expect(stop, 'sem nada em voo não há botão de parar').toHaveCount(0)
+  await expect(stop, 'fixo ao lado do mic, desabilitado sem nada em voo').toBeDisabled()
 
   // Stands in for the stuck provider: longer than the whole assertion window below.
   llm.setChatDelay(90_000)
@@ -22,7 +22,7 @@ test('parar durante "pensando" cancela o turno travado e libera o próximo', asy
   await page.locator('textarea[name="prompt"]').fill('oi mika, tudo bem?')
   await page.keyboard.press('Enter')
   await expect(page.getByText(THINKING).first()).toBeVisible()
-  await expect(stop).toHaveCount(1)
+  await expect(stop).toBeEnabled()
   await page.keyboard.press('Shift')
   await stop.focus()
   await page.screenshot({ path: artifactPath('stop-thinking-before.png') })
@@ -31,7 +31,7 @@ test('parar durante "pensando" cancela o turno travado e libera o próximo', asy
   await expect(page.getByText(THINKING), 'parar tira do "pensando" sem esperar o provedor').toHaveCount(0, {
     timeout: 3_000,
   })
-  await expect(stop).toHaveCount(0)
+  await expect(stop).toBeDisabled()
   await waitForUiIdle(page)
   await page.screenshot({ path: artifactPath('stop-thinking-after.png') })
 

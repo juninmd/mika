@@ -42,11 +42,13 @@ type ItemState = {
   pulse?: boolean
   hold?: boolean
   badge?: 'warn' | 'danger'
+  disabled?: boolean
 }
 
-function stopItem(p: T, t: Translate): ItemState | undefined {
-  if (!canStopTurn(p.ttsIsPlaying, p.status)) return undefined
-  return { title: t(p.ttsIsPlaying ? 'shell.dock.stopSpeech' : 'shell.dock.stopThinking'), onClick: p.onStop }
+// Always beside the mic so it never jumps around; disabled while there is nothing to stop.
+function stopItem(p: T, t: Translate): ItemState {
+  const title = t(p.ttsIsPlaying ? 'shell.dock.stopSpeech' : 'shell.dock.stopThinking')
+  return { title, onClick: p.onStop, disabled: !canStopTurn(p.ttsIsPlaying, p.status) }
 }
 
 function useDockItems(p: T): Partial<Record<DockKey, ItemState>> {
@@ -65,7 +67,6 @@ function useDockItems(p: T): Partial<Record<DockKey, ItemState>> {
       ? t('shell.dock.updateAvailable')
       : null
   return {
-    // Contextual: only while she talks or thinks — a stop button with nothing to stop is a dead button.
     stop: stopItem(p, t),
     mic: {
       title: micTitle,
@@ -191,6 +192,7 @@ export const CommandDock = memo(function CommandDock(p: T) {
                 key={key}
                 onClick={item.onClick}
                 active={item.active}
+                disabled={item.disabled}
                 pulse={item.pulse}
                 title={item.title}
                 onPeek={() => setPeek(key)}
