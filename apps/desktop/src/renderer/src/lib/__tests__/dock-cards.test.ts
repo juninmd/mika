@@ -30,12 +30,50 @@ describe('dockCard', () => {
     expect(dockCard('game_session', result)).toEqual({ kind: 'recap', subject: 'Hades', body: 'Morreu no Asterius.' })
   })
 
+  it('turns the day summary into a daily card with the stats, and only the stats in passenger mode', () => {
+    const data = {
+      day: '2026-11-16',
+      totalMs: 7_200_000,
+      totalDuration: '2h',
+      sessionCount: 2,
+      byGame: [
+        { game: 'Hades', duration: '1h' },
+        { game: 'Celeste', duration: '1h' },
+      ],
+      achievements: [{ game: 'Hades', description: 'Fugiu do Tártaro' }],
+      deaths: 3,
+      currentStreakDays: 4,
+      passengerMode: false,
+      highlights: [{ game: 'Hades', summary: 'Run tensa contra a Megera.' }],
+    }
+    expect(dockCard('game_session', { success: true, data })).toEqual({
+      kind: 'daily',
+      subject: '2h · Hades, Celeste',
+      body: 'Run tensa contra a Megera.',
+      daily: { sessions: 2, deaths: 3, streak: 4, achievements: ['Fugiu do Tártaro'], passenger: false },
+    })
+    const { highlights: _memories, ...passengerData } = data
+    expect(dockCard('game_session', { success: true, data: { ...passengerData, passengerMode: true } })).toMatchObject({
+      body: '',
+      daily: { passenger: true, achievements: ['Fugiu do Tártaro'] },
+    })
+  })
+
   it('ignores failures, listings and tools that have nothing to show', () => {
     expect(dockCard('reminder', { success: false, error: 'x' })).toBeNull()
     expect(dockCard('reminder', { success: true, data: { reminders: [] } })).toBeNull()
     expect(dockCard('game_knowledge', { success: true, data: { places: [] } })).toBeNull()
     expect(dockCard('get_time', { success: true, data: { time: '12:00' } })).toBeNull()
     expect(dockCard('game_session', 'not json')).toBeNull()
+    const malformed = {
+      day: '2026-11-16',
+      byGame: [null, 3, { game: 'Hades' }],
+      achievements: [null, { description: 'A' }, { description: 'A' }],
+    }
+    expect(dockCard('game_session', { success: true, data: malformed })).toMatchObject({
+      subject: 'Hades',
+      daily: { achievements: ['A'] },
+    })
   })
 })
 
