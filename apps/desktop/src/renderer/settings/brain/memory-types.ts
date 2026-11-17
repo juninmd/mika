@@ -11,6 +11,7 @@ export type LearnedFact = {
   subject: string
   fact: string
   confidence: number
+  active?: boolean
   updatedAt: number
 }
 
