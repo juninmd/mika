@@ -19,6 +19,7 @@ export function GamerCompanionPanel({ config, onSave }: FeatureComponentProps) {
   const watcherIntervalSeconds = configNum(config, 'gamer-companion.gameWatcherIntervalSeconds', 30)
   const backseatEnabled = configBool(config, 'gamer-companion.backseatGamingEnabled', false)
   const backseatAggressiveness = configNum(config, 'gamer-companion.backseatAggressiveness', 40)
+  const copilotEnabled = configBool(config, 'gamer-companion.copilotEnabled', false)
   const favoriteGames = configStrArray(config, 'gamer-companion.favoriteGames')
   const favoriteAnime = configStrArray(config, 'gamer-companion.favoriteAnime')
 
@@ -60,6 +61,7 @@ export function GamerCompanionPanel({ config, onSave }: FeatureComponentProps) {
           watcherIntervalSeconds={watcherIntervalSeconds}
           backseatEnabled={backseatEnabled}
           backseatAggressiveness={backseatAggressiveness}
+          copilotEnabled={copilotEnabled}
           onSave={onSave}
         />
 
