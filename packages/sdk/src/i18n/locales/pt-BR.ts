@@ -865,7 +865,7 @@ export const ptBR: TranslationDict = {
   'settings.computerUse.tab.label': 'Controle do computador',
   'settings.computerUse.field.enabled.label': 'Permitir controle do computador',
   'settings.computerUse.field.enabled.description':
-    'Desligado por padrão. Ligado, a Mika pode mover o mouse, clicar e digitar no seu computador. Toda ação ainda pede sua aprovação.',
+    'Desligado por padrão. Ligado, a Mika pode mover o mouse, clicar, digitar, mudar o volume e trocar de janela. Cliques e digitação pedem sua aprovação.',
   'settings.computerUse.panel.description':
     'A Mika opera mouse e teclado dentro do que já está aberto — sempre depois da sua aprovação.',
   'settings.computerUse.panel.statusOn': 'Ativo',
@@ -876,7 +876,8 @@ export const ptBR: TranslationDict = {
   'settings.computerUse.panel.guardSwitchTitle': 'Chave geral',
   'settings.computerUse.panel.guardSwitchText': 'Desligada, a ferramenta não roda nada — nem busca elementos na tela.',
   'settings.computerUse.panel.guardApprovalTitle': 'Aprovação por ação',
-  'settings.computerUse.panel.guardApprovalText': 'Cada chamada abre um diálogo. Sem a sua decisão, nada acontece.',
+  'settings.computerUse.panel.guardApprovalText':
+    'Cliques, digitação e atalhos pedem aprovação a cada vez. Volume e troca de janela não pedem.',
   'settings.computerUse.panel.guardWindowTitle': 'Alvos recusados',
   'settings.computerUse.panel.guardWindowText':
     'Mesmo aprovada, recusa agir nas janelas da própria Mika e digitar em campos de senha (Windows).',
@@ -892,6 +893,17 @@ export const ptBR: TranslationDict = {
   'settings.computerUse.panel.actionTypeText': 'Escreve texto no campo que está em foco.',
   'settings.computerUse.panel.actionKey': 'Atalhos',
   'settings.computerUse.panel.actionKeyText': 'Pressiona combinações como ctrl+c ou enter.',
+  'settings.computerUse.panel.guardStopTitle': 'Parada de emergência',
+  'settings.computerUse.panel.guardStopText':
+    'Ctrl+Alt+End desliga o controle na hora, de qualquer lugar. Para voltar, ligue aqui de novo.',
+  'settings.computerUse.panel.guardCursorTitle': 'Cursor da Mika',
+  'settings.computerUse.panel.guardCursorText': 'Um ponteiro rosa aparece onde ela vai agir, antes do clique.',
+  'settings.computerUse.panel.actionMouse': 'Mouse',
+  'settings.computerUse.panel.actionMouseText': 'Move, dá duplo clique, rola e arrasta numa posição da tela.',
+  'settings.computerUse.panel.actionVolume': 'Volume',
+  'settings.computerUse.panel.actionVolumeText': 'Aumenta, abaixa ou silencia o som do sistema por voz.',
+  'settings.computerUse.panel.actionWindow': 'Trocar de janela',
+  'settings.computerUse.panel.actionWindowText': 'Traz uma janela aberta para a frente pelo nome (Windows).',
   'settings.mcp.panel.timeoutLabel': 'Tempo de espera por servidor',
   'settings.browser.tab.label': 'Navegador',
   'settings.browser.tab.group': 'Ferramentas',

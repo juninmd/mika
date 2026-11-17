@@ -883,7 +883,7 @@ export const deDE: TranslationDict = {
   'settings.computerUse.tab.label': 'Computersteuerung',
   'settings.computerUse.field.enabled.label': 'Computersteuerung erlauben',
   'settings.computerUse.field.enabled.description':
-    'Standardmäßig aus. Eingeschaltet kann Mika auf deinem Computer die Maus bewegen, klicken und tippen. Jede Aktion verlangt weiterhin deine Zustimmung.',
+    'Standardmäßig aus. Eingeschaltet kann Mika die Maus bewegen, klicken, tippen, die Lautstärke ändern und Fenster wechseln. Klicks und Tippen fragen nach deiner Freigabe.',
   'settings.computerUse.panel.description':
     'Mika steuert Maus und Tastatur innerhalb dessen, was bereits geöffnet ist — immer erst nach deiner Freigabe.',
   'settings.computerUse.panel.statusOn': 'An',
@@ -896,7 +896,7 @@ export const deDE: TranslationDict = {
     'Wenn aus, führt das Tool nichts aus — nicht mal eine Suche auf dem Bildschirm.',
   'settings.computerUse.panel.guardApprovalTitle': 'Freigabe pro Aktion',
   'settings.computerUse.panel.guardApprovalText':
-    'Jeder Aufruf öffnet einen Dialog. Ohne deine Entscheidung passiert nichts.',
+    'Klicks, Tippen und Tastenkürzel fragen jedes Mal nach Freigabe. Lautstärke und Fensterwechsel nicht.',
   'settings.computerUse.panel.guardWindowTitle': 'Abgelehnte Ziele',
   'settings.computerUse.panel.guardWindowText':
     'Selbst nach Freigabe weigert sie sich, in Mikas eigenen Fenstern zu agieren oder in Passwortfelder zu tippen (Windows).',
@@ -912,6 +912,17 @@ export const deDE: TranslationDict = {
   'settings.computerUse.panel.actionTypeText': 'Tippt Text in das fokussierte Feld.',
   'settings.computerUse.panel.actionKey': 'Tastenkürzel',
   'settings.computerUse.panel.actionKeyText': 'Drückt Kombinationen wie ctrl+c oder enter.',
+  'settings.computerUse.panel.guardStopTitle': 'Not-Aus',
+  'settings.computerUse.panel.guardStopText':
+    'Strg+Alt+Ende schaltet die Steuerung sofort ab, von überall. Hier wieder einschalten.',
+  'settings.computerUse.panel.guardCursorTitle': 'Mikas Cursor',
+  'settings.computerUse.panel.guardCursorText': 'Ein rosa Zeiger zeigt vor dem Klick, wo sie handeln wird.',
+  'settings.computerUse.panel.actionMouse': 'Maus',
+  'settings.computerUse.panel.actionMouseText': 'Bewegt, doppelklickt, scrollt und zieht an einer Bildschirmposition.',
+  'settings.computerUse.panel.actionVolume': 'Lautstärke',
+  'settings.computerUse.panel.actionVolumeText': 'Erhöht, senkt oder stummt den Systemton per Sprache.',
+  'settings.computerUse.panel.actionWindow': 'Fenster wechseln',
+  'settings.computerUse.panel.actionWindowText': 'Holt ein offenes Fenster über seinen Namen nach vorne (Windows).',
   'settings.mcp.panel.timeoutLabel': 'Wartezeit pro Server',
   'settings.browser.tab.label': 'Browser',
   'settings.browser.tab.group': 'Tools',

@@ -5,7 +5,7 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "cd73856a6f08c330f7cf02b38d103e0498159239+dirty",
+    "commit": "b539974bfb9a803467d23ca86e963767f1396c01+dirty",
     "tree": "1d6d03f0133f6f81",
     "contract": "e3b0c44298fc1c14",
     "deps": {

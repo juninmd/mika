@@ -1,4 +1,4 @@
-//! As quatro janelas do app. Os labels espelham `DesktopInvokeContext['windowType']`
+//! As janelas do app (mais o cursor da Mika, `AGENT_CURSOR`). Os labels espelham `DesktopInvokeContext['windowType']`
 //! e são a fonte da verdade do contexto de segurança — ver protocol.rs.
 
 use tauri::webview::{NewWindowFeatures, NewWindowResponse};
@@ -306,6 +306,32 @@ pub fn create_plugin_view(
     Ok(window)
 }
 
+/// Label of the agent cursor overlay (`features::computer_use::cursor_overlay`). It matches no
+/// capability and maps to `WindowType::Unknown`, so the page has no IPC at all — it only draws.
+pub const AGENT_CURSOR: &str = "agent-cursor";
+
+/// Mika's own pointer: a small transparent, click-through, never-focused window that shows where
+/// the `computer` tool is acting. Static page (`public/agent-cursor.html`), no script.
+pub fn create_agent_cursor(app: &AppHandle) -> tauri::Result<WebviewWindow> {
+    let window = WebviewWindowBuilder::new(app, AGENT_CURSOR, page(AGENT_CURSOR, "agent-cursor.html"))
+        .on_navigation(navigation_guard())
+        .on_new_window(deny_new_window)
+        .inner_size(44.0, 44.0)
+        .decorations(false)
+        .transparent(true)
+        .shadow(false)
+        .always_on_top(true)
+        .skip_taskbar(true)
+        .focusable(false)
+        .focused(false)
+        .resizable(false)
+        .visible(false)
+        .build()?;
+    let _ = window.set_ignore_cursor_events(true);
+    crate::permissions::install(&window);
+    Ok(window)
+}
+
 fn fraction_of_work_area(app: &AppHandle, fraction: f64) -> Option<(f64, f64)> {
     let monitor = app.primary_monitor().ok()??;
     let scale = monitor.scale_factor();
@@ -450,7 +476,7 @@ mod tests {
         let source = include_str!("windows.rs");
         let production = source.split("#[cfg(test)]").next().unwrap();
         let builders = production.matches("WebviewWindowBuilder::new(").count();
-        assert_eq!(builders, 4, "o número de janelas mudou — confira cada uma");
+        assert_eq!(builders, 5, "o número de janelas mudou — confira cada uma");
         assert_eq!(production.matches(".on_navigation(navigation_guard())").count(), builders);
         assert_eq!(production.matches(".on_new_window(deny_new_window)").count(), builders);
     }

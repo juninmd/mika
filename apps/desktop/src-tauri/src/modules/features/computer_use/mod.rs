@@ -19,6 +19,11 @@
 //!   `computerUse.enabled` config gate — wired to `ToolRegistry::register_destructive` so every
 //!   call goes through the approval broker (see `tool.rs`'s header for why that choice, not
 //!   `desktop`'s plain `register`).
+//! - [`pointer`]: `move`/`double_click`/`scroll`/`drag`, with the same own-window refusal.
+//! - [`cursor_overlay`]: Mika's visible pointer, shown where every pointer action lands.
+//! - [`pc_control`] + [`window_focus`]: tool `pc_control` — volume and switching windows by voice,
+//!   low-risk, so plain `register` (no dialog per call), still behind `computer-use.enabled`.
+//! - [`emergency_stop`]: Ctrl+Alt+End turns `computer-use.enabled` off and hides the cursor.
 //! - [`settings`]: the `computer-use` settings tab (`ComputerUsePanel`,
 //!   `apps/desktop/src/features/computer-use/renderer/settings.tsx`).
 //!
@@ -29,11 +34,16 @@
 //! `register_tools()`/first-pass stub, the same shape `vision`/`user_profile`/`reminder` already
 //! use.
 
+mod cursor_overlay;
+mod emergency_stop;
 mod foreground_guard;
 mod input_backend;
 mod key_combo;
+mod pc_control;
+mod pointer;
 mod settings;
 mod tool;
 mod ui_automation;
+mod window_focus;
 
 pub(crate) use settings::register;
