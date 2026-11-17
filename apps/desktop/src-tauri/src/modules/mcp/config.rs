@@ -11,9 +11,11 @@ use tauri::AppHandle;
 
 pub const MCP_CONFIG_FILE: &str = "mcp.json";
 
-/// Espelha `ServerSpec` (`mcp-client.ts`): um servidor declarado em `mcp.json`.
+/// Espelha `ServerSpec` (`mcp-client.ts`): um servidor declarado em `mcp.json`. Local (`command`,
+/// stdio) ou remoto (`url`, Streamable HTTP) — mesmas grafias de Cursor/Claude Desktop.
 #[derive(Debug, Clone, Deserialize, Default, PartialEq)]
 pub struct ServerSpec {
+    #[serde(default)]
     pub command: String,
     #[serde(default)]
     pub args: Vec<String>,
@@ -21,6 +23,12 @@ pub struct ServerSpec {
     pub env: BTreeMap<String, String>,
     #[serde(default)]
     pub cwd: Option<String>,
+    /// Endpoint de um servidor remoto; presente, `command`/`args`/`env`/`cwd` não se aplicam.
+    #[serde(default)]
+    pub url: Option<String>,
+    /// Cabeçalhos HTTP do servidor remoto (`Authorization: Bearer ...`) — segredo, cifrado como `env`.
+    #[serde(default)]
+    pub headers: BTreeMap<String, String>,
     /// `"disabled": true` no `mcp.json` (mesma grafia de Cursor/Cline): o servidor fica declarado
     /// mas não sobe. Ausente = ligado — arquivo antigo continua valendo sem mudança.
     #[serde(default)]
