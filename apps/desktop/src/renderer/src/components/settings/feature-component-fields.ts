@@ -134,6 +134,7 @@ export const FEATURE_COMPONENT_HANDLED_FIELDS = {
     'gamer-companion.steamId64',
     'gamer-companion.backseatGamingEnabled',
     'gamer-companion.backseatAggressiveness',
+    'gamer-companion.copilotEnabled',
     'gamer-companion.momentCooldowns',
     'gamer-companion.momentCooldowns.boss',
     'gamer-companion.momentCooldowns.achievement',

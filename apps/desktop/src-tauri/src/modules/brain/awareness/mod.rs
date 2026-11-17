@@ -261,6 +261,7 @@ pub fn spawn_proactive_engine(
     let store_for_bus = Arc::clone(&store);
     let commentary_state_for_bus = Arc::clone(&commentary_state);
     let commentary_generator_for_bus = Arc::clone(&commentary_generator);
+    let copilot_state = Arc::new(crate::modules::gamer::copilot::CopilotState::default());
     let mute_learning_for_bus = Arc::clone(&mute_learning);
     let app_for_bus = app.clone();
     let person_cooldown = Arc::new(person_detected::PersonCooldown::default());
@@ -381,6 +382,22 @@ pub fn spawn_proactive_engine(
                         // Conta para o intervalo mínimo do motor: sem isto, um comentário de morte e
                         // uma fala proativa sobre outro assunto saíam colados.
                         if spoke {
+                            engine.note_spoken_elsewhere(now_ms());
+                        }
+                    });
+                }
+                EventKey::GameCopilotAlert => {
+                    // Co-piloto: aviso curto de perigo/item perdido — ver `gamer::copilot`.
+                    let (engine, state, store, tension, generator, payload) = (
+                        Arc::clone(&engine_for_bus),
+                        Arc::clone(&copilot_state),
+                        Arc::clone(&store_for_bus),
+                        Arc::clone(&tension_for_bus),
+                        Arc::clone(&commentary_generator_for_bus),
+                        envelope.payload.clone(),
+                    );
+                    spawn_reaction(async move {
+                        if crate::modules::gamer::copilot::maybe_alert(&state, &store, &tension, &*generator, &payload, now_ms()).await {
                             engine.note_spoken_elsewhere(now_ms());
                         }
                     });

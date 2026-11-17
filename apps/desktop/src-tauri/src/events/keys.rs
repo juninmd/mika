@@ -76,6 +76,7 @@
 //! | `PowerResume` / `PowerBattery` | Sim | São bordas de transição raras (poll de 15s); perder uma faz o próximo poll ainda enxergar o novo estado (bateria continua desconectada até religar), só a fala reativa daquele instante específico não sai — degradação aceitável, mesma classe de `MoodChanged`. |
 //! | `HardwareAlert` | Sim | Borda de piora (poll de 30s); o toast `Notification` sai do mesmo tick e é o aviso garantido — perder este evento só cala a fala da Mika daquela vez. |
 //! | `SensesPaused` | Sim | É o estado de UI do indicador de sentidos; o próximo toggle ressincroniza, e o toast `Notification` do mesmo clique é o aviso garantido. |
+//! | `GameCopilotAlert` | Sim | Um perigo/item perdido visto num tick de visão; o próximo tick (segundos depois) vê a mesma cena de novo se ela ainda importa — perder um é um aviso a menos, nunca estado errado. |
 //! | `ActivityChanged` | Sim | Estado de UI (ícone/expressão) sempre resincronizado pela PRÓXIMA transição de atividade, que ocorre a cada troca de estado de voz — mesma razão de `Expression`. |
 //!
 //! As variantes marcadas "risco aceito" seguem o mesmo tratamento que `VadAudio` já tinha antes
@@ -188,6 +189,11 @@ pub enum EventKey {
     /// `ProactiveEngine::should_speak`) — os outros 3 seguem sem porte, nomeados, não escondidos.
     GameMoment,
 
+    /// O co-piloto de jogo viu um perigo ou um item que ficou para trás (`{ game, kind, detail }`).
+    /// Publicador: `vision::watcher` (bloco `copilot` do `GAME_SIGNAL`); consumidor:
+    /// `gamer::copilot::maybe_alert`, pelo assinante de `brain::awareness`.
+    GameCopilotAlert,
+
     /// O sistema reconectou à tomada — a borda simétrica de [`Self::PowerBattery`]
     /// (`false` -> `true` de `on_battery_power` vira `true` -> `false`). Publicador:
     /// `modules/system_signals/power.rs`, mesmo poller, mesma técnica de borda de estado.
@@ -257,6 +263,7 @@ impl EventKey {
         Self::ActiveWindowChanged,
         Self::BrainProactiveThought,
         Self::GameMoment,
+        Self::GameCopilotAlert,
         Self::PowerAc,
         Self::PersonUpdated,
         Self::PersonDeleted,
@@ -304,6 +311,7 @@ impl EventKey {
             Self::ActiveWindowChanged => "os:active-window-changed",
             Self::BrainProactiveThought => "brain:proactive-thought",
             Self::GameMoment => "steam:game-moment",
+            Self::GameCopilotAlert => "gamer:copilot-alert",
             Self::PowerAc => "system:power-ac",
             Self::PersonUpdated => "person-catalog:updated",
             Self::PersonDeleted => "person-catalog:deleted",
