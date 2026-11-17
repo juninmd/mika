@@ -2036,6 +2036,14 @@ export const deDE: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': 'Kein aufgelisteter Fakt enthält',
   'settings.memory.panel.factsEmptyDefault': 'Noch keine Fakten gelernt.',
   'settings.memory.panel.deleteFactAriaPrefix': 'Fakt löschen:',
+  'settings.memory.panel.editFactAriaPrefix': 'Fakt bearbeiten:',
+  'settings.memory.panel.editFactLabel': 'Fakt bearbeiten',
+  'settings.memory.panel.saveFactAriaLabel': 'Fakt speichern',
+  'settings.memory.panel.cancelEditAriaLabel': 'Bearbeitung abbrechen',
+  'settings.memory.panel.passengerNotice':
+    'Passagiermodus aktiv: Mika speichert oder ändert in dieser Sitzung keine Erinnerungen. Ansehen und Löschen geht weiterhin.',
+  'settings.memory.panel.recordingOffNotice':
+    'Speichern von Erinnerungen ist aus: Mika speichert oder ändert keine Erinnerungen. Ansehen und Löschen geht weiterhin.',
   'settings.memory.panel.peopleTitle': 'Bekannte Personen',
   'settings.memory.panel.peopleEmpty': 'Noch keine Personen katalogisiert.',
   'settings.memory.panel.forgetButton': 'Vergessen',
