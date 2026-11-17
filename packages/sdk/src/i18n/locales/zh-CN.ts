@@ -275,6 +275,7 @@ export const zhCN: TranslationDict = {
   'shell.menu.mic': '麦克风',
   'shell.menu.pin': '置顶',
   'shell.menu.miniMode': '迷你模式',
+  'shell.menu.edgeDock': '边缘停靠',
   'shell.menu.settings': '设置',
   'shell.menu.clearHistory': '清空历史',
   'shell.tray.show': '显示',

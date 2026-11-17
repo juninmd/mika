@@ -1,15 +1,27 @@
-import { History, MessageCircle, MessageCirclePlus, Mic, Minimize2, Pin, Settings2, Trash2 } from 'lucide-react'
+import {
+  History,
+  MessageCircle,
+  MessageCirclePlus,
+  Mic,
+  Minimize2,
+  PanelRight,
+  Pin,
+  Settings2,
+  Trash2,
+} from 'lucide-react'
 import { useMemo } from 'react'
 import type { ContextMenuItem } from '../components/MikaContextMenu'
+import { isDockStyle, type MiniModeStyle } from '../lib/mini-mode'
 import { useDockActions } from './useDockActions'
 import { useI18n } from './useI18n'
-import { setMiniMode } from './useMiniMode'
+import { toggleWindowMode } from './useMiniMode'
 
 /** The mini window is 240 px tall: only what fits, and the way back out. */
-const MINI_MENU = new Set(['mini', 'mic', 'settings'])
+const MINI_MENU = new Set(['mini', 'dock', 'mic', 'settings'])
 
 interface MikaMenuActions {
   mini: boolean
+  miniStyle: MiniModeStyle
   pinned: boolean
   micEnabled: boolean
   onTogglePin: () => void
@@ -25,6 +37,7 @@ export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
   const { openSettings } = useDockActions()
   const {
     mini,
+    miniStyle,
     pinned,
     micEnabled,
     onTogglePin,
@@ -75,9 +88,16 @@ export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
       {
         id: 'mini',
         label: t('shell.menu.miniMode'),
-        checked: mini,
+        checked: mini && !isDockStyle(miniStyle),
         icon: <Minimize2 size={14} />,
-        onSelect: () => setMiniMode(!mini),
+        onSelect: () => void toggleWindowMode('head', mini, miniStyle),
+      },
+      {
+        id: 'dock',
+        label: t('shell.menu.edgeDock'),
+        checked: mini && isDockStyle(miniStyle),
+        icon: <PanelRight size={14} />,
+        onSelect: () => void toggleWindowMode('dock', mini, miniStyle),
       },
       {
         id: 'settings',
@@ -97,6 +117,7 @@ export function useMikaMenuItems(actions: MikaMenuActions): ContextMenuItem[] {
     ],
     [
       mini,
+      miniStyle,
       micEnabled,
       pinned,
       onOpenChat,

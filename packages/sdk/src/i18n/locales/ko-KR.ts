@@ -277,6 +277,7 @@ export const koKR: TranslationDict = {
   'shell.menu.mic': '마이크',
   'shell.menu.pin': '항상 위에 고정',
   'shell.menu.miniMode': '미니 모드',
+  'shell.menu.edgeDock': '가장자리 도크',
   'shell.menu.settings': '설정',
   'shell.menu.clearHistory': '기록 지우기',
   'shell.tray.show': '보기',
