@@ -1,5 +1,5 @@
 import type { ChatMessage } from '@mika/sdk'
-import { BellRing, BookOpen, Lightbulb, Tv, X } from 'lucide-react'
+import { BellRing, BookOpen, CalendarCheck, Lightbulb, Trophy, Tv, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { bubbleDwellMs } from '../../hooks/mika-events-helpers'
 import { useI18n } from '../../hooks/useI18n'
@@ -91,15 +91,41 @@ const ITEM =
 const DISMISS =
   'absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg text-text-muted hover:bg-surface-raise-strong hover:text-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-focus'
 
-const CARD_ICON = { reminder: BellRing, hint: Lightbulb, recap: BookOpen, media: Tv } as const
+const CARD_ICON = { reminder: BellRing, hint: Lightbulb, recap: BookOpen, media: Tv, daily: CalendarCheck } as const
 
 function CardTitle({ card }: { card: Card }) {
   const { t, locale } = useI18n()
   if (card.kind === 'hint') return <>{t(`shell.edgeDock.card.level.${card.level ?? 'tip'}`)}</>
   if (card.kind === 'recap') return <>{t('shell.edgeDock.card.recap')}</>
   if (card.kind === 'media') return <>{t(`shell.edgeDock.card.media.${card.media ?? 'video'}`)}</>
+  if (card.kind === 'daily')
+    return (
+      <>
+        {[t('shell.edgeDock.card.daily'), card.daily?.passenger && t('shell.edgeDock.card.dailyPassenger')]
+          .filter(Boolean)
+          .join(' · ')}
+      </>
+    )
   const at = card.at ? new Date(card.at).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : ''
   return <>{[t('shell.edgeDock.card.reminder'), at].filter(Boolean).join(' · ')}</>
+}
+
+/** The day in numbers, plus up to three achievements of the day. */
+function DailyStats({ daily }: { daily: NonNullable<Card['daily']> }) {
+  const { t } = useI18n()
+  return (
+    <>
+      <p className="mt-0.5 text-caption text-text-muted">
+        {t('shell.edgeDock.card.dailyStats', { sessions: daily.sessions, deaths: daily.deaths, streak: daily.streak })}
+      </p>
+      {daily.achievements.slice(0, 3).map((achievement) => (
+        <p key={achievement} className="mt-0.5 flex items-center gap-1 text-caption text-text-main">
+          <Trophy aria-hidden="true" size={12} className="shrink-0 text-accent-text" />
+          <span className="truncate">{achievement}</span>
+        </p>
+      ))}
+    </>
+  )
 }
 
 function ResultCard({ card, onDismiss }: { card: Card; onDismiss: () => void }) {
@@ -112,6 +138,7 @@ function ResultCard({ card, onDismiss }: { card: Card; onDismiss: () => void }) 
         <CardTitle card={card} />
       </p>
       {card.subject && <p className="mt-1 text-caption font-semibold text-text-main">{card.subject}</p>}
+      {card.daily && <DailyStats daily={card.daily} />}
       {card.body && <p className="mt-0.5 line-clamp-5 text-caption leading-relaxed text-text-muted">{card.body}</p>}
       <button type="button" title={t('shell.thought.dismiss')} onClick={onDismiss} className={DISMISS}>
         <X size={14} />

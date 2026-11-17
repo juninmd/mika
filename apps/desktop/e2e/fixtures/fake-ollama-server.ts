@@ -201,6 +201,14 @@ function toolCallFor(
     return { name: 'get_system_info', args: {} }
   }
 
+  // "What did we do today?" — the dock quick action (`shell.edgeDock.quick.todayPrompt`, pt-BR).
+  if (turn.includes('O que fizemos hoje?') && available.has('game_session')) {
+    const messages = Array.isArray(body.messages) ? body.messages : []
+    const last = messages.at(-1) as { role?: string } | undefined
+    if (last?.role === 'tool') return null
+    return { name: 'game_session', args: { action: 'today' } }
+  }
+
   if (turn.includes('HOMOLOGA_APROVACAO') && available.has('clear_history')) {
     const messages = Array.isArray(body.messages) ? body.messages : []
     if (messages.some((message) => (message as { role?: string }).role === 'tool')) return null

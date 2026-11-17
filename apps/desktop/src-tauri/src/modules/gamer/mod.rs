@@ -90,6 +90,7 @@
 //!   `modules::register_config_bound_tools`) — não é mais uma lacuna, listado aqui só por histórico.
 
 pub mod copilot;
+pub mod daily_summary;
 pub mod feature;
 pub mod game_detection;
 #[cfg(test)]

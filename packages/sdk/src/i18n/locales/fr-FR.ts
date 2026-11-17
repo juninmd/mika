@@ -2607,6 +2607,12 @@ export const frFR: TranslationDict = {
   'shell.edgeDock.card.media.video': 'Regarde',
   'shell.edgeDock.card.media.live': 'En live',
   'shell.edgeDock.card.media.music': 'Écoute',
+  'shell.edgeDock.quick.today': "Qu'avons-nous fait aujourd'hui ?",
+  'shell.edgeDock.quick.todayPrompt':
+    "Qu'avons-nous fait aujourd'hui ? Fais-moi le résumé du jour : jeux, temps de jeu et succès.",
+  'shell.edgeDock.card.daily': 'Résumé du jour',
+  'shell.edgeDock.card.dailyPassenger': 'statistiques seulement (mode passager)',
+  'shell.edgeDock.card.dailyStats': 'Sessions : {{sessions}} · Morts : {{deaths}} · Série : {{streak}} j',
   'shell.edgeDock.card.level.hint': 'Piste',
   'shell.edgeDock.card.level.tip': 'Indice',
   'shell.edgeDock.card.level.solution': 'Solution',

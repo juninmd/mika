@@ -152,6 +152,14 @@ fn playtime_response(memory: &SessionMemory) -> Value {
     })
 }
 
+fn today_response(store: &ConfigStore, memory: &SessionMemory) -> Value {
+    let passenger = crate::modules::privacy::passenger::is_passenger_mode(store);
+    match memory.history(200) {
+        Ok(history) => super::daily_summary::today_summary(&history, memory.current_session().as_ref(), now_ms(), &chrono::Local, passenger),
+        Err(error) => json!({ "success": false, "error": error, "errorCode": "internal" }),
+    }
+}
+
 fn streak_response(memory: &SessionMemory) -> Value {
     let history = match memory.history(500) {
         Ok(h) => h,
@@ -196,13 +204,13 @@ pub fn definition() -> ToolDefinition {
     ToolDefinition {
         name: "game_session".into(),
         description: Some(
-            "The user's gaming sessions. stats: current session (id, game, duration); playtime: time played; streak: consecutive play days; events / describe: one session's timeline / narrated recap in a `style` (need `sessionId`). Use instead of guessing play numbers."
+            "The user's gaming sessions. today: what we did today (play time, sessions, achievements, deaths, streak, recaps) — use it for \"what did we do today?\"; stats: current session (id, game, duration); playtime: time played; streak: consecutive play days; events / describe: one session's timeline / narrated recap in a `style` (need `sessionId`). Use instead of guessing play numbers."
                 .into(),
         ),
         input_schema: json!({
             "type": "object",
             "properties": {
-                "action": { "type": "string", "enum": ["stats", "playtime", "streak", "events", "describe"] },
+                "action": { "type": "string", "enum": ["today", "stats", "playtime", "streak", "events", "describe"] },
                 "sessionId": { "type": "string", "description": "Session id (from action=stats); required for events/describe." },
                 "style": { "type": "string", "enum": ["funny", "strategic", "educational", "lore"] },
             },
@@ -237,6 +245,7 @@ impl ToolHandler for GameSessionHandler {
         let session_id = args.get("sessionId").and_then(Value::as_str).map(str::trim).filter(|s| !s.is_empty());
 
         Ok(match action {
+            "today" => today_response(&self.store, &self.memory),
             "stats" => stats_response(&self.memory),
             "playtime" => playtime_response(&self.memory),
             "streak" => streak_response(&self.memory),
@@ -308,6 +317,21 @@ mod tests {
         let result = handler.call(json!({ "action": "stats" })).await.unwrap();
         assert_eq!(result["success"], false);
         assert_eq!(result["errorCode"], "denied");
+    }
+
+    /// "O que fizemos hoje" lê o modo passageiro do `ConfigStore` real a cada chamada.
+    #[tokio::test]
+    async fn today_drops_the_recaps_in_passenger_mode() {
+        let (handler, memory, _dir) = handler();
+        let session = memory.start_session("1145360", "Hades").unwrap();
+        memory.end_session().unwrap();
+        memory.set_summary(&session.id, "Run tensa contra a Megera.").unwrap();
+        let normal = handler.call(json!({ "action": "today" })).await.unwrap();
+        assert_eq!(normal["data"]["highlights"][0]["summary"], "Run tensa contra a Megera.");
+        handler.store.set("privacy.passengerMode", json!(true)).unwrap();
+        let passenger = handler.call(json!({ "action": "today" })).await.unwrap();
+        assert_eq!(passenger["data"]["sessionCount"], 1);
+        assert!(passenger["data"].get("highlights").is_none());
     }
 
     #[tokio::test]

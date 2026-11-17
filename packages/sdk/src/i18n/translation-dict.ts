@@ -2326,6 +2326,11 @@ export type TranslationDict = {
   'shell.edgeDock.card.media.video': string
   'shell.edgeDock.card.media.live': string
   'shell.edgeDock.card.media.music': string
+  'shell.edgeDock.quick.today': string
+  'shell.edgeDock.quick.todayPrompt': string
+  'shell.edgeDock.card.daily': string
+  'shell.edgeDock.card.dailyPassenger': string
+  'shell.edgeDock.card.dailyStats': string
   'shell.edgeDock.card.level.hint': string
   'shell.edgeDock.card.level.tip': string
   'shell.edgeDock.card.level.solution': string
