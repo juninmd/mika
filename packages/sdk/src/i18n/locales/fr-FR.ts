@@ -219,6 +219,7 @@ export const frFR: TranslationDict = {
   'shell.bubble.openHistory': 'Ouvrir l’historique',
   'shell.dock.history': 'Historique',
   'shell.dock.stopSpeech': 'Arrêter de parler',
+  'shell.dock.stopThinking': 'Annuler la réponse',
   'shell.dock.short.stop': 'Stop',
   'shell.dock.short.mic': 'Micro',
   'shell.dock.short.chat': 'Chat',

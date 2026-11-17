@@ -213,6 +213,7 @@ export const zhCN: TranslationDict = {
   'shell.bubble.openHistory': '打开历史',
   'shell.dock.history': '历史',
   'shell.dock.stopSpeech': '停止说话',
+  'shell.dock.stopThinking': '取消回复',
   'shell.dock.short.stop': '停止',
   'shell.dock.short.mic': '麦克风',
   'shell.dock.short.chat': '聊天',

@@ -218,6 +218,7 @@ export const itIT: TranslationDict = {
   'shell.bubble.openHistory': 'Apri cronologia',
   'shell.dock.history': 'Cronologia',
   'shell.dock.stopSpeech': 'Smetti di parlare',
+  'shell.dock.stopThinking': 'Annulla risposta',
   'shell.dock.short.stop': 'Stop',
   'shell.dock.short.mic': 'Microfono',
   'shell.dock.short.chat': 'Chat',
