@@ -26,6 +26,8 @@ pub(super) struct Media {
     pub title: String,
 }
 
+use crate::modules::system_signals::active_window::ActiveWindowSnapshot;
+
 const BROWSERS: &[&str] = &[
     "mozilla firefox", "firefox", "google chrome", "chrome", "chromium", "microsoft edge", "edge", "brave", "opera", "vivaldi", "safari", "arc",
 ];
@@ -111,6 +113,11 @@ pub(super) fn classify(title: &str, owner: &str) -> Option<Media> {
     Some(Media { kind, title: subject })
 }
 
+/// The focused window plays media: the owner is watching or listening, not playing (`gamer::copilot`).
+pub(crate) fn is_watching(window: Option<&ActiveWindowSnapshot>) -> bool {
+    window.is_some_and(|w| classify(w.title.as_deref().unwrap_or(""), w.owner.as_deref().unwrap_or("")).is_some())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -153,5 +160,15 @@ mod tests {
         assert_eq!(kind("main.rs - mika - Visual Studio Code", "code"), None);
         assert_eq!(kind("Ableton Live 12 Suite", "Ableton Live 12 Suite"), None);
         assert_eq!(kind("", ""), None);
+    }
+
+    /// The copilot (`gamer::copilot`) must not shout about a streamer's game as if it were the owner's.
+    #[test]
+    fn a_focused_livestream_or_video_means_watching_not_playing() {
+        let window = |title: &str, owner: &str| ActiveWindowSnapshot { title: Some(title.into()), owner: Some(owner.into()) };
+        assert!(is_watching(Some(&window("gaules - Twitch - Google Chrome", "chrome"))));
+        assert!(is_watching(Some(&window("Elden Ring boss fight - YouTube - Brave", "brave"))));
+        assert!(!is_watching(Some(&window("ELDEN RING", "eldenring"))));
+        assert!(!is_watching(None));
     }
 }
