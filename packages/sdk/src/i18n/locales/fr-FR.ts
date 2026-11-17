@@ -179,6 +179,7 @@ export const frFR: TranslationDict = {
   'shell.history.exportJson': 'Exporter JSON',
   'shell.history.exportMd': 'Exporter Markdown',
   'shell.history.spokenTitle': 'Dit à voix haute',
+  'shell.history.liveListening': 'J’écoute…',
   'shell.history.viewInChat': 'Voir dans le chat',
   'shell.history.roleUser': 'Vous',
   'shell.history.roleSystem': 'Système',

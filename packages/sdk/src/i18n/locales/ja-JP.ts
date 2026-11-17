@@ -177,6 +177,7 @@ export const jaJP: TranslationDict = {
   'shell.history.exportJson': 'JSONをエクスポート',
   'shell.history.exportMd': 'Markdownをエクスポート',
   'shell.history.spokenTitle': '音声で話された',
+  'shell.history.liveListening': '聞き取り中…',
   'shell.history.viewInChat': 'チャットで見る',
   'shell.history.roleUser': 'あなた',
   'shell.history.roleSystem': 'システム',

@@ -178,6 +178,7 @@ export const itIT: TranslationDict = {
   'shell.history.exportJson': 'Esporta JSON',
   'shell.history.exportMd': 'Esporta Markdown',
   'shell.history.spokenTitle': 'Detto ad alta voce',
+  'shell.history.liveListening': 'In ascolto…',
   'shell.history.viewInChat': 'Vedi in chat',
   'shell.history.roleUser': 'Tu',
   'shell.history.roleSystem': 'Sistema',

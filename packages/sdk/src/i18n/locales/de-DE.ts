@@ -179,6 +179,7 @@ export const deDE: TranslationDict = {
   'shell.history.exportJson': 'JSON exportieren',
   'shell.history.exportMd': 'Markdown exportieren',
   'shell.history.spokenTitle': 'Laut gesprochen',
+  'shell.history.liveListening': 'Hört zu…',
   'shell.history.viewInChat': 'Im Chat ansehen',
   'shell.history.roleUser': 'Du',
   'shell.history.roleSystem': 'System',

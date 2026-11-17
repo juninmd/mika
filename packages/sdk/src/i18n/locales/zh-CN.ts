@@ -176,6 +176,7 @@ export const zhCN: TranslationDict = {
   'shell.history.exportJson': '导出 JSON',
   'shell.history.exportMd': '导出 Markdown',
   'shell.history.spokenTitle': '语音输入',
+  'shell.history.liveListening': '正在聆听…',
   'shell.history.viewInChat': '在聊天中查看',
   'shell.history.roleUser': '你',
   'shell.history.roleSystem': '系统',

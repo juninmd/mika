@@ -178,6 +178,7 @@ export const ruRU: TranslationDict = {
   'shell.history.exportJson': 'Экспорт в JSON',
   'shell.history.exportMd': 'Экспорт в Markdown',
   'shell.history.spokenTitle': 'Сказано вслух',
+  'shell.history.liveListening': 'Слушаю…',
   'shell.history.viewInChat': 'Показать в чате',
   'shell.history.roleUser': 'Ты',
   'shell.history.roleSystem': 'Система',

@@ -177,6 +177,7 @@ export const koKR: TranslationDict = {
   'shell.history.exportJson': 'JSON 내보내기',
   'shell.history.exportMd': 'Markdown 내보내기',
   'shell.history.spokenTitle': '소리 내어 말한 내용',
+  'shell.history.liveListening': '듣는 중…',
   'shell.history.viewInChat': '채팅에서 보기',
   'shell.history.roleUser': '나',
   'shell.history.roleSystem': '시스템',
