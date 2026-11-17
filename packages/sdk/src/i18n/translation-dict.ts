@@ -235,6 +235,7 @@ export type TranslationDict = {
   'shell.bubble.openHistory': string
   'shell.dock.history': string
   'shell.dock.stopSpeech': string
+  'shell.dock.stopThinking': string
   'shell.dock.short.stop': string
   'shell.dock.short.mic': string
   'shell.dock.short.chat': string
@@ -294,6 +295,7 @@ export type TranslationDict = {
   'shell.menu.mic': string
   'shell.menu.pin': string
   'shell.menu.miniMode': string
+  'shell.menu.edgeDock': string
   'shell.menu.pinOn': string
   'shell.menu.pinOff': string
   'shell.menu.settings': string

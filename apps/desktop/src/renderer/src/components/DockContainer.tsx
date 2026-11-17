@@ -23,7 +23,7 @@ type DockContainerProps = {
   onOpenHistory: () => void
   onOpenWheel: () => void
   ttsIsPlaying: boolean
-  onStopSpeech: () => void
+  onStop: () => void
   sttEnabled?: boolean
   inputMode?: 'ptt' | 'continuous'
   updateAvailable?: boolean
@@ -44,7 +44,7 @@ export const DockContainer = memo(function DockContainer({
   onOpenHistory,
   onOpenWheel,
   ttsIsPlaying,
-  onStopSpeech,
+  onStop,
   sttEnabled,
   inputMode,
   updateAvailable,
@@ -149,7 +149,7 @@ export const DockContainer = memo(function DockContainer({
             onOpenHistory={onOpenHistory}
             onOpenSettings={openSettings}
             onOpenWheel={onOpenWheel}
-            onStopSpeech={onStopSpeech}
+            onStop={onStop}
             ttsIsPlaying={ttsIsPlaying}
             showHistory={showHistory}
             showLegend={isHovered || hasFocus}

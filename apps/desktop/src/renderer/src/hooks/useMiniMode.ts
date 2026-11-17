@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { type MiniModeStyle, miniModeAction, parseMiniModeStyle } from '../lib/mini-mode'
+import { type MiniModeStyle, menuWindowMode, miniModeAction, parseMiniModeStyle } from '../lib/mini-mode'
 import { getElectronApi } from '../lib/shell-api'
 import { subscribeWindowFlag } from '../lib/window-fullscreen'
 
@@ -11,6 +11,13 @@ const STYLE_PATH = 'app.miniModeStyle'
 
 export function setMiniModeStyle(style: MiniModeStyle): void {
   void getElectronApi().runtime.saveSetting(STYLE_PATH, style)
+}
+
+/** Menu de contexto: entra no formato pedido (cabeça ou dock de borda) ou sai, se ele já está ativo. */
+export async function toggleWindowMode(target: 'head' | 'dock', mini: boolean, style: MiniModeStyle): Promise<void> {
+  const next = menuWindowMode(target, mini, style)
+  if (next.style !== style) await getElectronApi().runtime.saveSetting(STYLE_PATH, next.style)
+  setMiniMode(next.mini)
 }
 
 /** Estilo do modo mini (`app.miniModeStyle`): quadrado da cabeça ou dock de borda. */
