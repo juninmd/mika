@@ -165,3 +165,18 @@ fn open_specs_decrypts_sealed_values_and_keeps_plain_ones() {
     assert_eq!(specs["gh"].env["A"], "secret");
     assert_eq!(specs["gh"].env["B"], "plain");
 }
+
+/// O token de um servidor remoto (`Authorization`) é tão segredo quanto uma chave em `env`.
+#[test]
+fn a_remote_servers_auth_header_is_sealed_on_disk_and_opened_for_the_connection() {
+    let dir = TempDir::new();
+    let (store, data_dir) = (store(&dir), dir.0.join("mcp"));
+    let doc = json!({ "mcpServers": { "web": { "url": "https://x.dev/mcp", "headers": { "Authorization": "Bearer sk_web_123" } } } });
+
+    write_sealed_document(&data_dir, &doc, &store).unwrap();
+
+    assert!(!on_disk(&dir).contains("sk_web_123"), "token em claro no mcp.json");
+    let mut servers = super::super::config::read_servers(&data_dir);
+    open_specs(&mut servers, &store);
+    assert_eq!(servers["web"].headers["Authorization"], "Bearer sk_web_123");
+}

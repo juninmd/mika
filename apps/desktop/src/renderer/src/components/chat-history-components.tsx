@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { useCallback, useState } from 'react'
 import { useI18n } from '../hooks/useI18n'
 import { MessageBubble } from './ChatHistoryMessageBubble'
+import { LiveTranscriptBubble } from './chat-history-live-transcript'
 import type { ChatHistoryMessage } from './chat-history-utils'
 import { MessageIcon } from './Icons'
 
@@ -113,6 +114,7 @@ export function HistoryScrollContent({
           )}
         />
       )}
+      {!loading && !search.trim() && <LiveTranscriptBubble />}
     </div>
   )
 }
