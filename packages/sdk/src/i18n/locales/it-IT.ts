@@ -280,6 +280,7 @@ export const itIT: TranslationDict = {
   'shell.menu.mic': 'Microfono',
   'shell.menu.pin': 'Tieni in primo piano',
   'shell.menu.miniMode': 'Modalità mini',
+  'shell.menu.edgeDock': 'Dock laterale',
   'shell.menu.settings': 'Impostazioni',
   'shell.menu.clearHistory': 'Cancella cronologia',
   'shell.tray.show': 'Mostra',

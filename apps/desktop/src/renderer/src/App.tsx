@@ -116,6 +116,7 @@ export const App = memo(function App() {
   const { anchor: menuAnchor, open: openContextMenu, close: closeContextMenu } = useMikaContextMenu()
   const menuItems = useMikaMenuItems({
     mini,
+    miniStyle,
     pinned,
     micEnabled,
     onTogglePin: handleTogglePin,

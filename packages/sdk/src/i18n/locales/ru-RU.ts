@@ -286,6 +286,7 @@ export const ruRU: TranslationDict = {
   'shell.menu.mic': 'Микрофон',
   'shell.menu.pin': 'Поверх всех окон',
   'shell.menu.miniMode': 'Мини-режим',
+  'shell.menu.edgeDock': 'Боковая панель',
   'shell.menu.settings': 'Настройки',
   'shell.menu.clearHistory': 'Очистить историю',
   'shell.tray.show': 'Показать',

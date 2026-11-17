@@ -281,6 +281,7 @@ export const frFR: TranslationDict = {
   'shell.menu.mic': 'Microphone',
   'shell.menu.pin': 'Garder au premier plan',
   'shell.menu.miniMode': 'Mode mini',
+  'shell.menu.edgeDock': 'Dock latéral',
   'shell.menu.settings': 'Paramètres',
   'shell.menu.clearHistory': 'Effacer l’historique',
   'shell.tray.show': 'Afficher',

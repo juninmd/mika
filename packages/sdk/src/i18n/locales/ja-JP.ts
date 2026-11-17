@@ -275,6 +275,7 @@ export const jaJP: TranslationDict = {
   'shell.menu.mic': 'マイク',
   'shell.menu.pin': '最前面に固定',
   'shell.menu.miniMode': 'ミニモード',
+  'shell.menu.edgeDock': 'エッジドック',
   'shell.menu.settings': '設定',
   'shell.menu.clearHistory': '履歴を消去',
   'shell.tray.show': '表示',
