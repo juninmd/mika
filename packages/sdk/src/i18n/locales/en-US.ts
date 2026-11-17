@@ -177,6 +177,7 @@ export const enUS: TranslationDict = {
   'shell.history.exportJson': 'Export JSON',
   'shell.history.exportMd': 'Export Markdown',
   'shell.history.spokenTitle': 'Spoken out loud',
+  'shell.history.liveListening': 'Listening…',
   'shell.history.viewInChat': 'View in chat',
   'shell.history.roleUser': 'You',
   'shell.history.roleSystem': 'System',

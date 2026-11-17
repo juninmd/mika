@@ -177,6 +177,7 @@ export const esES: TranslationDict = {
   'shell.history.exportJson': 'Exportar JSON',
   'shell.history.exportMd': 'Exportar Markdown',
   'shell.history.spokenTitle': 'Dicho en voz alta',
+  'shell.history.liveListening': 'Escuchando…',
   'shell.history.viewInChat': 'Ver en el chat',
   'shell.history.roleUser': 'Tú',
   'shell.history.roleSystem': 'Sistema',

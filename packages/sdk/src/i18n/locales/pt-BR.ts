@@ -177,6 +177,7 @@ export const ptBR: TranslationDict = {
   'shell.history.exportJson': 'Exportar JSON',
   'shell.history.exportMd': 'Exportar Markdown',
   'shell.history.spokenTitle': 'Falado em voz alta',
+  'shell.history.liveListening': 'Ouvindo você…',
   'shell.history.viewInChat': 'Ver no chat',
   'shell.history.roleUser': 'Você',
   'shell.history.roleSystem': 'Sistema',

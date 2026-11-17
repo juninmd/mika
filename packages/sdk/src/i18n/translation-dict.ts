@@ -197,6 +197,7 @@ export type TranslationDict = {
   'shell.history.exportJson': string
   'shell.history.exportMd': string
   'shell.history.spokenTitle': string
+  'shell.history.liveListening': string
   'shell.history.viewInChat': string
   'shell.history.roleUser': string
   'shell.history.roleSystem': string
