@@ -68,6 +68,8 @@ fn fields() -> Vec<Value> {
         json!({ "configPath": "vision.readClipboardImages", "type": "boolean", "label": "settings.vision.field.readClipboardImages", "description": "settings.vision.field.readClipboardImages" }),
         json!({ "configPath": "vision.visualDiaryEnabled", "type": "boolean", "label": "settings.vision.field.visualDiaryEnabled", "description": "settings.vision.field.visualDiaryEnabled" }),
         json!({ "configPath": "vision.visualDiaryIntervalCycles", "type": "number", "label": "settings.vision.field.visualDiaryIntervalCycles.label", "min": 1, "max": 100, "description": "settings.vision.field.visualDiaryIntervalCycles.description" }),
+        json!({ "configPath": "vision.mediaReactions", "type": "boolean", "label": "settings.vision.field.mediaReactions.label", "description": "settings.vision.field.mediaReactions.description" }),
+        json!({ "configPath": "vision.mediaReactionCooldownSec", "type": "number", "label": "settings.vision.field.mediaReactionCooldownSec.label", "description": "settings.vision.field.mediaReactionCooldownSec.description", "min": 60, "max": 1800, "step": 60 }),
     ]
 }
 
@@ -114,7 +116,7 @@ mod tests {
         assert_eq!(d["tabId"], json!("vision"));
         assert_eq!(d["enabledConfigPath"], json!("vision.enabled"));
         assert_eq!(d["groups"].as_array().unwrap().len(), 1);
-        assert_eq!(d["groups"][0]["fields"].as_array().unwrap().len(), 23);
+        assert_eq!(d["groups"][0]["fields"].as_array().unwrap().len(), 25);
     }
 
     /// Toda `configPath` é prefixada por `vision.` — um campo sem o prefixo grava fora do
@@ -130,7 +132,7 @@ mod tests {
         }
     }
 
-    /// `vision.schema.ts` foi removido (backend Node deletado na migração para Tauri); os 23
+    /// `vision.schema.ts` foi removido (backend Node deletado na migração para Tauri); os 25
     /// campos que ele fixava viram pin direto sobre `fields()`, única fonte de verdade agora.
     #[test]
     fn field_count_and_paths_match_the_expected_keys() {
@@ -158,6 +160,8 @@ mod tests {
             "readClipboardImages",
             "visualDiaryEnabled",
             "visualDiaryIntervalCycles",
+            "mediaReactions",
+            "mediaReactionCooldownSec",
         ];
         let declared = fields();
         assert_eq!(keys.len(), declared.len(), "contagem de campos mudou — releia antes de ajustar o pin");

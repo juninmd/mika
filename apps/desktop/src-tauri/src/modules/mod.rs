@@ -291,6 +291,8 @@ pub fn register_config_bound_tools(app: &tauri::AppHandle) {
         Some(Arc::clone(&game_tension)),
         Some(Arc::clone(&gaming_state)),
     );
+    // Reações ao vídeo/live/música em foco (opt-in `vision.mediaReactions`) — ver `vision::media_reaction`.
+    let _ = vision::spawn_media_reactions(Arc::clone(&store));
     let _ = vision::spawn_clipboard_watch(Arc::clone(&store), crate::events::bus(), app.clone());
     let _ = vision::spawn_clipboard_image_analysis(Arc::clone(&store));
     // A Mika puxa assunto sozinha (ociosidade, jogo, tela) e responde a quem a interrompeu.

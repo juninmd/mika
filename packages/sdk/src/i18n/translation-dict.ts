@@ -1249,6 +1249,11 @@ export type TranslationDict = {
   'settings.user.panel.completionOf': string
   'settings.user.panel.completionFields': string
   'settings.user.panel.completionHint': string
+  'settings.vision.panel.mediaReactionsHeader': string
+  'settings.vision.field.mediaReactions.label': string
+  'settings.vision.field.mediaReactions.description': string
+  'settings.vision.field.mediaReactionCooldownSec.label': string
+  'settings.vision.field.mediaReactionCooldownSec.description': string
   'settings.vision.field.visualDiaryIntervalCycles.label': string
   'settings.vision.field.visualDiaryIntervalCycles.description': string
   'settings.vision.field.textDensityThreshold.label': string
@@ -2310,6 +2315,9 @@ export type TranslationDict = {
   'shell.edgeDock.quick.passenger': string
   'shell.edgeDock.card.reminder': string
   'shell.edgeDock.card.recap': string
+  'shell.edgeDock.card.media.video': string
+  'shell.edgeDock.card.media.live': string
+  'shell.edgeDock.card.media.music': string
   'shell.edgeDock.card.level.hint': string
   'shell.edgeDock.card.level.tip': string
   'shell.edgeDock.card.level.solution': string

@@ -211,6 +211,19 @@ observação.
 
 **MUST**: todo comentário é gerado por LLM com o contexto da observação. Nunca template.
 
+### Reações em tempo real (vídeo, live, música)
+
+`vision::media_reaction` (`vision.mediaReactions`, **desligado por padrão**): com vídeo, live ou
+música na janela em foco (`media_classify.rs`, só título/dono da janela), a Mika comenta de vez em
+quando, e o cartão "Assistindo/Na live/Ouvindo" aparece no dock de borda.
+
+**MUST**: a mídia fica em foco por duas sondagens (20 s) antes de contar; uma reação por
+`vision.mediaReactionCooldownSec` (60–1800 s, padrão 300); o mesmo título só depois de três
+intervalos; e a fala ainda passa pela cadência do `ProactiveEngine`.
+**MUST**: vídeo e live usam um quadro pela mesma porta de privacidade de toda captura; música usa só
+o título. **MUST NOT** gravar áudio do sistema: o título já identifica a música, e o loopback
+ouviria chamadas e vozes de terceiros.
+
 ## Privacidade
 
 **MUST**: visão é opt-in explícito.
