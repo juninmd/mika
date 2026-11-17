@@ -36,8 +36,9 @@ const CENTRALIZED_IN_CREDENTIALS: Record<string, readonly string[]> = {
     'apiKeys.unslothApiKey',
   ],
   STTProviderPanel: ['voice.groqApiKey', 'voice.openaiApiKey'],
+  // `apiKeys.elevenLabs` saiu daqui: a aba TTS LÊ a chave (mascarada) para listar as vozes; a
+  // isenção ratificava o defeito de o seletor nunca saber que havia chave salva.
   TTSProviderPanel: [
-    'apiKeys.elevenLabs',
     'voice.azureTtsSubscriptionKey',
     'voice.googleTtsApiKey',
     'voice.azureTtsRegion',

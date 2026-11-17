@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '../fixtures/tauri-app'
 import { artifactPath, writeArtifact } from '../fixtures/artifact'
 import { clickDockButton } from '../fixtures/dock'
+import { ELEVENLABS_TEST_KEY } from '../fixtures/fake-elevenlabs'
 
 async function openSettings(page: Page): Promise<Page> {
   const settingsPromise = page.context().waitForEvent('page')
@@ -78,4 +79,57 @@ test('STT settings panel renders and options are visible', async ({ app }) => {
   await navigateToTab(settings, 'Escuta', /Escuta|STT/)
   await expect(settings.getByText(/Provedor|ASR|Escuta|STT/i).first()).toBeVisible()
   await settings.screenshot({ path: artifactPath('voice-settings-stt.png') })
+})
+
+type ShellWindow = { electronAPI: import('../../src/shared/electron-api-types').ElectronShellApi }
+
+async function readConfigPath(page: Page, path: string): Promise<unknown> {
+  return page.evaluate(async (p) => {
+    const { config } = await (window as unknown as ShellWindow).electronAPI.runtime.getSettingsConfig()
+    return p.split('.').reduce<unknown>((node, key) => (node as Record<string, unknown> | undefined)?.[key], config)
+  }, path)
+}
+
+// A chave salva chega ao renderer MASCARADA; antes desta correção a aba TTS dizia "insira a API key"
+// mesmo com ela salva. O dublê só responde à chave real, então ver as vozes prova o caminho inteiro.
+test('ElevenLabs: a chave salva lista as vozes, toca a prévia e a escolhida vira a voz da Mika', async ({ app }) => {
+  const page = await app.firstWindow()
+  await page.waitForLoadState('domcontentloaded')
+  await page.evaluate(async (key) => {
+    const api = (window as unknown as ShellWindow).electronAPI.runtime
+    await api.saveSetting('apiKeys.elevenLabs', key)
+    await api.saveSetting('voice.ttsProvider', 'elevenlabs')
+  }, ELEVENLABS_TEST_KEY)
+  expect(await readConfigPath(page, 'apiKeys.elevenLabs')).toBe('[REDACTED]')
+
+  const settings = await openSettings(page)
+  await navigateToTab(settings, 'Fala', /Fala|TTS/)
+  const aurora = settings.getByRole('option', { name: /Aurora/ })
+  const bento = settings.getByRole('option', { name: /Bento/ })
+  await expect(aurora).toBeVisible()
+  await expect(bento).toBeVisible()
+
+  const play = settings.getByRole('button', { name: 'Ouvir voz Aurora' })
+  await settings.evaluate(() => {
+    const original = HTMLMediaElement.prototype.play
+    HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
+      ;(window as unknown as { __previewSrc?: string }).__previewSrc = this.src
+      return original.call(this)
+    }
+  })
+  await play.click()
+  await expect
+    .poll(() => settings.evaluate(() => (window as unknown as { __previewSrc?: string }).__previewSrc ?? ''))
+    .toMatch(/^data:audio\/wav/)
+
+  await bento.click()
+  await expect(bento).toHaveAttribute('aria-selected', 'true')
+  await expect.poll(() => readConfigPath(settings, 'voice.elevenLabsVoiceId')).toBe('voz-bento')
+  await bento.scrollIntoViewIfNeeded()
+  await settings.screenshot({ path: artifactPath('voice-settings-elevenlabs-voices.png') })
+  writeArtifact('voice-settings-elevenlabs-voices', {
+    listed: ['Aurora', 'Bento'],
+    previewPlayed: 'Aurora',
+    selectedVoiceId: 'voz-bento',
+  })
 })

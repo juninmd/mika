@@ -121,7 +121,8 @@ export function useShellMessaging({
         if (sendMessageSeqRef.current === seq) handleSendError(error)
       } finally {
         // Turn ends only here; tying it to appStatus === 'idle' depended on a UI transition that might never come.
-        endTurn()
+        // A cancelled turn already ended in `cancelTurn`; ending it again would free the mutex of the next one.
+        if (sendMessageSeqRef.current === seq) endTurn()
       }
     },
     [eAPI.runtime, endTurn, handleSendResponse, handleSendError],
@@ -158,6 +159,19 @@ export function useShellMessaging({
     [runTurn, endTurn, handleCommand, setMessages, setAppStatus, setBubble, setExpression],
   )
 
+  // Stop pressed: the UI leaves "thinking" now, without waiting for a backend that may be stuck; the
+  // seq bump makes the aborted turn's late reply land nowhere.
+  const cancelTurn = useCallback(() => {
+    // Not only our own send: a barge-in reply runs in the backend under this window too, and is cancelled the same way.
+    if (isSendingRef.current) {
+      sendMessageSeqRef.current++
+      endTurn()
+      setBubbleVisible(false) // the "..." placeholder; a reply already on screen (stop while speaking) stays
+    }
+    setAppStatus((s) => (s === 'thinking' || s === 'acting' ? 'idle' : s))
+    eAPI.runtime.cancelChatMessage().catch(() => rendererLog.warn('[useShellMessaging] chat cancel failed'))
+  }, [eAPI.runtime, endTurn, setAppStatus, setBubbleVisible])
+
   // Releases only the LAST held utterance; past HELD_SPEECH_TTL_MS it's dropped with a log instead.
   flushHeldSpeechRef.current = () => {
     const held = heldSpeechRef.current
@@ -182,5 +196,5 @@ export function useShellMessaging({
     setSpeechHeld(true)
   }, [])
 
-  return { sendMessage, doClearHistory, isSendingRef, speechHeld, holdSpeech }
+  return { sendMessage, cancelTurn, doClearHistory, isSendingRef, speechHeld, holdSpeech }
 }

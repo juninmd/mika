@@ -235,6 +235,7 @@ export type TranslationDict = {
   'shell.bubble.openHistory': string
   'shell.dock.history': string
   'shell.dock.stopSpeech': string
+  'shell.dock.stopThinking': string
   'shell.dock.short.stop': string
   'shell.dock.short.mic': string
   'shell.dock.short.chat': string
@@ -2114,6 +2115,21 @@ export type TranslationDict = {
   'settings.mcp.form.error.envKey': string
   'settings.mcp.form.error.envDuplicate': string
   'settings.mcp.form.error.envValue': string
+  'settings.mcp.form.remote': string
+  'settings.mcp.form.remoteHint': string
+  'settings.mcp.form.url': string
+  'settings.mcp.form.urlHint': string
+  'settings.mcp.form.urlPlaceholder': string
+  'settings.mcp.form.headers': string
+  'settings.mcp.form.addHeader': string
+  'settings.mcp.form.headersEmpty': string
+  'settings.mcp.form.headerKey': string
+  'settings.mcp.form.headerKeyPlaceholder': string
+  'settings.mcp.form.removeHeader': string
+  'settings.mcp.form.previewRemote': string
+  'settings.mcp.form.error.urlInvalid': string
+  'settings.mcp.form.error.headerKey': string
+  'settings.mcp.form.error.headerDuplicate': string
   'settings.mcp.test.running': string
   'settings.mcp.test.ok': string
   'settings.mcp.test.failed': string
