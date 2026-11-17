@@ -5,8 +5,8 @@
     "perfil": "contract"
   },
   "artefato": {
-    "commit": "55d528a0aaad7b5e19c052c3c3d9f9bb14eeb2af+dirty",
-    "tree": "28ab5a1c775dafc2",
+    "commit": "c5b16e4d03e3235857d68c9bb2271d625a7e0a4e",
+    "tree": "03ea8422d5ae4624",
     "contract": "65d0586d5991ee80",
     "deps": {
       "zod": "catalog:"
@@ -27,7 +27,7 @@
     {
       "id": "vivo",
       "status": "ok",
-      "detail": "131 arquivo(s) fora do módulo o referenciam"
+      "detail": "132 arquivo(s) fora do módulo o referenciam"
     },
     {
       "id": "headless",

@@ -1339,6 +1339,13 @@ export const enUS: TranslationDict = {
   'settings.user.panel.completionFields': 'fields',
   'settings.user.panel.completionHint':
     'The more complete, the less Mika needs to guess preferences, context and personal boundaries.',
+  'settings.vision.panel.mediaReactionsHeader': 'Real-time reactions',
+  'settings.vision.field.mediaReactions.label': "React to what I'm watching",
+  'settings.vision.field.mediaReactions.description':
+    'Mika now and then comments on the video, livestream or song in focus. Video and live use one screen frame; music uses only the window title. No audio is recorded.',
+  'settings.vision.field.mediaReactionCooldownSec.label': 'Minimum time between reactions',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    'Shortest gap between two comments. The same video or song comes back only after three gaps.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Visual Diary Interval (cycles)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Every N capture cycles, writes an entry to the visual diary.',
@@ -2513,6 +2520,9 @@ export const enUS: TranslationDict = {
   'shell.edgeDock.card.daily': "Today's summary",
   'shell.edgeDock.card.dailyPassenger': 'stats only (passenger mode)',
   'shell.edgeDock.card.dailyStats': 'Sessions: {{sessions}} · Deaths: {{deaths}} · Streak: {{streak}} d',
+  'shell.edgeDock.card.media.video': 'Watching',
+  'shell.edgeDock.card.media.live': 'On the live',
+  'shell.edgeDock.card.media.music': 'Listening',
   'shell.edgeDock.card.level.hint': 'Clue',
   'shell.edgeDock.card.level.tip': 'Hint',
   'shell.edgeDock.card.level.solution': 'Solution',

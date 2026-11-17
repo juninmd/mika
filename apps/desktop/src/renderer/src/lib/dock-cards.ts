@@ -1,6 +1,6 @@
 /** A tool result worth floating beside the edge dock: what she just did, at a glance. */
 export type DockCardContent = {
-  kind: 'reminder' | 'hint' | 'recap' | 'daily'
+  kind: 'reminder' | 'hint' | 'recap' | 'daily' | 'media'
   subject: string
   body: string
   /** Help-ladder step of a hint (`gamer::game_knowledge_tool::HelpLadder`). */
@@ -9,6 +9,8 @@ export type DockCardContent = {
   at?: number
   /** "What did we do today" (`game_session` today); `passenger` means the recaps were left out. */
   daily?: { sessions: number; deaths: number; streak: number; achievements: string[]; passenger: boolean }
+  /** What a media reaction is about (`vision::media_reaction`). */
+  media?: 'video' | 'live' | 'music'
 }
 
 type Data = Record<string, unknown>
@@ -52,6 +54,7 @@ function dailyCard(data: Data): DockCardContent {
 }
 
 const LEVELS = new Set(['hint', 'tip', 'solution'])
+const MEDIA = new Set(['video', 'live', 'music'])
 
 /**
  * Card for a finished tool call, or `null`. Four results are worth it: a reminder just created
@@ -71,4 +74,14 @@ export function dockCard(name: string, result: unknown): DockCardContent | null 
   if (name === 'game_session' && text(data.commentary))
     return { kind: 'recap', subject: text(data.gameName), body: text(data.commentary) }
   return null
+}
+
+/** Card for a real-time reaction (`source: 'media-reaction'` proactive thought), or `null`. */
+export function mediaCard(payload: unknown): DockCardContent | null {
+  const event = payload as { source?: unknown; media?: { kind?: unknown; title?: unknown } } | null
+  if (event?.source !== 'media-reaction') return null
+  const kind = text(event.media?.kind)
+  const title = text(event.media?.title)
+  if (!MEDIA.has(kind) || !title) return null
+  return { kind: 'media', media: kind as DockCardContent['media'], subject: title, body: '' }
 }

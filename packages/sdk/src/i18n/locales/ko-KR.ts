@@ -1314,6 +1314,13 @@ export const koKR: TranslationDict = {
   'settings.user.panel.completionOf': '/',
   'settings.user.panel.completionFields': '개 항목',
   'settings.user.panel.completionHint': '더 채울수록 Mika가 취향, 맥락, 개인적인 선을 짐작해야 할 일이 줄어들어요.',
+  'settings.vision.panel.mediaReactionsHeader': '실시간 리액션',
+  'settings.vision.field.mediaReactions.label': '내가 보는 것에 반응하기',
+  'settings.vision.field.mediaReactions.description':
+    'Mika가 포커스된 영상, 라이브, 음악에 가끔 코멘트합니다. 영상과 라이브는 화면 한 프레임을, 음악은 창 제목만 사용합니다. 오디오는 녹음하지 않습니다.',
+  'settings.vision.field.mediaReactionCooldownSec.label': '리액션 최소 간격',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    '두 코멘트 사이의 최소 간격. 같은 영상이나 곡은 세 간격이 지나야 다시 나옵니다.',
   'settings.vision.field.visualDiaryIntervalCycles.label': '비주얼 다이어리 간격 (사이클)',
   'settings.vision.field.visualDiaryIntervalCycles.description': '캡처 사이클 N번마다 비주얼 다이어리에 항목을 써요.',
   'settings.vision.field.textDensityThreshold.label': '텍스트/UI 밀도 임계값',
@@ -2467,6 +2474,9 @@ export const koKR: TranslationDict = {
   'shell.edgeDock.card.daily': '오늘의 요약',
   'shell.edgeDock.card.dailyPassenger': '통계만 (동승자 모드)',
   'shell.edgeDock.card.dailyStats': '세션: {{sessions}} · 사망: {{deaths}} · 연속: {{streak}}일',
+  'shell.edgeDock.card.media.video': '시청 중',
+  'shell.edgeDock.card.media.live': '라이브 중',
+  'shell.edgeDock.card.media.music': '듣는 중',
   'shell.edgeDock.card.level.hint': '단서',
   'shell.edgeDock.card.level.tip': '힌트',
   'shell.edgeDock.card.level.solution': '정답',

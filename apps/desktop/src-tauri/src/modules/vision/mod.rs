@@ -149,6 +149,8 @@ mod compression;
 mod feature;
 mod image_hash;
 mod llm_client;
+mod media_classify;
+mod media_reaction;
 mod observation_events;
 mod people_tool;
 mod read_tool;
@@ -167,6 +169,7 @@ use crate::native::NativeModule;
 pub use clipboard_analysis::spawn_clipboard_image_analysis;
 pub use clipboard_watch::spawn_clipboard_watch;
 pub use feature::register_feature;
+pub use media_reaction::spawn_media_reactions;
 pub(crate) use screenshot_thought::proactive_thought_payload_for_screenshot;
 #[cfg(any(test, feature = "e2e"))]
 pub use watcher::ingest_analysis_for_e2e;

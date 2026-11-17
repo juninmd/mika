@@ -1369,6 +1369,13 @@ export const esES: TranslationDict = {
   'settings.user.panel.completionFields': 'campos',
   'settings.user.panel.completionHint':
     'Cuanto más completo, menos necesita Mika adivinar preferencias, contexto y límites personales.',
+  'settings.vision.panel.mediaReactionsHeader': 'Reacciones en tiempo real',
+  'settings.vision.field.mediaReactions.label': 'Reaccionar a lo que estoy viendo',
+  'settings.vision.field.mediaReactions.description':
+    'Mika comenta de vez en cuando el vídeo, el directo o la canción en primer plano. Vídeo y directo usan un fotograma de la pantalla; la música, solo el título de la ventana. No se graba audio.',
+  'settings.vision.field.mediaReactionCooldownSec.label': 'Intervalo mínimo entre reacciones',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    'Tiempo mínimo entre dos comentarios. El mismo vídeo o canción solo vuelve tras tres intervalos.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Intervalo del diario visual (ciclos)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Cada N ciclos de captura, escribe una entrada en el diario visual.',
@@ -2563,6 +2570,9 @@ export const esES: TranslationDict = {
   'shell.edgeDock.card.daily': 'Resumen del día',
   'shell.edgeDock.card.dailyPassenger': 'solo estadísticas (modo pasajero)',
   'shell.edgeDock.card.dailyStats': 'Sesiones: {{sessions}} · Muertes: {{deaths}} · Racha: {{streak}} d',
+  'shell.edgeDock.card.media.video': 'Viendo',
+  'shell.edgeDock.card.media.live': 'En el directo',
+  'shell.edgeDock.card.media.music': 'Escuchando',
   'shell.edgeDock.card.level.hint': 'Pista',
   'shell.edgeDock.card.level.tip': 'Consejo',
   'shell.edgeDock.card.level.solution': 'Solución',

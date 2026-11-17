@@ -1318,6 +1318,13 @@ export const jaJP: TranslationDict = {
   'settings.user.panel.completionFields': '項目',
   'settings.user.panel.completionHint':
     '情報が充実するほど、Mikaが好みや文脈、個人的な境界線を推測する必要が減ります。',
+  'settings.vision.panel.mediaReactionsHeader': 'リアルタイムリアクション',
+  'settings.vision.field.mediaReactions.label': '見ているものにリアクションする',
+  'settings.vision.field.mediaReactions.description':
+    'Mika がフォーカス中の動画・配信・音楽にときどきコメントします。動画と配信は画面の1フレーム、音楽はウィンドウタイトルだけを使います。音声は録音しません。',
+  'settings.vision.field.mediaReactionCooldownSec.label': 'リアクションの最小間隔',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    '2つのコメントの最短間隔。同じ動画や曲は3間隔後まで繰り返しません。',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'ビジュアル日記の間隔（サイクル）',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Nキャプチャサイクルごとにビジュアル日記へエントリを記録します。',
@@ -2476,6 +2483,9 @@ export const jaJP: TranslationDict = {
   'shell.edgeDock.card.daily': '今日のまとめ',
   'shell.edgeDock.card.dailyPassenger': '統計のみ（パッセンジャーモード）',
   'shell.edgeDock.card.dailyStats': 'セッション: {{sessions}} · デス: {{deaths}} · 連続: {{streak}}日',
+  'shell.edgeDock.card.media.video': '視聴中',
+  'shell.edgeDock.card.media.live': '配信中',
+  'shell.edgeDock.card.media.music': '再生中',
   'shell.edgeDock.card.level.hint': '手がかり',
   'shell.edgeDock.card.level.tip': 'ヒント',
   'shell.edgeDock.card.level.solution': '答え',

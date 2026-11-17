@@ -1263,6 +1263,13 @@ export const zhCN: TranslationDict = {
   'settings.user.panel.completionOf': '/',
   'settings.user.panel.completionFields': '个字段',
   'settings.user.panel.completionHint': '信息越完整，Mika 就越不需要猜测偏好、上下文和个人边界。',
+  'settings.vision.panel.mediaReactionsHeader': '实时反应',
+  'settings.vision.field.mediaReactions.label': '对我正在看的内容做出反应',
+  'settings.vision.field.mediaReactions.description':
+    'Mika 会不时评论当前焦点的视频、直播或音乐。视频和直播使用一帧屏幕画面；音乐只使用窗口标题。不会录制任何音频。',
+  'settings.vision.field.mediaReactionCooldownSec.label': '反应最小间隔',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    '两次评论之间的最短间隔。同一视频或歌曲要过三个间隔才会再次出现。',
   'settings.vision.field.visualDiaryIntervalCycles.label': '视觉日记间隔（周期）',
   'settings.vision.field.visualDiaryIntervalCycles.description': '每 N 个捕获周期，向视觉日记写入一条记录。',
   'settings.vision.field.textDensityThreshold.label': '文本/界面密度阈值',
@@ -2369,6 +2376,9 @@ export const zhCN: TranslationDict = {
   'shell.edgeDock.card.daily': '今日总结',
   'shell.edgeDock.card.dailyPassenger': '仅统计（乘客模式）',
   'shell.edgeDock.card.dailyStats': '会话：{{sessions}} · 死亡：{{deaths}} · 连续：{{streak}} 天',
+  'shell.edgeDock.card.media.video': '正在看',
+  'shell.edgeDock.card.media.live': '直播中',
+  'shell.edgeDock.card.media.music': '正在听',
   'shell.edgeDock.card.level.hint': '线索',
   'shell.edgeDock.card.level.tip': '提示',
   'shell.edgeDock.card.level.solution': '答案',
