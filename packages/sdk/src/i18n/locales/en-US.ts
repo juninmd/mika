@@ -1982,6 +1982,14 @@ export const enUS: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': 'No listed fact contains',
   'settings.memory.panel.factsEmptyDefault': 'No facts learned yet.',
   'settings.memory.panel.deleteFactAriaPrefix': 'Delete fact:',
+  'settings.memory.panel.editFactAriaPrefix': 'Edit fact:',
+  'settings.memory.panel.editFactLabel': 'Edit fact',
+  'settings.memory.panel.saveFactAriaLabel': 'Save fact',
+  'settings.memory.panel.cancelEditAriaLabel': 'Cancel editing',
+  'settings.memory.panel.passengerNotice':
+    'Passenger mode is on: Mika does not save or change memories this session. You can still view and delete.',
+  'settings.memory.panel.recordingOffNotice':
+    'Memory recording is off: Mika does not save or change memories. You can still view and delete.',
   'settings.memory.panel.peopleTitle': 'Known people',
   'settings.memory.panel.peopleEmpty': 'No people cataloged yet.',
   'settings.memory.panel.forgetButton': 'Forget',
