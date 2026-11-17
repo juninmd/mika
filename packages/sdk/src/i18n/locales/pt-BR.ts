@@ -1993,6 +1993,14 @@ export const ptBR: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': 'Nenhum fato listado contém',
   'settings.memory.panel.factsEmptyDefault': 'Nenhum fato aprendido ainda.',
   'settings.memory.panel.deleteFactAriaPrefix': 'Apagar fato:',
+  'settings.memory.panel.editFactAriaPrefix': 'Editar fato:',
+  'settings.memory.panel.editFactLabel': 'Editar fato',
+  'settings.memory.panel.saveFactAriaLabel': 'Salvar fato',
+  'settings.memory.panel.cancelEditAriaLabel': 'Cancelar edição',
+  'settings.memory.panel.passengerNotice':
+    'Modo passageiro ligado: a Mika não grava nem altera memórias nesta sessão. Você ainda pode ver e apagar.',
+  'settings.memory.panel.recordingOffNotice':
+    'Gravação de memória desligada: a Mika não grava nem altera memórias. Você ainda pode ver e apagar.',
   'settings.memory.panel.peopleTitle': 'Pessoas conhecidas',
   'settings.memory.panel.peopleEmpty': 'Nenhuma pessoa catalogada ainda.',
   'settings.memory.panel.forgetButton': 'Esquecer',

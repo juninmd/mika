@@ -1949,6 +1949,14 @@ export const jaJP: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': '一致する事実はありません：',
   'settings.memory.panel.factsEmptyDefault': 'まだ学習した事実はありません。',
   'settings.memory.panel.deleteFactAriaPrefix': '事実を削除：',
+  'settings.memory.panel.editFactAriaPrefix': '事実を編集：',
+  'settings.memory.panel.editFactLabel': '事実を編集',
+  'settings.memory.panel.saveFactAriaLabel': '事実を保存',
+  'settings.memory.panel.cancelEditAriaLabel': '編集をキャンセル',
+  'settings.memory.panel.passengerNotice':
+    'パッセンジャーモード中：このセッションではミカは記憶を保存・変更しません。閲覧と削除は可能です。',
+  'settings.memory.panel.recordingOffNotice':
+    '記憶の保存はオフです：ミカは記憶を保存・変更しません。閲覧と削除は可能です。',
   'settings.memory.panel.peopleTitle': '既知の人物',
   'settings.memory.panel.peopleEmpty': 'まだ登録された人物はいません。',
   'settings.memory.panel.forgetButton': '忘れる',

@@ -1,10 +1,21 @@
 import { BentoGrid, GlassCard } from '@mika/sdk-ui/settings'
 import { Database, Download, Loader2 } from 'lucide-react'
+import { PASSENGER_PATH } from '../../src/components/hud/PassengerChip'
 import type { FeatureComponentProps } from '../../src/components/settings/feature-components'
+import { configBool } from '../../src/components/settings/settings-utils'
+import { useConfigFlag } from '../../src/hooks/useConfigFlag'
 import { useI18n } from '../../src/hooks/useI18n'
 import { MemoryHero } from './memory-hero'
 import { MemoryLayers } from './memory-layers'
-import { EpisodicCard, ErrorNote, FactsCard, PeopleCard, ProfileCard, RelationsCard } from './memory-panel-cards'
+import {
+  EpisodicCard,
+  ErrorNote,
+  FactsCard,
+  PeopleCard,
+  ProfileCard,
+  RelationsCard,
+  WriteBlockedNote,
+} from './memory-panel-cards'
 import { MemoryConfigSection, PromptTraceSection } from './memory-panel-sections'
 import { useMemoryConsole } from './use-memory-console'
 
@@ -37,6 +48,7 @@ export function MemoryPanel({ config, onSave }: MemoryPanelProps) {
     searchEpisodic,
     deleteEpisodic,
     addFact,
+    updateFact,
     deleteFact,
     saveName,
     forgetName,
@@ -49,6 +61,9 @@ export function MemoryPanel({ config, onSave }: MemoryPanelProps) {
     facts,
     hasData,
   } = useMemoryConsole()
+  const passenger = useConfigFlag(PASSENGER_PATH, false)
+  const recordingOff = !configBool(config, 'memory.enabled', true)
+  const writeBlocked = passenger || recordingOff
 
   return (
     <div className="space-y-4">
@@ -112,6 +127,7 @@ export function MemoryPanel({ config, onSave }: MemoryPanelProps) {
           </div>
 
           <div className="space-y-4">
+            {writeBlocked && <WriteBlockedNote passenger={passenger} />}
             {error && <ErrorNote message={error} />}
 
             {loading && !snapshot && (
@@ -139,6 +155,8 @@ export function MemoryPanel({ config, onSave }: MemoryPanelProps) {
               onNewFactChange={setNewFactText}
               onAdd={() => void addFact()}
               onDelete={(id) => void deleteFact(id)}
+              onUpdate={updateFact}
+              writeBlocked={writeBlocked}
               busy={busyFact}
             />
 
@@ -162,7 +180,7 @@ export function MemoryPanel({ config, onSave }: MemoryPanelProps) {
               onNameChange={setNewName}
               onSave={() => void saveName()}
               onForget={() => void forgetName()}
-              busy={busyName}
+              busy={busyName || writeBlocked}
             />
           </div>
         </GlassCard>

@@ -2010,6 +2010,14 @@ export const itIT: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': 'Nessun fatto elencato contiene',
   'settings.memory.panel.factsEmptyDefault': 'Ancora nessun fatto appreso.',
   'settings.memory.panel.deleteFactAriaPrefix': 'Elimina fatto:',
+  'settings.memory.panel.editFactAriaPrefix': 'Modifica fatto:',
+  'settings.memory.panel.editFactLabel': 'Modifica fatto',
+  'settings.memory.panel.saveFactAriaLabel': 'Salva fatto',
+  'settings.memory.panel.cancelEditAriaLabel': 'Annulla modifica',
+  'settings.memory.panel.passengerNotice':
+    'Modalità passeggero attiva: Mika non salva né modifica ricordi in questa sessione. Puoi ancora vederli ed eliminarli.',
+  'settings.memory.panel.recordingOffNotice':
+    'Registrazione della memoria disattivata: Mika non salva né modifica ricordi. Puoi ancora vederli ed eliminarli.',
   'settings.memory.panel.peopleTitle': 'Persone conosciute',
   'settings.memory.panel.peopleEmpty': 'Ancora nessuna persona catalogata.',
   'settings.memory.panel.forgetButton': 'Dimentica',
