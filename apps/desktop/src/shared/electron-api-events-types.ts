@@ -1,5 +1,16 @@
 import type { ActivityPayload, PowerProfileState } from '@mika/sdk/contracts'
 
+/** `EventKey::BrainProactiveThought` as the backend publishes it (`hud_bridge.rs`). */
+export type BrainProactiveThoughtPayload = {
+  type?: string
+  message?: string
+  source?: string
+  context?: string
+  priority?: number
+  /** Set by real-time reactions (`vision::media_reaction`). */
+  media?: { kind: string; title: string }
+}
+
 export type EventsRuntimeApi = {
   onActivity: (callback: (payload: ActivityPayload) => void) => () => void
   onMoodChanged: (callback: (payload: { valence: number; arousal: number; label: string }) => void) => () => void
@@ -31,6 +42,6 @@ export type EventsRuntimeApi = {
   sendMicState: (enabled: boolean) => void
 
   onMicState: (callback: (payload: { enabled: boolean }) => void) => () => void
-  onBrainProactiveThought: (callback: (payload: { type: string; message: string }) => void) => () => void
+  onBrainProactiveThought: (callback: (payload: BrainProactiveThoughtPayload) => void) => () => void
   onChatError: (callback: (payload: { message: string; type?: string }) => void) => () => void
 }

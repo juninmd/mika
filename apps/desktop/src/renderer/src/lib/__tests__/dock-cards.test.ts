@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dockCard } from '../dock-cards'
+import { dockCard, mediaCard } from '../dock-cards'
 
 describe('dockCard', () => {
   it('turns a created reminder into a reminder card', () => {
@@ -36,5 +36,19 @@ describe('dockCard', () => {
     expect(dockCard('game_knowledge', { success: true, data: { places: [] } })).toBeNull()
     expect(dockCard('get_time', { success: true, data: { time: '12:00' } })).toBeNull()
     expect(dockCard('game_session', 'not json')).toBeNull()
+  })
+})
+
+describe('mediaCard', () => {
+  it('turns a media reaction into a card naming what she is reacting to', () => {
+    const payload = { source: 'media-reaction', context: '…', media: { kind: 'live', title: 'gaules' } }
+    expect(mediaCard(payload)).toEqual({ kind: 'media', media: 'live', subject: 'gaules', body: '' })
+  })
+
+  it('ignores other proactive thoughts and malformed media', () => {
+    expect(mediaCard({ source: 'clipboard-image', context: 'gato' })).toBeNull()
+    expect(mediaCard({ source: 'media-reaction', media: { kind: 'podcast', title: 'x' } })).toBeNull()
+    expect(mediaCard({ source: 'media-reaction', media: { kind: 'video', title: '  ' } })).toBeNull()
+    expect(mediaCard(null)).toBeNull()
   })
 })
