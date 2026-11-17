@@ -109,6 +109,12 @@ fn fields() -> Vec<Value> {
             "visibleWhen": { "configPath": "gamer-companion.backseatGamingEnabled", "equals": true },
         }),
         json!({
+            "configPath": "gamer-companion.copilotEnabled",
+            "type": "boolean",
+            "label": "settings.gamerCompanion.field.copilotEnabled.label",
+            "description": "settings.gamerCompanion.field.copilotEnabled.description",
+        }),
+        json!({
             "configPath": "gamer-companion.momentCooldowns",
             "type": "object",
             "label": "settings.gamerCompanion.field.momentCooldowns.label",
@@ -228,7 +234,7 @@ mod tests {
         assert_eq!(d["enabledConfigPath"], json!("gamer-companion.enabled"));
         assert_eq!(d["accentColor"], json!("violet"));
         assert_eq!(d["groups"].as_array().unwrap().len(), 1);
-        assert_eq!(d["groups"][0]["fields"].as_array().unwrap().len(), 12);
+        assert_eq!(d["groups"][0]["fields"].as_array().unwrap().len(), 13);
     }
 
     /// Toda `configPath` é prefixada por `gamer-companion.` — um campo sem o prefixo grava fora do
