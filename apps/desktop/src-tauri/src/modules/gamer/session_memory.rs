@@ -76,6 +76,14 @@ impl SessionMemory {
         self.current.lock().ok().and_then(|guard| guard.clone())
     }
 
+    /// Anota um momento na sessão em andamento (vai ao disco no `end_session`); `false` sem sessão.
+    pub fn push_event(&self, event: super::session_types::GameEvent, max_events: usize) -> bool {
+        let Ok(mut guard) = self.current.lock() else { return false };
+        let Some(session) = guard.as_mut().filter(|s| s.events.len() < max_events) else { return false };
+        session.events.push(event);
+        true
+    }
+
     pub fn history(&self, limit: i64) -> Result<Vec<GameSession>, String> {
         self.db.history(limit)
     }
