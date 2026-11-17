@@ -130,6 +130,8 @@ export async function connectHost(
     args: [
       '--use-fake-ui-for-media-stream',
       '--use-fake-device-for-media-stream',
+      // Real speech instead of the fake mic's beep, for specs that need the STT to hear words.
+      ...(process.env.MIKA_E2E_FAKE_AUDIO ? [`--use-file-for-fake-audio-capture=${process.env.MIKA_E2E_FAKE_AUDIO}`] : []),
       '--autoplay-policy=no-user-gesture-required',
       '--use-angle=swiftshader',
       '--enable-unsafe-swiftshader',
