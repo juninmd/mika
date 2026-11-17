@@ -213,11 +213,13 @@ janela; a geometria devolvida ao sair continua a de antes do mini.
   microfone sem trazer a janela para a frente; abrir, nunca alternar. Chat aberto vence o discreto.
 - **Bolha e cartões** (`DockFeed`): com o chat fechado, a última fala da Mika (inclusive a proativa)
   e os pensamentos proativos aparecem numa bolha ao lado da coluna; resultados de `reminder`,
-  `game_knowledge` (com o degrau da escada de ajuda) e `game_session` describe viram cartões
-  (`dockCard`). Qualquer um deles tira o dock da faixa.
-- **Ações rápidas** na coluna: "Onde paramos?" e "Dica sem spoiler" vão como mensagem do usuário
+  `game_knowledge` (com o degrau da escada de ajuda), `game_session` describe e `game_session` today
+  (resumo do dia: tempo, sessões, conquistas, mortes, sequência) viram cartões (`dockCard`). Qualquer um deles tira o dock da faixa.
+- **Ações rápidas** na coluna: "Onde paramos?", "O que fizemos hoje?" e "Dica sem spoiler" vão como mensagem do usuário
   (quem responde é o LLM, com a retomada da sessão e a escada de ajuda), e o modo passageiro
   alterna `privacy.passengerMode`.
+- **Resumo do dia** (`gamer::daily_summary`): com o modo passageiro ligado, só estatísticas do jogo;
+  os resumos narrados das sessões (lembrança) ficam de fora, e os momentos da visão não são gravados.
 
 ## Onboarding
 

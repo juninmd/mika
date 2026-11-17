@@ -89,6 +89,7 @@
 //!   desde a rodada anterior (`game_watcher::start`, chamado por
 //!   `modules::register_config_bound_tools`) — não é mais uma lacuna, listado aqui só por histórico.
 
+pub mod daily_summary;
 pub mod feature;
 pub mod game_detection;
 #[cfg(test)]
