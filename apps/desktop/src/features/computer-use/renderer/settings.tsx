@@ -1,13 +1,18 @@
 import { BentoGrid, GlassCard, GlassSection, GlassToggle, SectionDivider, StatusPill } from '@mika/sdk-ui/settings'
 import {
+  AppWindow,
   BadgeCheck,
   Keyboard,
   type LucideIcon,
+  Mouse,
+  MousePointer2,
   MousePointerClick,
+  OctagonX,
   Power,
   ScanSearch,
   ShieldBan,
   TextCursorInput,
+  Volume2,
 } from 'lucide-react'
 import type { FeatureComponentProps } from '../../../renderer/src/components/settings/feature-components'
 import { configBool } from '../../../renderer/src/components/settings/settings-utils'
@@ -28,8 +33,8 @@ function InfoTile({ icon: Icon, title, text }: { icon: LucideIcon; title: string
   )
 }
 
-/** Single kill switch for the `computer` tool (WP5). Approval is asked per call regardless —
- *  this only decides whether the capability exists at all. */
+/** Single kill switch for `computer` (approval per call) and `pc_control` (volume/windows, no
+ *  dialog); Ctrl+Alt+End turns it off from anywhere (`emergency_stop.rs`). */
 export function ComputerUsePanel({ config, onSave }: FeatureComponentProps) {
   const { t } = useI18n()
   const saveBool = onSave as (path: string, value: boolean) => Promise<void>
@@ -64,7 +69,7 @@ export function ComputerUsePanel({ config, onSave }: FeatureComponentProps) {
           <p className="mt-1 text-xs leading-relaxed text-text-muted">
             {t('settings.computerUse.panel.safeguardsDescription')}
           </p>
-          <div className="mt-4 grid gap-2 md:grid-cols-3">
+          <div className="mt-4 grid gap-2 md:grid-cols-3 xl:grid-cols-5">
             <InfoTile
               icon={Power}
               title={t('settings.computerUse.panel.guardSwitchTitle')}
@@ -79,6 +84,16 @@ export function ComputerUsePanel({ config, onSave }: FeatureComponentProps) {
               icon={ShieldBan}
               title={t('settings.computerUse.panel.guardWindowTitle')}
               text={t('settings.computerUse.panel.guardWindowText')}
+            />
+            <InfoTile
+              icon={OctagonX}
+              title={t('settings.computerUse.panel.guardStopTitle')}
+              text={t('settings.computerUse.panel.guardStopText')}
+            />
+            <InfoTile
+              icon={MousePointer2}
+              title={t('settings.computerUse.panel.guardCursorTitle')}
+              text={t('settings.computerUse.panel.guardCursorText')}
             />
           </div>
 
@@ -103,6 +118,21 @@ export function ComputerUsePanel({ config, onSave }: FeatureComponentProps) {
               icon={Keyboard}
               title={t('settings.computerUse.panel.actionKey')}
               text={t('settings.computerUse.panel.actionKeyText')}
+            />
+            <InfoTile
+              icon={Mouse}
+              title={t('settings.computerUse.panel.actionMouse')}
+              text={t('settings.computerUse.panel.actionMouseText')}
+            />
+            <InfoTile
+              icon={Volume2}
+              title={t('settings.computerUse.panel.actionVolume')}
+              text={t('settings.computerUse.panel.actionVolumeText')}
+            />
+            <InfoTile
+              icon={AppWindow}
+              title={t('settings.computerUse.panel.actionWindow')}
+              text={t('settings.computerUse.panel.actionWindowText')}
             />
           </div>
           <p className="mt-3 text-caption leading-snug text-text-muted">

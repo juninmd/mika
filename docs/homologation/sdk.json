@@ -5,8 +5,8 @@
     "perfil": "contract"
   },
   "artefato": {
-    "commit": "cd73856a6f08c330f7cf02b38d103e0498159239+dirty",
-    "tree": "e876e19fbded6bb0",
+    "commit": "3c6fd192215ea95c4363cb9e0cb72abbe3c916fd+dirty",
+    "tree": "efe5482afdee98fd",
     "contract": "65d0586d5991ee80",
     "deps": {
       "zod": "catalog:"
@@ -16,7 +16,7 @@
   "ambiente": {
     "plataforma": "linux",
     "node": "v24.22.3",
-    "data": "2026-11-16"
+    "data": "2026-11-17"
   },
   "criterios": [
     {
