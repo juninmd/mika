@@ -1393,6 +1393,13 @@ export const frFR: TranslationDict = {
   'settings.user.panel.completionFields': 'champs',
   'settings.user.panel.completionHint':
     'Plus c’est complet, moins Mika a besoin de deviner préférences, contexte et limites personnelles.',
+  'settings.vision.panel.mediaReactionsHeader': 'Réactions en temps réel',
+  'settings.vision.field.mediaReactions.label': 'Réagir à ce que je regarde',
+  'settings.vision.field.mediaReactions.description':
+    "Mika commente de temps en temps la vidéo, le live ou la musique au premier plan. Vidéo et live utilisent une image de l'écran ; la musique, seulement le titre de la fenêtre. Aucun son n'est enregistré.",
+  'settings.vision.field.mediaReactionCooldownSec.label': 'Intervalle minimal entre réactions',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    "Délai minimal entre deux commentaires. La même vidéo ou musique ne revient qu'après trois intervalles.",
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Intervalle du journal visuel (cycles)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Tous les N cycles de capture, écrit une entrée dans le journal visuel.',
@@ -2048,6 +2055,14 @@ export const frFR: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': 'Aucun fait listé ne contient',
   'settings.memory.panel.factsEmptyDefault': "Aucun fait appris pour l'instant.",
   'settings.memory.panel.deleteFactAriaPrefix': 'Supprimer le fait :',
+  'settings.memory.panel.editFactAriaPrefix': 'Modifier le fait :',
+  'settings.memory.panel.editFactLabel': 'Modifier le fait',
+  'settings.memory.panel.saveFactAriaLabel': 'Enregistrer le fait',
+  'settings.memory.panel.cancelEditAriaLabel': 'Annuler la modification',
+  'settings.memory.panel.passengerNotice':
+    "Mode passager activé : Mika n'enregistre ni ne modifie de souvenirs pendant cette session. Vous pouvez toujours les voir et les supprimer.",
+  'settings.memory.panel.recordingOffNotice':
+    "Enregistrement de la mémoire désactivé : Mika n'enregistre ni ne modifie de souvenirs. Vous pouvez toujours les voir et les supprimer.",
   'settings.memory.panel.peopleTitle': 'Personnes connues',
   'settings.memory.panel.peopleEmpty': "Aucune personne cataloguée pour l'instant.",
   'settings.memory.panel.forgetButton': 'Oublier',
@@ -2589,6 +2604,9 @@ export const frFR: TranslationDict = {
   'shell.edgeDock.quick.passenger': 'Mode passager : rien de cette session n’est enregistré',
   'shell.edgeDock.card.reminder': 'Rappel',
   'shell.edgeDock.card.recap': 'Résumé de la session',
+  'shell.edgeDock.card.media.video': 'Regarde',
+  'shell.edgeDock.card.media.live': 'En live',
+  'shell.edgeDock.card.media.music': 'Écoute',
   'shell.edgeDock.card.level.hint': 'Piste',
   'shell.edgeDock.card.level.tip': 'Indice',
   'shell.edgeDock.card.level.solution': 'Solution',

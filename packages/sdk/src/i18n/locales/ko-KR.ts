@@ -1317,6 +1317,13 @@ export const koKR: TranslationDict = {
   'settings.user.panel.completionOf': '/',
   'settings.user.panel.completionFields': '개 항목',
   'settings.user.panel.completionHint': '더 채울수록 Mika가 취향, 맥락, 개인적인 선을 짐작해야 할 일이 줄어들어요.',
+  'settings.vision.panel.mediaReactionsHeader': '실시간 리액션',
+  'settings.vision.field.mediaReactions.label': '내가 보는 것에 반응하기',
+  'settings.vision.field.mediaReactions.description':
+    'Mika가 포커스된 영상, 라이브, 음악에 가끔 코멘트합니다. 영상과 라이브는 화면 한 프레임을, 음악은 창 제목만 사용합니다. 오디오는 녹음하지 않습니다.',
+  'settings.vision.field.mediaReactionCooldownSec.label': '리액션 최소 간격',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    '두 코멘트 사이의 최소 간격. 같은 영상이나 곡은 세 간격이 지나야 다시 나옵니다.',
   'settings.vision.field.visualDiaryIntervalCycles.label': '비주얼 다이어리 간격 (사이클)',
   'settings.vision.field.visualDiaryIntervalCycles.description': '캡처 사이클 N번마다 비주얼 다이어리에 항목을 써요.',
   'settings.vision.field.textDensityThreshold.label': '텍스트/UI 밀도 임계값',
@@ -1941,6 +1948,14 @@ export const koKR: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': '다음이 들어간 사실이 없어요:',
   'settings.memory.panel.factsEmptyDefault': '아직 알게 된 사실이 없어요.',
   'settings.memory.panel.deleteFactAriaPrefix': '사실 삭제:',
+  'settings.memory.panel.editFactAriaPrefix': '사실 편집:',
+  'settings.memory.panel.editFactLabel': '사실 편집',
+  'settings.memory.panel.saveFactAriaLabel': '사실 저장',
+  'settings.memory.panel.cancelEditAriaLabel': '편집 취소',
+  'settings.memory.panel.passengerNotice':
+    '승객 모드 켜짐: 이번 세션에서 미카는 기억을 저장하거나 바꾸지 않습니다. 보기와 삭제는 계속 가능합니다.',
+  'settings.memory.panel.recordingOffNotice':
+    '기억 저장 꺼짐: 미카는 기억을 저장하거나 바꾸지 않습니다. 보기와 삭제는 계속 가능합니다.',
   'settings.memory.panel.peopleTitle': '아는 사람들',
   'settings.memory.panel.peopleEmpty': '아직 카탈로그에 등록된 사람이 없어요.',
   'settings.memory.panel.forgetButton': '잊기',
@@ -2465,6 +2480,9 @@ export const koKR: TranslationDict = {
   'shell.edgeDock.quick.passenger': '패신저 모드: 이 세션의 내용은 저장되지 않습니다',
   'shell.edgeDock.card.reminder': '알림',
   'shell.edgeDock.card.recap': '세션 요약',
+  'shell.edgeDock.card.media.video': '시청 중',
+  'shell.edgeDock.card.media.live': '라이브 중',
+  'shell.edgeDock.card.media.music': '듣는 중',
   'shell.edgeDock.card.level.hint': '단서',
   'shell.edgeDock.card.level.tip': '힌트',
   'shell.edgeDock.card.level.solution': '정답',

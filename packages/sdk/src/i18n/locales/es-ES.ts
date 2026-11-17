@@ -1372,6 +1372,13 @@ export const esES: TranslationDict = {
   'settings.user.panel.completionFields': 'campos',
   'settings.user.panel.completionHint':
     'Cuanto más completo, menos necesita Mika adivinar preferencias, contexto y límites personales.',
+  'settings.vision.panel.mediaReactionsHeader': 'Reacciones en tiempo real',
+  'settings.vision.field.mediaReactions.label': 'Reaccionar a lo que estoy viendo',
+  'settings.vision.field.mediaReactions.description':
+    'Mika comenta de vez en cuando el vídeo, el directo o la canción en primer plano. Vídeo y directo usan un fotograma de la pantalla; la música, solo el título de la ventana. No se graba audio.',
+  'settings.vision.field.mediaReactionCooldownSec.label': 'Intervalo mínimo entre reacciones',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    'Tiempo mínimo entre dos comentarios. El mismo vídeo o canción solo vuelve tras tres intervalos.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Intervalo del diario visual (ciclos)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Cada N ciclos de captura, escribe una entrada en el diario visual.',
@@ -2023,6 +2030,14 @@ export const esES: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': 'Ningún dato listado contiene',
   'settings.memory.panel.factsEmptyDefault': 'Aún no se ha aprendido ningún dato.',
   'settings.memory.panel.deleteFactAriaPrefix': 'Eliminar dato:',
+  'settings.memory.panel.editFactAriaPrefix': 'Editar dato:',
+  'settings.memory.panel.editFactLabel': 'Editar dato',
+  'settings.memory.panel.saveFactAriaLabel': 'Guardar dato',
+  'settings.memory.panel.cancelEditAriaLabel': 'Cancelar edición',
+  'settings.memory.panel.passengerNotice':
+    'Modo pasajero activado: Mika no guarda ni cambia recuerdos en esta sesión. Aún puedes verlos y borrarlos.',
+  'settings.memory.panel.recordingOffNotice':
+    'Grabación de memoria desactivada: Mika no guarda ni cambia recuerdos. Aún puedes verlos y borrarlos.',
   'settings.memory.panel.peopleTitle': 'Personas conocidas',
   'settings.memory.panel.peopleEmpty': 'Aún no hay personas catalogadas.',
   'settings.memory.panel.forgetButton': 'Olvidar',
@@ -2561,6 +2576,9 @@ export const esES: TranslationDict = {
   'shell.edgeDock.quick.passenger': 'Modo pasajero: no se guarda nada de esta sesión',
   'shell.edgeDock.card.reminder': 'Recordatorio',
   'shell.edgeDock.card.recap': 'Resumen de la sesión',
+  'shell.edgeDock.card.media.video': 'Viendo',
+  'shell.edgeDock.card.media.live': 'En el directo',
+  'shell.edgeDock.card.media.music': 'Escuchando',
   'shell.edgeDock.card.level.hint': 'Pista',
   'shell.edgeDock.card.level.tip': 'Consejo',
   'shell.edgeDock.card.level.solution': 'Solución',

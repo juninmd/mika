@@ -1380,6 +1380,13 @@ export const deDE: TranslationDict = {
   'settings.user.panel.completionFields': 'Feldern',
   'settings.user.panel.completionHint':
     'Je vollständiger, desto weniger muss Mika Vorlieben, Kontext und persönliche Grenzen erraten.',
+  'settings.vision.panel.mediaReactionsHeader': 'Echtzeit-Reaktionen',
+  'settings.vision.field.mediaReactions.label': 'Auf das reagieren, was ich schaue',
+  'settings.vision.field.mediaReactions.description':
+    'Mika kommentiert ab und zu das Video, den Livestream oder den Song im Vordergrund. Video und Live nutzen ein Bildschirmbild, Musik nur den Fenstertitel. Es wird kein Ton aufgenommen.',
+  'settings.vision.field.mediaReactionCooldownSec.label': 'Mindestabstand zwischen Reaktionen',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    'Kürzester Abstand zwischen zwei Kommentaren. Dasselbe Video oder derselbe Song kommt erst nach drei Abständen wieder.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Intervall des visuellen Tagebuchs (Zyklen)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Schreibt alle N Aufnahmezyklen einen Eintrag ins visuelle Tagebuch.',
@@ -2032,6 +2039,14 @@ export const deDE: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': 'Kein aufgelisteter Fakt enthält',
   'settings.memory.panel.factsEmptyDefault': 'Noch keine Fakten gelernt.',
   'settings.memory.panel.deleteFactAriaPrefix': 'Fakt löschen:',
+  'settings.memory.panel.editFactAriaPrefix': 'Fakt bearbeiten:',
+  'settings.memory.panel.editFactLabel': 'Fakt bearbeiten',
+  'settings.memory.panel.saveFactAriaLabel': 'Fakt speichern',
+  'settings.memory.panel.cancelEditAriaLabel': 'Bearbeitung abbrechen',
+  'settings.memory.panel.passengerNotice':
+    'Passagiermodus aktiv: Mika speichert oder ändert in dieser Sitzung keine Erinnerungen. Ansehen und Löschen geht weiterhin.',
+  'settings.memory.panel.recordingOffNotice':
+    'Speichern von Erinnerungen ist aus: Mika speichert oder ändert keine Erinnerungen. Ansehen und Löschen geht weiterhin.',
   'settings.memory.panel.peopleTitle': 'Bekannte Personen',
   'settings.memory.panel.peopleEmpty': 'Noch keine Personen katalogisiert.',
   'settings.memory.panel.forgetButton': 'Vergessen',
@@ -2577,6 +2592,9 @@ export const deDE: TranslationDict = {
   'shell.edgeDock.quick.passenger': 'Passagiermodus: Nichts aus dieser Sitzung wird gespeichert',
   'shell.edgeDock.card.reminder': 'Erinnerung',
   'shell.edgeDock.card.recap': 'Sitzungszusammenfassung',
+  'shell.edgeDock.card.media.video': 'Schaut',
+  'shell.edgeDock.card.media.live': 'Im Livestream',
+  'shell.edgeDock.card.media.music': 'Hört',
   'shell.edgeDock.card.level.hint': 'Hinweis',
   'shell.edgeDock.card.level.tip': 'Tipp',
   'shell.edgeDock.card.level.solution': 'Lösung',

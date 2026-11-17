@@ -1342,6 +1342,13 @@ export const enUS: TranslationDict = {
   'settings.user.panel.completionFields': 'fields',
   'settings.user.panel.completionHint':
     'The more complete, the less Mika needs to guess preferences, context and personal boundaries.',
+  'settings.vision.panel.mediaReactionsHeader': 'Real-time reactions',
+  'settings.vision.field.mediaReactions.label': "React to what I'm watching",
+  'settings.vision.field.mediaReactions.description':
+    'Mika now and then comments on the video, livestream or song in focus. Video and live use one screen frame; music uses only the window title. No audio is recorded.',
+  'settings.vision.field.mediaReactionCooldownSec.label': 'Minimum time between reactions',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    'Shortest gap between two comments. The same video or song comes back only after three gaps.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Visual Diary Interval (cycles)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Every N capture cycles, writes an entry to the visual diary.',
@@ -1978,6 +1985,14 @@ export const enUS: TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': 'No listed fact contains',
   'settings.memory.panel.factsEmptyDefault': 'No facts learned yet.',
   'settings.memory.panel.deleteFactAriaPrefix': 'Delete fact:',
+  'settings.memory.panel.editFactAriaPrefix': 'Edit fact:',
+  'settings.memory.panel.editFactLabel': 'Edit fact',
+  'settings.memory.panel.saveFactAriaLabel': 'Save fact',
+  'settings.memory.panel.cancelEditAriaLabel': 'Cancel editing',
+  'settings.memory.panel.passengerNotice':
+    'Passenger mode is on: Mika does not save or change memories this session. You can still view and delete.',
+  'settings.memory.panel.recordingOffNotice':
+    'Memory recording is off: Mika does not save or change memories. You can still view and delete.',
   'settings.memory.panel.peopleTitle': 'Known people',
   'settings.memory.panel.peopleEmpty': 'No people cataloged yet.',
   'settings.memory.panel.forgetButton': 'Forget',
@@ -2510,6 +2525,9 @@ export const enUS: TranslationDict = {
   'shell.edgeDock.quick.passenger': 'Passenger mode: nothing from this session is saved',
   'shell.edgeDock.card.reminder': 'Reminder',
   'shell.edgeDock.card.recap': 'Session recap',
+  'shell.edgeDock.card.media.video': 'Watching',
+  'shell.edgeDock.card.media.live': 'On the live',
+  'shell.edgeDock.card.media.music': 'Listening',
   'shell.edgeDock.card.level.hint': 'Clue',
   'shell.edgeDock.card.level.tip': 'Hint',
   'shell.edgeDock.card.level.solution': 'Solution',

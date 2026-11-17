@@ -1251,6 +1251,11 @@ export type TranslationDict = {
   'settings.user.panel.completionOf': string
   'settings.user.panel.completionFields': string
   'settings.user.panel.completionHint': string
+  'settings.vision.panel.mediaReactionsHeader': string
+  'settings.vision.field.mediaReactions.label': string
+  'settings.vision.field.mediaReactions.description': string
+  'settings.vision.field.mediaReactionCooldownSec.label': string
+  'settings.vision.field.mediaReactionCooldownSec.description': string
   'settings.vision.field.visualDiaryIntervalCycles.label': string
   'settings.vision.field.visualDiaryIntervalCycles.description': string
   'settings.vision.field.textDensityThreshold.label': string
@@ -1829,6 +1834,12 @@ export type TranslationDict = {
   'settings.memory.panel.factsEmptyFiltered': string
   'settings.memory.panel.factsEmptyDefault': string
   'settings.memory.panel.deleteFactAriaPrefix': string
+  'settings.memory.panel.editFactAriaPrefix': string
+  'settings.memory.panel.editFactLabel': string
+  'settings.memory.panel.saveFactAriaLabel': string
+  'settings.memory.panel.cancelEditAriaLabel': string
+  'settings.memory.panel.passengerNotice': string
+  'settings.memory.panel.recordingOffNotice': string
   'settings.memory.panel.peopleTitle': string
   'settings.memory.panel.peopleEmpty': string
   'settings.memory.panel.forgetButton': string
@@ -2312,6 +2323,9 @@ export type TranslationDict = {
   'shell.edgeDock.quick.passenger': string
   'shell.edgeDock.card.reminder': string
   'shell.edgeDock.card.recap': string
+  'shell.edgeDock.card.media.video': string
+  'shell.edgeDock.card.media.live': string
+  'shell.edgeDock.card.media.music': string
   'shell.edgeDock.card.level.hint': string
   'shell.edgeDock.card.level.tip': string
   'shell.edgeDock.card.level.solution': string
