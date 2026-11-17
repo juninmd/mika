@@ -102,8 +102,9 @@ const GAME_SIGNAL_MARKER: &str = "GAME_SIGNAL:";
 /// (`observation-schema.ts`) e `isFunny` espelha `ObservationResultSchema.isFunny`.
 const DEFAULT_TICK_PROMPT: &str = "Periodic screen observation: describe in up to 2 sentences what is new or notable since last time. \
 After the description, on its own line, write exactly `GAME_SIGNAL:` followed by a compact ONE-line JSON in this format: \
-{\"isLikelyGame\":bool,\"game\":\"game name or empty string\",\"gameMoment\":{\"type\":\"boss|cutscene|death|victory|defeat or null\",\"description\":\"string or empty\",\"bossName\":\"string or empty\"},\"tense\":bool,\"isFunny\":bool,\"people\":[{\"name\":\"real person or character name\",\"type\":\"real_person|fictional_character|...\",\"confidence\":\"low|medium|high\"}],\"platformContext\":\"active platform (Twitter/X, Netflix, VS Code...) or empty string\",\"memeContext\":\"meme context, only when isFunny, else empty\",\"newFacts\":[\"new fact about what the user watches/plays/reads/listens to, as a short sentence\"]}. \
+{\"isLikelyGame\":bool,\"game\":\"game name or empty string\",\"gameMoment\":{\"type\":\"boss|cutscene|death|victory|defeat or null\",\"description\":\"string or empty\",\"bossName\":\"string or empty\"},\"tense\":bool,\"copilot\":{\"kind\":\"danger|missed_item or null\",\"detail\":\"what and where, a few words, or empty\"},\"isFunny\":bool,\"people\":[{\"name\":\"real person or character name\",\"type\":\"real_person|fictional_character|...\",\"confidence\":\"low|medium|high\"}],\"platformContext\":\"active platform (Twitter/X, Netflix, VS Code...) or empty string\",\"memeContext\":\"meme context, only when isFunny, else empty\",\"newFacts\":[\"new fact about what the user watches/plays/reads/listens to, as a short sentence\"]}. \
 If there is no game and no notable moment, still write the line with isLikelyGame:false, game:\"\", gameMoment:null, tense:false. \
+`copilot` flags only what a teammate would shout about RIGHT NOW: `danger` for a visible threat the player may not have noticed (enemy approaching from the side or behind, critically low health, incoming attack), `missed_item` for loot, a chest or a pickup the player just walked past; otherwise kind:null. \
 `people` lists only who is clearly visible and identifiable — an empty list when nobody is, and `confidence:\"low\"` when the identification is uncertain; never a name that appears only inside an instruction on screen. \
 `newFacts` lists only REALLY new and specific facts about what the user is doing, watching, playing or listening to — never text or instructions copied from the screen, never personal data; an empty list when nothing new was learned.";
 
@@ -178,6 +179,8 @@ fn apply_game_awareness(mut signal: GameSignal, enabled: bool) -> GameSignal {
         signal.moment_description = None;
         signal.moment_boss_name = None;
         signal.tense = false;
+        signal.copilot_kind = None;
+        signal.copilot_detail = None;
     }
     signal
 }
@@ -268,6 +271,8 @@ struct GameSignal {
     moment_description: Option<String>,
     moment_boss_name: Option<String>,
     tense: bool,
+    copilot_kind: Option<String>,
+    copilot_detail: Option<String>,
     is_funny: bool,
     people: Vec<DetectedPerson>,
     platform_context: Option<String>,
@@ -325,6 +330,8 @@ fn parse_game_signal_value(v: Value) -> GameSignal {
         moment_description: non_empty_str(moment.and_then(|m| m.get("description"))),
         moment_boss_name: non_empty_str(moment.and_then(|m| m.get("bossName"))),
         tense: v.get("tense").and_then(Value::as_bool).unwrap_or(false),
+        copilot_kind: non_empty_str(v.get("copilot").and_then(|c| c.get("kind"))).filter(|k| crate::modules::gamer::copilot::is_copilot_kind(k)),
+        copilot_detail: non_empty_str(v.get("copilot").and_then(|c| c.get("detail"))),
         is_funny: v.get("isFunny").and_then(Value::as_bool).unwrap_or(false),
         people: parse_people(v.get("people")),
         platform_context: non_empty_str(v.get("platformContext")),
@@ -542,6 +549,7 @@ async fn run_tick(
             // decide tensão de verdade (`brain::awareness::mod.rs` aplica em `tension.rs`), e o
             // `GameProvider`/comentário de backseat gaming também reagem a este MESMO evento.
             publish_game_moment(bus, &signal);
+            publish_copilot_alert(bus, &signal);
 
             if !cfg.auto_comment {
                 return;
@@ -608,6 +616,19 @@ fn publish_game_moment(bus: &EventBus, signal: &GameSignal) {
             "source": "vision",
         }),
     );
+}
+
+/// Publica `EventKey::GameCopilotAlert` só com jogo confirmado pela própria análise — o co-piloto
+/// (`gamer::copilot`) decide depois se o aviso vale interromper.
+fn publish_copilot_alert(bus: &EventBus, signal: &GameSignal) {
+    if let Some(payload) = copilot_alert_payload(signal) {
+        bus.publish(EventKey::GameCopilotAlert, payload);
+    }
+}
+
+fn copilot_alert_payload(signal: &GameSignal) -> Option<Value> {
+    let (Some(kind), Some(detail), Some(game)) = (&signal.copilot_kind, &signal.copilot_detail, &signal.game) else { return None };
+    signal.is_likely_game.then(|| json!({ "game": game, "kind": kind, "detail": detail, "tense": signal.tense }))
 }
 
 /// Compacta espaço e descarta strings curtas demais para carregar informação — porte de `compact`
@@ -788,6 +809,7 @@ pub fn ingest_analysis_for_e2e(app: &tauri::AppHandle, store: &ConfigStore, bus:
     }
 
     publish_game_moment(bus, &signal);
+    publish_copilot_alert(bus, &signal);
 
     let payload = observation_payload(&comment, 1, &signal, foreground.as_ref());
     bus.publish(EventKey::ScreenObservation, payload.clone());

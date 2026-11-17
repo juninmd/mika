@@ -56,6 +56,7 @@ export const Events = {
   GAME_CHANGED: 'steam:game-changed',
   GAME_STOPPED: 'steam:game-stopped',
   GAME_MOMENT: 'steam:game-moment',
+  GAME_COPILOT_ALERT: 'gamer:copilot-alert',
 
   SCREEN_OBSERVATION: 'vision:screen-observation',
 
