@@ -5,7 +5,7 @@ import type { SystemRuntimeApi } from './electron-api-system-types'
 import type { PluginRpcRequest, PluginRpcResponse } from './plugin-rpc-contract'
 
 export type { ChatRuntimeApi, ToolCatalogItem } from './electron-api-chat-types'
-export type { EventsRuntimeApi } from './electron-api-events-types'
+export type { BrainProactiveThoughtPayload, EventsRuntimeApi } from './electron-api-events-types'
 export type { PromptSummaryPayload, SettingsRuntimeApi } from './electron-api-settings-types'
 export type { RendererLogEntry, SystemRuntimeApi } from './electron-api-system-types'
 

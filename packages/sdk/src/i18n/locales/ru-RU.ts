@@ -1368,6 +1368,13 @@ export const ruRU: TranslationDict = {
   'settings.user.panel.completionFields': 'полей',
   'settings.user.panel.completionHint':
     'Чем полнее профиль, тем меньше Mika приходится гадать о предпочтениях, контексте и личных границах.',
+  'settings.vision.panel.mediaReactionsHeader': 'Реакции в реальном времени',
+  'settings.vision.field.mediaReactions.label': 'Реагировать на то, что я смотрю',
+  'settings.vision.field.mediaReactions.description':
+    'Мика время от времени комментирует видео, стрим или песню в фокусе. Для видео и стрима берётся один кадр экрана, для музыки — только заголовок окна. Звук не записывается.',
+  'settings.vision.field.mediaReactionCooldownSec.label': 'Минимальный интервал между реакциями',
+  'settings.vision.field.mediaReactionCooldownSec.description':
+    'Наименьший промежуток между двумя комментариями. То же видео или песня вернётся только через три интервала.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Интервал визуального дневника (циклы)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Каждые N циклов захвата делает запись в визуальный дневник.',
@@ -2566,6 +2573,9 @@ export const ruRU: TranslationDict = {
   'shell.edgeDock.quick.passenger': 'Режим пассажира: ничего из этой сессии не сохраняется',
   'shell.edgeDock.card.reminder': 'Напоминание',
   'shell.edgeDock.card.recap': 'Итоги сессии',
+  'shell.edgeDock.card.media.video': 'Смотрит',
+  'shell.edgeDock.card.media.live': 'На стриме',
+  'shell.edgeDock.card.media.music': 'Слушает',
   'shell.edgeDock.card.level.hint': 'Зацепка',
   'shell.edgeDock.card.level.tip': 'Подсказка',
   'shell.edgeDock.card.level.solution': 'Решение',
