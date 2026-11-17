@@ -136,7 +136,8 @@ type ServerCardProps = {
 export function McpServerCard({ server, busy, actionError, onToggle, onEdit, onRemove }: ServerCardProps) {
   const { t } = useI18n()
   const look = serverLook(server, t)
-  const preview = commandPreview(server.command, server.args)
+  const preview = server.url ?? commandPreview(server.command, server.args)
+  const secrets = server.envKeys.length + (server.headerKeys?.length ?? 0)
   return (
     <motion.li
       layout="position"
@@ -152,10 +153,10 @@ export function McpServerCard({ server, busy, actionError, onToggle, onEdit, onR
             {server.enabled && server.status === 'connected' && (
               <StatusPill variant="accent" label={t('settings.mcp.card.toolCount', { count: server.tools.length })} />
             )}
-            {server.envKeys.length > 0 && (
+            {secrets > 0 && (
               <span className="inline-flex items-center gap-1 text-caption text-text-subtle">
                 <KeyRound size={12} aria-hidden="true" />
-                {t('settings.mcp.card.secretCount', { count: server.envKeys.length })}
+                {t('settings.mcp.card.secretCount', { count: secrets })}
               </span>
             )}
           </div>

@@ -193,7 +193,8 @@ fn describe_exposes_env_keys_but_never_env_values() {
 /// mapa inteiro de uma vez.
 #[test]
 fn a_malformed_entry_is_reported_per_server() {
-    let doc = json!({ "mcpServers": { "bad": { "url": "http://x" }, "fs": { "command": "npx" } } });
+    // `{ "url": ... }` sem `command` virou servidor remoto válido; malformado agora é tipo errado.
+    let doc = json!({ "mcpServers": { "bad": { "command": 42 }, "fs": { "command": "npx" } } });
     let listed = entries(&doc);
     assert_eq!(listed.len(), 2);
     assert!(listed.iter().find(|(n, _)| n == "bad").unwrap().1.is_err());
@@ -223,6 +224,40 @@ fn editing_a_server_keeps_its_unreadable_env_in_the_file_but_out_of_the_spawned_
     assert_eq!(spec.env.keys().collect::<Vec<_>>(), ["NEW", "OK"]);
     assert_eq!(doc["mcpServers"]["s"]["env"]["LOST"], json!("enc:aes256:abc"));
     // "mantenha o salvo" para um valor ilegível é o erro nomeado de sempre, não o ciphertext.
-    let err = resolve_env(&input(json!({ "command": "npx", "env": { "LOST": null } })), find_entry(&doc, "s").unwrap().get("env")).unwrap_err();
+    let err = resolve_spec(&input(json!({ "command": "npx", "env": { "LOST": null } })), find_entry(&doc, "s")).unwrap_err();
     assert!(err.contains("LOST"), "{err}");
+}
+
+// --- servidor remoto (url + headers) -------------------------------------------------------------
+
+#[test]
+fn a_spec_is_either_local_or_remote_and_remote_only_takes_http_urls() {
+    let remote = input(json!({ "command": "", "url": " https://mcp.example.com/mcp ", "headers": { "Authorization": "Bearer t" } }));
+    assert_eq!(remote.url.as_deref(), Some("https://mcp.example.com/mcp"));
+    assert!(parse_spec(&json!({ "command": "npx", "url": "https://x.dev/mcp" })).is_err());
+    assert!(parse_spec(&json!({ "command": "" })).is_err());
+    for url in ["file:///etc/passwd", "ftp://x.dev/mcp", "http://", "nada"] {
+        assert!(parse_spec(&json!({ "command": "", "url": url })).is_err(), "{url}");
+    }
+}
+
+/// CRLF num valor viraria um cabeçalho injetado; nome com espaço não é token HTTP.
+#[test]
+fn header_names_must_be_tokens_and_values_single_line() {
+    assert!(parse_spec(&json!({ "command": "", "url": "https://x.dev", "headers": { "X Bad": "v" } })).is_err());
+    assert!(parse_spec(&json!({ "command": "", "url": "https://x.dev", "headers": { "X-Ok": "a\r\nInjected: 1" } })).is_err());
+}
+
+#[test]
+fn switching_a_server_to_remote_drops_local_fields_and_keeps_the_saved_token_on_null() {
+    let mut doc = json!({ "mcpServers": { "s": { "command": "npx", "args": ["a"], "env": { "K": "v" }, "autoApprove": ["x"] } } });
+    let to_remote = json!({ "command": "", "url": "https://x.dev/mcp", "headers": { "Authorization": "Bearer t" } });
+    upsert(&mut doc, "s", input(to_remote), Some("s")).unwrap();
+    let entry = &doc["mcpServers"]["s"];
+    assert_eq!(entry, &json!({ "url": "https://x.dev/mcp", "headers": { "Authorization": "Bearer t" }, "autoApprove": ["x"] }));
+
+    let spec = upsert(&mut doc, "s", input(json!({ "command": "", "url": "https://x.dev/v2", "headers": { "Authorization": null } })), Some("s")).unwrap();
+    assert_eq!(spec.headers["Authorization"], "Bearer t");
+    assert_eq!(describe("s", &spec)["headerKeys"], json!(["Authorization"]));
+    assert!(!describe("s", &spec).to_string().contains("Bearer"), "a UI nunca recebe o valor do cabeçalho");
 }

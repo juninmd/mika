@@ -8,9 +8,10 @@ import { trapTab } from '../../../renderer/src/components/tool-approval-focus'
 import { useI18n } from '../../../renderer/src/hooks/useI18n'
 import { getElectronApi } from '../../../renderer/src/lib/shell-api'
 import { openExternalLink } from '../../../renderer/src/lib/shell-links'
-import { ArgsEditor, EnvEditor, errorText, TestResult, type TestState } from './mcp-editor-fields'
+import { errorText, TestResult, type TestState } from './mcp-editor-fields'
 import { commandPreview, type McpServerForm, pasteCommandLine, specFromForm, validateForm } from './mcp-server-form'
 import type { McpTemplate } from './mcp-templates'
+import { TransportFields } from './mcp-transport-fields'
 import { BTN } from './mcp-ui'
 
 export type EditorTarget = { form: McpServerForm; originalName?: string; template?: McpTemplate }
@@ -42,7 +43,7 @@ function useEditor({ target, takenNames, onClose }: EditorProps) {
 
   const runTest = async () => {
     setShowErrors(true)
-    if (errors.command || errors.cwd || errors.args) return
+    if (errors.command || errors.cwd || errors.args || errors.url) return
     setTest({ status: 'testing' })
     try {
       const result = await getElectronApi().runtime.testMcpServer({
@@ -161,7 +162,9 @@ export function McpServerEditor(props: EditorProps) {
     }
   }
 
-  const preview = commandPreview(ed.form.command.trim() || '…', ed.form.args)
+  const preview = ed.form.remote
+    ? ed.form.url.trim() || '…'
+    : commandPreview(ed.form.command.trim() || '…', ed.form.args)
 
   return createPortal(
     <motion.div
@@ -208,47 +211,18 @@ export function McpServerEditor(props: EditorProps) {
               />
             </div>
           </div>
-          <AuroraField
-            label={t('settings.mcp.form.command')}
-            description={t('settings.mcp.form.commandHint')}
-            value={ed.form.command}
-            onChange={ed.setCommand}
-            placeholder={t('settings.mcp.form.commandPlaceholder')}
-            warning={errorText(t, ed.errors.command)}
-            invalid={Boolean(ed.errors.command)}
-          />
-          <ArgsEditor
-            args={ed.form.args}
-            onChange={(args) => ed.update({ args })}
-            placeholder={
-              target.template?.need === 'folder'
-                ? t('settings.mcp.form.folderPlaceholder')
-                : t('settings.mcp.form.argPlaceholder')
-            }
-            error={errorText(t, ed.errors.args)}
-            t={t}
-          />
-          <EnvEditor
-            rows={ed.form.env}
-            onChange={(env) => ed.update({ env })}
+          <TransportFields
+            form={ed.form}
             errors={ed.errors}
-            keyUrl={target.template?.need === 'apiKey' ? target.template.docsUrl : undefined}
+            update={ed.update}
+            setCommand={ed.setCommand}
+            template={target.template}
             t={t}
-          />
-          <AuroraField
-            label={t('settings.mcp.form.cwd')}
-            description={t('settings.mcp.form.cwdHint')}
-            badge={t('settings.mcp.form.optional')}
-            value={ed.form.cwd}
-            onChange={(cwd) => ed.update({ cwd })}
-            placeholder={t('settings.mcp.form.cwdPlaceholder')}
-            warning={errorText(t, ed.errors.cwd)}
-            invalid={Boolean(ed.errors.cwd)}
           />
           <div className="rounded-xl border border-border-subtle bg-bg-deep/60 px-3.5 py-2.5">
             <p className="mb-1 flex items-center gap-1.5 text-micro font-bold uppercase tracking-[0.12em] text-text-subtle">
               <SquareTerminal size={12} aria-hidden="true" />
-              {t('settings.mcp.form.preview')}
+              {t(ed.form.remote ? 'settings.mcp.form.previewRemote' : 'settings.mcp.form.preview')}
             </p>
             <code className="block break-all font-mono text-caption text-text-main">{preview}</code>
           </div>

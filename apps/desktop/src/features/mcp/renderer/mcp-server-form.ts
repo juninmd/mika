@@ -13,6 +13,11 @@ export type McpServerForm = {
   args: string[]
   env: EnvRow[]
   cwd: string
+  /** Servidor remoto (Streamable HTTP): usa `url`/`headers` no lugar de comando/args/env/cwd. */
+  remote: boolean
+  url: string
+  /** Mesma semântica de `env`: `Authorization` salvo nunca volta para a UI. */
+  headers: EnvRow[]
   enabled: boolean
   /** Args obrigatórios (vindo de template), ex.: a pasta do filesystem. */
   minArgs?: number
@@ -28,23 +33,43 @@ export type McpFormErrorCode =
   | 'envKey'
   | 'envDuplicate'
   | 'envValue'
+  | 'urlInvalid'
+  | 'headerKey'
+  | 'headerDuplicate'
 
-/** Campo (`name`, `command`, `cwd`, `args`, `env.<rowId>`) → código de erro. */
+/** Campo (`name`, `command`, `url`, `cwd`, `args`, `env.<rowId>`, `headers.<rowId>`) → código de erro. */
 export type McpFormErrors = Record<string, McpFormErrorCode>
 
 const NAME_RE = /^[A-Za-z0-9_.-]+$/
 const ENV_KEY_RE = /^[A-Za-z_][A-Za-z0-9_]{0,127}$/
 const ABSOLUTE_RE = /^(\/|[A-Za-z]:[\\/]|\\\\)/
+/** Token da RFC 9110 — mesmo alfabeto de `editor::is_header_key`. */
+const HEADER_KEY_RE = /^[A-Za-z0-9!#$%&'*+.^_`|~-]{1,128}$/
 
-export const emptyForm = (): McpServerForm => ({ name: '', command: '', args: [], env: [], cwd: '', enabled: true })
+export const emptyForm = (): McpServerForm => ({
+  name: '',
+  command: '',
+  args: [],
+  env: [],
+  cwd: '',
+  remote: false,
+  url: '',
+  headers: [],
+  enabled: true,
+})
+
+const savedRows = (keys: readonly string[]): EnvRow[] => keys.map((key) => ({ id: key, key, value: '', saved: true }))
 
 export function formFromServer(server: McpServerSummary): McpServerForm {
   return {
     name: server.name,
     command: server.command,
     args: [...server.args],
-    env: server.envKeys.map((key) => ({ id: key, key, value: '', saved: true })),
+    env: savedRows(server.envKeys),
     cwd: server.cwd ?? '',
+    remote: Boolean(server.url),
+    url: server.url ?? '',
+    headers: savedRows(server.headerKeys ?? []),
     enabled: server.enabled,
   }
 }
@@ -82,6 +107,9 @@ function envFromRows(rows: readonly EnvRow[]): Record<string, string | null> {
 }
 
 export function specFromForm(form: McpServerForm): McpServerSpecInput {
+  if (form.remote) {
+    return { command: '', url: form.url.trim(), headers: envFromRows(form.headers), enabled: form.enabled }
+  }
   const cwd = form.cwd.trim()
   return {
     command: form.command.trim(),
@@ -128,28 +156,58 @@ function nameError(name: string, taken: readonly string[], originalName?: string
   return undefined
 }
 
-function envErrors(rows: readonly EnvRow[]): McpFormErrors {
+const ROW_RULES = {
+  env: { keyRe: ENV_KEY_RE, keyCode: 'envKey', duplicateCode: 'envDuplicate', lowercase: false },
+  // Cabeçalho HTTP não diferencia caixa: `authorization` e `Authorization` são o mesmo.
+  headers: { keyRe: HEADER_KEY_RE, keyCode: 'headerKey', duplicateCode: 'headerDuplicate', lowercase: true },
+} as const
+
+function rowErrors(rows: readonly EnvRow[], kind: keyof typeof ROW_RULES): McpFormErrors {
+  const rules = ROW_RULES[kind]
   const errors: McpFormErrors = {}
   const seen = new Set<string>()
   for (const row of rows) {
     const key = row.key.trim()
+    const id = rules.lowercase ? key.toLowerCase() : key
     if (!key && !row.value) continue
-    if (!ENV_KEY_RE.test(key)) errors[`env.${row.id}`] = 'envKey'
-    else if (seen.has(key)) errors[`env.${row.id}`] = 'envDuplicate'
-    else if (!row.saved && row.value === '') errors[`env.${row.id}`] = 'envValue'
-    seen.add(key)
+    if (!rules.keyRe.test(key)) errors[`${kind}.${row.id}`] = rules.keyCode
+    else if (seen.has(id)) errors[`${kind}.${row.id}`] = rules.duplicateCode
+    else if (!row.saved && row.value === '') errors[`${kind}.${row.id}`] = 'envValue'
+    seen.add(id)
   }
   return errors
 }
 
-export function validateForm(form: McpServerForm, taken: readonly string[], originalName?: string): McpFormErrors {
-  const errors: McpFormErrors = envErrors(form.env)
-  const name = nameError(form.name, taken, originalName)
-  if (name) errors.name = name
+function urlError(url: string): McpFormErrorCode | undefined {
+  const trimmed = url.trim()
+  if (!trimmed) return 'required'
+  try {
+    const parsed = new URL(trimmed)
+    return ['http:', 'https:'].includes(parsed.protocol) && parsed.host ? undefined : 'urlInvalid'
+  } catch {
+    return 'urlInvalid'
+  }
+}
+
+function transportErrors(form: McpServerForm): McpFormErrors {
+  if (form.remote) {
+    const errors = rowErrors(form.headers, 'headers')
+    const url = urlError(form.url)
+    if (url) errors.url = url
+    return errors
+  }
+  const errors = rowErrors(form.env, 'env')
   if (!form.command.trim()) errors.command = 'required'
   const cwd = form.cwd.trim()
   if (cwd && !ABSOLUTE_RE.test(cwd)) errors.cwd = 'cwdAbsolute'
   if (form.minArgs && form.args.filter(Boolean).length < form.minArgs) errors.args = 'argsMissing'
+  return errors
+}
+
+export function validateForm(form: McpServerForm, taken: readonly string[], originalName?: string): McpFormErrors {
+  const errors = transportErrors(form)
+  const name = nameError(form.name, taken, originalName)
+  if (name) errors.name = name
   return errors
 }
 
