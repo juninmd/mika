@@ -26,7 +26,7 @@ export const WizardBackdrop = memo(function WizardBackdrop() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 overflow-hidden"
+      className="pointer-events-none fixed inset-0 overflow-hidden"
       style={{ background: 'var(--bg)' }}
     >
       {AURORAS.map((aurora) => (
