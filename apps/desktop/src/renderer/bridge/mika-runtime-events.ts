@@ -1,6 +1,6 @@
 import type { ActivityPayload, PowerProfileState } from '@mika/sdk/contracts'
 import { DESKTOP_INVOKE_CHANNELS, DESKTOP_RENDERER_EVENT_CHANNELS, DESKTOP_SEND_CHANNELS } from '@mika/sdk/contracts'
-import type { EventsRuntimeApi } from '../../shared/electron-api-types'
+import type { BrainProactiveThoughtPayload, EventsRuntimeApi } from '../../shared/electron-api-types'
 import { MIKA_EVENT_CHANNELS } from '../../shared/mika-event-channels'
 import { ipcRenderer } from '../../shared/tauri-renderer-runtime'
 import { onChannel } from './mika-runtime-channel'
@@ -66,7 +66,7 @@ export function createEventsRuntimeApi(): EventsRuntimeApi {
       ipcRenderer.send(DESKTOP_SEND_CHANNELS.VoiceMicStateRequest)
       return off
     },
-    onBrainProactiveThought: (callback: (payload: { type: string; message: string }) => void) =>
+    onBrainProactiveThought: (callback: (payload: BrainProactiveThoughtPayload) => void) =>
       onChannel(MIKA_EVENT_CHANNELS.brainProactiveThought, callback),
     onChatError: (callback: (payload: { message: string; type?: string }) => void) =>
       onChannel(MIKA_EVENT_CHANNELS.chatError, callback),

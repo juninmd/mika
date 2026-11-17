@@ -118,6 +118,8 @@ export const FEATURE_COMPONENT_HANDLED_FIELDS = {
     'vision.visualDiaryIntervalCycles',
     'vision.textDensityThreshold',
     'vision.captureBlocklist',
+    'vision.mediaReactions',
+    'vision.mediaReactionCooldownSec',
   ],
   GamerCompanionPanel: [
     'gamer-companion.enabled',
