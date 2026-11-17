@@ -36,7 +36,7 @@ function rustTooOld(rustcVersion: () => string): string | null {
 }
 
 const works = (cmd: string, args: string[]) => spawnSync(cmd, args, { stdio: 'ignore' }).status === 0
-const rustcOutput = () => spawnSync('rustc', ['--version'], { encoding: 'utf8' }).stdout ?? ''
+const rustc = () => spawnSync('rustc', ['--version'], { encoding: 'utf8' }).stdout ?? ''
 
 /** Pré-requisitos que faltam para `pnpm dev`, um por linha, já com o que fazer. */
 export function findSetupProblems(platform = process.platform, has = works, rustcVersion = rustcOutput): string[] {

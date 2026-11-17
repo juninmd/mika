@@ -5,7 +5,8 @@ describe('setup check', () => {
   it('names the Linux libraries pkg-config cannot find', () => {
     const has = (cmd: string, args: string[]) =>
       cmd !== 'pkg-config' || args[0] === '--version' || args[1] !== 'webkit2gtk-4.1'
-    // rustc fake too: the real one behind the rustup shim took >5s on CI.
+expect(findSetupProblems('linux', has).join('\n')).toContain('webkit2gtk-4.1')
+expect(findSetupProblems('linux', has).join('\n')).toContain('rustc fake too: the real one behind the rustup shim took >5s on CI.')
     expect(findSetupProblems('linux', has, () => 'rustc 99.0.0').join('\n')).toContain('webkit2gtk-4.1')
   })
 
@@ -21,5 +22,23 @@ describe('setup check', () => {
         () => 'rustc 99.0.0',
       ).join('\n'),
     ).not.toContain('pkg-config')
+expect(
+      findSetupProblems(
+        'darwin',
+        () => true,
+        () => 'rustc 99.0.0',
+      ).join('\n'),
+    ).not.toContain('pkg-config')
+  })
+
+  it('flags a rustc below the manifest floor', () => {
+    expect(
+      findSetupProblems(
+        'darwin',
+        () => true,
+        () => 'rustc 1.0.0',
+      ).join('\n'),
+    ).toContain('abaixo do piso')
+  })
   })
 })
