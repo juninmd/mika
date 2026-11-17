@@ -21,6 +21,8 @@ const MAX_ACHIEVEMENTS: usize = 10;
 /// Teto de eventos por sessão: uma maratona de horas não cresce a linha do SQLite sem limite.
 const MAX_SESSION_EVENTS: usize = 500;
 /// A visão só emite `boss|cutscene|death|victory|defeat` (`vision/watcher.rs`); `achievement` fica para eventos de outra origem.
+/// Mesmo tipo dentro desta janela é a mesma tela relida pela visão, não um momento novo.
+const SAME_MOMENT_MS: u64 = 90_000;
 const ACHIEVEMENT_KINDS: &[&str] = &["achievement", "victory"];
 
 /// Momento de visão como evento de sessão. O mini-game é a Mika contra o usuário, não o jogo aberto.
@@ -49,8 +51,10 @@ pub(super) fn record_moment(memory: &SessionMemory, store: &ConfigStore, payload
         return false; // tick atrasado depois de um alt-tab: não é deste jogo.
     }
     let Some(event) = moment_event(payload, at_ms) else { return false };
-    // A visão republica a mesma tela de morte a cada passada: um momento conta uma vez.
-    if session.events.iter().any(|e| e.kind == event.kind && e.description == event.description) {
+    // A visão republica a mesma tela a cada passada, às vezes com outra descrição: um momento conta uma vez.
+    let at = super::iso_time::parse_iso8601(&event.timestamp).unwrap_or(at_ms);
+    let near = |e: &GameEvent| super::iso_time::parse_iso8601(&e.timestamp).is_some_and(|t| t.abs_diff(at) < SAME_MOMENT_MS);
+    if session.events.iter().any(|e| e.kind == event.kind && (e.description == event.description || near(e))) {
         return false;
     }
     memory.push_event(event, MAX_SESSION_EVENTS)
@@ -246,6 +250,10 @@ mod tests {
         let minigame = json!({ "game": "Jogo da Velha", "type": "victory", "description": "x", "source": "minigame" });
         assert!(!record_moment(&memory, &store, &minigame, 2));
         assert!(!record_moment(&memory, &store, &death, 2), "a mesma tela de morte repetida conta uma vez");
+        let reworded = json!({ "game": "Hades", "type": "death", "description": "morreu para a Megera", "at": 30_000 });
+        assert!(!record_moment(&memory, &store, &reworded, 30_000), "mesma tela relida com outra descrição");
+        let later = json!({ "game": "Hades", "type": "death", "description": "Asterion", "at": 200_000 });
+        assert!(record_moment(&memory, &store, &later, 200_000), "outra morte, minutos depois, conta");
         let other_game = json!({ "game": "Celeste", "type": "death", "description": "espinhos" });
         assert!(!record_moment(&memory, &store, &other_game, 2), "momento de outro jogo não entra nesta sessão");
         store.set("privacy.passengerMode", json!(true)).unwrap();
@@ -253,7 +261,7 @@ mod tests {
 
         let ended = memory.end_session().unwrap().unwrap();
         let _ = std::fs::remove_dir_all(&dir);
-        assert_eq!(ended.events.iter().map(|e| e.description.as_str()).collect::<Vec<_>>(), ["Megera"]);
+        assert_eq!(ended.events.iter().map(|e| e.description.as_str()).collect::<Vec<_>>(), ["Megera", "Asterion"]);
     }
 
     #[test]
