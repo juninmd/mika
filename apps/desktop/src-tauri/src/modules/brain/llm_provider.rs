@@ -70,12 +70,12 @@ fn transport() -> rig_reqwest::ReqwestClient {
 /// as duas setadas, o turno vai para esse servidor local. No binário distribuído a função nem
 /// existe: as variáveis no ambiente do usuário não redirecionam o prompt para lugar nenhum.
 #[cfg(feature = "e2e")]
-fn e2e_cloud_base() -> Option<String> {
+pub(crate) fn e2e_cloud_base() -> Option<String> {
     e2e_cloud_base_with(std::env::var("MIKA_E2E").ok().as_deref(), std::env::var("MIKA_E2E_CLOUD_BASE_URL").ok().as_deref())
 }
 
 #[cfg(not(feature = "e2e"))]
-fn e2e_cloud_base() -> Option<String> {
+pub(crate) fn e2e_cloud_base() -> Option<String> {
     None
 }
 
