@@ -132,6 +132,16 @@ fn vision() -> Namespace {
                 FieldUi::new("settings.vision.field.visualDiaryIntervalCycles.label")
                     .described("settings.vision.field.visualDiaryIntervalCycles.description"),
             ),
+            // Reações em tempo real ao vídeo/live/música em foco (`vision::media_reaction`). Opt-in:
+            // comentar o que o dono assiste sem ele pedir só com o toggle ligado.
+            boolean("mediaReactions", false).with_ui(
+                FieldUi::new("settings.vision.field.mediaReactions.label")
+                    .described("settings.vision.field.mediaReactions.description"),
+            ),
+            int_range("mediaReactionCooldownSec", 300, 60, 1800).with_ui(
+                FieldUi::new("settings.vision.field.mediaReactionCooldownSec.label")
+                    .described("settings.vision.field.mediaReactionCooldownSec.description"),
+            ),
         ],
     }
 }

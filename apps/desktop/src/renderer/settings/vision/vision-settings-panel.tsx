@@ -6,6 +6,7 @@ import { configBool, configNum, configStr, pick } from '../../src/components/set
 import { useI18n } from '../../src/hooks/useI18n'
 import { useUIStore } from '../../src/store/useUIStore'
 import { VisionLiveMonitor } from './vision-live-monitor'
+import { VisionMediaReactionsCard } from './vision-media-reactions-card'
 import { visionBlockReason } from './vision-readiness'
 import { VisionDisabledHero } from './vision-settings-components'
 import { getAwarenessToggles, getBehaviorToggles, getCaptureSliders } from './vision-settings-controls'
@@ -85,6 +86,8 @@ export function VisionSettingsPanel(props: VisionSettingsPanelProps) {
     configNum(rawCfg, 'vision.textDensityThreshold', 0.12),
   )
   const captureBlocklist = pick(props.captureBlocklist, () => configStr(rawCfg, 'vision.captureBlocklist', ''))
+  const mediaReactions = configBool(rawCfg, 'vision.mediaReactions')
+  const mediaReactionCooldownSec = configNum(rawCfg, 'vision.mediaReactionCooldownSec', 300)
   const privacy = {
     screenCapture: configBool(rawCfg, 'privacy.screenCapture'),
     clipboardLogging: configBool(rawCfg, 'privacy.clipboardLogging'),
@@ -175,6 +178,16 @@ export function VisionSettingsPanel(props: VisionSettingsPanelProps) {
             boolSave={boolSave}
             numSave={numSave}
             stringSave={stringSave}
+          />
+        )}
+
+        {enabled && (
+          <VisionMediaReactionsCard
+            t={t}
+            enabled={mediaReactions}
+            cooldownSec={mediaReactionCooldownSec}
+            boolSave={boolSave}
+            numSave={numSave}
           />
         )}
 
