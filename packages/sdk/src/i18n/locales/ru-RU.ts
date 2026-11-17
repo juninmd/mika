@@ -939,6 +939,9 @@ export const ruRU: TranslationDict = {
   'settings.gamerCompanion.field.gameWatcherEnabled.description':
     'Следит за активными процессами, чтобы понять, когда ты играешь.',
   'settings.gamerCompanion.field.gameWatcherIntervalSeconds.label': 'Интервал проверки (с)',
+  'settings.gamerCompanion.field.copilotEnabled.label': 'Режим второго пилота',
+  'settings.gamerCompanion.field.copilotEnabled.description':
+    'Пока вы играете, Мика коротко предупреждает голосом об опасностях и пропущенных предметах, не повторяясь и не перебивая в напряжённые моменты.',
   'settings.gamerCompanion.field.backseatGamingEnabled.label': 'Режим подсказчика (советы)',
   'settings.gamerCompanion.field.backseatGamingEnabled.description':
     'Mika будет давать советы и предупреждения в реальном времени об игре, в которую ты играешь.',

@@ -882,6 +882,8 @@ export type TranslationDict = {
   'settings.gamerCompanion.field.gameWatcherEnabled.label': string
   'settings.gamerCompanion.field.gameWatcherEnabled.description': string
   'settings.gamerCompanion.field.gameWatcherIntervalSeconds.label': string
+  'settings.gamerCompanion.field.copilotEnabled.label': string
+  'settings.gamerCompanion.field.copilotEnabled.description': string
   'settings.gamerCompanion.field.backseatGamingEnabled.label': string
   'settings.gamerCompanion.field.backseatGamingEnabled.description': string
   'settings.gamerCompanion.field.backseatAggressiveness.label': string

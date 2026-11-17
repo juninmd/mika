@@ -882,6 +882,9 @@ export const zhCN: TranslationDict = {
   'settings.gamerCompanion.field.gameWatcherEnabled.label': '自动游戏检测',
   'settings.gamerCompanion.field.gameWatcherEnabled.description': '监控活动进程以检测你何时在玩游戏。',
   'settings.gamerCompanion.field.gameWatcherIntervalSeconds.label': '检查间隔(秒)',
+  'settings.gamerCompanion.field.copilotEnabled.label': '副驾驶模式',
+  'settings.gamerCompanion.field.copilotEnabled.description':
+    '游戏时,米卡会用一句简短的语音提醒你危险和遗漏的物品,不会重复,也不会在紧张时刻打扰你。',
   'settings.gamerCompanion.field.backseatGamingEnabled.label': '指导模式(提示)',
   'settings.gamerCompanion.field.backseatGamingEnabled.description': '米卡会实时对你正在玩的游戏给出提示和提醒。',
   'settings.gamerCompanion.field.backseatAggressiveness.label': '指导模式的积极程度',
