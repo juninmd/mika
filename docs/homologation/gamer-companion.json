@@ -5,7 +5,7 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "cd73856a6f08c330f7cf02b38d103e0498159239+dirty",
+    "commit": "f92bd4066865f8f31f33c0df989cb253a6d4b8eb+dirty",
     "tree": "1d6d03f0133f6f81",
     "contract": "e3b0c44298fc1c14",
     "deps": {
@@ -57,7 +57,7 @@
     {
       "id": "contrato",
       "status": "ok",
-      "detail": "297 teste(s) Rust em modules::gamer"
+      "detail": "304 teste(s) Rust em modules::gamer"
     }
   ],
   "estado": "aprovado",

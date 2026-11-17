@@ -26,25 +26,27 @@ const versionOf = (text: string) =>
 const isOlder = (a: number[], b: number[]) => (a[0] ?? 0) < (b[0] ?? 0) || (a[0] === b[0] && (a[1] ?? 0) < (b[1] ?? 0))
 
 /** O `rust-version` do manifesto é o piso: abaixo dele o build falha no meio, com erro de crate. */
-function rustTooOld(): string | null {
+function rustTooOld(rustcVersion: () => string): string | null {
   const manifest = readFileSync(new URL('../../apps/desktop/src-tauri/Cargo.toml', import.meta.url), 'utf8')
   const floor = manifest.match(/^rust-version\s*=\s*"([^"]+)"/m)?.[1]
-  const out = spawnSync('rustc', ['--version'], { encoding: 'utf8' }).stdout ?? ''
+  const out = rustcVersion()
   return floor && isOlder(versionOf(out), versionOf(floor))
     ? `rustc ${versionOf(out).join('.')} abaixo do piso ${floor} — rode \`rustup update stable\``
     : null
 }
 
 const works = (cmd: string, args: string[]) => spawnSync(cmd, args, { stdio: 'ignore' }).status === 0
+// A cold `rustc` behind rustup can take seconds; injectable so the check stays testable.
+const rustc = () => spawnSync('rustc', ['--version'], { encoding: 'utf8' }).stdout ?? ''
 
 /** Pré-requisitos que faltam para `pnpm dev`, um por linha, já com o que fazer. */
-export function findSetupProblems(platform = process.platform, has = works): string[] {
+export function findSetupProblems(platform = process.platform, has = works, rustcVersion = rustc): string[] {
   const problems: string[] = []
   const nodeError = getDevRuntimeError()
   if (nodeError) problems.push(nodeError)
   if (!has('cargo', ['--version'])) problems.push('Rust ausente: instale a toolchain estável em https://rustup.rs')
   else {
-    const old = rustTooOld()
+    const old = rustTooOld(rustcVersion)
     if (old) problems.push(old)
   }
   if (platform === 'linux') {

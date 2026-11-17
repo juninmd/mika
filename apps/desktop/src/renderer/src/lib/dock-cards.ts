@@ -1,16 +1,16 @@
 /** A tool result worth floating beside the edge dock: what she just did, at a glance. */
 export type DockCardContent = {
-  kind: 'reminder' | 'hint' | 'recap' | 'media' | 'daily'
+  kind: 'reminder' | 'hint' | 'recap' | 'daily' | 'media'
   subject: string
   body: string
   /** Help-ladder step of a hint (`gamer::game_knowledge_tool::HelpLadder`). */
   level?: 'hint' | 'tip' | 'solution'
   /** When a reminder fires (epoch ms). */
   at?: number
-  /** What a media reaction is about (`vision::media_reaction`). */
-  media?: 'video' | 'live' | 'music'
   /** "What did we do today" (`game_session` today); `passenger` means the recaps were left out. */
   daily?: { sessions: number; deaths: number; streak: number; achievements: string[]; passenger: boolean }
+  /** What a media reaction is about (`vision::media_reaction`). */
+  media?: 'video' | 'live' | 'music'
 }
 
 type Data = Record<string, unknown>

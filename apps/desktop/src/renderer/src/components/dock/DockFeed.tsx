@@ -91,13 +91,12 @@ const ITEM =
 const DISMISS =
   'absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg text-text-muted hover:bg-surface-raise-strong hover:text-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-focus'
 
-const CARD_ICON = { reminder: BellRing, hint: Lightbulb, recap: BookOpen, media: Tv, daily: CalendarCheck } as const
+const CARD_ICON = { reminder: BellRing, hint: Lightbulb, recap: BookOpen, daily: CalendarCheck, media: Tv } as const
 
 function CardTitle({ card }: { card: Card }) {
   const { t, locale } = useI18n()
   if (card.kind === 'hint') return <>{t(`shell.edgeDock.card.level.${card.level ?? 'tip'}`)}</>
   if (card.kind === 'recap') return <>{t('shell.edgeDock.card.recap')}</>
-  if (card.kind === 'media') return <>{t(`shell.edgeDock.card.media.${card.media ?? 'video'}`)}</>
   if (card.kind === 'daily')
     return (
       <>
@@ -106,6 +105,7 @@ function CardTitle({ card }: { card: Card }) {
           .join(' · ')}
       </>
     )
+  if (card.kind === 'media') return <>{t(`shell.edgeDock.card.media.${card.media ?? 'video'}`)}</>
   const at = card.at ? new Date(card.at).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : ''
   return <>{[t('shell.edgeDock.card.reminder'), at].filter(Boolean).join(' · ')}</>
 }
