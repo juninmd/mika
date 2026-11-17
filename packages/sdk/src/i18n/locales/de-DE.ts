@@ -283,6 +283,7 @@ export const deDE: TranslationDict = {
   'shell.menu.mic': 'Mikrofon',
   'shell.menu.pin': 'Im Vordergrund halten',
   'shell.menu.miniMode': 'Mini-Modus',
+  'shell.menu.edgeDock': 'Randdock',
   'shell.menu.settings': 'Einstellungen',
   'shell.menu.clearHistory': 'Verlauf löschen',
   'shell.tray.show': 'Anzeigen',

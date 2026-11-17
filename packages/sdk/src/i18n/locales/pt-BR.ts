@@ -281,6 +281,7 @@ export const ptBR: TranslationDict = {
   'shell.menu.mic': 'Microfone',
   'shell.menu.pin': 'Fixar no topo',
   'shell.menu.miniMode': 'Modo mini',
+  'shell.menu.edgeDock': 'Dock de borda',
   'shell.menu.settings': 'Configurações',
   'shell.menu.clearHistory': 'Limpar histórico',
   'shell.tray.show': 'Mostrar',

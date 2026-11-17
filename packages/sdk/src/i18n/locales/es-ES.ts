@@ -281,6 +281,7 @@ export const esES: TranslationDict = {
   'shell.menu.mic': 'Micrófono',
   'shell.menu.pin': 'Mantener encima',
   'shell.menu.miniMode': 'Modo mini',
+  'shell.menu.edgeDock': 'Dock lateral',
   'shell.menu.settings': 'Configuración',
   'shell.menu.clearHistory': 'Borrar historial',
   'shell.tray.show': 'Mostrar',

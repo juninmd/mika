@@ -295,6 +295,7 @@ export type TranslationDict = {
   'shell.menu.mic': string
   'shell.menu.pin': string
   'shell.menu.miniMode': string
+  'shell.menu.edgeDock': string
   'shell.menu.pinOn': string
   'shell.menu.pinOff': string
   'shell.menu.settings': string

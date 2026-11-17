@@ -281,6 +281,7 @@ export const enUS: TranslationDict = {
   'shell.menu.mic': 'Microphone',
   'shell.menu.pin': 'Keep on top',
   'shell.menu.miniMode': 'Mini mode',
+  'shell.menu.edgeDock': 'Edge dock',
   'shell.menu.settings': 'Settings',
   'shell.menu.clearHistory': 'Clear history',
   'shell.tray.show': 'Show',
