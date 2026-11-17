@@ -14,6 +14,7 @@ import { MikaContextMenu } from './components/MikaContextMenu'
 import { NeuralWheel } from './components/NeuralWheel'
 import { NotificationContainer } from './components/NotificationToast'
 import { ProactiveThoughtBubble } from './components/ProactiveThoughtBubble'
+import { UpdatePrompt } from './components/UpdatePrompt'
 import { useAppShell } from './hooks/useAppShell'
 import { useClickThrough } from './hooks/useClickThrough'
 import { useHudLayout } from './hooks/useHudLayout'
@@ -36,7 +37,7 @@ import { useUIStore } from './store/useUIStore'
 export const App = memo(function App() {
   useTheme()
   useClickThrough()
-  const { available: updateAvailable } = useUpdateChecker()
+  const update = useUpdateChecker()
   const providerDown = useProviderHealthIndicator()
   const { isOpen: wheelOpen, position: wheelPos, openWheel, closeWheel } = useNeuralWheel()
   const { pending: approvalPending, approve, deny } = useToolApprovalGate()
@@ -226,13 +227,14 @@ export const App = memo(function App() {
                 onStopSpeech={stopTTS}
                 sttEnabled={sttEnabled}
                 inputMode={inputMode}
-                updateAvailable={updateAvailable}
+                updateAvailable={update.available}
                 providerDown={providerDown}
               />
             </div>
 
             <NotificationContainer notifications={notifications} onDismiss={dismiss} anchor={hudLayout.toasts} />
             <ProactiveThoughtBubble anchor={hudLayout.toasts} />
+            <UpdatePrompt update={update} anchor={hudLayout.toasts} />
             <CommandPalette />
 
             <NeuralWheel
