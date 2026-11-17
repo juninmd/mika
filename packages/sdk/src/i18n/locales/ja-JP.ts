@@ -214,6 +214,7 @@ export const jaJP: TranslationDict = {
   'shell.bubble.openHistory': '履歴を開く',
   'shell.dock.history': '履歴',
   'shell.dock.stopSpeech': '話すのをやめる',
+  'shell.dock.stopThinking': '返答をキャンセル',
   'shell.dock.short.stop': '停止',
   'shell.dock.short.mic': 'マイク',
   'shell.dock.short.chat': 'チャット',

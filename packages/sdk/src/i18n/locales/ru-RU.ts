@@ -224,6 +224,7 @@ export const ruRU: TranslationDict = {
   'shell.bubble.openHistory': 'Открыть историю',
   'shell.dock.history': 'История',
   'shell.dock.stopSpeech': 'Остановить речь',
+  'shell.dock.stopThinking': 'Отменить ответ',
   'shell.dock.short.stop': 'Стоп',
   'shell.dock.short.mic': 'Микрофон',
   'shell.dock.short.chat': 'Чат',

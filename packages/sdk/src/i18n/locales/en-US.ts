@@ -217,6 +217,7 @@ export const enUS: TranslationDict = {
   'shell.bubble.openHistory': 'Open history',
   'shell.dock.history': 'History',
   'shell.dock.stopSpeech': 'Stop speaking',
+  'shell.dock.stopThinking': 'Cancel reply',
   'shell.dock.short.stop': 'Stop',
   'shell.dock.short.mic': 'Microphone',
   'shell.dock.short.chat': 'Chat',

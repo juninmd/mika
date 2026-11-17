@@ -217,6 +217,7 @@ export const ptBR: TranslationDict = {
   'shell.bubble.openHistory': 'Abrir histórico',
   'shell.dock.history': 'Histórico',
   'shell.dock.stopSpeech': 'Parar de falar',
+  'shell.dock.stopThinking': 'Cancelar resposta',
   'shell.dock.short.stop': 'Parar',
   'shell.dock.short.mic': 'Microfone',
   'shell.dock.short.chat': 'Chat',
