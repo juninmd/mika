@@ -14,6 +14,7 @@ import type {
   LlmPullProgress,
   LlmStatus,
   OpenRouterKeyStatus,
+  ProviderBilling,
 } from '../../shared/electron-api-system-types'
 import type { SystemRuntimeApi } from '../../shared/electron-api-types'
 import { ipcRenderer } from '../../shared/tauri-renderer-runtime'
@@ -107,6 +108,10 @@ export function createSystemRuntimeApi(): SystemRuntimeApi {
         provider,
         model,
       }) as Promise<LlmModelProfile>,
+    getProviderBilling: (provider: string) =>
+      ipcRenderer.invoke(DESKTOP_LOCAL_INVOKE_ROUTES.providerBillingGet.channel, {
+        provider,
+      }) as Promise<ProviderBilling>,
     getLlmStatus: () => ipcRenderer.invoke(DESKTOP_LOCAL_INVOKE_ROUTES.llmGetStatus.channel) as Promise<LlmStatus>,
     onLlmStatus: (callback: (status: LlmStatus) => void) =>
       onChannel(DESKTOP_RENDERER_EVENT_CHANNELS.LlmStatus, callback),

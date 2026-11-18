@@ -28,6 +28,7 @@ import { appBinaryPath } from './app-binary'
 import { connectHost, type HostSession, isHostMode } from './e2e-host'
 import { legalAccepted } from './legal-accepted'
 import { startFakeWiki, type FakeWiki } from './fake-wiki-server'
+import { startFakeUpdateFeed, type FakeUpdateFeed } from './fake-update-feed'
 import { createTempProfile, type TempProfile } from './temp-profile'
 
 // Playwright compila specs/fixtures de `e2e/**` em CJS — `import.meta.url` quebraria com "Cannot
@@ -64,12 +65,15 @@ type MikaFixtures = {
   profile: TempProfile
   llm: FakeOllama
   wiki: FakeWiki
+  updateFeed: FakeUpdateFeed | null
   cdpPort: number
 }
 
 // Skin pinned via `test.use({ skin: 'haru' })`, not process.env — workers:1 shares a process, so an env var would leak across specs.
 type MikaOptions = {
   skin: string | undefined
+  /** Versão que o `latest.json` local anuncia; sem ela o app não tem endpoint de update. */
+  updateVersion: string | undefined
 }
 
 /** Instância órfã do plugin single-instance faz a próxima sessão morrer calada no handshake. */
@@ -262,6 +266,16 @@ export async function capturePagePixels(
 
 export const test = base.extend<MikaFixtures & MikaOptions>({
   skin: [undefined, { option: true }],
+  updateVersion: [undefined, { option: true }],
+
+  updateFeed: async ({ updateVersion }, use) => {
+    const feed = updateVersion ? await startFakeUpdateFeed(updateVersion, 'Correções e melhorias.') : null
+    try {
+      await use(feed)
+    } finally {
+      await feed?.close()
+    }
+  },
 
   profile: async ({}, use) => {
     const profile = await createTempProfile()
@@ -296,7 +310,7 @@ export const test = base.extend<MikaFixtures & MikaOptions>({
 
   // Own budget: cold first launch is slower than 90s under load; keep it separate from the test timeout.
   app: [
-    async ({ profile, llm, wiki, skin, cdpPort }, use) => {
+    async ({ profile, llm, wiki, skin, cdpPort, updateFeed }, use) => {
       expect(
         existsSync(appBinaryPath),
         `${appBinaryPath} não existe. Rode "pnpm --filter @mika/desktop build:e2e" primeiro (NUNCA "cargo build --release" cru, e sem a feature e2e os ganchos de teste não existem — ver e2e/fixtures/app-binary.ts).`,
@@ -358,6 +372,7 @@ export const test = base.extend<MikaFixtures & MikaOptions>({
           // Google e OpenRouter têm URL fixa: com esta env var (dupla trava com `MIKA_E2E=1`, só no
           // binário `e2e`) o turno deles vai para o mesmo dublê local — ver `llm_provider::e2e_cloud_base`.
           MIKA_E2E_CLOUD_BASE_URL: llm.baseUrl,
+          ...(updateFeed ? { MIKA_E2E_UPDATE_ENDPOINT: updateFeed.endpoint } : {}),
           // E2E sem rede externa: o proxy aponta para uma porta fechada e só o loopback (LLM e Wikipédia
           // dublês) passa. Sem isto a preparação de modelos da tela final baixava ~790 MB de verdade e o
           // "Voltar" só destravava ao fim do download (ou nunca, num teste de 60 s).
