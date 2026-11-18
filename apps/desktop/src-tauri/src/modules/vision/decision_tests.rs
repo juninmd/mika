@@ -60,6 +60,69 @@ fn raw_base64_becomes_a_jpeg_data_url() {
 
 struct TempDir(std::path::PathBuf);
 
+/// One-shot loopback HTTP server: answers the first request with `body` and hands back the
+/// request body it received.
+fn serve_once(body: &'static str) -> (String, std::thread::JoinHandle<String>) {
+    use std::io::{BufRead, BufReader, Read, Write};
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let url = format!("http://{}", listener.local_addr().unwrap());
+    let handle = std::thread::spawn(move || {
+        let (stream, _) = listener.accept().unwrap();
+        let mut reader = BufReader::new(stream.try_clone().unwrap());
+        let mut length = 0;
+        loop {
+            let mut line = String::new();
+            reader.read_line(&mut line).unwrap();
+            if line == "\r\n" {
+                break;
+            }
+            if let Some(v) = line.to_ascii_lowercase().strip_prefix("content-length:") {
+                length = v.trim().parse().unwrap();
+            }
+        }
+        let mut request = vec![0; length];
+        reader.read_exact(&mut request).unwrap();
+        let mut stream = stream;
+        write!(stream, "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}", body.len()).unwrap();
+        String::from_utf8(request).unwrap()
+    });
+    (url, handle)
+}
+
+fn store_for(url: &str, tag: &str) -> (ConfigStore, TempDir) {
+    let dir = TempDir(std::env::temp_dir().join(format!("mika-decision-{tag}-{}", std::process::id())));
+    std::fs::create_dir_all(&dir.0).unwrap();
+    let store = ConfigStore::open(&dir.0, crate::config::schemas::registry()).unwrap();
+    store.set("vision.decisionBaseUrl", json!(url)).unwrap();
+    (store, dir)
+}
+
+/// The real HTTP path: every frame goes out as a data URL with the four questions, and the
+/// server's answers come back as a verdict.
+#[tokio::test(flavor = "multi_thread")]
+async fn decide_sends_the_frames_and_reads_the_answers() {
+    let (url, server) = serve_once(r#"{"answers":{"game":{"type":"noul","noul":1.0},"moment":{"type":"choice","choice":"none","confidence":0.4},"danger":{"type":"noul","noul":0.9},"notable":{"type":"noul","noul":0.6}},"usage":{"input_tokens":9,"output_tokens":0}}"#);
+    let (store, _dir) = store_for(&url, "ok");
+    let verdict = decide(&store, &["QUJD".to_string(), "data:image/png;base64,REVG".to_string()]).await;
+    assert_eq!(verdict, Some(Verdict { urgent: true, notable: true }));
+    let request: Value = serde_json::from_str(&server.join().unwrap()).unwrap();
+    assert_eq!(request["images"], json!(["data:image/jpeg;base64,QUJD", "data:image/png;base64,REVG"]));
+    assert_eq!(request["state"], Value::Null);
+    assert_eq!(request["questions"], questions());
+}
+
+/// A server that answers without `answers` (wrong model, old llama-server) is no verdict and is
+/// recorded in the provider-health banner, never read as "nothing happening".
+#[tokio::test(flavor = "multi_thread")]
+async fn a_response_without_answers_is_no_verdict_and_a_recorded_failure() {
+    let (url, server) = serve_once(r#"{"usage":{"input_tokens":9,"output_tokens":0}}"#);
+    let (store, _dir) = store_for(&url, "missing");
+    assert_eq!(decide(&store, &["QUJD".to_string()]).await, None);
+    server.join().unwrap();
+    let entry = provider_health::get(PROVIDER, &url).expect("failure recorded");
+    assert_eq!(entry.to_json()["failureCount"], json!(1));
+}
+
 impl Drop for TempDir {
     fn drop(&mut self) {
         let _ = std::fs::remove_dir_all(&self.0);
