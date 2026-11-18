@@ -79,6 +79,12 @@ mod tests {
         assert!(refusal(Phase::Downloaded).is_none());
     }
 
+    /// `prompts/update/new-version-speech.md` tells the model to call it by this name.
+    #[test]
+    fn name_matches_the_one_the_speech_prompt_cites() {
+        assert_eq!(definition().name, "app_update");
+    }
+
     #[test]
     fn takes_no_arguments_so_the_llm_cannot_pick_a_version() {
         assert_eq!(definition().input_schema["properties"], json!({}));
