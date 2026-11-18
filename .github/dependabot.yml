@@ -11,6 +11,8 @@ updates:
       rust-minor-patch:
         update-types: [minor, patch]
 
+    cooldown:
+      default-days: 7
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -20,8 +22,15 @@ updates:
       npm-minor-patch:
         update-types: [minor, patch]
 
+    cooldown:
+      default-days: 7
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns: ['*']
+    cooldown:
+      default-days: 7
