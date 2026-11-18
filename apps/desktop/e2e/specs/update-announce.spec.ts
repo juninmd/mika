@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import { artifactPath, writeArtifact } from '../fixtures/artifact'
+import { openComposer } from '../fixtures/composer'
 import { waitForUiIdle } from '../fixtures/settled'
 import { expect, test } from '../fixtures/tauri-app'
 
@@ -47,4 +48,33 @@ test('versão nova: Mika avisa, pergunta, e "Depois" não instala nada', async (
     spokenLines: (await assistantLines(page)).length,
     statusAfterLater: status,
   })
+})
+
+// The spoken "yes" lands as a chat turn (voice goes through STT into the same send path): the LLM
+// double calls `app_update`, which goes straight to the updater. The feed's package URL is a closed
+// port, so the download fails — what this proves is the wiring, not a real install.
+test('versão nova: "pode atualizar" chama app_update e o backend tenta baixar', async ({ app }) => {
+  test.setTimeout(120_000)
+  const page = await app.firstWindow()
+  await page.waitForLoadState('domcontentloaded')
+  await expect(page.getByTestId('update-prompt')).toBeVisible({ timeout: 60_000 })
+
+  await page.evaluate(() => {
+    const w = window as unknown as Api & { __update: unknown[] }
+    w.__update = []
+    w.electronAPI.runtime.onToolResult(({ name, result }) => {
+      if (name === 'app_update') w.__update.push(result)
+    })
+  })
+  const input = await openComposer(page)
+  await input.fill('pode atualizar')
+  await input.press('Enter')
+
+  const results = () => page.evaluate(() => (window as unknown as { __update: unknown[] }).__update)
+  await expect.poll(async () => (await results()).length, { timeout: 60_000 }).toBeGreaterThan(0)
+  const result = JSON.stringify((await results())[0])
+  expect(result).not.toContain('nenhuma versão nova pendente')
+  expect(result).toContain('"success":false')
+
+  writeArtifact('update-by-voice', { toolResult: (await results())[0] })
 })
