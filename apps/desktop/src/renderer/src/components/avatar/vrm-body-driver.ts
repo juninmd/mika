@@ -18,6 +18,7 @@ import {
   applyIdleSway,
   applySpeechGesture,
   readArmPose,
+  SpeechEnvelope,
   writeArmPose,
 } from './vrm-pose'
 import { attachEyeTarget } from './vrm-scene-setup'
@@ -50,6 +51,8 @@ export class VrmBodyDriver {
   private sceneBaseX = 0
   private sceneBaseTurn = 0
   private readonly ambient: SpringState = { value: 1, velocity: 0 }
+  private readonly speech = new SpeechEnvelope()
+  private readonly armSway: SpringState = { value: 1, velocity: 0 }
 
   constructor(scene: THREE.Scene) {
     scene.add(this.lookTarget, this.eyeTarget)
@@ -140,15 +143,15 @@ export class VrmBodyDriver {
     this.quietGate.enabled = idleEnabled
     this.applyArmPose(vrm, this.withIdleState(actionPose, dt, elapsed))
     vrm.scene.position.y = this.sceneBaseY + Math.sin(this.jumpImpulse * Math.PI) * 0.08 + this.bodyPose.hipsY
-    if (!this.arms.playing) {
-      applyIdleArmSway(vrm.humanoid, breath, weightLag)
-    }
+    // Fades out under a gesture instead of switching off: dropping it in one frame snapped the arms.
+    const armSway = Math.max(0, springTo(this.armSway, this.arms.playing ? 0 : 1, 10, dt))
+    if (armSway > 1e-3) applyIdleArmSway(vrm.humanoid, breath * armSway, weightLag * armSway)
     // A held idle state is the idle pose for now: no random full-pose action on top of it.
     this.poseGate.busy = this.quietGate.busy || this.states.current !== null
     this.poseGate.enabled = idleEnabled
     const idleAction = this.idle.tick(dt, this.poseGate)
     if (idleAction) this.play(idleAction)
-    applySpeechGesture(vrm.humanoid, speaking, volume, elapsed)
+    applySpeechGesture(vrm.humanoid, this.speech.advance(speaking, volume, dt), elapsed)
     addBodyPoseOffsets(vrm.humanoid, this.bodyPose)
     this.driveIdleClip(idleEnabled)
     this.clips.blend(dt)

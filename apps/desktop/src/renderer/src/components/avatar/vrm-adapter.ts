@@ -21,6 +21,7 @@ import { VrmBodyDriver } from './vrm-body-driver'
 import type { ArmPose } from './vrm-body-rig'
 import type { VrmLifeSnapshot } from './vrm-debug-bridge'
 import { applyFabricDetail } from './vrm-fabric'
+import { frameDelta } from './vrm-frame-policy'
 import { IDLE_STATES, type IdleState } from './vrm-idle-states'
 import { VrmKatana } from './vrm-katana'
 import { bodyActionForExpression, expressionPreset, ORIGINAL_LOOK, type VrmLook } from './vrm-look'
@@ -328,7 +329,7 @@ export class VrmAvatar implements AvatarEngine {
   update(dt: number): void {
     const vrm = this.vrm
     if (!vrm) return
-    dt = Number.isFinite(dt) ? Math.max(0, Math.min(dt, 0.05)) : 0
+    dt = frameDelta(dt)
     // Lip-sync sources are pulled here, not pushed per frame by the component, so both backends share one ref.
     if (this.volumeRef) this.mouthOpen = clamp01(this.volumeRef.current, 0)
     if (this.vowelsRef) this.vowels = this.vowelsRef.current
