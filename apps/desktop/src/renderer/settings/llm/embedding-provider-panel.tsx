@@ -14,6 +14,7 @@ import {
 import { Cpu, Globe, Layers, Plug, Server, Sparkles, Zap } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { ModelPickerField } from '../../src/components/settings/ModelPickerField'
+import { ProviderBillingCard } from '../../src/components/settings/ProviderBillingCard'
 import { type BadgeKind, providerBadges } from '../../src/components/settings/provider-badges'
 import { configBool, configNum, configStr, pick } from '../../src/components/settings/settings-utils'
 import { useProviderModelTransaction } from '../../src/components/settings/useProviderModelTransaction'
@@ -205,6 +206,8 @@ export function EmbeddingProviderPanel(props: EmbeddingProviderPanelProps) {
             )}
           />
         </GlassCard>
+
+        <ProviderBillingCard provider={embeddingProvider} />
       </BentoGrid>
     </GlassSection>
   )

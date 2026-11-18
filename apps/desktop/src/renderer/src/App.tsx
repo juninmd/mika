@@ -79,6 +79,7 @@ export const App = memo(function App() {
     handleTogglePin,
     handleClearHistory,
     stopTTS,
+    stopTurn,
     expression,
     volumeRef,
   } = shell
@@ -117,6 +118,7 @@ export const App = memo(function App() {
   const { anchor: menuAnchor, open: openContextMenu, close: closeContextMenu } = useMikaContextMenu()
   const menuItems = useMikaMenuItems({
     mini,
+    miniStyle,
     pinned,
     micEnabled,
     onTogglePin: handleTogglePin,
@@ -224,7 +226,7 @@ export const App = memo(function App() {
                 onOpenHistory={handleOpenHistory}
                 onOpenWheel={() => openWheel()}
                 ttsIsPlaying={ttsIsPlaying}
-                onStopSpeech={stopTTS}
+                onStop={stopTurn}
                 sttEnabled={sttEnabled}
                 inputMode={inputMode}
                 updateAvailable={update.available}

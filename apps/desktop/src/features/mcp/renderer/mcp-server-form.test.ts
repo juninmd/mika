@@ -202,3 +202,41 @@ describe('templateInstalled', () => {
     expect(templateInstalled(tpl('memory'), [{ args: ['-y', '@modelcontextprotocol/server-memory-plus'] }])).toBe(false)
   })
 })
+
+describe('remote (web) servers', () => {
+  const remote = server({
+    command: '',
+    args: [],
+    envKeys: [],
+    url: 'https://mcp.example.com/mcp',
+    headerKeys: ['Authorization'],
+  })
+
+  // Same rule as env: the saved bearer token never comes back, so an untouched edit must send null.
+  it('editing a remote server keeps its saved Authorization as null and sends no local fields', () => {
+    expect(specFromForm(formFromServer(remote))).toEqual({
+      command: '',
+      url: 'https://mcp.example.com/mcp',
+      headers: { Authorization: null },
+      enabled: true,
+    })
+  })
+
+  it('toggling a remote server keeps it remote', () => {
+    expect(toggledSpec(remote, false)).toMatchObject({ url: 'https://mcp.example.com/mcp', enabled: false })
+  })
+
+  it('requires an http(s) URL instead of a command', () => {
+    const errors = (url: string) => validateForm(form({ name: 'web', remote: true, url }), [])
+    expect(errors('')).toEqual({ url: 'required' })
+    expect(errors('file:///etc/passwd')).toEqual({ url: 'urlInvalid' })
+    expect(errors('mcp.example.com')).toEqual({ url: 'urlInvalid' })
+    expect(errors('http://localhost:8000/mcp')).toEqual({})
+  })
+
+  it('rejects header names with spaces and case-insensitive duplicates', () => {
+    const headers = [envRow('X Bad', 'v'), envRow('authorization', 'a'), { ...envRow('Authorization', 'b'), id: 'dup' }]
+    const errors = validateForm(form({ name: 'web', remote: true, url: 'https://x.dev/mcp', headers }), [])
+    expect(errors).toEqual({ 'headers.X Bad': 'headerKey', 'headers.dup': 'headerDuplicate' })
+  })
+})
