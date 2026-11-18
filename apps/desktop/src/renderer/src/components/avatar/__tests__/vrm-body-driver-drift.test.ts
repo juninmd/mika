@@ -44,3 +44,21 @@ describe('corpo do VRM não deriva com o tempo', () => {
     }
   })
 })
+
+// O balanço de respiração dos braços sumia no quadro em que um gesto começava: o braço estalava.
+describe('gesto começa sem estalo no braço', () => {
+  it('o antebraço não salta no quadro em que um gesto procedural assume', () => {
+    const { vrm, bones } = fakeVrm()
+    const driver = new VrmBodyDriver(new THREE.Scene())
+    const clock = new VrmActionClock()
+    const dt = 1 / 60
+    let t = 0
+    // ~1,5 s: a respiração está no pico, onde o balanço do antebraço é maior.
+    for (; t < 1.5; t += dt) driver.update(vrm, dt, t, clock, false, 0, false)
+    const before = bones.get('leftLowerArm')?.rotation.y ?? 0
+    driver.play('wave')
+    driver.update(vrm, dt, t, clock, false, 0, false)
+    const after = bones.get('leftLowerArm')?.rotation.y ?? 0
+    expect(Math.abs(after - before)).toBeLessThan(0.005)
+  })
+})
