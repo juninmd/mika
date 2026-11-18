@@ -5,6 +5,7 @@ import { useCallback } from 'react'
 import { configBool, configNum, configStr, pick } from '../../src/components/settings/settings-utils'
 import { useI18n } from '../../src/hooks/useI18n'
 import { useUIStore } from '../../src/store/useUIStore'
+import { VisionDecisionCard } from './vision-decision-card'
 import { VisionLiveMonitor } from './vision-live-monitor'
 import { VisionMediaReactionsCard } from './vision-media-reactions-card'
 import { visionBlockReason } from './vision-readiness'
@@ -88,6 +89,8 @@ export function VisionSettingsPanel(props: VisionSettingsPanelProps) {
   const captureBlocklist = pick(props.captureBlocklist, () => configStr(rawCfg, 'vision.captureBlocklist', ''))
   const mediaReactions = configBool(rawCfg, 'vision.mediaReactions')
   const mediaReactionCooldownSec = configNum(rawCfg, 'vision.mediaReactionCooldownSec', 300)
+  const decisionEnabled = configBool(rawCfg, 'vision.decisionEnabled')
+  const decisionThreshold = configNum(rawCfg, 'vision.decisionThreshold', 0.5)
   const privacy = {
     screenCapture: configBool(rawCfg, 'privacy.screenCapture'),
     clipboardLogging: configBool(rawCfg, 'privacy.clipboardLogging'),
@@ -188,6 +191,16 @@ export function VisionSettingsPanel(props: VisionSettingsPanelProps) {
             cooldownSec={mediaReactionCooldownSec}
             boolSave={boolSave}
             numSave={numSave}
+          />
+        )}
+
+        {enabled && (
+          <VisionDecisionCard
+            t={t}
+            config={rawCfg}
+            enabled={decisionEnabled}
+            threshold={decisionThreshold}
+            onSave={onSave}
           />
         )}
 

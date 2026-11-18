@@ -1336,6 +1336,19 @@ export const jaJP: TranslationDict = {
   'settings.vision.field.mediaReactionCooldownSec.label': 'リアクションの最小間隔',
   'settings.vision.field.mediaReactionCooldownSec.description':
     '2つのコメントの最短間隔。同じ動画や曲は3間隔後まで繰り返しません。',
+  'settings.vision.panel.decisionHeader': '判断モデル',
+  'settings.vision.panel.decisionHint': 'PCで実行: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
+  'settings.vision.panel.decisionStatus.ok': 'エラーなし',
+  'settings.vision.panel.decisionStatus.failing': 'サーバーから応答がありません',
+  'settings.vision.field.decisionEnabled.label': '判断モデルで画面をふるい分ける',
+  'settings.vision.field.decisionEnabled.description':
+    'ローカルモデル（d1-2B）が各フレームを見て、ゲームの山場、危険、コメントに値するものがあるときだけ本格的な画像解析を呼びます。ゲーム中は3秒ごとに画面を確認します。',
+  'settings.vision.field.decisionBaseUrl.label': 'サーバーのアドレス',
+  'settings.vision.field.decisionBaseUrl.description':
+    'd1-2B を動かすローカルの llama-server。このPCのアドレス（127.0.0.1 または localhost）のみ使えます。',
+  'settings.vision.field.decisionThreshold.label': '判断のしきい値',
+  'settings.vision.field.decisionThreshold.description':
+    'シグナルとして数える最小確率。高いほど画像解析の呼び出しが減ります。',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'ビジュアル日記の間隔（サイクル）',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Nキャプチャサイクルごとにビジュアル日記へエントリを記録します。',

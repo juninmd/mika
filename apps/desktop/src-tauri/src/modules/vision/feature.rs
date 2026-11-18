@@ -70,6 +70,9 @@ fn fields() -> Vec<Value> {
         json!({ "configPath": "vision.visualDiaryIntervalCycles", "type": "number", "label": "settings.vision.field.visualDiaryIntervalCycles.label", "min": 1, "max": 100, "description": "settings.vision.field.visualDiaryIntervalCycles.description" }),
         json!({ "configPath": "vision.mediaReactions", "type": "boolean", "label": "settings.vision.field.mediaReactions.label", "description": "settings.vision.field.mediaReactions.description" }),
         json!({ "configPath": "vision.mediaReactionCooldownSec", "type": "number", "label": "settings.vision.field.mediaReactionCooldownSec.label", "description": "settings.vision.field.mediaReactionCooldownSec.description", "min": 60, "max": 1800, "step": 60 }),
+        json!({ "configPath": "vision.decisionEnabled", "type": "boolean", "label": "settings.vision.field.decisionEnabled.label", "description": "settings.vision.field.decisionEnabled.description" }),
+        json!({ "configPath": "vision.decisionBaseUrl", "type": "text", "label": "settings.vision.field.decisionBaseUrl.label", "description": "settings.vision.field.decisionBaseUrl.description", "placeholder": "http://127.0.0.1:8080" }),
+        json!({ "configPath": "vision.decisionThreshold", "type": "number", "label": "settings.vision.field.decisionThreshold.label", "description": "settings.vision.field.decisionThreshold.description", "min": 0.05, "max": 0.95, "step": 0.05 }),
     ]
 }
 
@@ -116,7 +119,7 @@ mod tests {
         assert_eq!(d["tabId"], json!("vision"));
         assert_eq!(d["enabledConfigPath"], json!("vision.enabled"));
         assert_eq!(d["groups"].as_array().unwrap().len(), 1);
-        assert_eq!(d["groups"][0]["fields"].as_array().unwrap().len(), 25);
+        assert_eq!(d["groups"][0]["fields"].as_array().unwrap().len(), 28);
     }
 
     /// Toda `configPath` é prefixada por `vision.` — um campo sem o prefixo grava fora do
@@ -132,7 +135,7 @@ mod tests {
         }
     }
 
-    /// `vision.schema.ts` foi removido (backend Node deletado na migração para Tauri); os 25
+    /// `vision.schema.ts` foi removido (backend Node deletado na migração para Tauri); os 28
     /// campos que ele fixava viram pin direto sobre `fields()`, única fonte de verdade agora.
     #[test]
     fn field_count_and_paths_match_the_expected_keys() {
@@ -162,6 +165,9 @@ mod tests {
             "visualDiaryIntervalCycles",
             "mediaReactions",
             "mediaReactionCooldownSec",
+            "decisionEnabled",
+            "decisionBaseUrl",
+            "decisionThreshold",
         ];
         let declared = fields();
         assert_eq!(keys.len(), declared.len(), "contagem de campos mudou — releia antes de ajustar o pin");

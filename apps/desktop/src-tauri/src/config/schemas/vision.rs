@@ -142,6 +142,20 @@ fn vision() -> Namespace {
                 FieldUi::new("settings.vision.field.mediaReactionCooldownSec.label")
                     .described("settings.vision.field.mediaReactionCooldownSec.description"),
             ),
+            // Decision-model pre-filter (`vision::decision`): a local llama-server answering
+            // `/v1/systemone` decides whether a frame is worth the full vision LLM call.
+            boolean("decisionEnabled", false).with_ui(
+                FieldUi::new("settings.vision.field.decisionEnabled.label")
+                    .described("settings.vision.field.decisionEnabled.description"),
+            ),
+            text("decisionBaseUrl", "http://127.0.0.1:8080").with_ui(
+                FieldUi::new("settings.vision.field.decisionBaseUrl.label")
+                    .described("settings.vision.field.decisionBaseUrl.description"),
+            ),
+            float_range("decisionThreshold", 0.5, 0.05, 0.95).with_ui(
+                FieldUi::new("settings.vision.field.decisionThreshold.label")
+                    .described("settings.vision.field.decisionThreshold.description"),
+            ),
         ],
     }
 }

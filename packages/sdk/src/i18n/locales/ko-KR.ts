@@ -1332,6 +1332,18 @@ export const koKR: TranslationDict = {
   'settings.vision.field.mediaReactionCooldownSec.label': '리액션 최소 간격',
   'settings.vision.field.mediaReactionCooldownSec.description':
     '두 코멘트 사이의 최소 간격. 같은 영상이나 곡은 세 간격이 지나야 다시 나옵니다.',
+  'settings.vision.panel.decisionHeader': '판단 모델',
+  'settings.vision.panel.decisionHint': 'PC에서 실행: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
+  'settings.vision.panel.decisionStatus.ok': '오류 없음',
+  'settings.vision.panel.decisionStatus.failing': '서버 응답 없음',
+  'settings.vision.field.decisionEnabled.label': '판단 모델로 화면 거르기',
+  'settings.vision.field.decisionEnabled.description':
+    '로컬 모델(d1-2B)이 프레임마다 확인하고 게임의 결정적 순간, 위험, 말할 만한 것이 있을 때만 전체 비전을 호출합니다. 게임 중에는 3초마다 화면을 확인합니다.',
+  'settings.vision.field.decisionBaseUrl.label': '서버 주소',
+  'settings.vision.field.decisionBaseUrl.description':
+    'd1-2B를 실행하는 로컬 llama-server. 이 컴퓨터의 주소(127.0.0.1 또는 localhost)만 허용됩니다.',
+  'settings.vision.field.decisionThreshold.label': '판단 임계값',
+  'settings.vision.field.decisionThreshold.description': '신호로 인정하는 최소 확률. 높을수록 비전 호출이 줄어듭니다.',
   'settings.vision.field.visualDiaryIntervalCycles.label': '비주얼 다이어리 간격 (사이클)',
   'settings.vision.field.visualDiaryIntervalCycles.description': '캡처 사이클 N번마다 비주얼 다이어리에 항목을 써요.',
   'settings.vision.field.textDensityThreshold.label': '텍스트/UI 밀도 임계값',

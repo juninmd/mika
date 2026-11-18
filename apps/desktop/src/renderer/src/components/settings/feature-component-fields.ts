@@ -120,6 +120,9 @@ export const FEATURE_COMPONENT_HANDLED_FIELDS = {
     'vision.captureBlocklist',
     'vision.mediaReactions',
     'vision.mediaReactionCooldownSec',
+    'vision.decisionEnabled',
+    'vision.decisionBaseUrl',
+    'vision.decisionThreshold',
   ],
   GamerCompanionPanel: [
     'gamer-companion.enabled',

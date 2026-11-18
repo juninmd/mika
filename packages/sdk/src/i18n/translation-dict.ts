@@ -1264,6 +1264,16 @@ export type TranslationDict = {
   'settings.vision.field.mediaReactions.description': string
   'settings.vision.field.mediaReactionCooldownSec.label': string
   'settings.vision.field.mediaReactionCooldownSec.description': string
+  'settings.vision.panel.decisionHeader': string
+  'settings.vision.panel.decisionHint': string
+  'settings.vision.panel.decisionStatus.ok': string
+  'settings.vision.panel.decisionStatus.failing': string
+  'settings.vision.field.decisionEnabled.label': string
+  'settings.vision.field.decisionEnabled.description': string
+  'settings.vision.field.decisionBaseUrl.label': string
+  'settings.vision.field.decisionBaseUrl.description': string
+  'settings.vision.field.decisionThreshold.label': string
+  'settings.vision.field.decisionThreshold.description': string
   'settings.vision.field.visualDiaryIntervalCycles.label': string
   'settings.vision.field.visualDiaryIntervalCycles.description': string
   'settings.vision.field.textDensityThreshold.label': string

@@ -1368,6 +1368,19 @@ export const ptBR: TranslationDict = {
   'settings.vision.field.mediaReactionCooldownSec.label': 'Intervalo mínimo entre reações',
   'settings.vision.field.mediaReactionCooldownSec.description':
     'Tempo mínimo entre dois comentários. O mesmo vídeo ou música só volta depois de três intervalos.',
+  'settings.vision.panel.decisionHeader': 'Modelo de decisão',
+  'settings.vision.panel.decisionHint': 'Rode no seu PC: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
+  'settings.vision.panel.decisionStatus.ok': 'Sem falhas',
+  'settings.vision.panel.decisionStatus.failing': 'Sem resposta do servidor',
+  'settings.vision.field.decisionEnabled.label': 'Filtrar a tela com o modelo de decisão',
+  'settings.vision.field.decisionEnabled.description':
+    'Um modelo local (d1-2B) olha cada quadro e só chama a visão completa quando há um momento de jogo, perigo ou algo que vale comentar. Em jogo, a tela é checada a cada 3 s.',
+  'settings.vision.field.decisionBaseUrl.label': 'Endereço do servidor',
+  'settings.vision.field.decisionBaseUrl.description':
+    'llama-server local com o d1-2B. Só aceita endereço deste computador (127.0.0.1 ou localhost).',
+  'settings.vision.field.decisionThreshold.label': 'Limiar de decisão',
+  'settings.vision.field.decisionThreshold.description':
+    'Probabilidade mínima para contar um sinal. Mais alto, menos chamadas à visão.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Intervalo do Diário Visual (ciclos)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'A cada N ciclos de captura, grava uma entrada no diário visual.',

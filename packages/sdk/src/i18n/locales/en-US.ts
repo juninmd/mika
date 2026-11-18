@@ -1357,6 +1357,19 @@ export const enUS: TranslationDict = {
   'settings.vision.field.mediaReactionCooldownSec.label': 'Minimum time between reactions',
   'settings.vision.field.mediaReactionCooldownSec.description':
     'Shortest gap between two comments. The same video or song comes back only after three gaps.',
+  'settings.vision.panel.decisionHeader': 'Decision model',
+  'settings.vision.panel.decisionHint': 'Run on your PC: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
+  'settings.vision.panel.decisionStatus.ok': 'No failures',
+  'settings.vision.panel.decisionStatus.failing': 'No answer from the server',
+  'settings.vision.field.decisionEnabled.label': 'Filter the screen with the decision model',
+  'settings.vision.field.decisionEnabled.description':
+    'A local model (d1-2B) looks at each frame and only calls full vision for a game moment, a danger or something worth a comment. In games the screen is checked every 3 s.',
+  'settings.vision.field.decisionBaseUrl.label': 'Server address',
+  'settings.vision.field.decisionBaseUrl.description':
+    'Local llama-server running d1-2B. Only addresses on this computer (127.0.0.1 or localhost) are accepted.',
+  'settings.vision.field.decisionThreshold.label': 'Decision threshold',
+  'settings.vision.field.decisionThreshold.description':
+    'Minimum probability for a signal to count. Higher means fewer vision calls.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Visual Diary Interval (cycles)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Every N capture cycles, writes an entry to the visual diary.',

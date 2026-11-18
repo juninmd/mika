@@ -1281,6 +1281,19 @@ export const zhCN: TranslationDict = {
   'settings.vision.field.mediaReactionCooldownSec.label': '反应最小间隔',
   'settings.vision.field.mediaReactionCooldownSec.description':
     '两次评论之间的最短间隔。同一视频或歌曲要过三个间隔才会再次出现。',
+  'settings.vision.panel.decisionHeader': '决策模型',
+  'settings.vision.panel.decisionHint':
+    '在你的电脑上运行：llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
+  'settings.vision.panel.decisionStatus.ok': '无故障',
+  'settings.vision.panel.decisionStatus.failing': '服务器无响应',
+  'settings.vision.field.decisionEnabled.label': '用决策模型筛选屏幕',
+  'settings.vision.field.decisionEnabled.description':
+    '本地模型（d1-2B）查看每一帧，只有出现游戏关键时刻、危险或值得评论的内容时才调用完整视觉分析。游戏中每 3 秒检查一次屏幕。',
+  'settings.vision.field.decisionBaseUrl.label': '服务器地址',
+  'settings.vision.field.decisionBaseUrl.description':
+    '运行 d1-2B 的本地 llama-server。只接受本机地址（127.0.0.1 或 localhost）。',
+  'settings.vision.field.decisionThreshold.label': '决策阈值',
+  'settings.vision.field.decisionThreshold.description': '信号被计入的最低概率。越高，视觉调用越少。',
   'settings.vision.field.visualDiaryIntervalCycles.label': '视觉日记间隔（周期）',
   'settings.vision.field.visualDiaryIntervalCycles.description': '每 N 个捕获周期，向视觉日记写入一条记录。',
   'settings.vision.field.textDensityThreshold.label': '文本/界面密度阈值',

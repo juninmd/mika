@@ -1386,6 +1386,20 @@ export const ruRU: TranslationDict = {
   'settings.vision.field.mediaReactionCooldownSec.label': 'Минимальный интервал между реакциями',
   'settings.vision.field.mediaReactionCooldownSec.description':
     'Наименьший промежуток между двумя комментариями. То же видео или песня вернётся только через три интервала.',
+  'settings.vision.panel.decisionHeader': 'Модель решений',
+  'settings.vision.panel.decisionHint':
+    'Запустите на своём ПК: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
+  'settings.vision.panel.decisionStatus.ok': 'Без сбоев',
+  'settings.vision.panel.decisionStatus.failing': 'Сервер не отвечает',
+  'settings.vision.field.decisionEnabled.label': 'Фильтровать экран моделью решений',
+  'settings.vision.field.decisionEnabled.description':
+    'Локальная модель (d1-2B) смотрит каждый кадр и вызывает полное зрение только при игровом моменте, опасности или чём-то, что стоит прокомментировать. В играх экран проверяется каждые 3 с.',
+  'settings.vision.field.decisionBaseUrl.label': 'Адрес сервера',
+  'settings.vision.field.decisionBaseUrl.description':
+    'Локальный llama-server с d1-2B. Принимаются только адреса этого компьютера (127.0.0.1 или localhost).',
+  'settings.vision.field.decisionThreshold.label': 'Порог решения',
+  'settings.vision.field.decisionThreshold.description':
+    'Минимальная вероятность, при которой сигнал засчитывается. Выше — меньше вызовов зрения.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Интервал визуального дневника (циклы)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Каждые N циклов захвата делает запись в визуальный дневник.',
