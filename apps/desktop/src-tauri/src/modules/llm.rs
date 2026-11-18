@@ -760,7 +760,7 @@ fn reset_provider_circuit(payload: &Value) -> Value {
     json!({ "ok": ok })
 }
 
-async fn get_openrouter_quota(store: &ConfigStore) -> Value {
+pub(crate) async fn get_openrouter_quota(store: &ConfigStore) -> Value {
     let api_key = store
         .get(CFG_OPENROUTER)
         .and_then(|v| v.as_str().map(str::to_string))
@@ -774,8 +774,11 @@ async fn get_openrouter_quota(store: &ConfigStore) -> Value {
         return json!({ "ok": false, "error": error });
     }
 
+    // Só no binário `e2e` (dupla trava): a cota vem do dublê local, sem a nuvem nem chave real.
+    let url = crate::modules::brain::llm_provider::e2e_cloud_base()
+        .map_or_else(|| OPENROUTER_QUOTA_URL.to_string(), |base| format!("{base}/api/v1/key"));
     let response = match http_client()
-        .get(OPENROUTER_QUOTA_URL)
+        .get(url)
         .bearer_auth(trimmed)
         .timeout(QUOTA_TIMEOUT)
         .send()

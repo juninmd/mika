@@ -3,6 +3,7 @@ import { toDisplayError } from '@mika/sdk-ui'
 import { BentoGrid, GlassSection } from '@mika/sdk-ui/settings'
 import { Cpu } from 'lucide-react'
 import { useCallback } from 'react'
+import { ProviderBillingCard } from '../../src/components/settings/ProviderBillingCard'
 import { configBool, configNum, configStr, pick } from '../../src/components/settings/settings-utils'
 import { useProviderModelTransaction } from '../../src/components/settings/useProviderModelTransaction'
 import { useI18n } from '../../src/hooks/useI18n'
@@ -141,6 +142,8 @@ export function LLMConnectionPanel(props: LLMConnectionPanelProps) {
           selectProvider={selectProvider}
           doSave={doSave}
         />
+
+        <ProviderBillingCard provider={provider} />
 
         {provider === 'ollama' && (
           <OllamaModelDownload
