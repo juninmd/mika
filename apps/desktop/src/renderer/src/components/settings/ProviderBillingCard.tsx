@@ -1,68 +1,18 @@
-import { getLocale } from '@mika/sdk/i18n'
-import { formatLocalNumber, toDisplayError } from '@mika/sdk-ui'
-import { GlassCard, SectionHeader, StatTile, StatusPill } from '@mika/sdk-ui/settings'
-import { RotateCw, Wallet } from 'lucide-react'
+import { toDisplayError } from '@mika/sdk-ui'
+import { GlassCard, SectionHeader } from '@mika/sdk-ui/settings'
+import { CircleSlash, Info, KeyRound, RotateCw, TriangleAlert, Wallet } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import type { ProviderBalance, ProviderBilling, ProviderLocalUsage } from '../../../../shared/electron-api-system-types'
+import type { ProviderBilling } from '../../../../shared/electron-api-system-types'
 import { type Translate, useI18n } from '../../hooks/useI18n'
 import { getElectronApi } from '../../lib/shell-api'
 import { type BillingVerdict, billingVerdict } from './provider-billing'
+import { BalanceHero, TONE_SOFT, type Tone, UsageFacts, VERDICT_TONE } from './provider-billing-parts'
 
-type PillVariant = Parameters<typeof StatusPill>[0]['variant']
-
-const VERDICT_PILL: Record<BillingVerdict, PillVariant> = {
-  ok: 'ok',
-  low: 'warn',
-  exhausted: 'error',
-  unknown: 'neutral',
-  free: 'info',
-  missingKey: 'pending',
-  error: 'error',
-}
-
-const num = (value: number) => formatLocalNumber(value, getLocale(), { maximumFractionDigits: 1 })
-const money = (value: number) =>
-  formatLocalNumber(value, getLocale(), { style: 'currency', currency: 'USD', maximumFractionDigits: 4 })
-
-function amount(value: number | null, unit: ProviderBalance['unit'] | ProviderLocalUsage['unit'], t: Translate) {
-  if (value === null) return t('settings.providerBilling.noCap')
-  return unit === 'usd' ? money(value) : `${num(value)} ${t(`settings.providerBilling.unit.${unit}`)}`
-}
-
-function resetLabel(resetsAt: ProviderBalance['resetsAt']): string | null {
-  if (resetsAt === null) return null
-  return typeof resetsAt === 'number' ? new Date(resetsAt).toLocaleDateString(getLocale()) : resetsAt
-}
-
-function BalanceTiles({ balance, t }: { balance: ProviderBalance; t: Translate }) {
-  const reset = resetLabel(balance.resetsAt)
-  return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      <StatTile
-        label={t('settings.providerBilling.remaining')}
-        value={amount(balance.remaining, balance.unit, t)}
-        tone={balance.exhausted ? 'danger' : 'ok'}
-      />
-      <StatTile label={t('settings.providerBilling.used')} value={amount(balance.used, balance.unit, t)} />
-      <StatTile label={t('settings.providerBilling.limit')} value={amount(balance.limit, balance.unit, t)} />
-      <StatTile label={t('settings.providerBilling.resets')} value={reset ?? '—'} hint={balance.plan ?? undefined} />
-    </div>
-  )
-}
-
-function UsageTiles({ usage, t }: { usage: ProviderLocalUsage; t: Translate }) {
-  const cost = usage.costUsd === null ? t('settings.providerBilling.costUnknown') : money(usage.costUsd)
-  const last = usage.lastUsedAt
-    ? new Date(usage.lastUsedAt).toLocaleString(getLocale())
-    : t('settings.providerBilling.never')
-  return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      <StatTile label={t('settings.providerBilling.localUsage')} value={amount(usage.amount, usage.unit, t)} />
-      <StatTile label={t('settings.providerBilling.requests')} value={num(usage.requests)} />
-      {usage.unit === 'tokens' && <StatTile label={t('settings.providerBilling.cost')} value={cost} />}
-      <StatTile label={t('settings.providerBilling.lastUsed')} value={last} />
-    </div>
-  )
+const NOTE_ICON: Partial<Record<BillingVerdict, typeof Info>> = {
+  unknown: Info,
+  free: CircleSlash,
+  missingKey: KeyRound,
+  error: TriangleAlert,
 }
 
 function apiNote(billing: ProviderBilling, t: Translate): string | null {
@@ -98,46 +48,65 @@ function useProviderBilling(provider: string, t: Translate) {
   return { billing, error, refresh: useCallback(() => setTick((n) => n + 1), []) }
 }
 
+function VerdictBadge({ verdict, tone, t }: { verdict: BillingVerdict | null; tone: Tone; t: Translate }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-micro font-bold uppercase tracking-[0.12em] ${TONE_SOFT[tone]}`}
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-current motion-safe:animate-pulse" aria-hidden="true" />
+      {t(`settings.providerBilling.verdict.${verdict ?? 'loading'}`)}
+    </span>
+  )
+}
+
+function Note({ verdict, tone, text }: { verdict: BillingVerdict | null; tone: Tone; text: string }) {
+  const Icon = (verdict && NOTE_ICON[verdict]) || Wallet
+  return (
+    <div role="note" className={`flex items-start gap-3 rounded-xl border p-3 ${TONE_SOFT[tone]}`}>
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-surface-raise">
+        <Icon className="h-4 w-4" aria-hidden="true" />
+      </span>
+      <p className="self-center text-sm text-text-main">{text}</p>
+    </div>
+  )
+}
+
 /** Créditos, cota e uso atual do provedor ativo de uma tela de provider (LLM, TTS, STT, visão…). */
 export function ProviderBillingCard({ provider }: { provider: string }) {
   const { t } = useI18n()
   const { billing, error, refresh } = useProviderBilling(provider, t)
-  const verdict = billing ? billingVerdict(billing) : null
+  const verdict = billing ? billingVerdict(billing) : error ? 'error' : null
+  const tone: Tone = verdict ? VERDICT_TONE[verdict] : 'info'
   const note = billing ? apiNote(billing, t) : error
   return (
-    <GlassCard span="full">
+    <GlassCard span="full" hover={false}>
       <section data-testid="provider-billing" data-provider={provider} data-verdict={verdict ?? 'loading'}>
         <SectionHeader
           title={t('settings.providerBilling.title')}
           description={t('settings.providerBilling.description')}
-          className="mb-3"
+          className="mb-4"
           actions={
             <div className="flex items-center gap-2">
-              <StatusPill
-                variant={verdict ? VERDICT_PILL[verdict] : 'loading'}
-                label={t(`settings.providerBilling.verdict.${verdict ?? 'loading'}`)}
-                dot
-              />
+              <VerdictBadge verdict={verdict} tone={tone} t={t} />
               <button
                 type="button"
                 onClick={refresh}
                 aria-label={t('settings.providerBilling.refresh')}
-                className="rounded-lg border border-border-subtle p-1.5 text-text-muted transition hover:border-border-strong hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                className="rounded-lg border border-border-subtle p-1.5 text-text-muted transition hover:border-border-strong hover:text-text-main active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
               >
                 <RotateCw className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
             </div>
           }
         />
-        <div className="space-y-3">
-          {billing?.api.balance && <BalanceTiles balance={billing.api.balance} t={t} />}
-          {note && (
-            <p className="flex items-center gap-2 text-xs text-text-muted" role="note">
-              <Wallet className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-              {note}
-            </p>
+        <div className="space-y-4">
+          {billing?.api.balance && <BalanceHero balance={billing.api.balance} tone={tone} t={t} />}
+          {note && <Note verdict={verdict} tone={tone} text={note} />}
+          {billing?.usage && (
+            <div className="border-t border-border-subtle pt-4">
+              <UsageFacts usage={billing.usage} t={t} />
+            </div>
           )}
-          {billing?.usage && <UsageTiles usage={billing.usage} t={t} />}
         </div>
       </section>
     </GlassCard>
