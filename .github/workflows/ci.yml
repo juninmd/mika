@@ -35,7 +35,7 @@ env:
   # Só a `main` grava cache de Rust: o rust-cache guarda as dependências, iguais entre PRs, e cada
   # PR gravando o seu (GBs por job) estourava os 10 GB do repositório e expulsava o da `main`.
   SAVE_RUST_CACHE: ${{ github.ref == 'refs/heads/main' }}
-  # .deb do apt: uma entrada só (a do E2E Linux, que instala o superconjunto), lida pelos outros jobs.
+  # .deb do apt: uma entrada só, gravada pelo E2E Linux da `main` (o superconjunto), lida pelos outros jobs.
   APT_DEB_CACHE: /home/runner/.cache/apt-debs
   # Dependências nativas do Tauri no Linux (webkit, tray, áudio, captura, X11) — igual a release.yml.
   LINUX_DEPS: >-
@@ -243,11 +243,11 @@ jobs:
         run: pnpm --filter @mika/desktop exec playwright install-deps chromium
 
       - name: Guardar os .deb baixados (Linux)
-        if: runner.os == 'Linux' && steps.apt-cache.outputs.cache-hit != 'true'
+        if: runner.os == 'Linux' && steps.apt-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main'
         run: ./.github/scripts/apt-snapshot.sh
 
       - uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
-        if: runner.os == 'Linux' && steps.apt-cache.outputs.cache-hit != 'true'
+        if: runner.os == 'Linux' && steps.apt-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main'
         with:
           path: ${{ env.APT_DEB_CACHE }}
           key: ${{ steps.apt.outputs.key }}
