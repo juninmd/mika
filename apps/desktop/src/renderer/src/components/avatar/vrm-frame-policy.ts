@@ -22,3 +22,11 @@ export function gateFrame(now: number, last: number, minFrameMs: number): { rend
   // Depois de uma pausa ou engasgo, ressincroniza em vez de disparar os quadros atrasados em rajada.
   return { render: true, last: elapsed > minFrameMs * 2 ? now : last + minFrameMs }
 }
+
+/** Maior passo de um quadro (s): absorve um engasgo sem cortar o teto eco (15 fps = 66 ms). */
+export const MAX_FRAME_DT = 0.1
+
+/** Passo sanitizado, o mesmo no loop e no avatar: um corte mais baixo deixava ela em câmera lenta sem foco. */
+export function frameDelta(dt: number): number {
+  return Number.isFinite(dt) ? Math.max(0, Math.min(dt, MAX_FRAME_DT)) : 0
+}
