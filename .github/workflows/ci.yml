@@ -227,7 +227,7 @@ jobs:
         run: echo "version=$(pnpm --filter @mika/desktop exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
 
       # O download do Chromium (~150 MB) só muda com a versão do Playwright.
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: pw-cache
         with:
           path: ${{ runner.os == 'macOS' && '~/Library/Caches/ms-playwright' || '~/.cache/ms-playwright' }}
