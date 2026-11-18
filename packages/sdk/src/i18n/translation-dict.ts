@@ -2049,6 +2049,9 @@ export type TranslationDict = {
   'settings.providerBilling.missingKey': string
   'settings.providerBilling.error': string
   'settings.providerBilling.refresh': string
+  'settings.providerBilling.period.daily': string
+  'settings.providerBilling.period.weekly': string
+  'settings.providerBilling.period.monthly': string
   'settings.providerBilling.unit.usd': string
   'settings.providerBilling.unit.tokens': string
   'settings.providerBilling.unit.characters': string
