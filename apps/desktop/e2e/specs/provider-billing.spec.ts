@@ -51,12 +51,14 @@ test('telas de provider mostram créditos, cota e uso — ou dizem que a API nã
   await openTab(settings, 'LLM')
   const llm = await cardFor(settings, 'openrouter', 'low')
   await expect(llm.getByText('Saldo baixo')).toBeVisible()
-  await expect(llm.getByRole('status', { name: /Saldo restante: US\$\s?0,40/ })).toBeVisible()
+  await expect(llm.getByText(/^US\$\s?0,40$/)).toBeVisible()
+  await expect(llm.getByRole('meter', { name: 'Saldo restante' })).toHaveAttribute('value', '4')
   await llm.screenshot({ path: artifactPath('provider-billing-llm.png') })
 
   await openTab(settings, 'Fala')
   const tts = await cardFor(settings, 'elevenlabs', 'ok')
-  await expect(tts.getByRole('status', { name: /Saldo restante: 27\.500 caracteres/ })).toBeVisible()
+  await expect(tts.getByText('27.500 caracteres', { exact: true })).toBeVisible()
+  await expect(tts.getByRole('meter', { name: 'Saldo restante' })).toHaveAttribute('value', '92')
   await tts.screenshot({ path: artifactPath('provider-billing-tts.png') })
 
   await openTab(settings, 'Escuta')
