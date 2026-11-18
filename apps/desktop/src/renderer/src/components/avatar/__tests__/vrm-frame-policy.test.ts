@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { gateFrame, vrmFramePolicy } from '../vrm-frame-policy'
+import { frameDelta, gateFrame, vrmFramePolicy } from '../vrm-frame-policy'
 
 // Unfocused is the companion's normal state (over a game or editor): eco used to switch the idle
 // poses off, so she stood still almost all the time.
@@ -53,5 +53,18 @@ describe('portão de quadros do VRM', () => {
     const gate = gateFrame(10_000, 0, 1000 / 60)
     expect(gate.render).toBe(true)
     expect(gateFrame(10_005, gate.last, 1000 / 60).render).toBe(false)
+  })
+})
+
+// O adapter cortava dt em 50 ms enquanto o eco entrega 66 ms: ela andava a 75% da velocidade sem foco.
+describe('passo de tempo do quadro', () => {
+  it('no teto eco (15 fps) o tempo da animação acompanha o relógio', () => {
+    expect(frameDelta(1 / 15)).toBeCloseTo(1 / 15, 9)
+  })
+
+  it('depois de um engasgo o passo é limitado, e lixo vira zero', () => {
+    expect(frameDelta(2)).toBe(0.1)
+    expect(frameDelta(Number.NaN)).toBe(0)
+    expect(frameDelta(-1)).toBe(0)
   })
 })
