@@ -1,10 +1,9 @@
 import { t } from '@mika/sdk/i18n'
 import { toErrorMessage } from '@mika/sdk/utils/object'
 import { toDisplayError } from '@mika/sdk-ui'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { rendererLog } from '../lib/renderer-logger'
 import { getElectronApi } from '../lib/shell-api'
-import { useUIStore } from '../store/useUIStore'
 
 type UpdateState = {
   checking: boolean
@@ -50,7 +49,6 @@ async function resolveUpdateChannel(): Promise<UpdateChannel> {
 
 export function useUpdateChecker() {
   const [state, setState] = useState<UpdateState>(initialState)
-  const notifiedVersion = useRef<string | null>(null)
 
   const runUpdateAction = useCallback(
     async <T>(
@@ -58,13 +56,15 @@ export function useUpdateChecker() {
       action: () => Promise<T>,
       nextState: (result: T) => Partial<UpdateState>,
       fallbackError: string,
-    ) => {
+    ): Promise<T | null> => {
       setState((s) => ({ ...s, [flag]: true, error: null }))
       try {
         const result = await action()
         setState((s) => ({ ...s, [flag]: false, ...nextState(result) }))
+        return result
       } catch (error) {
         setState((s) => ({ ...s, [flag]: false, error: toDisplayError(error, fallbackError) }))
+        return null
       }
     },
     [],
@@ -87,13 +87,15 @@ export function useUpdateChecker() {
     [runUpdateAction],
   )
 
+  /** `true` com o pacote baixado e verificado — quem encadeia o install ("Atualizar agora") lê isto. */
   const downloadUpdate = useCallback(async () => {
-    await runUpdateAction(
+    const result = await runUpdateAction(
       'downloading',
       () => getElectronApi().runtime.downloadUpdate(),
       (result) => ({ error: result.error ?? null, downloaded: result.success && !result.error }),
       t('settings.update.error.download'),
     )
+    return Boolean(result?.success && !result.error)
   }, [runUpdateAction])
 
   const installUpdate = useCallback(async () => {
@@ -161,13 +163,6 @@ export function useUpdateChecker() {
     const timer = setInterval(() => void refreshStatus(), 60_000)
     return () => clearInterval(timer)
   }, [state.channel, refreshStatus])
-
-  // Aviso humano, uma vez por versão: o badge do dock sozinho passa despercebido no boot.
-  useEffect(() => {
-    if (!state.available || !state.version || notifiedVersion.current === state.version) return
-    notifiedVersion.current = state.version
-    useUIStore.getState().addNotification('info', `${t('settings.update.status.available')} v${state.version}`)
-  }, [state.available, state.version])
 
   return {
     ...state,

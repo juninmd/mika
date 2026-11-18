@@ -169,6 +169,11 @@ export type TranslationDict = {
   'shell.toast.info': string
   'shell.toast.success': string
   'shell.toast.warning': string
+  'shell.update.prompt.title': string
+  'shell.update.prompt.body': string
+  'shell.update.prompt.now': string
+  'shell.update.prompt.later': string
+  'shell.update.prompt.updating': string
   'shell.toast.error': string
   'shell.toast.close': string
   'shell.toast.queuedOne': string
