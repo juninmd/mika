@@ -35,6 +35,8 @@ env:
   # Só a `main` grava cache de Rust: o rust-cache guarda as dependências, iguais entre PRs, e cada
   # PR gravando o seu (GBs por job) estourava os 10 GB do repositório e expulsava o da `main`.
   SAVE_RUST_CACHE: ${{ github.ref == 'refs/heads/main' }}
+  # .deb do apt: uma entrada só (a do E2E Linux, que instala o superconjunto), lida pelos outros jobs.
+  APT_DEB_CACHE: /home/runner/.cache/apt-debs
   # Dependências nativas do Tauri no Linux (webkit, tray, áudio, captura, X11) — igual a release.yml.
   LINUX_DEPS: >-
     libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf libssl-dev libasound2-dev
@@ -89,6 +91,19 @@ jobs:
           cache-on-failure: true
           save-if: ${{ env.SAVE_RUST_CACHE }}
 
+      # Chave pela imagem do runner: .deb de outra imagem pode depender de versão que ela não tem.
+      - name: Chave do cache do apt
+        if: runner.os == 'Linux'
+        id: apt
+        run: echo "key=apt-debs-$ImageOS-$ImageVersion-${{ hashFiles('.github/workflows/ci.yml') }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        if: runner.os == 'Linux'
+        id: apt-cache
+        with:
+          path: ${{ env.APT_DEB_CACHE }}
+          key: ${{ steps.apt.outputs.key }}
+
       - name: Dependências do sistema (Linux)
         run: ./.github/scripts/apt-install.sh $LINUX_DEPS
 
@@ -128,6 +143,19 @@ jobs:
           shared-key: ci-check-${{ matrix.os }}
           cache-on-failure: true
           save-if: ${{ env.SAVE_RUST_CACHE }}
+
+      # Chave pela imagem do runner: .deb de outra imagem pode depender de versão que ela não tem.
+      - name: Chave do cache do apt
+        if: runner.os == 'Linux'
+        id: apt
+        run: echo "key=apt-debs-$ImageOS-$ImageVersion-${{ hashFiles('.github/workflows/ci.yml') }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        if: runner.os == 'Linux'
+        id: apt-cache
+        with:
+          path: ${{ env.APT_DEB_CACHE }}
+          key: ${{ steps.apt.outputs.key }}
 
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
@@ -175,6 +203,19 @@ jobs:
           cache-on-failure: true
           save-if: ${{ env.SAVE_RUST_CACHE }}
 
+      # Chave pela imagem do runner: .deb de outra imagem pode depender de versão que ela não tem.
+      - name: Chave do cache do apt
+        if: runner.os == 'Linux'
+        id: apt
+        run: echo "key=apt-debs-$ImageOS-$ImageVersion-${{ hashFiles('.github/workflows/ci.yml') }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        if: runner.os == 'Linux'
+        id: apt-cache
+        with:
+          path: ${{ env.APT_DEB_CACHE }}
+          key: ${{ steps.apt.outputs.key }}
+
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
         run: ./.github/scripts/apt-install.sh $LINUX_DEPS xvfb dbus-x11
@@ -200,6 +241,16 @@ jobs:
       - name: Dependências do Chromium (Linux)
         if: runner.os == 'Linux'
         run: pnpm --filter @mika/desktop exec playwright install-deps chromium
+
+      - name: Guardar os .deb baixados (Linux)
+        if: runner.os == 'Linux' && steps.apt-cache.outputs.cache-hit != 'true'
+        run: ./.github/scripts/apt-snapshot.sh
+
+      - uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        if: runner.os == 'Linux' && steps.apt-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ env.APT_DEB_CACHE }}
+          key: ${{ steps.apt.outputs.key }}
 
       - name: Build do binário E2E
         run: pnpm --filter @mika/desktop build:e2e
