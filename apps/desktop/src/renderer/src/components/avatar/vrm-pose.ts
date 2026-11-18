@@ -1,5 +1,6 @@
 import type { VRM, VRMHumanBoneName } from '@pixiv/three-vrm'
 import type * as THREE from 'three'
+import { type SpringState, springTo } from './damped-spring'
 import { ARM_REST, type ArmPose } from './vrm-body-rig'
 import { type GazeDriver, headAnglesToward, NECK_SHARE } from './vrm-gaze'
 
@@ -249,7 +250,7 @@ export function animateVrmHead(
 ): void {
   const nodRot = Math.sin(nodImpulse * Math.PI * 2) * 0.25 * nodImpulse
   head.rotation.x = nodRot + breath * 0.006
-  head.rotation.y = nodImpulse > 0 ? 0 : weightLag * 0.03
+  head.rotation.y = weightLag * 0.03
   const envelope = actionRemaining > 0 ? Math.sin((actionRemaining / actionDuration) * Math.PI) ** 2 : 0
   head.rotation.z = weightLag * 0.012
   if (actionName === 'shakehead') head.rotation.y += Math.sin(actionRemaining * 14) * 0.22 * envelope
@@ -287,14 +288,21 @@ function applySpeechLeftArm(humanoid: Humanoid, factor: number, elapsed: number)
   if (hand) hand.rotation.z -= Math.sin(elapsed * 2.4 + 1) * 0.025 * factor
 }
 
-export function applySpeechGesture(
-  humanoid: Humanoid | undefined,
-  speaking: boolean,
-  volume: number,
-  elapsed: number,
-): void {
-  if (!humanoid || !speaking) return
-  const intensity = Math.min(1, Math.max(0.15, volume * 1.5))
+/** Rigidez do envelope da fala: ~0,8 s até 95%, lento o bastante para o volume cru não tremer o gesto. */
+const SPEECH_OMEGA = 6
+
+/** Intensidade do gesto da fala, por mola: entra e sai sem tranco e ignora o chiado quadro a quadro do volume. */
+export class SpeechEnvelope {
+  private readonly state: SpringState = { value: 0, velocity: 0 }
+
+  advance(speaking: boolean, volume: number, dt: number): number {
+    const target = speaking ? Math.min(1, Math.max(0.15, volume * 1.5)) : 0
+    return Math.max(0, springTo(this.state, target, SPEECH_OMEGA, dt))
+  }
+}
+
+export function applySpeechGesture(humanoid: Humanoid | undefined, intensity: number, elapsed: number): void {
+  if (!humanoid || intensity < 1e-3) return
   applySpeechTorso(humanoid, intensity, elapsed)
   const bias = Math.sin(elapsed * 0.7)
   if (bias >= -0.3) applySpeechRightArm(humanoid, Math.max(0, bias + 0.3) * intensity, elapsed)

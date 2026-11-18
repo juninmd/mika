@@ -129,7 +129,7 @@ describe('homologação da interatividade e pose do VRM', () => {
       getNormalizedBoneNode: (name: string) => nodes[name] ?? null,
     }
 
-    applySpeechGesture(fakeHumanoid as never, true, 0.6, 1.5)
+    applySpeechGesture(fakeHumanoid as never, 0.9, 1.5)
 
     expect(nodes.head.rotation.x).not.toBe(0)
     expect(nodes.chest.rotation.x).not.toBe(0)

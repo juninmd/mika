@@ -13,7 +13,7 @@ import type { AvatarCanvasProps } from './avatar/avatar-canvas.types'
 import { isHeadHitArea } from './avatar/avatar-hit-area'
 import { VrmAvatar } from './avatar/vrm-adapter'
 import { installVrmDebugBridge } from './avatar/vrm-debug-bridge'
-import { gateFrame, vrmFramePolicy } from './avatar/vrm-frame-policy'
+import { frameDelta, gateFrame, vrmFramePolicy } from './avatar/vrm-frame-policy'
 import { parseVrmModelPath } from './avatar/vrm-look'
 import { projectVrmFace } from './hud/vrm-face-projection'
 
@@ -120,7 +120,7 @@ export const VrmCanvas = React.memo(function VrmCanvas({
       const gate = gateFrame(now, last, minFrameMs)
       if (!gate.render) return
       last = gate.last
-      const dt = Math.min(0.1, (now - lastRender) / 1000)
+      const dt = frameDelta((now - lastRender) / 1000)
       lastRender = now
       const cursor = mouseRefRef.current?.current
       if (cursor) avatar.setCursorTarget(cursor.x, cursor.y)
