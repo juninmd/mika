@@ -42,26 +42,27 @@ function applyHandPose(
   thumbUp: number,
 ): void {
   const sign = side === 'left' ? -1 : 1
+  // Everything blends by `peace`: a switch at peace > 0 snapped the thumb and the fist cascade in one frame.
+  const p = Math.min(1, Math.max(0, peace))
   for (const finger of ['Index', 'Middle', 'Ring', 'Little'] as const) {
     const extended = finger === 'Index' || finger === 'Middle'
-    const cascade = peace > 0 ? 1 : FINGER_WEIGHT[finger]
-    const curl = grip * cascade * (extended ? 1 - peace : 1)
-    const spread = extended ? peace * (finger === 'Index' ? 0.12 : -0.12) : 0
+    const cascade = FINGER_WEIGHT[finger] + (1 - FINGER_WEIGHT[finger]) * p
+    const curl = grip * cascade * (extended ? 1 - p : 1)
+    const spread = extended ? p * (finger === 'Index' ? 0.12 : -0.12) : 0
     applyFingerPose(vrm, `${side}${finger}`, sign * curl, spread)
   }
-  const thumb = vrm.humanoid.getNormalizedBoneNode(`${side}ThumbProximal`)
-  if (peace > 0) {
-    vrm.humanoid.getNormalizedBoneNode(`${side}ThumbMetacarpal`)?.rotation.set(0, -sign * 0.35, sign * 0.5)
-    thumb?.rotation.set(0, -sign * 0.3, sign * 0.55)
-    vrm.humanoid.getNormalizedBoneNode(`${side}ThumbDistal`)?.rotation.set(0, 0, sign * 0.45)
-    return
-  }
+  const mix = (from: number, to: number) => from * (1 - p) + to * p
   // Thumbs-up: the thumb stays straight out of the fist instead of folding over it.
-  if (thumb) thumb.rotation.set(0, sign * grip * 0.8 * (1 - thumbUp), 0)
-  // The hilt grip curls this joint too; nothing else does, so it rests straight.
-  vrm.humanoid.getNormalizedBoneNode(`${side}ThumbDistal`)?.rotation.set(0, 0, 0)
-  const thumbBase = vrm.humanoid.getNormalizedBoneNode(`${side}ThumbMetacarpal`)
-  thumbBase?.rotation.set(0, sign * thumbUp * 0.35, -sign * (heart * 1.1 + grip * 0.25 * (1 - peace) * (1 - thumbUp)))
+  const proximalY = sign * grip * 0.8 * (1 - thumbUp)
+  vrm.humanoid
+    .getNormalizedBoneNode(`${side}ThumbProximal`)
+    ?.rotation.set(0, mix(proximalY, -sign * 0.3), mix(0, sign * 0.55))
+  // The hilt grip curls the distal joint too; outside the peace sign it rests straight.
+  vrm.humanoid.getNormalizedBoneNode(`${side}ThumbDistal`)?.rotation.set(0, 0, mix(0, sign * 0.45))
+  const baseZ = -sign * (heart * 1.1 + grip * 0.25 * (1 - thumbUp))
+  vrm.humanoid
+    .getNormalizedBoneNode(`${side}ThumbMetacarpal`)
+    ?.rotation.set(0, mix(sign * thumbUp * 0.35, -sign * 0.35), mix(baseZ, sign * 0.5))
 }
 
 function applyFingerPose(vrm: VRM, finger: string, curl: number, spread: number): void {

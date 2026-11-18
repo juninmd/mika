@@ -73,3 +73,22 @@ describe('suavidade da cabeça e da fala', () => {
     expect(last).toBeLessThan(0.05)
   })
 })
+
+// O "paz e amor" ligava o polegar e o dedo anelar no primeiro quadro em que o peso passava de zero.
+describe('mão do sinal de paz', () => {
+  it('um começo de paz move os dedos só um começo', () => {
+    const at = (rightPeace: number) => {
+      const vrm = fakeVrm()
+      writeArmPose(vrm, { ...ARM_REST, rightGrip: 1, rightPeace })
+      return vrm.nodes
+    }
+    const rest = at(0)
+    const start = at(0.02)
+    for (const [name, node] of start) {
+      const before = rest.get(name)?.rotation.values ?? []
+      node.rotation.values.forEach((value, i) => {
+        expect(Math.abs(value - (before[i] ?? 0)), `${name}[${i}]`).toBeLessThan(0.05)
+      })
+    }
+  })
+})

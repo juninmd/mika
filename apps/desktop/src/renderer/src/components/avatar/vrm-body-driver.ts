@@ -2,7 +2,7 @@ import type { VRM } from '@pixiv/three-vrm'
 import * as THREE from 'three'
 import { type SpringState, springTo } from './damped-spring'
 import type { VrmActionClock } from './vrm-action-clock'
-import { ARM_REST, type ArmPose, VrmArmDriver } from './vrm-body-rig'
+import { ARM_REST, type ArmPose, BODY_ACTION_SECONDS, isVrmBodyAction, VrmArmDriver } from './vrm-body-rig'
 import { VrmClipLayer } from './vrm-clip-layer'
 import { IDLE_CLIP, VRM_ACTION_CLIPS, VRM_CLIP_URLS } from './vrm-clips'
 import { type FidgetOffsets, VrmFidgetLayer } from './vrm-fidget'
@@ -75,7 +75,9 @@ export class VrmBodyDriver {
 
   play(name: string): void {
     const clip = VRM_ACTION_CLIPS[name as keyof typeof VRM_ACTION_CLIPS] ?? name
-    if (this.clips.play(clip, { fade: 0.35 })) return
+    // The capture ends with the action (peaceSign runs 11.7 s for a 3 s gesture), then idle crossfades in.
+    const hold = isVrmBodyAction(name) ? BODY_ACTION_SECONDS[name] : undefined
+    if (this.clips.play(clip, { fade: 0.35, hold })) return
     if (name === 'nod') this.nod()
     this.arms.play(name)
   }
