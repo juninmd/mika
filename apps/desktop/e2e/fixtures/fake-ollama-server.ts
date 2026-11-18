@@ -210,6 +210,13 @@ function toolCallFor(
     return { name: 'game_session', args: { action: 'today' } }
   }
 
+  // The spoken "yes" to Mika's new-version question (`update-announce.spec.ts`).
+  if (turn.includes('pode atualizar') && available.has('app_update')) {
+    const messages = Array.isArray(body.messages) ? body.messages : []
+    if ((messages.at(-1) as { role?: string } | undefined)?.role === 'tool') return null
+    return { name: 'app_update', args: {} }
+  }
+
   if (turn.includes('HOMOLOGA_APROVACAO') && available.has('clear_history')) {
     const messages = Array.isArray(body.messages) ? body.messages : []
     if (messages.some((message) => (message as { role?: string }).role === 'tool')) return null

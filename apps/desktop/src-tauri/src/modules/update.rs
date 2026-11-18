@@ -20,6 +20,7 @@ use crate::updater;
 
 mod announce;
 pub mod auto;
+mod tool;
 
 /// `app.autoUpdate` — ver [`auto::Mode`].
 const AUTO_UPDATE_CONFIG_PATH: &str = "app.autoUpdate";
@@ -206,6 +207,7 @@ pub fn spawn_auto(store: Arc<ConfigStore>, app: AppHandle) {
     if updater::is_configured(&app) != Value::Bool(true) {
         return;
     }
+    tool::register(app.clone());
     tauri::async_runtime::spawn(async move {
         let mut shutdown_rx = crate::shutdown::subscribe();
         let mut tick = tokio::time::interval_at(tokio::time::Instant::now() + AUTO_TICK, AUTO_TICK);
