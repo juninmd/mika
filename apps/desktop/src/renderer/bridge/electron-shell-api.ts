@@ -127,6 +127,8 @@ export function createElectronShellApi(mika: MikaRuntimeApi): ElectronShellApi {
         openExternal: (url: string) => ipcRenderer.invoke(DESKTOP_SHELL_CHANNELS.OpenExternal, { url }),
         revealPath: (kind: 'data' | 'logs') =>
           ipcRenderer.invoke(DESKTOP_SHELL_CHANNELS.RevealPath, { kind }) as Promise<{ path: string }>,
+        importAvatarModel: () =>
+          ipcRenderer.invoke(DESKTOP_SHELL_CHANNELS.ImportAvatarModel) as Promise<{ modelPath: string } | null>,
         quit: () => ipcRenderer.invoke(DESKTOP_SHELL_CHANNELS.AppQuit) as Promise<void>,
       },
     },

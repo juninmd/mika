@@ -752,9 +752,7 @@ for (const spring of physics.springs.filter((s) => s.name?.startsWith('Haru_')))
       tube(name, cuffRing(legRadius(legs, side, top - 0.004)), 0.0045, cuffMat, leg)
     }
   }
-  legwear('Outfit_Seifuku_Socks', 0.44, ['#26232f', '#100e16'], ['#26232f', '#100e16'])
   legwear('Outfit_Maid_Stockings', 0.6, ['#f7f5fb', '#bab5cd'], ['#2b2735', '#121019'])
-  legwear('Outfit_Idol_Stockings', 0.62, ['#fbf7fb', '#cdbcd3'], ['#ff7fb2', '#c9447e'])
 }
 replaceImage('Body_00', recodePng(imageBytes(imageIndex('Body_00'))))
 refineAnimeProportions(T, gltf, binary)

@@ -56,6 +56,8 @@ export type ElectronShellNamespace = {
     openExternal?: (url: string) => Promise<void>
     /** Opens the app data or logs folder in the OS file manager; resolves to its real path. */
     revealPath?: (kind: 'data' | 'logs') => Promise<{ path: string }>
+    /** Native picker for a .vrm or .model3.json, copied into the profile; null when cancelled. */
+    importAvatarModel?: () => Promise<{ modelPath: string } | null>
     /** Quits the whole app (tray "Quit" sequence), not just the calling window. */
     quit?: () => Promise<void>
   }

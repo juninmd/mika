@@ -45,6 +45,7 @@ mod affinity_action;
 mod expression_action;
 mod expression_bridge;
 mod feature;
+pub(crate) mod import_model;
 mod inspect_model;
 pub(crate) mod model_inventory;
 mod plugin_test;

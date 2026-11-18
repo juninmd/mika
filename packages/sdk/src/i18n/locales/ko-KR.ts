@@ -2865,9 +2865,13 @@ export const koKR: TranslationDict = {
   'settings.skin.modelStation.thirdPartyBadge': '서드파티',
   'settings.skin.modelStation.thirdPartyTooltip': '이 모델은 앱에 포함되어 있지 않아요',
   'settings.skin.modelStation.customPathLabel': '사용자 지정 모델 경로',
-  'settings.skin.modelStation.customPathPlaceholder': '예: C:modelsmy-model.model3.json',
-  'settings.skin.modelStation.customPathDescription':
-    '내 .vrm 또는 .model3.json 파일을 지정하세요. 위에서 고른 스킨을 대체해요.',
+  'settings.skin.modelStation.customPathPlaceholder': '예: live2d/my-skin/my-skin.vrm',
+  'settings.skin.import.title': '내 모델 가져오기',
+  'settings.skin.import.description':
+    '.vrm 또는 Live2D .model3.json을 선택하면 Mika가 데이터 폴더로 복사하고 바로 적용합니다. 아래 경로는 사용 중인 모델을 가리킵니다.',
+  'settings.skin.import.button': '모델 가져오기…',
+  'settings.skin.import.success': '모델을 가져와 적용했습니다.',
+  'settings.skin.import.error': '모델을 가져오지 못했습니다.',
   'settings.skin.stage.ariaLabel': '미리보기 스테이지: {{name}}',
   'settings.skin.stage.loading': '모델 불러오는 중…',
   'settings.skin.stage.error': '이 모델을 스테이지에 불러오지 못했어요.',
