@@ -134,6 +134,7 @@ export function useShellVoice({
     vadSilenceMs,
     vadEndpointingEnabled,
     offlineMode,
+    livePartials: true,
     onTranscript: (text, meta) => {
       const spoken = text.trim()
       if (!spoken) return

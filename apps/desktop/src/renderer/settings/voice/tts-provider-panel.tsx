@@ -1,5 +1,6 @@
 import { BentoGrid, GlassCard, GlassSection, ProviderChoiceGrid, SectionHeader } from '@mika/sdk-ui/settings'
 import { Loader2, Mic } from 'lucide-react'
+import { ProviderBillingCard } from '../../src/components/settings/ProviderBillingCard'
 import { useI18n } from '../../src/hooks/useI18n'
 import { useReportedSave } from '../../src/hooks/useReportedSave'
 import { useSaveState } from '../../src/hooks/useSaveState'
@@ -99,6 +100,8 @@ export function TTSProviderPanel(props: TTSProviderPanelProps) {
             )}
           />
         </GlassCard>
+
+        <ProviderBillingCard provider={ttsProvider} />
 
         <TtsBehaviorCards t={t} fields={fields} boolSave={boolSave} numSave={numSave} />
 

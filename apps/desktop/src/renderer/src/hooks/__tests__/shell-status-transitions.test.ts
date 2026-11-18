@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { nextStatusOnOfflineChange, nextStatusOnTtsStop, nextStatusOnVad } from '../shell-status-transitions'
+import {
+  canStopTurn,
+  nextStatusOnOfflineChange,
+  nextStatusOnTtsStop,
+  nextStatusOnVad,
+} from '../shell-status-transitions'
 
 describe('nextStatusOnTtsStop — evita travar em "speaking" quando o áudio já parou', () => {
   it('TTS ainda tocando: nunca força transição, mesmo vindo de "speaking"', () => {
@@ -49,4 +54,21 @@ describe('nextStatusOnVad — "listening" só nasce e morre a partir de "idle"',
   it('nada relevante muda: não emite transição', () => {
     expect(nextStatusOnVad(false, false, 'idle')).toBeNull()
   })
+})
+
+describe('canStopTurn — o botão de parar existe enquanto houver algo a parar', () => {
+  it.each(['thinking', 'acting'] as const)('turno travado em "%s" sem áudio: parar fica disponível', (status) => {
+    expect(canStopTurn(false, status)).toBe(true)
+  })
+
+  it('áudio tocando: parar fica disponível em qualquer status', () => {
+    expect(canStopTurn(true, 'idle')).toBe(true)
+  })
+
+  it.each(['idle', 'listening', 'confirming', 'error', 'offline'] as const)(
+    '"%s" sem áudio: nada a parar, sem botão morto',
+    (status) => {
+      expect(canStopTurn(false, status)).toBe(false)
+    },
+  )
 })

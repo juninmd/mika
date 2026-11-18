@@ -9,7 +9,7 @@
 //! - chave de topo desconhecida, outros servidores e chave desconhecida DENTRO da entrada editada
 //!   (`autoApprove`, `type`, …) sobrevivem — o arquivo é do usuário, a UI só mexe no que conhece;
 //! - JSON inválido no disco é ERRO, nunca template vazio: a próxima escrita gravaria por cima;
-//! - valor de `env` nunca sai daqui para a UI (`describe` só expõe as chaves). Na volta, `null` num
+//! - valor de `env`/`headers` nunca sai daqui para a UI (`describe` só expõe as chaves). Na volta, `null` num
 //!   valor de `env` significa "mantenha o que está salvo" — é assim que a UI edita um servidor com
 //!   segredo sem jamais ter visto o segredo.
 
@@ -29,6 +29,7 @@ const MAX_ARG_CHARS: usize = 4096;
 const MAX_ENV_ENTRIES: usize = 64;
 const MAX_ENV_KEY_CHARS: usize = 128;
 const MAX_ENV_VALUE_CHARS: usize = 8192;
+const MAX_URL_CHARS: usize = 2048;
 
 /// Um servidor como a UI o manda: `env` com `None` = "mantenha o valor salvo".
 #[derive(Debug, Clone, PartialEq)]
@@ -37,6 +38,10 @@ pub struct ServerInput {
     pub args: Vec<String>,
     pub env: BTreeMap<String, Option<String>>,
     pub cwd: Option<String>,
+    /// Servidor remoto (Streamable HTTP): presente, `command`/`args`/`env`/`cwd` são ignorados.
+    pub url: Option<String>,
+    /// Mesma semântica de `env` (`None` = mantenha o salvo): `Authorization` é segredo.
+    pub headers: BTreeMap<String, Option<String>>,
     pub enabled: bool,
 }
 
@@ -84,21 +89,43 @@ fn is_env_key(key: &str) -> bool {
         && key.len() <= MAX_ENV_KEY_CHARS
 }
 
-fn parse_env(value: Option<&Value>) -> Result<BTreeMap<String, Option<String>>, String> {
+/// Nome de cabeçalho HTTP (token da RFC 9110).
+fn is_header_key(key: &str) -> bool {
+    !key.is_empty() && key.len() <= MAX_ENV_KEY_CHARS && key.chars().all(|c| c.is_ascii_alphanumeric() || "!#$%&'*+-.^_`|~".contains(c))
+}
+
+/// `env` e `headers`: objeto { chave: valor | null }, mesmos tetos.
+fn parse_secret_map(value: Option<&Value>, what: &str, valid_key: fn(&str) -> bool) -> Result<BTreeMap<String, Option<String>>, String> {
     let Some(value) = value.filter(|v| !v.is_null()) else { return Ok(BTreeMap::new()) };
-    let map = value.as_object().ok_or("env tem de ser objeto { CHAVE: valor }")?;
+    let map = value.as_object().ok_or_else(|| format!("{what} tem de ser objeto {{ CHAVE: valor }}"))?;
     if map.len() > MAX_ENV_ENTRIES {
-        return Err(format!("no máximo {MAX_ENV_ENTRIES} variáveis de ambiente"));
+        return Err(format!("no máximo {MAX_ENV_ENTRIES} entradas em {what}"));
     }
-    let mut env = BTreeMap::new();
+    let mut parsed = BTreeMap::new();
     for (key, raw) in map {
-        if !is_env_key(key) {
-            return Err(format!("chave de env inválida: {key}"));
+        if !valid_key(key) {
+            return Err(format!("chave de {what} inválida: {key}"));
         }
-        let parsed = if raw.is_null() { None } else { Some(bounded_string(raw, "valor de env", MAX_ENV_VALUE_CHARS)?) };
-        env.insert(key.clone(), parsed);
+        let value = if raw.is_null() { None } else { Some(bounded_string(raw, &format!("valor de {what}"), MAX_ENV_VALUE_CHARS)?) };
+        if value.as_deref().is_some_and(|v| v.contains(['\r', '\n'])) {
+            return Err(format!("valor de {what} {key} contém quebra de linha"));
+        }
+        parsed.insert(key.clone(), value);
     }
-    Ok(env)
+    Ok(parsed)
+}
+
+fn parse_url(value: Option<&Value>) -> Result<Option<String>, String> {
+    let Some(value) = value.filter(|v| !v.is_null()) else { return Ok(None) };
+    let url = bounded_string(value, "url", MAX_URL_CHARS)?.trim().to_string();
+    if url.is_empty() {
+        return Ok(None);
+    }
+    let parsed = url::Url::parse(&url).map_err(|error| format!("url inválida: {error}"))?;
+    if !matches!(parsed.scheme(), "http" | "https") || parsed.host_str().is_none() {
+        return Err("url tem de ser http:// ou https:// com host".into());
+    }
+    Ok(Some(url))
 }
 
 fn parse_cwd(value: Option<&Value>) -> Result<Option<String>, String> {
@@ -117,8 +144,11 @@ pub fn parse_spec(value: &Value) -> Result<ServerInput, String> {
     let spec = value.as_object().ok_or("spec tem de ser objeto")?;
     let command = bounded_string(spec.get("command").unwrap_or(&Value::Null), "command", MAX_COMMAND_CHARS)?;
     let command = command.trim().to_string();
-    if command.is_empty() {
-        return Err("command não pode ser vazio".into());
+    let url = parse_url(spec.get("url"))?;
+    match (command.is_empty(), url.is_some()) {
+        (true, false) => return Err("command (local) ou url (remoto) é obrigatório".into()),
+        (false, true) => return Err("use command (local) OU url (remoto), não os dois".into()),
+        _ => {}
     }
     let enabled = match spec.get("enabled") {
         None | Some(Value::Null) => true,
@@ -128,8 +158,10 @@ pub fn parse_spec(value: &Value) -> Result<ServerInput, String> {
     Ok(ServerInput {
         command,
         args: parse_args(spec.get("args"))?,
-        env: parse_env(spec.get("env"))?,
+        env: parse_secret_map(spec.get("env"), "env", is_env_key)?,
         cwd: parse_cwd(spec.get("cwd"))?,
+        url,
+        headers: parse_secret_map(spec.get("headers"), "headers", is_header_key)?,
         enabled,
     })
 }
@@ -140,19 +172,52 @@ fn is_unreadable(value: &Value) -> bool {
     value.as_str().is_some_and(crate::config::crypto::Encryption::is_encrypted)
 }
 
-/// `null` = valor salvo em `previous_env`; sem valor salvo (ou ilegível), recusa nomeando a chave.
-pub fn resolve_env(input: &ServerInput, previous_env: Option<&Value>) -> Result<BTreeMap<String, String>, String> {
-    input
-        .env
+/// `null` = valor salvo em `previous`; sem valor salvo (ou ilegível), recusa nomeando a chave.
+fn resolve_secrets(values: &BTreeMap<String, Option<String>>, previous: Option<&Value>, what: &str) -> Result<BTreeMap<String, String>, String> {
+    values
         .iter()
         .map(|(key, value)| {
             let resolved = match value {
                 Some(value) => Some(value.clone()),
-                None => previous_env.and_then(|env| env.get(key)).filter(|v| !is_unreadable(v)).and_then(Value::as_str).map(str::to_string),
+                None => previous.and_then(|map| map.get(key)).filter(|v| !is_unreadable(v)).and_then(Value::as_str).map(str::to_string),
             };
-            resolved.map(|v| (key.clone(), v)).ok_or_else(|| format!("env {key} sem valor salvo para manter"))
+            resolved.map(|v| (key.clone(), v)).ok_or_else(|| format!("{what} {key} sem valor salvo para manter"))
         })
         .collect()
+}
+
+/// O `ServerSpec` efetivo de `input`, com `env`/`headers` `null` resolvidos contra a entrada salva.
+pub fn resolve_spec(input: &ServerInput, previous: Option<&Value>) -> Result<ServerSpec, String> {
+    let field = |key: &str| previous.and_then(|entry| entry.get(key));
+    Ok(ServerSpec {
+        command: input.command.clone(),
+        args: input.args.clone(),
+        env: resolve_secrets(&input.env, field("env"), "env")?,
+        cwd: input.cwd.clone(),
+        url: input.url.clone(),
+        headers: resolve_secrets(&input.headers, field("headers"), "header")?,
+        disabled: !input.enabled,
+    })
+}
+
+/// O mapa a gravar: os valores resolvidos mais o ciphertext ilegível que o usuário não reenviou —
+/// segue no arquivo (nada o apaga sem querer), só não entra no `ServerSpec`.
+fn stored_secrets(resolved: &BTreeMap<String, String>, previous: Option<&Value>) -> Value {
+    let mut stored = resolved.iter().map(|(k, v)| (k.clone(), json!(v))).collect::<Map<_, _>>();
+    for (key, value) in previous.and_then(Value::as_object).into_iter().flatten() {
+        if is_unreadable(value) && !stored.contains_key(key) {
+            stored.insert(key.clone(), value.clone());
+        }
+    }
+    Value::Object(stored)
+}
+
+/// Grava `value` em `key`, ou tira a chave quando `None`.
+fn set_or_remove(entry: &mut Map<String, Value>, key: &str, value: Option<Value>) {
+    match value {
+        Some(value) => entry.insert(key.into(), value),
+        None => entry.remove(key),
+    };
 }
 
 /// Mesma precedência de `read_servers`: `mcpServers`, e `mcp_servers` só se aquela estiver ausente.
@@ -194,30 +259,21 @@ pub fn upsert(doc: &mut Value, name: &str, input: ServerInput, original: Option<
     ensure_name_is_free(servers, name, if original.is_some() { source } else { "" })?;
 
     let mut entry = servers.get(source).and_then(Value::as_object).cloned().unwrap_or_default();
-    let env = resolve_env(&input, entry.get("env"))?;
-    entry.insert("command".into(), json!(input.command));
-    entry.insert("args".into(), json!(input.args));
-    let mut stored_env = env.iter().map(|(k, v)| (k.clone(), json!(v))).collect::<Map<_, _>>();
-    // Variável ilegível que o usuário não reenviou: o ciphertext segue no arquivo (nada o apaga
-    // sem querer), só não entra no `ServerSpec` devolvido.
-    for (key, value) in entry.get("env").and_then(Value::as_object).into_iter().flatten() {
-        if is_unreadable(value) && !stored_env.contains_key(key) {
-            stored_env.insert(key.clone(), value.clone());
-        }
-    }
-    entry.insert("env".into(), Value::Object(stored_env));
-    match &input.cwd {
-        Some(cwd) => entry.insert("cwd".into(), json!(cwd)),
-        None => entry.remove("cwd"),
-    };
-    match input.enabled {
-        true => entry.remove("disabled"),
-        false => entry.insert("disabled".into(), json!(true)),
-    };
+    let spec = resolve_spec(&input, Some(&Value::Object(entry.clone())))?;
+    let local = spec.url.is_none();
+    let env = local.then(|| stored_secrets(&spec.env, entry.get("env")));
+    let headers = (!local).then(|| stored_secrets(&spec.headers, entry.get("headers")));
+    set_or_remove(&mut entry, "command", local.then(|| json!(spec.command)));
+    set_or_remove(&mut entry, "args", local.then(|| json!(spec.args)));
+    set_or_remove(&mut entry, "env", env);
+    set_or_remove(&mut entry, "cwd", spec.cwd.as_ref().filter(|_| local).map(|cwd| json!(cwd)));
+    set_or_remove(&mut entry, "url", spec.url.as_ref().map(|url| json!(url)));
+    set_or_remove(&mut entry, "headers", headers);
+    set_or_remove(&mut entry, "disabled", spec.disabled.then(|| json!(true)));
 
     servers.remove(source);
     servers.insert(name.to_string(), Value::Object(entry));
-    Ok(ServerSpec { command: input.command, args: input.args, env, cwd: input.cwd, disabled: !input.enabled })
+    Ok(spec)
 }
 
 pub fn remove(doc: &mut Value, name: &str) -> Result<(), String> {
@@ -245,6 +301,8 @@ pub fn describe(name: &str, spec: &ServerSpec) -> Value {
         "args": spec.args,
         "envKeys": spec.env.keys().collect::<Vec<_>>(),
         "cwd": spec.cwd,
+        "url": spec.url,
+        "headerKeys": spec.headers.keys().collect::<Vec<_>>(),
         "enabled": !spec.disabled,
     })
 }

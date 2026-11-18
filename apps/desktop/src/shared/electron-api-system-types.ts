@@ -30,6 +30,41 @@ export interface OpenRouterKeyStatus {
   exhausted: boolean
 }
 
+/** Saldo pela API oficial do provedor (`providerBillingGet`); `null` = o provedor não informou. */
+export interface ProviderBalance {
+  unit: 'usd' | 'characters'
+  used: number
+  limit: number | null
+  remaining: number | null
+  /** Epoch ms (ElevenLabs) ou período textual (OpenRouter: `daily`, `monthly`…). */
+  resetsAt: number | string | null
+  plan: string | null
+  exhausted: boolean
+}
+
+/** Uso medido pela própria Mika (`token_usage.db`). `costUsd: null` = algum pedido sem preço conhecido. */
+export interface ProviderLocalUsage {
+  unit: 'tokens' | 'characters' | 'seconds'
+  amount: number
+  requests: number
+  costUsd: number | null
+  unknownCostRequests: number
+  lastUsedAt: number
+}
+
+/** Response of `providerBillingGet` (Rust `modules/provider_billing`). */
+export interface ProviderBilling {
+  provider: string
+  local: boolean
+  free: boolean
+  api: {
+    status: 'ok' | 'unavailable' | 'notApplicable' | 'missingKey' | 'error'
+    error?: string
+    balance?: ProviderBalance
+  }
+  usage: ProviderLocalUsage | null
+}
+
 /** Response of `llmGetModelProfile` (Rust `modules/llm/profile_route.rs`); `null` = the provider did not say. */
 export interface LlmModelProfile {
   contextWindow: number | null
@@ -125,6 +160,7 @@ export type SystemRuntimeApi = {
 
   getOpenRouterQuota: () => Promise<{ ok: boolean; quota?: OpenRouterKeyStatus; error?: string }>
   getModelProfile: (provider: string, model: string) => Promise<LlmModelProfile>
+  getProviderBilling: (provider: string) => Promise<ProviderBilling>
   testCredential: (payload: CredentialTestRequest) => Promise<CredentialTestResult>
   getLlmStatus: () => Promise<LlmStatus>
   onLlmStatus: (callback: (status: LlmStatus) => void) => () => void

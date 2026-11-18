@@ -9,6 +9,7 @@ import {
   SectionHeader,
 } from '@mika/sdk-ui/settings'
 import { ModelPickerField } from '../../src/components/settings/ModelPickerField'
+import { ProviderBillingCard } from '../../src/components/settings/ProviderBillingCard'
 import { VisionMissionPanel } from './vision-mission-panel'
 import type { VisionPrivacy } from './vision-readiness'
 import {
@@ -113,6 +114,8 @@ export function VisionSettingsEnabledCards({
           )}
         />
       </GlassCard>
+
+      <ProviderBillingCard provider={provider === 'default' ? chatProvider : provider} />
 
       {captureSliders.slice(0, 2).map((control) => (
         <SliderCard key={control.configPath} control={control} onSave={numSave} />

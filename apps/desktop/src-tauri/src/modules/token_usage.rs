@@ -125,6 +125,11 @@ pub fn arm(app: &AppHandle) {
     let _ = APP.set(app.clone());
 }
 
+/// Quem grava uso sem `AppHandle` no ponto de chamada (TTS/STT, ver `provider_billing::usage`).
+pub(crate) fn armed_app() -> Option<&'static AppHandle> {
+    APP.get()
+}
+
 /// Embedding remoto (OpenRouter/OpenAI-compatível) que devolveu `usage.prompt_tokens`, surface
 /// `"embeddings"`. Sem [`arm`] (testes) não grava nada.
 pub(crate) fn record_embedding(provider: &str, model: &str, input_tokens: u64) {
