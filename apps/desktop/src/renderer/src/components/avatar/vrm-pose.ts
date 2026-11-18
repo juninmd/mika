@@ -32,6 +32,8 @@ export function writeArmPose(vrm: VRM, pose: ArmPose): void {
 }
 
 const FINGER_WEIGHT: Record<string, number> = { Index: 0.84, Middle: 0.96, Ring: 1.1, Little: 1.24 }
+/** A living open hand never lies flat: grip 0 still curls the fingers this much. */
+const RELAXED_CURL = 0.15
 
 function applyHandPose(
   vrm: VRM,
@@ -47,7 +49,7 @@ function applyHandPose(
   for (const finger of ['Index', 'Middle', 'Ring', 'Little'] as const) {
     const extended = finger === 'Index' || finger === 'Middle'
     const cascade = FINGER_WEIGHT[finger] + (1 - FINGER_WEIGHT[finger]) * p
-    const curl = grip * cascade * (extended ? 1 - p : 1)
+    const curl = (RELAXED_CURL + grip * (1 - RELAXED_CURL)) * cascade * (extended ? 1 - p : 1)
     const spread = extended ? p * (finger === 'Index' ? 0.12 : -0.12) : 0
     applyFingerPose(vrm, `${side}${finger}`, sign * curl, spread)
   }

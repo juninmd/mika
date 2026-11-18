@@ -2,7 +2,16 @@ import type { VRM } from '@pixiv/three-vrm'
 import * as THREE from 'three'
 import { type SpringState, springTo } from './damped-spring'
 import type { VrmActionClock } from './vrm-action-clock'
-import { ARM_REST, type ArmPose, BODY_ACTION_SECONDS, isVrmBodyAction, VrmArmDriver } from './vrm-body-rig'
+import {
+  ARM_REST,
+  type ArmPose,
+  armPoseFor,
+  BODY_ACTION_SECONDS,
+  isVrmBodyAction,
+  VRM_BODY_ACTIONS,
+  VrmArmDriver,
+  type VrmBodyAction,
+} from './vrm-body-rig'
 import { VrmClipLayer } from './vrm-clip-layer'
 import { IDLE_CLIP, VRM_ACTION_CLIPS, VRM_CLIP_URLS } from './vrm-clips'
 import { type FidgetOffsets, VrmFidgetLayer } from './vrm-fidget'
@@ -24,6 +33,19 @@ import {
 import { attachEyeTarget } from './vrm-scene-setup'
 
 const POSE_KEYS = Object.keys(ARM_REST) as (keyof ArmPose)[]
+/** Twentieths of the gesture: rhythmic leg moves (bounce, floss) cross rest at coarser samples. */
+const SAMPLES = Array.from({ length: 19 }, (_, i) => (i + 1) / 20)
+const LEG_KEYS = POSE_KEYS.filter((key) => /Leg|hips/.test(key))
+
+/** Gestures that pose the legs themselves (sitting, dances); the rest stand on the captured idle stance. */
+const LEG_ACTIONS = new Set<VrmBodyAction>(
+  VRM_BODY_ACTIONS.filter((action) =>
+    SAMPLES.some((progress) => {
+      const pose = armPoseFor(action, progress)
+      return LEG_KEYS.some((key) => Math.abs(pose[key] - ARM_REST[key]) > 1e-3)
+    }),
+  ),
+)
 
 export class VrmBodyDriver {
   readonly lookTarget = new THREE.Object3D()
@@ -189,18 +211,20 @@ export class VrmBodyDriver {
   }
 
   /**
-   * The captured idle loop is the resting body; procedural gestures and held idle states take the
-   * skeleton while they play (the clip would overwrite the arms they pose). It is autonomous motion
-   * like the idle poses, so a backgrounded or reduced-motion window (`idleEnabled` off) holds the rest
-   * pose instead of looping it.
+   * The captured idle loop is the resting body. A procedural gesture takes the upper body but stands
+   * on the loop's hips and legs (alone it locked them straight and together, a mannequin); gestures
+   * that pose the legs and held idle states take the whole skeleton. It is autonomous motion like the
+   * idle poses, so a backgrounded or reduced-motion window (`idleEnabled` off) holds the rest pose.
    */
   private driveIdleClip(idleEnabled: boolean): void {
     const playing = this.clips.playing
-    if (this.arms.playing || this.states.current || !idleEnabled) {
+    const gesture = this.arms.name
+    if ((gesture && LEG_ACTIONS.has(gesture)) || this.states.current || !idleEnabled) {
       if (playing === IDLE_CLIP) this.clips.stop(0.3)
-    } else if (!playing) {
-      this.clips.play(IDLE_CLIP, { loop: true, fade: 0.8 })
+      return
     }
+    if (!playing) this.clips.play(IDLE_CLIP, { loop: true, fade: 0.8 })
+    this.clips.setUpperBody(gesture === null, 0.3)
   }
 
   private applyArmPose(vrm: VRM, pose: Readonly<ArmPose>): void {

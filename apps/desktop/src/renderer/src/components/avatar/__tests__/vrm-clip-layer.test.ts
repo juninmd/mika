@@ -48,3 +48,48 @@ describe('camada de clipes do VRM', () => {
     expect(worst).toBeLessThan(0.08)
   })
 })
+
+// Gesto procedural parava o idle capturado inteiro: as pernas iam para a pose de manequim (juntas e
+// retas) a cada aceno. Agora o clipe segura quadril e pernas enquanto o gesto é dono do tronco.
+describe('gesto procedural sobre a postura capturada', () => {
+  function twoBones() {
+    const root = new THREE.Object3D()
+    const arm = new THREE.Object3D()
+    const leg = new THREE.Object3D()
+    arm.name = 'arm'
+    leg.name = 'leg'
+    root.add(arm, leg)
+    // A slow drift, not a constant: three's mixer skips rewriting a value that did not change.
+    const bend = (angle: number) => new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), angle).toArray()
+    const hold = (bone: string) =>
+      new THREE.QuaternionKeyframeTrack(`${bone}.quaternion`, [0, 10], [...bend(0.4), ...bend(0.5)])
+    const layer = new VrmClipLayer()
+    const clip = new THREE.AnimationClip('idle', 10, [hold('arm'), hold('leg')])
+    layer.adopt(root, undefined, new Map([['idle', clip]]), new Set([leg]))
+    const angle = (bone: THREE.Object3D) => 2 * Math.acos(Math.min(1, Math.abs(bone.quaternion.w)))
+    const step = () => {
+      arm.quaternion.identity()
+      leg.quaternion.identity()
+      layer.blend(FRAME)
+      return { arm: angle(arm), leg: angle(leg) }
+    }
+    return { layer, step }
+  }
+
+  it('o clipe fica nas pernas e devolve o braço ao gesto, sem salto', () => {
+    const { layer, step } = twoBones()
+    layer.play('idle', { loop: true, fade: 0.3 })
+    let prev = step()
+    for (let t = 0; t < 1; t += FRAME) prev = step()
+    layer.setUpperBody(false, 0.3)
+    let worst = 0
+    for (let t = 0; t < 1; t += FRAME) {
+      const now = step()
+      worst = Math.max(worst, Math.abs(now.arm - prev.arm))
+      prev = now
+    }
+    expect(prev.leg).toBeGreaterThan(0.4)
+    expect(prev.arm).toBeLessThan(1e-3)
+    expect(worst).toBeLessThan(0.05)
+  })
+})

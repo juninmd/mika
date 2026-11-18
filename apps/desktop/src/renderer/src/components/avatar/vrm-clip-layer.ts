@@ -29,6 +29,11 @@ export class VrmClipLayer {
   private holdLeft = Number.POSITIVE_INFINITY
   /** Lazily cloned twin per clip: replaying a clip mid-play crossfades from its twin instead of rewinding in place. */
   private readonly twins = new Map<string, THREE.AnimationClip>()
+  /** Hips and legs: the clip can keep them while a procedural gesture owns the rest of the body. */
+  private lower = new Set<THREE.Object3D>()
+  private upper = 1
+  private upperTarget = 1
+  private upperRate = 3
 
   async attach(vrm: VRM, urls: Record<string, string>): Promise<void> {
     const clips = new Map<string, THREE.AnimationClip>()
@@ -41,13 +46,24 @@ export class VrmClipLayer {
         if (animation) clips.set(name, humanoidClip(name, animation, vrm))
       }),
     )
-    this.adopt(vrm.scene, vrm.humanoid.getNormalizedBoneNode('hips') ?? undefined, clips)
+    const lower = new Set<THREE.Object3D>()
+    for (const name of LOWER_BODY) {
+      const node = vrm.humanoid.getNormalizedBoneNode(name)
+      if (node) lower.add(node)
+    }
+    this.adopt(vrm.scene, vrm.humanoid.getNormalizedBoneNode('hips') ?? undefined, clips, lower)
     for (const entry of entries) if (entry.status === 'rejected') throw entry.reason
   }
 
   /** Wires already-built clips to the skeleton under `root`. */
-  adopt(root: THREE.Object3D, hips: THREE.Object3D | undefined, clips: Map<string, THREE.AnimationClip>): void {
+  adopt(
+    root: THREE.Object3D,
+    hips: THREE.Object3D | undefined,
+    clips: Map<string, THREE.AnimationClip>,
+    lower = new Set<THREE.Object3D>(),
+  ): void {
     this.mixer = new THREE.AnimationMixer(root)
+    this.lower = lower
     this.hips = hips
     if (hips) this.hipsRest.copy(hips.position)
     for (const [name, clip] of clips) this.clips.set(name, clip)
@@ -118,6 +134,12 @@ export class VrmClipLayer {
     return twin
   }
 
+  /** Off: the clip keeps only hips and legs, so a gesture stands on the captured stance. */
+  setUpperBody(on: boolean, fade = 0.3): void {
+    this.upperTarget = on ? 1 : 0
+    this.upperRate = 1 / Math.max(0.05, fade)
+  }
+
   stop(fade = 0.5): void {
     this.target = 0
     this.fadeRate = 1 / Math.max(0.05, fade)
@@ -138,10 +160,13 @@ export class VrmClipLayer {
     for (const bone of this.bones) this.held.get(bone)?.copy(bone.quaternion)
     const hipsBase = this.hipsBase.copy(this.hipsRest)
     mixer.update(dt)
+    this.upper +=
+      Math.sign(this.upperTarget - this.upper) * Math.min(Math.abs(this.upperTarget - this.upper), dt * this.upperRate)
     const w = smooth(this.weight)
+    const wUpper = w * smooth(this.upper)
     for (const bone of this.bones) {
       const base = this.held.get(bone)
-      if (base) bone.quaternion.copy(base.slerp(bone.quaternion, w))
+      if (base) bone.quaternion.copy(base.slerp(bone.quaternion, this.lower.has(bone) ? w : wUpper))
     }
     if (this.hips) this.hips.position.lerpVectors(hipsBase, this.hips.position, w)
   }
@@ -153,6 +178,18 @@ export class VrmClipLayer {
 }
 
 const smooth = (t: number) => t * t * (3 - 2 * t)
+
+const LOWER_BODY = [
+  'hips',
+  'leftUpperLeg',
+  'rightUpperLeg',
+  'leftLowerLeg',
+  'rightLowerLeg',
+  'leftFoot',
+  'rightFoot',
+  'leftToes',
+  'rightToes',
+] as const
 
 function humanoidClip(name: string, animation: VRMAnimation, vrm: VRM): THREE.AnimationClip {
   const { rotation, translation } = createVRMAnimationHumanoidTracks(animation, vrm.humanoid, vrm.meta.metaVersion)

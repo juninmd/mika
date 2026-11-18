@@ -26,8 +26,8 @@ describe('writeArmPose', () => {
       const sign = side === 'left' ? -1 : 1
       expect(vrm.nodes.get(`${side}IndexProximal`)?.rotation.values[2]).toBeCloseTo(0)
       expect(vrm.nodes.get(`${side}MiddleProximal`)?.rotation.values[2]).toBeCloseTo(0)
-      expect(vrm.nodes.get(`${side}RingProximal`)?.rotation.values[2]).toBeCloseTo(sign * 0.99)
-      expect(vrm.nodes.get(`${side}LittleProximal`)?.rotation.values[2]).toBeCloseTo(sign * 0.99)
+      expect(vrm.nodes.get(`${side}RingProximal`)?.rotation.values[2]).toBeCloseTo(sign * 1.0065)
+      expect(vrm.nodes.get(`${side}LittleProximal`)?.rotation.values[2]).toBeCloseTo(sign * 1.0065)
       expect(vrm.nodes.get(`${side}ThumbMetacarpal`)?.rotation.values).toEqual([0, -sign * 0.35, sign * 0.5])
       expect(vrm.nodes.get(`${side}ThumbProximal`)?.rotation.values).toEqual([0, -sign * 0.3, sign * 0.55])
       expect(vrm.nodes.get(`${side}ThumbDistal`)?.rotation.values).toEqual([0, 0, sign * 0.45])
@@ -90,5 +90,18 @@ describe('mão do sinal de paz', () => {
         expect(Math.abs(value - (before[i] ?? 0)), `${name}[${i}]`).toBeLessThan(0.05)
       })
     }
+  })
+})
+
+// Mão aberta com grip 0 deixava os dedos retos como tábua (aceno, chamar, dar de ombros); mão viva
+// em repouso sempre curva um pouco, mais no mindinho que no indicador.
+describe('mão aberta relaxada', () => {
+  it('grip 0 ainda curva os dedos de leve, em cascata até o mindinho', () => {
+    const vrm = fakeVrm()
+    writeArmPose(vrm, { ...ARM_REST, rightGrip: 0 })
+    const curl = (finger: string) => Math.abs(vrm.nodes.get(`right${finger}Proximal`)?.rotation.values[2] ?? 0)
+    expect(curl('Index')).toBeGreaterThan(0.1)
+    expect(curl('Index')).toBeLessThan(0.35)
+    expect(curl('Little')).toBeGreaterThan(curl('Index'))
   })
 })
