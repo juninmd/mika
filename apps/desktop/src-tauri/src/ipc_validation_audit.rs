@@ -85,6 +85,11 @@ const ROUTE_AUDIT: &[(&str, RouteAudit)] = &[
         RouteAudit::Allowlisted("provider/model são só chave de lookup em HashMap interno; string vazia/arbitrária é chave inexistente, sem efeito externo"),
     ),
     ("llm:getOpenRouterQuota", RouteAudit::Allowlisted("sem payload; usa a API key já salva na config")),
+    // -- modules/provider_billing/mod.rs -----------------------------------------------------------
+    (
+        "providerBilling:get",
+        RouteAudit::Validated("owner-gated; provider por match fechado (catalog::spec), desconhecido é erro; chaves vêm da config e toda URL passa por assert_network_allowed"),
+    ),
     ("llm:getModelProfile", RouteAudit::Validated("provider por lista fechada; model não vazio e <= 256 chars; URLs/chaves vêm da config e cada busca passa pelo gate de rede de model_profile::fetch")),
     ("llm:getStatus", RouteAudit::Allowlisted("sem payload; sonda o Ollama da config salva via gate de rede (status::probe_ollama)")),
     ("llm:pullModel", RouteAudit::Validated("pull::validate_model_name: [A-Za-z0-9._:/-], <= 128 chars, sem '..' nem prefixo '-'/'/'/'.'; endpoint vem da config e passa pelo gate de rede")),

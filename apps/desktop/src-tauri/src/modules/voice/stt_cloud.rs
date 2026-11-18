@@ -48,6 +48,7 @@ use crate::config::store::ConfigStore;
 use crate::modules::privacy;
 
 use super::pcm_wav::pcm16_to_wav;
+use crate::modules::provider_billing::usage;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum CloudSttProvider {
@@ -62,6 +63,14 @@ impl CloudSttProvider {
             "groq-whisper" => Some(Self::Groq),
             "openai-whisper" => Some(Self::OpenAi),
             _ => None,
+        }
+    }
+
+    /// Id da tela de STT, chave do uso medido em `provider_billing`.
+    fn billing_id(self) -> &'static str {
+        match self {
+            Self::Groq => "groq-whisper",
+            Self::OpenAi => "openai-whisper",
         }
     }
 
@@ -255,6 +264,7 @@ pub(super) async fn transcribe(
         return json!({ "success": false, "error": e });
     }
 
+    let seconds = if super::transcribe::is_pcm16_mime(mime_type) { usage::pcm16_seconds(audio.len(), sample_rate) } else { 0.0 };
     let (upload_bytes, upload_mime) = build_upload(audio, mime_type, sample_rate);
     let filename = filename_for(&upload_mime);
     let boundary = format!("mika-stt-{}", uuid::Uuid::new_v4());
@@ -285,7 +295,10 @@ pub(super) async fn transcribe(
     };
 
     match parse_success_text(&bytes) {
-        Ok(text) => json!({ "success": true, "data": { "text": text } }),
+        Ok(text) => {
+            usage::record(provider.billing_id(), seconds);
+            json!({ "success": true, "data": { "text": text } })
+        }
         Err(e) => json!({ "success": false, "error": e }),
     }
 }

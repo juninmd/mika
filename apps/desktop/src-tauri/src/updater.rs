@@ -13,7 +13,7 @@ use std::sync::Mutex;
 
 use serde_json::Value;
 use tauri::AppHandle;
-use tauri_plugin_updater::{Update, UpdaterExt};
+use tauri_plugin_updater::{Update, Updater, UpdaterExt};
 
 /// O `Update` do último `check()` e os bytes do último `download()`, aguardando `install()`.
 /// Nunca acumula: cada `check()` substitui o anterior e descarta bytes que ninguém instalou.
@@ -23,7 +23,25 @@ static PENDING: Mutex<Option<(Update, Option<Vec<u8>>)>> = Mutex::new(None);
 /// `tauri.conf.json`; sem eles o `build()` do plugin falha com `EmptyEndpoints`. É exatamente
 /// a pergunta que `update.service.ts` faz antes de oferecer o controle ao usuário.
 pub fn is_configured(app: &AppHandle) -> Value {
-    Value::Bool(!cfg!(feature = "steam") && app.updater().is_ok())
+    Value::Bool(!cfg!(feature = "steam") && build(app).is_ok())
+}
+
+/// O `Updater` do `tauri.conf.json`. No binário E2E, com `MIKA_E2E=1` E `MIKA_E2E_UPDATE_ENDPOINT`,
+/// o endpoint é o `latest.json` local do spec — o distribuído nem compila este desvio.
+fn build(app: &AppHandle) -> tauri_plugin_updater::Result<Updater> {
+    #[cfg(feature = "e2e")]
+    if let Some(endpoint) = e2e_endpoint() {
+        return app.updater_builder().endpoints(vec![endpoint])?.build();
+    }
+    app.updater()
+}
+
+#[cfg(feature = "e2e")]
+fn e2e_endpoint() -> Option<url::Url> {
+    if std::env::var("MIKA_E2E").as_deref() != Ok("1") {
+        return None;
+    }
+    std::env::var("MIKA_E2E_UPDATE_ENDPOINT").ok()?.parse().ok()
 }
 
 /// `updateCheck` — consulta o endpoint. Assíncrono de verdade (rede), por isso vive no caminho
@@ -32,7 +50,7 @@ pub async fn check(app: AppHandle) -> Result<Value, String> {
     if cfg!(feature = "steam") {
         return Err("atualização gerenciada pelo cliente Steam".into());
     }
-    let updater = app.updater().map_err(|e| e.to_string())?;
+    let updater = build(&app).map_err(|e| e.to_string())?;
     let found = updater.check().await.map_err(|e| e.to_string())?;
 
     let Some(update) = found else {

@@ -18,6 +18,7 @@ use crate::protocol::InvokeContext;
 use crate::shell_actions::is_owner_surface;
 use crate::updater;
 
+mod announce;
 pub mod auto;
 
 /// `app.autoUpdate` — ver [`auto::Mode`].
@@ -107,6 +108,9 @@ async fn handle_check(app: &AppHandle) -> Value {
                 status.progress = None;
             }
 
+            if let (true, Some(version)) = (available, &version) {
+                announce::on_found(app, version, notes.as_deref());
+            }
             let mut response = json!({ "success": true, "updateAvailable": available });
             if let Some(version) = version {
                 response["version"] = json!(version);
