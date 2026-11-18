@@ -20,7 +20,9 @@ on:
 
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Na `main` o run é quem grava o cache: cancelá-lo a cada merge deixava a `main` sem cache nenhum.
+  # Lá os runs entram em fila (o pendente mais novo substitui o anterior, o em andamento termina).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read

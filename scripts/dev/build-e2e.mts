@@ -15,7 +15,19 @@ import { fileURLToPath } from 'node:url'
 const root = resolve(fileURLToPath(import.meta.url), '../../..')
 const result = spawnSync(
   'pnpm',
-  ['exec', 'tauri', 'build', '--no-bundle', '--config', 'src-tauri/tauri.conf.json', '--features', 'e2e'],
+  [
+    'exec',
+    'tauri',
+    'build',
+    '--no-bundle',
+    '--config',
+    'src-tauri/tauri.conf.json',
+    // `latest.json` do spec de update é servido em http://127.0.0.1; o release exige https.
+    '--config',
+    'src-tauri/tauri.e2e.conf.json',
+    '--features',
+    'e2e',
+  ],
   {
     cwd: resolve(root, 'apps/desktop'),
     stdio: 'inherit',
