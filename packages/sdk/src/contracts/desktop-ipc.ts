@@ -232,6 +232,20 @@ export const DESKTOP_LOCAL_INVOKE_ROUTES = {
       error: z.string().optional(),
     }),
   },
+  // Créditos/cota (API oficial, quando existe) e uso medido localmente do provedor de uma tela de
+  // provider (`modules/provider_billing`). O id é o mesmo que a tela salva em `llm.provider`/`voice.*`.
+  providerBillingGet: {
+    channel: 'providerBilling:get',
+    namespace: 'runtime',
+    requestSchema: z.object({ provider: z.string().min(1).max(64) }),
+    responseSchema: z.object({
+      provider: z.string(),
+      local: z.boolean(),
+      free: z.boolean(),
+      api: z.object({ status: z.string(), error: z.string().optional(), balance: z.unknown().optional() }),
+      usage: z.unknown().nullable(),
+    }),
+  },
   // Lê o documento legal EMPACOTADO (`bundle.resources` → `legal/`). O id é um enum fechado e o Rust
   // resolve o arquivo (`modules/legal.rs`): o payload nunca carrega caminho.
   legalGetDocument: {

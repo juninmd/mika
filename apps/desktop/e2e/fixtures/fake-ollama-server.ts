@@ -280,6 +280,15 @@ function nonceFor(turn: string, names: string[]): number {
 }
 
 /** Resposta única e coerente do Google/OpenRouter de mentirinha (os provedores locais usam `replyFor`). */
+export const OPENROUTER_KEY_STATUS = {
+  label: 'sk-or-v1-e2e',
+  limit: 10,
+  limit_remaining: 0.4,
+  limit_reset: 'monthly',
+  usage: 9.6,
+  is_free_tier: false,
+}
+
 export const CLOUD_REPLY = 'Oi! Aqui é a Mika, respondendo pelo provedor de nuvem de mentirinha do teste.'
 
 export async function startFakeOllama(): Promise<FakeOllama> {
@@ -347,6 +356,13 @@ export async function startFakeOllama(): Promise<FakeOllama> {
         const vector = Array.from({ length: 8 }, (_, i) => (i + 1) / 10)
         res.writeHead(200, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ embeddings: Array.from({ length: count }, () => vector), embedding: vector }))
+        return
+      }
+
+      // `GET /api/v1/key` do OpenRouter: cota da chave quase no fim (tela de créditos mostra "saldo baixo").
+      if (path === '/api/v1/key') {
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ data: OPENROUTER_KEY_STATUS }))
         return
       }
 

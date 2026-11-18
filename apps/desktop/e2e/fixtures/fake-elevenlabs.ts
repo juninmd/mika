@@ -27,15 +27,30 @@ export const ELEVENLABS_VOICES = [
   { voice_id: 'voz-bento', name: 'Bento', category: 'premade', labels: { gender: 'male', accent: 'brazilian' } },
 ].map((v) => ({ ...v, preview_url: silentWavDataUrl() }))
 
-/** `GET /v1/voices` da ElevenLabs. Devolve `true` quando atendeu a rota. */
+/** `GET /v1/user/subscription`: cota do plano em caracteres (formato da API oficial). */
+export const ELEVENLABS_SUBSCRIPTION = {
+  tier: 'starter',
+  character_count: 2500,
+  character_limit: 30000,
+  next_character_count_reset_unix: 1_798_761_600,
+  status: 'active',
+}
+
+const ELEVENLABS_ROUTES: Record<string, () => unknown> = {
+  '/v1/voices': () => ({ voices: ELEVENLABS_VOICES }),
+  '/v1/user/subscription': () => ELEVENLABS_SUBSCRIPTION,
+}
+
+/** Rotas da ElevenLabs (`/v1/voices`, `/v1/user/subscription`). Devolve `true` quando atendeu a rota. */
 export function handleElevenLabs(path: string, req: IncomingMessage, res: ServerResponse): boolean {
-  if (path !== '/v1/voices') return false
+  const route = ELEVENLABS_ROUTES[path]
+  if (!route) return false
   if (req.headers['xi-api-key'] !== ELEVENLABS_TEST_KEY) {
     res.writeHead(401, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ detail: { status: 'invalid_api_key' } }))
     return true
   }
   res.writeHead(200, { 'Content-Type': 'application/json' })
-  res.end(JSON.stringify({ voices: ELEVENLABS_VOICES }))
+  res.end(JSON.stringify(route()))
   return true
 }
