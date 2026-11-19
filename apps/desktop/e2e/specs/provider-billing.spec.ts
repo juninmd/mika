@@ -33,7 +33,7 @@ async function cardFor(settings: Page, provider: string, verdict: string) {
 test('telas de provider mostram créditos, cota e uso — ou dizem que a API não informa', async ({ app }) => {
   const page = await app.firstWindow()
   await page.waitForLoadState('domcontentloaded')
-  await save(page, 'apiKeys.openrouter', 'sk-or-v1-chave-de-teste-nunca-real')
+  await save(page, 'apiKeys.openrouter', 'sk-or-v1-e2e-fake')
   await save(page, 'llm.provider', 'openrouter')
   await save(page, 'apiKeys.elevenLabs', ELEVENLABS_TEST_KEY)
   await save(page, 'voice.ttsProvider', 'elevenlabs')
