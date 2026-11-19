@@ -1286,6 +1286,15 @@ export const zhCN: TranslationDict = {
     '在你的电脑上运行：llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': '无故障',
   'settings.vision.panel.decisionStatus.failing': '服务器无响应',
+  'settings.vision.field.decisionProvider.label': '决策模型提供方',
+  'settings.decision.providerSection.description': '选择由哪个本地模型判断一帧是否值得分析。',
+  'settings.decision.provider.llamaServer.label': 'llama-server (d1-2B)',
+  'settings.decision.provider.llamaServer.desc': '专为决策打造的模型：一次推理即可给出带概率的回答，速度最快。',
+  'settings.decision.provider.ollama.label': 'Ollama',
+  'settings.decision.provider.ollama.desc':
+    '你在 Ollama 中已有的小型视觉模型，例如 Qwen3.5 0.8B。使用 LLM 标签页中的 Ollama 地址。',
+  'settings.vision.field.decisionModel.label': '模型',
+  'settings.vision.field.decisionModel.description': '查看每一帧的 Ollama 视觉模型，建议选小模型。',
   'settings.tab.decision': '决策',
   'settings.decision.panel.title': '决策模型',
   'settings.decision.panel.description': '一个本地小模型在完整视觉分析之前查看每一帧，并决定是否值得分析。',
@@ -1295,7 +1304,7 @@ export const zhCN: TranslationDict = {
   'settings.decision.section.description': '本地服务器、阈值和筛选状态。',
   'settings.vision.field.decisionEnabled.label': '用决策模型筛选屏幕',
   'settings.vision.field.decisionEnabled.description':
-    '本地模型（d1-2B）查看每一帧，只有出现游戏关键时刻、危险或值得评论的内容时才调用完整视觉分析。游戏中每 3 秒检查一次屏幕。',
+    '本地模型查看每一帧，只有出现游戏关键时刻、危险或值得评论的内容时才调用完整视觉分析。游戏中每 3 秒检查一次屏幕。',
   'settings.vision.field.decisionBaseUrl.label': '服务器地址',
   'settings.vision.field.decisionBaseUrl.description':
     '运行 d1-2B 的本地 llama-server。只接受本机地址（127.0.0.1 或 localhost）。',

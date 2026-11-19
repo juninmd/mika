@@ -1385,6 +1385,18 @@ export const itIT: TranslationDict = {
     'Avvialo sul tuo PC: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': 'Nessun errore',
   'settings.vision.panel.decisionStatus.failing': 'Nessuna risposta dal server',
+  'settings.vision.field.decisionProvider.label': 'Provider del modello decisionale',
+  'settings.decision.providerSection.description':
+    'Scegli quale modello locale decide se un fotogramma merita un’analisi.',
+  'settings.decision.provider.llamaServer.label': 'llama-server (d1-2B)',
+  'settings.decision.provider.llamaServer.desc':
+    'Un modello fatto per decidere: risponde alle domande in un solo passaggio, con probabilità. Il più veloce.',
+  'settings.decision.provider.ollama.label': 'Ollama',
+  'settings.decision.provider.ollama.desc':
+    'Un piccolo modello di visione che hai già in Ollama, come Qwen3.5 0.8B. Usa l’indirizzo di Ollama della scheda LLM.',
+  'settings.vision.field.decisionModel.label': 'Modello',
+  'settings.vision.field.decisionModel.description':
+    'Modello di visione di Ollama che guarda ogni fotogramma. Meglio uno piccolo.',
   'settings.tab.decision': 'Decisione',
   'settings.decision.panel.title': 'Modello decisionale',
   'settings.decision.panel.description':
@@ -1395,7 +1407,7 @@ export const itIT: TranslationDict = {
   'settings.decision.section.description': 'Server locale, soglia e stato del filtro.',
   'settings.vision.field.decisionEnabled.label': 'Filtra lo schermo con il modello decisionale',
   'settings.vision.field.decisionEnabled.description':
-    'Un modello locale (d1-2B) guarda ogni fotogramma e chiama la visione completa solo per un momento di gioco, un pericolo o qualcosa da commentare. Nei giochi lo schermo viene controllato ogni 3 s.',
+    'Un modello locale guarda ogni fotogramma e chiama la visione completa solo per un momento di gioco, un pericolo o qualcosa da commentare. Nei giochi lo schermo viene controllato ogni 3 s.',
   'settings.vision.field.decisionBaseUrl.label': 'Indirizzo del server',
   'settings.vision.field.decisionBaseUrl.description':
     'llama-server locale con d1-2B. Sono accettati solo indirizzi di questo computer (127.0.0.1 o localhost).',

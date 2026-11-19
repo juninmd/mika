@@ -1268,6 +1268,14 @@ export type TranslationDict = {
   'settings.vision.panel.decisionHint': string
   'settings.vision.panel.decisionStatus.ok': string
   'settings.vision.panel.decisionStatus.failing': string
+  'settings.vision.field.decisionProvider.label': string
+  'settings.decision.providerSection.description': string
+  'settings.decision.provider.llamaServer.label': string
+  'settings.decision.provider.llamaServer.desc': string
+  'settings.decision.provider.ollama.label': string
+  'settings.decision.provider.ollama.desc': string
+  'settings.vision.field.decisionModel.label': string
+  'settings.vision.field.decisionModel.description': string
   'settings.tab.decision': string
   'settings.decision.panel.title': string
   'settings.decision.panel.description': string

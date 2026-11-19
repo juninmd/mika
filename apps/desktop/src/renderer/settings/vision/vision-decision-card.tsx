@@ -1,4 +1,4 @@
-import { AuroraField, GlassCard, GlassSlider, GlassToggle, SectionHeader, StatusPill } from '@mika/sdk-ui/settings'
+import { GlassCard, GlassSlider, GlassToggle, SectionHeader, StatusPill } from '@mika/sdk-ui/settings'
 import { useEffect, useState } from 'react'
 import type { LLMProviderHealth } from '../../../shared/electron-api-system-types'
 import type { Translate } from '../../src/hooks/useI18n'
@@ -31,13 +31,11 @@ function useDecisionFailure(active: boolean): LLMProviderHealth | undefined {
 /** Opt-in decision-model pre-filter for the screen watcher (`vision::decision`). */
 export function VisionDecisionCard({
   t,
-  config,
   enabled,
   threshold,
   onSave,
 }: {
   t: Translate
-  config: Record<string, unknown>
   enabled: boolean
   threshold: number
   onSave: (path: string, value: unknown) => Promise<void>
@@ -67,14 +65,6 @@ export function VisionDecisionCard({
         />
         {enabled && (
           <div className="space-y-3 pl-4 border-l border-border-subtle">
-            <AuroraField
-              label={t('settings.vision.field.decisionBaseUrl.label')}
-              description={t('settings.vision.field.decisionBaseUrl.description')}
-              configPath="vision.decisionBaseUrl"
-              config={config}
-              onSave={onSave}
-              placeholder="http://127.0.0.1:8080"
-            />
             <GlassSlider
               label={t('settings.vision.field.decisionThreshold.label')}
               description={t('settings.vision.field.decisionThreshold.description')}
@@ -86,7 +76,6 @@ export function VisionDecisionCard({
               showValue={(v: number) => `${Math.round(v * 100)}%`}
               onSave={onSave as (path: string, value: number) => Promise<void>}
             />
-            <p className="text-xs text-text-muted break-all">{t('settings.vision.panel.decisionHint')}</p>
           </div>
         )}
       </div>

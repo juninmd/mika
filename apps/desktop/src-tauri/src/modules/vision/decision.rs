@@ -4,6 +4,8 @@
 //! questions about one screenshot in a single forward pass, with probabilities and no generated
 //! text. The watcher asks it first and only pays for the full vision LLM when the frame is worth it:
 //! a game moment or danger right now, or something notable once the normal cadence is due.
+//! Two providers (`vision.decisionProvider`): `llamaServer` (d1-2B, `/v1/systemone`) and `ollama`
+//! (any local vision model in Ollama, `vision.decisionModel`, structured output).
 //! Loopback only: the frame never leaves the machine through this path.
 
 use std::time::Duration;
@@ -16,6 +18,7 @@ use crate::modules::llm::provider_health;
 /// Health-registry key: failures show up in the provider banner like any other vision provider.
 pub(super) const PROVIDER: &str = "decision";
 const DEFAULT_BASE_URL: &str = "http://127.0.0.1:8080";
+const OLLAMA_DEFAULT_BASE_URL: &str = crate::config::schemas::llm_defaults::OLLAMA_BASE_URL;
 const DEFAULT_THRESHOLD: f64 = 0.5;
 /// A CPU-only box takes seconds per frame; a GPU takes milliseconds.
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
@@ -35,11 +38,25 @@ pub(super) fn enabled(store: &ConfigStore) -> bool {
     store.get("vision.decisionEnabled").and_then(|v| v.as_bool()).unwrap_or(false)
 }
 
+#[path = "decision_ollama.rs"]
+mod ollama;
+
+fn stored(store: &ConfigStore, path: &str) -> Option<String> {
+    store.get(path).and_then(|v| v.as_str().map(str::trim).filter(|s| !s.is_empty()).map(str::to_string))
+}
+
+fn uses_ollama(store: &ConfigStore) -> bool {
+    stored(store, "vision.decisionProvider").as_deref() == Some("ollama")
+}
+
+/// Server the frame goes to: the decision URL for llama-server, the shared Ollama URL otherwise.
 pub(super) fn base_url(store: &ConfigStore) -> String {
-    store
-        .get("vision.decisionBaseUrl")
-        .and_then(|v| v.as_str().map(str::trim).filter(|s| !s.is_empty()).map(str::to_string))
-        .unwrap_or_else(|| DEFAULT_BASE_URL.to_string())
+    if uses_ollama(store) {
+        let base = stored(store, "apiKeys.ollamaBaseUrl").unwrap_or_else(|| OLLAMA_DEFAULT_BASE_URL.to_string());
+        let trimmed = base.trim_end_matches('/');
+        return trimmed.strip_suffix("/v1").unwrap_or(trimmed).to_string();
+    }
+    stored(store, "vision.decisionBaseUrl").unwrap_or_else(|| DEFAULT_BASE_URL.to_string())
 }
 
 fn threshold(store: &ConfigStore) -> f64 {
@@ -115,21 +132,28 @@ fn as_data_url(image: &str) -> String {
     }
 }
 
-async fn post_systemone(url: &str, images: &[String]) -> Result<Value, String> {
-    let images: Vec<String> = images.iter().map(|image| as_data_url(image)).collect();
-    let body = json!({ "state": Value::Null, "images": images, "questions": questions() });
-    let response = http_client()
-        .post(format!("{}/v1/systemone", url.trim_end_matches('/')))
-        .timeout(REQUEST_TIMEOUT)
-        .json(&body)
-        .send()
-        .await
-        .map_err(|err| err.to_string())?;
+async fn post_json(url: String, body: &Value) -> Result<Value, String> {
+    let response = http_client().post(url).timeout(REQUEST_TIMEOUT).json(body).send().await.map_err(|err| err.to_string())?;
     let status = response.status();
     if !status.is_success() {
         return Err(format!("HTTP {status}"));
     }
     response.json::<Value>().await.map_err(|err| err.to_string())
+}
+
+const MISSING_ANSWERS: &str = "resposta sem as respostas esperadas";
+
+/// `/v1/systemone` answers from whichever provider is configured.
+async fn ask(store: &ConfigStore, url: &str, images: &[String]) -> Result<Value, String> {
+    if uses_ollama(store) {
+        let model = stored(store, "vision.decisionModel").ok_or("nenhum modelo de decisão escolhido")?;
+        let body = post_json(format!("{url}/api/chat"), &ollama::request_body(&model, images)).await?;
+        return ollama::answers_from_reply(&body).ok_or_else(|| MISSING_ANSWERS.to_string());
+    }
+    let images: Vec<String> = images.iter().map(|image| as_data_url(image)).collect();
+    let body = json!({ "state": Value::Null, "images": images, "questions": questions() });
+    let mut reply = post_json(format!("{}/v1/systemone", url.trim_end_matches('/')), &body).await?;
+    Ok(reply.get_mut("answers").map(Value::take).unwrap_or(Value::Null))
 }
 
 /// Asks the decision model about one frame (every monitor the analysis mode keeps). `None` = no usable verdict (non-loopback URL,
@@ -150,9 +174,9 @@ pub(super) async fn decide(store: &ConfigStore, images: &[String]) -> Option<Ver
         return None;
     }
     let started = std::time::Instant::now();
-    let verdict = post_systemone(&url, images)
+    let verdict = ask(store, &url, images)
         .await
-        .and_then(|body| verdict_from(body.get("answers").unwrap_or(&Value::Null), threshold(store)).ok_or_else(|| "resposta sem as respostas esperadas".to_string()));
+        .and_then(|answers| verdict_from(&answers, threshold(store)).ok_or_else(|| MISSING_ANSWERS.to_string()));
     match verdict {
         Ok(v) => {
             provider_health::record_success(PROVIDER, &url);

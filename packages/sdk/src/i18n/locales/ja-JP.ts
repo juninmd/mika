@@ -1340,6 +1340,15 @@ export const jaJP: TranslationDict = {
   'settings.vision.panel.decisionHint': 'PCで実行: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': 'エラーなし',
   'settings.vision.panel.decisionStatus.failing': 'サーバーから応答がありません',
+  'settings.vision.field.decisionProvider.label': '判断モデルのプロバイダー',
+  'settings.decision.providerSection.description': 'フレームを解析する価値があるかを判断するローカルモデルを選びます。',
+  'settings.decision.provider.llamaServer.label': 'llama-server (d1-2B)',
+  'settings.decision.provider.llamaServer.desc': '判断専用のモデル。質問に1回のパスで確率付きで答えます。最速です。',
+  'settings.decision.provider.ollama.label': 'Ollama',
+  'settings.decision.provider.ollama.desc':
+    'Ollama にある小さな画像モデル（例：Qwen3.5 0.8B）。LLM タブの Ollama アドレスを使います。',
+  'settings.vision.field.decisionModel.label': 'モデル',
+  'settings.vision.field.decisionModel.description': '各フレームを見る Ollama の画像モデル。小さいものがおすすめです。',
   'settings.tab.decision': '判断',
   'settings.decision.panel.title': '判断モデル',
   'settings.decision.panel.description':
@@ -1350,7 +1359,7 @@ export const jaJP: TranslationDict = {
   'settings.decision.section.description': 'ローカルサーバー、しきい値、フィルターの状態。',
   'settings.vision.field.decisionEnabled.label': '判断モデルで画面をふるい分ける',
   'settings.vision.field.decisionEnabled.description':
-    'ローカルモデル（d1-2B）が各フレームを見て、ゲームの山場、危険、コメントに値するものがあるときだけ本格的な画像解析を呼びます。ゲーム中は3秒ごとに画面を確認します。',
+    'ローカルモデルが各フレームを見て、ゲームの山場、危険、コメントに値するものがあるときだけ本格的な画像解析を呼びます。ゲーム中は3秒ごとに画面を確認します。',
   'settings.vision.field.decisionBaseUrl.label': 'サーバーのアドレス',
   'settings.vision.field.decisionBaseUrl.description':
     'd1-2B を動かすローカルの llama-server。このPCのアドレス（127.0.0.1 または localhost）のみ使えます。',

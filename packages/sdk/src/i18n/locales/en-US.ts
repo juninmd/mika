@@ -1361,6 +1361,18 @@ export const enUS: TranslationDict = {
   'settings.vision.panel.decisionHint': 'Run on your PC: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': 'No failures',
   'settings.vision.panel.decisionStatus.failing': 'No answer from the server',
+  'settings.vision.field.decisionProvider.label': 'Decision model provider',
+  'settings.decision.providerSection.description':
+    'Choose which local model decides whether a frame is worth an analysis.',
+  'settings.decision.provider.llamaServer.label': 'llama-server (d1-2B)',
+  'settings.decision.provider.llamaServer.desc':
+    'A model built to decide: answers the questions in one pass, with probabilities. The fastest option.',
+  'settings.decision.provider.ollama.label': 'Ollama',
+  'settings.decision.provider.ollama.desc':
+    'A small vision model you already have in Ollama, such as Qwen3.5 0.8B. Uses the Ollama address from the LLM tab.',
+  'settings.vision.field.decisionModel.label': 'Model',
+  'settings.vision.field.decisionModel.description':
+    'Ollama vision model that looks at each frame. Prefer a small one.',
   'settings.tab.decision': 'Decision',
   'settings.decision.panel.title': 'Decision model',
   'settings.decision.panel.description':
@@ -1371,7 +1383,7 @@ export const enUS: TranslationDict = {
   'settings.decision.section.description': 'Local server, threshold and filter status.',
   'settings.vision.field.decisionEnabled.label': 'Filter the screen with the decision model',
   'settings.vision.field.decisionEnabled.description':
-    'A local model (d1-2B) looks at each frame and only calls full vision for a game moment, a danger or something worth a comment. In games the screen is checked every 3 s.',
+    'A local model looks at each frame and only calls full vision for a game moment, a danger or something worth a comment. In games the screen is checked every 3 s.',
   'settings.vision.field.decisionBaseUrl.label': 'Server address',
   'settings.vision.field.decisionBaseUrl.description':
     'Local llama-server running d1-2B. Only addresses on this computer (127.0.0.1 or localhost) are accepted.',

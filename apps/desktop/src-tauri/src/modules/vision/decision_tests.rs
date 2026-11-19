@@ -129,6 +129,45 @@ impl Drop for TempDir {
     }
 }
 
+/// Ollama provider: bare base64 images, the reply constrained to the schema, and the reply read
+/// back into the same answers the verdict rules use.
+#[test]
+fn ollama_request_and_reply_map_to_the_systemone_answers() {
+    let body = ollama::request_body("qwen3.5:0.8b", &["data:image/png;base64,QUJD".to_string(), "REVG".to_string()]);
+    assert_eq!(body["model"], json!("qwen3.5:0.8b"));
+    assert_eq!(body["messages"][0]["images"], json!(["QUJD", "REVG"]));
+    assert_eq!(body["format"], ollama::reply_schema());
+    assert_eq!(body["stream"], json!(false));
+
+    let content = r#"{"game":0.95,"moment":"boss","momentConfidence":0.8,"danger":0.2,"notable":0.3}"#;
+    let answers = ollama::answers_from_reply(&json!({"message": {"content": content}})).unwrap();
+    assert_eq!(verdict_from(&answers, 0.5), Some(Verdict { urgent: true, notable: true }));
+}
+
+/// A small model that ignores the schema is no verdict, never "nothing happening".
+#[test]
+fn an_ollama_reply_off_schema_is_no_answers() {
+    for content in ["not json", r#"{"game":0.9}"#, r#"{"game":"yes","moment":"none","momentConfidence":1,"danger":0,"notable":0}"#] {
+        assert_eq!(ollama::answers_from_reply(&json!({"message": {"content": content}})), None, "{content}");
+    }
+}
+
+/// The Ollama provider sends the frame to the shared Ollama URL (`apiKeys.ollamaBaseUrl`, `/v1`
+/// dropped), with the chosen model.
+#[tokio::test(flavor = "multi_thread")]
+async fn decide_with_ollama_uses_the_shared_url_and_the_chosen_model() {
+    let reply = r#"{"message":{"role":"assistant","content":"{\"game\":0.9,\"moment\":\"none\",\"momentConfidence\":0.9,\"danger\":0.1,\"notable\":0.1}"}}"#;
+    let (url, server) = serve_once(reply);
+    let (store, _dir) = store_for("http://127.0.0.1:1", "ollama");
+    store.set("vision.decisionProvider", json!("ollama")).unwrap();
+    store.set("vision.decisionModel", json!("qwen3.5:0.8b")).unwrap();
+    store.set("apiKeys.ollamaBaseUrl", json!(format!("{url}/v1"))).unwrap();
+    assert_eq!(base_url(&store), url);
+    assert_eq!(decide(&store, &["QUJD".to_string()]).await, Some(Verdict { urgent: false, notable: false }));
+    let request: Value = serde_json::from_str(&server.join().unwrap()).unwrap();
+    assert_eq!(request["model"], json!("qwen3.5:0.8b"));
+}
+
 /// Privacy: the screen frame only goes to a decision server on this machine. A LAN or internet
 /// address yields no verdict (plain cadence) and never reaches the network.
 #[tokio::test]

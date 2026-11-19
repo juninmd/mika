@@ -1,8 +1,9 @@
 import { BentoGrid, GlassSection, PageHero, StatusPill } from '@mika/sdk-ui/settings'
 import { Radar, ScanEye } from 'lucide-react'
+import { DecisionProviderCard } from '../../../settings/vision/decision-provider-card'
 import { VisionDecisionCard } from '../../../settings/vision/vision-decision-card'
 import { useI18n } from '../../hooks/useI18n'
-import { configBool, configNum } from './settings-utils'
+import { configBool, configNum, configStr } from './settings-utils'
 
 /** Own tab for the decision-model pre-filter (`vision::decision`); it gates the Vision tab's LLM. */
 export function DecisionPanel({
@@ -40,9 +41,15 @@ export function DecisionPanel({
         <BentoGrid>
           <VisionDecisionCard
             t={t}
-            config={config}
             enabled={enabled}
             threshold={configNum(config, 'vision.decisionThreshold', 0.5)}
+            onSave={onSave}
+          />
+          <DecisionProviderCard
+            t={t}
+            config={config}
+            provider={configStr(config, 'vision.decisionProvider', 'llamaServer')}
+            model={configStr(config, 'vision.decisionModel')}
             onSave={onSave}
           />
         </BentoGrid>

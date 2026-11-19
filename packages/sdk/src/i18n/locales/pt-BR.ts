@@ -1372,6 +1372,17 @@ export const ptBR: TranslationDict = {
   'settings.vision.panel.decisionHint': 'Rode no seu PC: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': 'Sem falhas',
   'settings.vision.panel.decisionStatus.failing': 'Sem resposta do servidor',
+  'settings.vision.field.decisionProvider.label': 'Provedor do modelo de decisão',
+  'settings.decision.providerSection.description': 'Escolha qual modelo local decide se um quadro vale uma análise.',
+  'settings.decision.provider.llamaServer.label': 'llama-server (d1-2B)',
+  'settings.decision.provider.llamaServer.desc':
+    'Modelo feito para decidir: responde às perguntas numa passada só, com probabilidade. É o mais rápido.',
+  'settings.decision.provider.ollama.label': 'Ollama',
+  'settings.decision.provider.ollama.desc':
+    'Um modelo de visão pequeno que você já tem no Ollama, como o Qwen3.5 0.8B. Usa o endereço do Ollama da aba LLM.',
+  'settings.vision.field.decisionModel.label': 'Modelo',
+  'settings.vision.field.decisionModel.description':
+    'Modelo de visão do Ollama que olha cada quadro. Prefira um pequeno.',
   'settings.tab.decision': 'Decisão',
   'settings.decision.panel.title': 'Modelo de decisão',
   'settings.decision.panel.description':
@@ -1382,7 +1393,7 @@ export const ptBR: TranslationDict = {
   'settings.decision.section.description': 'Servidor local, limiar e estado do filtro.',
   'settings.vision.field.decisionEnabled.label': 'Filtrar a tela com o modelo de decisão',
   'settings.vision.field.decisionEnabled.description':
-    'Um modelo local (d1-2B) olha cada quadro e só chama a visão completa quando há um momento de jogo, perigo ou algo que vale comentar. Em jogo, a tela é checada a cada 3 s.',
+    'Um modelo local olha cada quadro e só chama a visão completa quando há um momento de jogo, perigo ou algo que vale comentar. Em jogo, a tela é checada a cada 3 s.',
   'settings.vision.field.decisionBaseUrl.label': 'Endereço do servidor',
   'settings.vision.field.decisionBaseUrl.description':
     'llama-server local com o d1-2B. Só aceita endereço deste computador (127.0.0.1 ou localhost).',

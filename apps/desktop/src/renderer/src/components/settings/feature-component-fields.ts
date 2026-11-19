@@ -2,7 +2,13 @@ import { PROFILE_COMPONENT_HANDLED_FIELDS } from './feature-component-fields-pro
 import { VOICE_COMPONENT_HANDLED_FIELDS } from './feature-component-fields-voice'
 
 export const FEATURE_COMPONENT_HANDLED_FIELDS = {
-  DecisionPanel: ['vision.decisionEnabled', 'vision.decisionBaseUrl', 'vision.decisionThreshold'],
+  DecisionPanel: [
+    'vision.decisionEnabled',
+    'vision.decisionProvider',
+    'vision.decisionModel',
+    'vision.decisionBaseUrl',
+    'vision.decisionThreshold',
+  ],
   BehaviorPanel: [
     'character.moodBaseline',
     'character.energyLevel',

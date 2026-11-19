@@ -1336,6 +1336,15 @@ export const koKR: TranslationDict = {
   'settings.vision.panel.decisionHint': 'PC에서 실행: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': '오류 없음',
   'settings.vision.panel.decisionStatus.failing': '서버 응답 없음',
+  'settings.vision.field.decisionProvider.label': '판단 모델 제공자',
+  'settings.decision.providerSection.description': '프레임을 분석할 가치가 있는지 판단할 로컬 모델을 고릅니다.',
+  'settings.decision.provider.llamaServer.label': 'llama-server (d1-2B)',
+  'settings.decision.provider.llamaServer.desc': '판단 전용 모델: 질문에 한 번에 확률과 함께 답합니다. 가장 빠릅니다.',
+  'settings.decision.provider.ollama.label': 'Ollama',
+  'settings.decision.provider.ollama.desc':
+    'Ollama에 이미 있는 작은 비전 모델(예: Qwen3.5 0.8B). LLM 탭의 Ollama 주소를 사용합니다.',
+  'settings.vision.field.decisionModel.label': '모델',
+  'settings.vision.field.decisionModel.description': '각 프레임을 보는 Ollama 비전 모델. 작은 모델을 권장합니다.',
   'settings.tab.decision': '판단',
   'settings.decision.panel.title': '판단 모델',
   'settings.decision.panel.description':
@@ -1346,7 +1355,7 @@ export const koKR: TranslationDict = {
   'settings.decision.section.description': '로컬 서버, 임계값, 필터 상태.',
   'settings.vision.field.decisionEnabled.label': '판단 모델로 화면 거르기',
   'settings.vision.field.decisionEnabled.description':
-    '로컬 모델(d1-2B)이 프레임마다 확인하고 게임의 결정적 순간, 위험, 말할 만한 것이 있을 때만 전체 비전을 호출합니다. 게임 중에는 3초마다 화면을 확인합니다.',
+    '로컬 모델이 프레임마다 확인하고 게임의 결정적 순간, 위험, 말할 만한 것이 있을 때만 전체 비전을 호출합니다. 게임 중에는 3초마다 화면을 확인합니다.',
   'settings.vision.field.decisionBaseUrl.label': '서버 주소',
   'settings.vision.field.decisionBaseUrl.description':
     'd1-2B를 실행하는 로컬 llama-server. 이 컴퓨터의 주소(127.0.0.1 또는 localhost)만 허용됩니다.',
