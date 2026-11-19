@@ -23,7 +23,7 @@ export const MIKA_NAV_SECTIONS: NavSection[] = [
     id: 'cognicao',
     labelKey: 'shell.settingsNav.section.cognicao',
     icon: Cpu,
-    tabIds: ['llm', 'embeddings', 'brain', 'vision', 'prompts'],
+    tabIds: ['llm', 'embeddings', 'brain', 'vision', 'decision', 'prompts'],
   },
   { id: 'voz', labelKey: 'shell.settingsNav.section.voz', icon: Mic, tabIds: ['voice', 'stt', 'audio-devices'] },
   {
@@ -57,6 +57,7 @@ export const BUILT_IN_TAB_IDS = new Set([
   'audio-devices',
   'backup',
   'credentials',
+  'decision',
   'homologation',
   'logs',
   'modules',

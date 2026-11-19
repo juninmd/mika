@@ -1387,6 +1387,39 @@ export const esES: TranslationDict = {
   'settings.vision.field.mediaReactionCooldownSec.label': 'Intervalo mínimo entre reacciones',
   'settings.vision.field.mediaReactionCooldownSec.description':
     'Tiempo mínimo entre dos comentarios. El mismo vídeo o canción solo vuelve tras tres intervalos.',
+  'settings.vision.panel.decisionHeader': 'Modelo de decisión',
+  'settings.vision.panel.decisionHint':
+    'Ejecútalo en tu PC: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
+  'settings.vision.panel.decisionStatus.ok': 'Sin fallos',
+  'settings.vision.panel.decisionStatus.failing': 'Sin respuesta del servidor',
+  'settings.vision.field.decisionProvider.label': 'Proveedor del modelo de decisión',
+  'settings.decision.providerSection.description': 'Elige qué modelo local decide si un fotograma merece un análisis.',
+  'settings.decision.provider.llamaServer.label': 'llama-server (d1-2B)',
+  'settings.decision.provider.llamaServer.desc':
+    'Un modelo hecho para decidir: responde a las preguntas en una sola pasada, con probabilidades. Es el más rápido.',
+  'settings.decision.provider.ollama.label': 'Ollama',
+  'settings.decision.provider.ollama.desc':
+    'Un modelo de visión pequeño que ya tienes en Ollama, como Qwen3.5 0.8B. Usa la dirección de Ollama de la pestaña LLM.',
+  'settings.vision.field.decisionModel.label': 'Modelo',
+  'settings.vision.field.decisionModel.description':
+    'Modelo de visión de Ollama que mira cada fotograma. Mejor uno pequeño.',
+  'settings.tab.decision': 'Decisión',
+  'settings.decision.panel.title': 'Modelo de decisión',
+  'settings.decision.panel.description':
+    'Un modelo local pequeño mira cada fotograma antes de la visión completa y decide si vale la pena analizarlo.',
+  'settings.decision.hero.on': 'Activado',
+  'settings.decision.hero.off': 'Desactivado',
+  'settings.decision.hero.visionOff': 'Visión desactivada',
+  'settings.decision.section.description': 'Servidor local, umbral y estado del filtro.',
+  'settings.vision.field.decisionEnabled.label': 'Filtrar la pantalla con el modelo de decisión',
+  'settings.vision.field.decisionEnabled.description':
+    'Un modelo local mira cada fotograma y solo llama a la visión completa ante un momento de juego, un peligro o algo que merezca un comentario. En juegos, la pantalla se revisa cada 3 s.',
+  'settings.vision.field.decisionBaseUrl.label': 'Dirección del servidor',
+  'settings.vision.field.decisionBaseUrl.description':
+    'llama-server local con d1-2B. Solo se aceptan direcciones de este equipo (127.0.0.1 o localhost).',
+  'settings.vision.field.decisionThreshold.label': 'Umbral de decisión',
+  'settings.vision.field.decisionThreshold.description':
+    'Probabilidad mínima para que cuente una señal. Más alto, menos llamadas a la visión.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Intervalo del diario visual (ciclos)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Cada N ciclos de captura, escribe una entrada en el diario visual.',

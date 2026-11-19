@@ -10,6 +10,7 @@ import { ProviderHealthBanner } from './ProviderHealthBanner'
 // viewer, the homologation board, the backup wizard and eight other panels it never shows.
 const AboutPanel = lazy(() => import('./AboutPanel').then((m) => ({ default: m.AboutPanel })))
 const AudioDevicesPanel = lazy(() => import('./AudioDevicesPanel').then((m) => ({ default: m.AudioDevicesPanel })))
+const DecisionPanel = lazy(() => import('./DecisionPanel').then((m) => ({ default: m.DecisionPanel })))
 const BackupPanel = lazy(() => import('./BackupPanel').then((m) => ({ default: m.BackupPanel })))
 const HomologationPanel = lazy(() => import('./HomologationPanel').then((m) => ({ default: m.HomologationPanel })))
 const LogsPanel = lazy(() => import('./LogsPanel').then((m) => ({ default: m.LogsPanel })))
@@ -37,6 +38,10 @@ function renderBuiltInTab(ctrl: Ctrl): ReactElement | null {
 
   if (ctrl.activeTabId === 'logs') {
     return <LogsPanel config={ctrl.config} onSave={ctrl.saveSetting} />
+  }
+
+  if (ctrl.activeTabId === 'decision') {
+    return <DecisionPanel config={ctrl.config} onSave={ctrl.saveSetting} />
   }
 
   if (ctrl.activeTabId === 'prompts') {
