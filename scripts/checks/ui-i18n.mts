@@ -43,7 +43,6 @@ const ALLOWLIST: Record<string, { count: number; reason: string }> = {
     count: 3,
     reason: 'atalhos de teclado',
   },
-  'apps/desktop/src/renderer/src/components/live2d/model-path.ts': { count: 1, reason: 'nome do modelo' },
   'apps/desktop/src/renderer/src/components/settings/provider-credential-specs.ts': {
     count: 2,
     reason: 'prefixo de formato da chave',

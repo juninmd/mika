@@ -27,7 +27,7 @@ use super::model_inventory::{live2d_inventory, vrm_inventory, ModelInventory, EX
 
 /// `DEFAULT_MODEL_PATH`/fallback de `inspectLive2DModel` — mesmos 3 candidatos do TS, na mesma
 /// ordem: `modelPath` explícito, senão `live2d/<modelName>/<modelName>.model3.json` quando
-/// `modelName` não é o default, senão o Live2D de demonstração.
+/// `modelName` não é o default, senão o VRM oficial (`DEFAULT_MODEL_PATH`): nenhum Live2D é embutido.
 fn resolve_relative_path(model_name: &str, model_path: &str) -> String {
     // `vrm/mika/mika.vrm#look=haru` — a skin viaja na mesma chave; o disco não conhece o fragmento.
     let model_path = model_path.split('#').next().unwrap_or_default();
@@ -37,7 +37,7 @@ fn resolve_relative_path(model_name: &str, model_path: &str) -> String {
     if model_name != "default" {
         return format!("live2d/{model_name}/{model_name}.model3.json");
     }
-    "live2d/haru/haru_greeter_t05.model3.json".to_string()
+    "vrm/mika/mika.vrm".to_string()
 }
 
 /// Porte de `possibleBaseDirs`, reduzido aos dois candidatos que fazem sentido fora do processo
@@ -49,6 +49,10 @@ fn candidate_base_dirs(app: Option<&AppHandle>) -> Vec<PathBuf> {
             if path.is_dir() {
                 dirs.push(path);
             }
+        }
+        // Modelo importado: `live2d/<nome>/...` relativo ao perfil (`import_model.rs`).
+        if let Ok(path) = crate::state::app_data_dir(app) {
+            dirs.push(path);
         }
     }
     if let Some(manifest_parent) = Path::new(env!("CARGO_MANIFEST_DIR")).parent() {
@@ -169,8 +173,8 @@ mod tests {
     }
 
     #[test]
-    fn resolve_relative_path_falls_back_to_the_demo_live2d_when_everything_is_default() {
-        assert_eq!(resolve_relative_path("default", ""), "live2d/haru/haru_greeter_t05.model3.json");
+    fn resolve_relative_path_falls_back_to_the_bundled_vrm_when_everything_is_default() {
+        assert_eq!(resolve_relative_path("default", ""), "vrm/mika/mika.vrm");
     }
 
     #[test]
@@ -178,13 +182,13 @@ mod tests {
         let dir = Dir::new("live2d-json");
         write_file(
             dir.0.as_path(),
-            "live2d/haru/haru_greeter_t05.model3.json",
+            "live2d/meu/meu.model3.json",
             br#"{"FileReferences":{"Expressions":[{"Name":"F01","File":"f01.exp3.json"}],"Motions":{"Idle":[{"File":"idle.motion3.json"}]}}}"#,
         );
 
-        let result = inspect_model_in("default", "", &[dir.0.clone()]).unwrap();
+        let result = inspect_model_in("default", "live2d/meu/meu.model3.json", &[dir.0.clone()]).unwrap();
         assert_eq!(result["kind"], json!("live2d"));
-        assert_eq!(result["modelPath"], json!("live2d/haru/haru_greeter_t05.model3.json"));
+        assert_eq!(result["modelPath"], json!("live2d/meu/meu.model3.json"));
         assert_eq!(result["expressions"][0]["name"], json!("F01"));
         assert_eq!(result["motions"][0]["name"], json!("Idle:idle"));
         assert_eq!(result["supportedExpressions"].as_array().unwrap().len(), EXPRESSIONS.len());
@@ -237,20 +241,8 @@ mod tests {
 
     // -- fixtures reais do repositório (zero mocks) ---------------------------------------------
     // `apps/desktop/src/renderer/public` é a MESMA árvore que `candidate_base_dirs` resolve via
-    // `CARGO_MANIFEST_DIR` em dev/teste — os dois testes abaixo provam o caminho de produção
+    // `CARGO_MANIFEST_DIR` em dev/teste — o teste abaixo prova o caminho de produção
     // ponta a ponta, contra os ativos reais do avatar, não uma cópia sintética.
-
-    #[test]
-    fn inspect_model_reads_the_real_default_live2d_fixture() {
-        let result = inspect_model("default", "", None).expect("fixture live2d real do repositório");
-        assert_eq!(result["kind"], json!("live2d"));
-        assert!(result["expressions"].as_array().unwrap().is_empty(), "haru_greeter_t05 não declara Expressions");
-        let motions = result["motions"].as_array().unwrap();
-        assert_eq!(motions.len(), 42, "27 motions do grupo '' (idle + m01..m26) + 15 do grupo 'Action'");
-        let names: Vec<&str> = motions.iter().map(|m| m["name"].as_str().unwrap()).collect();
-        assert!(names.contains(&":haru_g_idle"));
-        assert!(names.contains(&"Action:mika_happy"));
-    }
 
     #[test]
     fn inspect_model_reads_the_real_default_vrm_fixture() {

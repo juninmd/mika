@@ -19,8 +19,8 @@ Windows (WebView2) expõe CDP: o fixture (`fixtures/tauri-app.ts`) sobe `mika-de
 
 As specs são as mesmas nos três sistemas (`app.firstWindow()` devolve uma `Page` real). `MIKA_E2E_HOST=1`
 força o host também no Windows. Em Linux precisa de display e de um barramento D-Bus de sessão:
-`xvfb-run -a dbus-run-session -- pnpm test`. Limites do host: o esquema `mika-live2d:` (amostras
-Live2D) não existe no Chromium, então specs de skin Live2D rodam só no caminho CDP.
+`xvfb-run -a dbus-run-session -- pnpm test`. Limites do host: o esquema `mika-live2d:` (modelos
+importados) não existe no Chromium; o host os serve em `/__e2e/live2d/`.
 
 ### Estado da suíte no host (medido em Linux/xvfb)
 
@@ -58,8 +58,8 @@ afirmou (`writeArtifact()` em `apps/desktop/e2e/fixtures/artifact.ts`). Abra os 
 ## Esperas
 
 Sem `waitForTimeout` para "deixar assentar": use `expect.poll`/`toBeVisible`, ou `waitForUiIdle`
-(`apps/desktop/e2e/fixtures/settled.ts`) antes de um print. Os poucos tempos que restam (`haru-vrm`, `vrm-life`,
-`live2d-arm-probe`) são relógio de coreografia do avatar, sem API que diga "o gesto chegou ao pico".
+(`apps/desktop/e2e/fixtures/settled.ts`) antes de um print. Os poucos tempos que restam (`haru-vrm`, `vrm-life`)
+são relógio de coreografia do avatar, sem API que diga "o gesto chegou ao pico".
 
 ## Perfil e `legal`
 

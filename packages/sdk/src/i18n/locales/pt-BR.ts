@@ -2950,9 +2950,13 @@ export const ptBR: TranslationDict = {
   'settings.skin.modelStation.thirdPartyBadge': 'Terceiros',
   'settings.skin.modelStation.thirdPartyTooltip': 'Este modelo não veio empacotado com o app',
   'settings.skin.modelStation.customPathLabel': 'Caminho do modelo personalizado',
-  'settings.skin.modelStation.customPathPlaceholder': 'ex.: C:modelosmeu-modelo.model3.json',
-  'settings.skin.modelStation.customPathDescription':
-    'Aponte para um .vrm ou .model3.json seu — substitui a skin escolhida acima.',
+  'settings.skin.modelStation.customPathPlaceholder': 'ex.: live2d/my-skin/my-skin.vrm',
+  'settings.skin.import.title': 'Importar modelo próprio',
+  'settings.skin.import.description':
+    'Escolha um .vrm ou o .model3.json de um Live2D: a Mika copia o modelo para a pasta de dados dela e já aplica. O caminho abaixo aponta para o modelo em uso.',
+  'settings.skin.import.button': 'Importar modelo…',
+  'settings.skin.import.success': 'Modelo importado e aplicado.',
+  'settings.skin.import.error': 'Não deu para importar o modelo.',
   'settings.skin.stage.ariaLabel': 'Palco de pré-visualização: {{name}}',
   'settings.skin.stage.loading': 'Carregando modelo…',
   'settings.skin.stage.error': 'Não foi possível montar este modelo no palco.',

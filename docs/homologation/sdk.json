@@ -6,7 +6,7 @@
   },
   "artefato": {
     "commit": "b873a4e9bd069a8e33e852ae2562cec8b94dbf1c+dirty",
-    "tree": "5bf6850d0f8c524c",
+"tree": "5bf6850d0f8c524c",
     "contract": "65d0586d5991ee80",
     "deps": {
       "zod": "catalog:"

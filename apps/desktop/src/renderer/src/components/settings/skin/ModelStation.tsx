@@ -3,16 +3,17 @@ import { Box, FolderCog } from 'lucide-react'
 import { type KeyboardEvent, useRef, useState } from 'react'
 import { type Translate, useI18n } from '../../../hooks/useI18n'
 import { useUIStore } from '../../../store/useUIStore'
-import { LIVE2D_MODELS, type Live2DModelOption, resolveLive2DModelPath, VRM_MODELS } from '../../live2d/model-path'
+import { type Live2DModelOption, resolveLive2DModelPath, VRM_MODELS } from '../../live2d/model-path'
 import { AuroraField, GlassSection, SectionLabel } from '../ds'
 import { configStr } from '../settings-utils'
+import { ImportModelButton } from './ImportModelButton'
 import { RosterCard } from './RosterCard'
 import { rosterKeyTarget } from './roster-nav'
 import { SkinDetails } from './SkinDetails'
 import { SkinStage } from './SkinStage'
 import { skinFacts } from './skin-catalog'
 
-const ROSTER: readonly Live2DModelOption[] = [...VRM_MODELS, ...LIVE2D_MODELS]
+const ROSTER: readonly Live2DModelOption[] = VRM_MODELS
 
 // The only label that is not a proper name; keeps the "(VRM)" suffix its siblings carry.
 function resolveModelLabel(model: Live2DModelOption, t: Translate): string {
@@ -127,19 +128,20 @@ export function ModelStation({ config, save }: ModelStationProps) {
       </GlassSection>
 
       <GlassSection
-        title={t('settings.skin.modelStation.customPathLabel')}
+        title={t('settings.skin.import.title')}
         icon={FolderCog}
-        description={t('settings.skin.modelStation.customPathDescription')}
-        collapsible
-        defaultCollapsed
+        description={t('settings.skin.import.description')}
       >
-        <AuroraField
-          label={t('settings.skin.modelStation.customPathLabel')}
-          configPath="character.modelPath"
-          config={config}
-          onSave={save}
-          placeholder={t('settings.skin.modelStation.customPathPlaceholder')}
-        />
+        <div className="flex flex-col gap-4">
+          <ImportModelButton save={save} />
+          <AuroraField
+            label={t('settings.skin.modelStation.customPathLabel')}
+            configPath="character.modelPath"
+            config={config}
+            onSave={save}
+            placeholder={t('settings.skin.modelStation.customPathPlaceholder')}
+          />
+        </div>
       </GlassSection>
     </>
   )

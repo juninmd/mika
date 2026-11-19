@@ -3004,9 +3004,13 @@ export const deDE: TranslationDict = {
   'settings.skin.modelStation.thirdPartyBadge': 'Drittanbieter',
   'settings.skin.modelStation.thirdPartyTooltip': 'Dieses Modell war nicht in der App enthalten',
   'settings.skin.modelStation.customPathLabel': 'Pfad zum eigenen Modell',
-  'settings.skin.modelStation.customPathPlaceholder': 'z. B. C:\\models\\mein-modell.model3.json',
-  'settings.skin.modelStation.customPathDescription':
-    'Verweise auf deine eigene .vrm- oder .model3.json-Datei — ersetzt den oben gewählten Skin.',
+  'settings.skin.modelStation.customPathPlaceholder': 'z. B. live2d/my-skin/my-skin.vrm',
+  'settings.skin.import.title': 'Eigenes Modell importieren',
+  'settings.skin.import.description':
+    'Wähle eine .vrm oder die .model3.json eines Live2D-Modells: Mika kopiert das Modell in ihren Datenordner und wendet es an. Der Pfad unten zeigt auf das aktive Modell.',
+  'settings.skin.import.button': 'Modell importieren…',
+  'settings.skin.import.success': 'Modell importiert und angewendet.',
+  'settings.skin.import.error': 'Das Modell konnte nicht importiert werden.',
   'settings.skin.stage.ariaLabel': 'Vorschaubühne: {{name}}',
   'settings.skin.stage.loading': 'Modell wird geladen…',
   'settings.skin.stage.error': 'Dieses Modell konnte nicht auf der Bühne geladen werden.',

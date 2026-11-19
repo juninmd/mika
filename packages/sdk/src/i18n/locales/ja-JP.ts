@@ -2890,9 +2890,13 @@ export const jaJP: TranslationDict = {
   'settings.skin.modelStation.thirdPartyBadge': 'サードパーティ',
   'settings.skin.modelStation.thirdPartyTooltip': 'このモデルはアプリに同梱されていません',
   'settings.skin.modelStation.customPathLabel': 'カスタムモデルのパス',
-  'settings.skin.modelStation.customPathPlaceholder': '例: C:modelsmy-model.model3.json',
-  'settings.skin.modelStation.customPathDescription':
-    '独自の .vrm または .model3.json を指定します — 上で選んだスキンを置き換えます。',
+  'settings.skin.modelStation.customPathPlaceholder': '例: live2d/my-skin/my-skin.vrm',
+  'settings.skin.import.title': '自分のモデルをインポート',
+  'settings.skin.import.description':
+    '.vrm または Live2D の .model3.json を選ぶと、Mika がデータフォルダにコピーして適用します。下のパスは使用中のモデルを指します。',
+  'settings.skin.import.button': 'モデルをインポート…',
+  'settings.skin.import.success': 'モデルをインポートして適用しました。',
+  'settings.skin.import.error': 'モデルをインポートできませんでした。',
   'settings.skin.stage.ariaLabel': 'プレビューステージ: {{name}}',
   'settings.skin.stage.loading': 'モデルを読み込み中…',
   'settings.skin.stage.error': 'このモデルをステージに読み込めませんでした。',
