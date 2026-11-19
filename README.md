@@ -332,7 +332,7 @@ Feature nova: pasta em `apps/desktop/src-tauri/src/modules/features/<contexto>/`
 
 ## 🚀 Começando
 
-**Requisitos:** Rust estável + [pré-requisitos do Tauri 2](https://tauri.app/start/prerequisites/); Node.js `^24.19.0` e pnpm ≥ 10 só para o build do renderer e os gates (o `24.18.0` no Windows causa crash nativo no Vite 8).
+**Requisitos:** Rust estável ≥ 1.97.1 (o `rust-version` do manifesto; `pnpm setup:check` avisa se estiver abaixo) + [pré-requisitos do Tauri 2](https://tauri.app/start/prerequisites/); Node.js `^24.19.0` e pnpm ≥ 10 só para o build do renderer e os gates (o `24.18.0` no Windows causa crash nativo no Vite 8).
 
 ```bash
 pnpm install
