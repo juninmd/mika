@@ -145,13 +145,15 @@ export class VrmClipLayer {
     for (const [action, f] of this.fades) {
       if (action !== next) Object.assign(f, { from: action.weight, to: 0, t: 0, span: fade })
     }
-    this.fades.set(next, { from: this.current ? 0 : 1, to: 1, t: 0, span: fade })
+    // A twin replayed while still fading out starts from where it is, not from zero.
+    const from = this.fades.has(next) ? next.weight : this.current ? 0 : 1
+    this.fades.set(next, { from, to: 1, t: 0, span: fade })
   }
 
   private advanceFades(dt: number): void {
     for (const [action, f] of this.fades) {
       f.t = Math.min(f.span, f.t + dt)
-      action.weight = f.from + (f.to - f.from) * smooth(f.t / f.span)
+      action.weight = f.from + (f.to - f.from) * smooth(f.span > 0 ? f.t / f.span : 1)
       if (f.t < f.span || f.to > 0) continue
       action.stop()
       this.fades.delete(action)

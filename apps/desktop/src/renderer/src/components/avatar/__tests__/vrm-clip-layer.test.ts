@@ -187,3 +187,30 @@ describe('gesto que interrompe um crossfade', () => {
     expect(speeds[20]).toBeLessThan(peak * 0.25)
   })
 })
+
+// Achados da revisão do PR #58: casos de borda do crossfade suave.
+describe('crossfade suave nas bordas', () => {
+  // `twin` alterna entre duas ações; no terceiro replay a "nova" ação ainda estava saindo e era zerada.
+  it('repetir o mesmo clipe três vezes seguidas não salta', () => {
+    const { layer, step } = held()
+    layer.play('b', { fade: 0.05 })
+    for (let t = 0; t < 1; t += FRAME) step()
+    let worst = 0
+    for (let play = 0; play < 3; play++) {
+      layer.play('b', { fade: 0.35 })
+      for (let i = 0; i < 6; i++) worst = Math.max(worst, Math.abs(step() - 1.2))
+    }
+    expect(worst).toBeLessThan(0.05)
+  })
+
+  // span 0 virava 0/0 = NaN no peso: o clipe nunca entrava.
+  it('fade zero entra na hora', () => {
+    const { layer, step } = held()
+    layer.play('a', { loop: true, fade: 0.05 })
+    for (let t = 0; t < 1; t += FRAME) step()
+    layer.play('b', { loop: true, fade: 0 })
+    let angle = 0
+    for (let t = 0; t < 0.5; t += FRAME) angle = step()
+    expect(angle).toBeCloseTo(1.2, 2)
+  })
+})
