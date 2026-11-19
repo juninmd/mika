@@ -146,6 +146,7 @@ mod capture_tool;
 mod clipboard_analysis;
 mod clipboard_watch;
 mod compression;
+mod decision;
 mod feature;
 mod image_hash;
 mod llm_client;
