@@ -151,11 +151,11 @@ const ink = material('Haru_Blazer', PALETTE.blazer, { texture: foldMap, outline:
 const skirtMaterial = material('Haru_FittedSkirt', PALETTE.blazer, { texture: clothMap, outline: 0.0011 })
 const pearl = material('Haru_Piping', PALETTE.piping, { outline: 0.0004 })
 const shirtMaterial = material('Haru_Shirt', PALETTE.shirt, { outline: 0.0006 })
-const scarf = material('Haru_ScarfSatin', ['#ffffff', '#b9c6dc'], { texture: scarfMap, outline: 0.0007, rim: 0.3 })
+const scarf = material('Haru_ScarfSatin', ['#ffffff', '#d8bfa0'], { texture: scarfMap, outline: 0.0007, rim: 0.3 })
 const stitch = material('Haru_Stitch', PALETTE.blazer, { outline: 0.0005 })
 const bowMaterial = material('Haru_ShoeBow', PALETTE.bow, { outline: 0.0004 })
 
-// Olhos: a íris VRoid (pupila, reflexos pintados) ganha o azul da Haru pela luminância.
+// Olhos: a íris VRoid (pupila, reflexos pintados) ganha o âmbar da Haru pela luminância.
 replaceImage('EyeIris_00', recolorPng(imageBytes(imageIndex('EyeIris_00')), IRIS_STOPS))
 replaceImage('Face_00', animeFacePng(imageBytes(imageIndex('Face_00'))))
 replaceImage('FaceMouth_00', animeMouthPng(imageBytes(imageIndex('FaceMouth_00'))))
@@ -173,11 +173,11 @@ for (const mat of gltf.materials) {
     if (mat.name.startsWith('Face')) toon.shadingShiftFactor = 0.35
   } else if (/HAIR$/.test(mat.name)) {
     inkOutline(mat, 0.0007)
-    toon.shadeColorFactor = [0.62, 0.52, 0.72]
-    toon.parametricRimColorFactor = [0.1, 0.08, 0.14]
+    toon.shadeColorFactor = [0.72, 0.42, 0.32]
+    toon.parametricRimColorFactor = [0.16, 0.1, 0.06]
     toon.parametricRimFresnelPowerFactor = 3.5
     toon.matcapTexture = angelRing
-    toon.matcapFactor = [0.55, 0.52, 0.62]
+    toon.matcapFactor = [0.5, 0.44, 0.36]
     mat.emissiveFactor = [0, 0, 0]
     delete mat.emissiveTexture
   } else if (mat.name.startsWith('Shoes')) {
@@ -185,9 +185,9 @@ for (const mat of gltf.materials) {
   }
 }
 const eyeliner = gltf.materials.find((mat) => mat.name.startsWith('FaceEyeline'))
-eyeliner.pbrMetallicRoughness.baseColorFactor = [0.32, 0.16, 0.22, 1]
+eyeliner.pbrMetallicRoughness.baseColorFactor = [0.3, 0.12, 0.08, 1]
 const brow = gltf.materials.find((mat) => mat.name.startsWith('FaceBrow'))
-brow.pbrMetallicRoughness.baseColorFactor = [0.2, 0.14, 0.24, 1]
+brow.pbrMetallicRoughness.baseColorFactor = [0.42, 0.2, 0.12, 1]
 
 function add(name, geometry, mat, bone, influence = bone === 'chest' ? torsoWeights : undefined) {
   const g = geometry
@@ -416,16 +416,18 @@ function springChain(name, parent, points, stiffness) {
   gltf.extensions.VRMC_springBone.springs.push({ name, joints: chain })
   return chain.map((joint) => joint.node)
 }
-const curls = springChain(
-  'Haru_CurlSpring',
-  'head',
-  [
-    [-0.098, 1.4, -0.108],
-    [-0.125, 1.3, -0.09],
-    [-0.135, 1.2, -0.07],
-  ],
-  1.8,
-)
+// side -1 = direita dela, +1 = esquerda: a mesma corrente espelhada em x.
+const curlChain = (side) =>
+  springChain(
+    side < 0 ? 'Haru_CurlSpring' : 'Haru_CurlSpringL',
+    'head',
+    [
+      [0.098 * side, 1.4, -0.108],
+      [0.125 * side, 1.3, -0.09],
+      [0.135 * side, 1.2, -0.07],
+    ],
+    1.8,
+  )
 // Oito painéis presos ao quadril; apenas a parte inferior da saia recebe inércia.
 const skirtSprings = Array.from({ length: 8 }, (_, i) =>
   springChain(
@@ -453,7 +455,7 @@ function skirtWeights(p, i) {
   ].filter(([, weight]) => weight > 0)
 }
 add('Haru_Skirt', fittedSkirt(T), skirtMaterial, 'hips', skirtWeights)
-const curlWeights = (p, i) => {
+const curlWeights = (curls) => (p, i) => {
   const tip = 1 - T.MathUtils.smoothstep(p.getY(i), 1.22, 1.4)
   return [
     [curls[0], 1 - tip],
@@ -562,22 +564,32 @@ for (const points of [
     ]
   })
 }
-// Rabo baixo atrás da orelha direita, como o da Haru Live2D: dois cachos em espiral até o ombro.
-for (const curl of [
-  { top: [-0.098, 1.402, -0.108], bottom: [-0.138, 1.2, -0.068], radius: 0.034, turns: 4.2 },
-  { top: [-0.084, 1.398, -0.122], bottom: [-0.108, 1.27, -0.118], radius: 0.024, turns: 3.2 },
-]) {
-  add('Haru_HairDrill', drillCurl(T, { ...curl, side: -1 }), hair, 'head', curlWeights)
+// Maria-chiquinha baixa de cachos em espiral atrás das orelhas: silhueta que nenhuma outra skin tem.
+for (const side of [-1, 1]) {
+  const weights = curlWeights(curlChain(side))
+  const at = ([x, y, z]) => [x * -side, y, z]
+  for (const curl of [
+    { top: [0.098, 1.402, -0.108], bottom: [0.138, 1.2, -0.068], radius: 0.034, turns: 4.2 },
+    { top: [0.084, 1.398, -0.122], bottom: [0.108, 1.27, -0.118], radius: 0.024, turns: 3.2 },
+  ]) {
+    add(
+      'Haru_HairDrill',
+      drillCurl(T, { ...curl, top: at(curl.top), bottom: at(curl.bottom), side }),
+      hair,
+      'head',
+      weights,
+    )
+  }
+  add(
+    'Haru_HairTie',
+    new T.TorusGeometry(0.0145, 0.0065, 20, 64)
+      .rotateX(Math.PI / 2 - 0.35)
+      .rotateZ(-0.5 * side)
+      .translate(0.094 * side, 1.41, -0.11),
+    scarf,
+    'head',
+  )
 }
-add(
-  'Haru_HairTie',
-  new T.TorusGeometry(0.0145, 0.0065, 20, 64)
-    .rotateX(Math.PI / 2 - 0.35)
-    .rotateZ(0.5)
-    .translate(-0.094, 1.41, -0.11),
-  scarf,
-  'head',
-)
 // Debrum claro no barrado do blazer e laço das sapatilhas.
 {
   const loop = Array.from({ length: 160 }, (_, i) => {
@@ -725,7 +737,7 @@ for (const spring of physics.springs.filter((s) => s.name?.startsWith('Haru_')))
   add(
     'Haru_Tights',
     shell.geometry,
-    material('Haru_Tights', ['#3b2e46', '#1d1627'], { outline: 0.0007, rim: 0.35 }),
+    material('Haru_Tights', ['#4a2a26', '#24120f'], { outline: 0.0007, rim: 0.35 }),
     'hips',
     (_, i) => shell.mix[i].map(([joint, w]) => [skin.joints[joint], w]),
   )
