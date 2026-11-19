@@ -172,15 +172,13 @@ export interface VrmLook {
 }
 
 const tint = (material: RegExp, color: string, shade: string) => ({ material, color, shade })
-const flat = (material: RegExp, color: string, shade: string) => ({ material, color, shade, flat: true })
 const HAIR = /^Hair/i
 const IRIS = /^EyeIris/i
 const TOPS = /^Tops/i
 const BOTTOMS = /^Bottoms/i
 const SHOES = /^Shoes/i
 
-// One VRM skin per existing Live2D model, colors read from each preview.png. Color only — blazer,
-// scarf, hat and curl need authored VRoid geometry.
+// Haru resolves to its own haru.vrm (see vrmModelPath); the entry keeps the saved `#look=haru` id valid.
 export const VRM_LOOKS: readonly VrmLook[] = [
   { id: 'original', name: 'Mika Aurora', tints: [] },
   {
@@ -194,50 +192,6 @@ export const VRM_LOOKS: readonly VrmLook[] = [
       tint(SHOES, '#26262e', '#111116'),
     ],
   },
-  {
-    id: 'hiyori',
-    name: 'Hiyori',
-    tints: [
-      flat(HAIR, '#9a7a5c', '#4e3a2a'),
-      tint(IRIS, '#8ea0c4', '#4a5c86'),
-      tint(TOPS, '#f3dfb6', '#b89a6a'),
-      tint(BOTTOMS, '#33405e', '#161c2e'),
-      tint(SHOES, '#5a4030', '#2a1c12'),
-    ],
-  },
-  {
-    id: 'mao',
-    name: 'Mao',
-    tints: [
-      flat(HAIR, '#f4a94e', '#a86a22'),
-      tint(IRIS, '#6db0f0', '#2f6fbf'),
-      tint(TOPS, '#f6f6f8', '#b8b8c8'),
-      tint(BOTTOMS, '#2d3266', '#151834'),
-      tint(SHOES, '#2a2f5c', '#12152c'),
-    ],
-  },
-  {
-    id: 'mark',
-    name: 'Mark',
-    tints: [
-      flat(HAIR, '#9a7048', '#4e3620'),
-      tint(IRIS, '#5ad46a', '#1f8a2c'),
-      tint(TOPS, '#ff5c5c', '#b52e2e'),
-      flat(BOTTOMS, '#3c72d6', '#1c3f8a'),
-      flat(SHOES, '#f2f2f2', '#9a9a9a'),
-    ],
-  },
-  {
-    id: 'rice',
-    name: 'Rice',
-    tints: [
-      flat(HAIR, '#efe7d8', '#b8ad98'),
-      tint(IRIS, '#5ad8c0', '#1f8f7c'),
-      tint(TOPS, '#6d84a6', '#38496a'),
-      flat(BOTTOMS, '#f2f0ea', '#b5b2a8'),
-      tint(SHOES, '#2b2b33', '#121216'),
-    ],
-  },
 ]
 
 const HARU_BLAZER = /^Haru_Blazer$/
@@ -245,25 +199,11 @@ const HARU_PIPING = /^Haru_Piping$/
 
 export const HARU_OUTFITS: readonly VrmLook[] = [
   {
-    id: 'seifuku',
-    name: 'Seifuku',
-    tints: [tint(HARU_BLAZER, '#f6f7fb', '#b3bdd3'), tint(HARU_PIPING, '#2c3a66', '#161d3a')],
-    show: /^Outfit_Seifuku_/,
-    hide: /^Haru_(Lapel|Pocket|Button|CenterSeam|Shirt|FoldedCollar|Scarf|Skirt|Seam|Tights)/,
-  },
-  {
     id: 'maid',
     name: 'Maid',
     tints: [tint(HARU_BLAZER, '#2b2735', '#121019'), tint(HARU_PIPING, '#fbfaff', '#c4c3d6')],
     show: /^Outfit_Maid_/,
     hide: /^Haru_(Lapel|Pocket|Button|CenterSeam|Shirt|Scarf|Skirt|Seam|Tights)/,
-  },
-  {
-    id: 'idol',
-    name: 'Idol',
-    tints: [tint(HARU_BLAZER, '#ffb3d1', '#d97aa6'), tint(/^Haru_Stitch$/, '#ffb3d1', '#d97aa6')],
-    show: /^Outfit_Idol_/,
-    hide: /^Haru_(Scarf|Skirt|Seam|Button|Pocket|Tights)/,
   },
 ]
 

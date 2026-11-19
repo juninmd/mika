@@ -1,8 +1,6 @@
 import { t } from '@mika/sdk/i18n'
 import { toErrorMessage } from '@mika/sdk/utils/object'
 import type * as PIXI from 'pixi.js'
-import { rendererLog } from '../../lib/renderer-logger'
-import { FALLBACK_LIVE2D_MODEL_PATH } from './model-path'
 
 const CUBISM_CORE_PATH = 'live2dcubismcore.min.js'
 
@@ -30,29 +28,18 @@ function resolveRendererAssetUrl(assetPath: string): string {
 }
 
 /**
- * Amostras Live2D (`live2d/<nome>/...`) NÃO vão no instalador (`LICENSE-ASSETS.md`) — em produção
- * elas só existem se o usuário as instalou manualmente em `<userData>/live2d/<nome>/`
- * (`vite.tauri.config.ts::closeBundle`), servidas pelo esquema custom `mika-live2d`
- * (`src-tauri/src/live2d_protocol.rs`), NUNCA por `document.baseURI` (que é o bundle, sem elas).
- * Em dev o bundle não é o gate — `public/live2d/*` está no disco e o servidor do Vite serve
- * direto, então mantém o caminho antigo por conveniência (sem precisar instalar nada à mão).
+ * Modelos próprios (`live2d/<nome>/...`, `.model3.json` ou `.vrm`) moram em `<userData>/live2d/`,
+ * onde o "Importar modelo" (`import_model.rs`) os copia, e saem pelo esquema custom `mika-live2d`
+ * (`src-tauri/src/live2d_protocol.rs`) também em dev: nenhum modelo de terceiro vem no bundle.
  *
  * Mapeamento de plataforma do próprio Tauri para um esquema custom: Windows/Android usam
  * `http://<esquema>.localhost/<path>`; macOS/Linux usam `<esquema>://localhost/<path>`.
  */
-export function resolveLive2DAssetUrl(
-  assetPath: string,
-  env: { platform: string; isProd: boolean } = {
-    platform: process.platform,
-    isProd: process.env.NODE_ENV === 'production',
-  },
-): string {
+export function resolveLive2DAssetUrl(assetPath: string, platform: string = process.platform): string {
   const normalized = assetPath.replace(/^\.\//, '').replace(/^\//, '')
-  if (!env.isProd) return resolveRendererAssetUrl(normalized)
-
   // The scheme root already is <userData>/live2d; the bundle-relative prefix would double it.
   const relative = normalized.replace(/^live2d\//, '')
-  const origin = env.platform === 'win32' ? 'http://mika-live2d.localhost' : 'mika-live2d://localhost'
+  const origin = platform === 'win32' ? 'http://mika-live2d.localhost' : 'mika-live2d://localhost'
   return `${origin}/${relative}`
 }
 
@@ -82,8 +69,7 @@ async function ensureCubismCoreLoaded(): Promise<void> {
   }
 }
 
-function normalizeModelPath(modelPath?: string): string {
-  if (!modelPath) return FALLBACK_LIVE2D_MODEL_PATH
+function normalizeModelPath(modelPath = ''): string {
   return modelPath.replace(/^\.\//, '').replace(/^\//, '')
 }
 
@@ -148,21 +134,15 @@ export async function loadLive2DModel(
   const { Live2DModel } = await import('pixi-live2d-display/cubism4')
 
   const modelUrl = resolveLive2DAssetUrl(normalizeModelPath(modelPath))
-  const fallbackModelUrl = resolveLive2DAssetUrl(FALLBACK_LIVE2D_MODEL_PATH)
-
   const screenWidth = app.screen?.width || 320
   const screenHeight = app.screen?.height || 350
 
-  let model: Live2DModelInstance | null = null
+  // No Live2D ships with the app: a broken user model surfaces as an error, not a silent swap.
+  let model: Live2DModelInstance
   try {
     model = (await Live2DModel.from(modelUrl)) as unknown as Live2DModelInstance
   } catch (error: unknown) {
-    const message = toErrorMessage(error)
-    if (modelUrl === fallbackModelUrl) {
-      throw new Error(`Falha ao carregar Live2D em ${modelUrl}: ${message}`)
-    }
-    rendererLog.warn(`[Live2D] Falha no modelo ${modelUrl}. Tentando fallback ${fallbackModelUrl}.`, error)
-    model = (await Live2DModel.from(fallbackModelUrl)) as unknown as Live2DModelInstance
+    throw new Error(`Falha ao carregar Live2D em ${modelUrl}: ${toErrorMessage(error)}`)
   }
 
   if (discardIfCancelled(model, isCancelled)) return null

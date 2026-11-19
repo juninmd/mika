@@ -124,6 +124,13 @@ export const DESKTOP_SHELL_INVOKE_ROUTES = {
     requestSchema: z.object({ kind: z.enum(['data', 'logs']) }),
     responseSchema: z.object({ path: z.string() }),
   },
+  // No path in the request: Rust opens the native picker, so the renderer never names a file.
+  importAvatarModel: {
+    channel: DESKTOP_SHELL_CHANNELS.ImportAvatarModel,
+    namespace: 'shell',
+    requestSchema: emptyPayloadSchema,
+    responseSchema: z.object({ modelPath: z.string() }).nullable(),
+  },
   // Encerra o app inteiro (não só a janela): quem recusa o EULA no primeiro uso sai por aqui.
   appQuit: {
     channel: DESKTOP_SHELL_CHANNELS.AppQuit,

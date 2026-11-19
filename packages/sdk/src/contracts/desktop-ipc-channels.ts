@@ -77,6 +77,7 @@ export const DESKTOP_SHELL_CHANNELS = {
   PluginViewOpen: 'plugin-view:open',
   OpenExternal: 'open-external',
   RevealPath: 'reveal-path',
+  ImportAvatarModel: 'import-avatar-model',
   AppQuit: 'app-quit',
 } as const
 
