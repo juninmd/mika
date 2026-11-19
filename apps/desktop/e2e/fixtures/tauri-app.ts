@@ -18,9 +18,9 @@
  */
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
-import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
-import { join, resolve } from 'node:path'
+import { join } from 'node:path'
 import { chromium, test as base, type Browser, type BrowserContext, type Page, expect } from '@playwright/test'
 import { AVATAR_MODELS } from '../../src/renderer/src/components/live2d/model-path'
 import { startFakeOllama, type FakeOllama } from './fake-ollama-server'
@@ -69,7 +69,7 @@ type MikaFixtures = {
   cdpPort: number
 }
 
-// Skin pinned via `test.use({ skin: 'haru' })`, not process.env — workers:1 shares a process, so an env var would leak across specs.
+// Skin pinned via `test.use({ skin: 'vrm-haru' })`, not process.env — workers:1 shares a process, so an env var would leak across specs.
 type MikaOptions = {
   skin: string | undefined
   /** Versão que o `latest.json` local anuncia; sem ela o app não tem endpoint de update. */
@@ -342,17 +342,6 @@ export const test = base.extend<MikaFixtures & MikaOptions>({
           throw new Error(`skin "${skinId}" não é skin nenhuma do catálogo. Conhecidas: ${known}`)
         }
         config.character = { modelPath: model.path }
-
-        // Amostras Live2D são de terceiro e não vão no instalador (LICENSE-ASSETS.md) — o app
-        // só as serve de `<userData>/live2d/<nome>/`, onde um usuário real as instala à mão.
-        // Espelha esse fluxo aqui em vez de depender do bundle (que nunca as tem em release).
-        if (!model.bundled) {
-          const folder = model.path.split('/')[1]
-          const source = resolve(__dirname, '../../src/renderer/public/live2d', folder)
-          const dest = join(profile.userDataDir, 'live2d', folder)
-          mkdirSync(dest, { recursive: true })
-          cpSync(source, dest, { recursive: true })
-        }
       }
       mkdirSync(profile.userDataDir, { recursive: true })
       writeFileSync(join(profile.userDataDir, 'config.json'), JSON.stringify(config, null, 2))

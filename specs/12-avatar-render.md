@@ -242,11 +242,10 @@ quadro ao terminar.
 
 **SHOULD** — para responder _este canal move alguma coisa NESTA skin?_, usar
 `window.__mikaLive2D.probe()` (força parâmetros crus por cima de tudo) e `readParams()` (lê o valor
-corrente). A sonda vive em `apps/desktop/e2e/specs/live2d-arm-probe.spec.ts`, fora da execução padrão
-(`MIKA_LIVE2D_PROBE=1`).
+corrente). Nenhum Live2D vem no app desde que as amostras saíram: a sonda vale para um modelo importado.
 
-**MUST** — homologação de skin alternativa roda com `MIKA_E2E_SKIN=<Pasta>` (o fixture semeia
-`character.modelPath`). Sem isso a suíte só vê a skin padrão, e as outras quatro nunca são olhadas.
+**MUST** — homologação de skin alternativa roda com `MIKA_E2E_SKIN=<id>` (`vrm-haru`, `vrm-maid`; o
+fixture semeia `character.modelPath`). Sem isso a suíte só vê a skin padrão.
 
 **MUST** — toda varredura de sonda inclui um **controle positivo** (um canal que comprovadamente move
 o desenho).

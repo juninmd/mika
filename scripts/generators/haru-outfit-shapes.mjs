@@ -1,5 +1,5 @@
 /** Geometry for the Haru outfits: flared skirts, lace, bows, surface lines and the hair outline. */
-import { garmentFront, scarfTail, skirtPoint, torsoSection } from './haru-garments.mjs'
+import { skirtPoint, torsoSection } from './haru-garments.mjs'
 
 /** Waist-to-hem skirt on Haru's pencil-skirt sections, opened into a flare with pleats or soft folds. */
 function skirtSurface(T, { length, flare, pleats, depth }, angle, t, lift = 0) {
@@ -82,28 +82,6 @@ export function bow(T, add, name, mat, bone, [x, y, z], size, tilt = 0) {
     add(name, lobe.translate(x, y, z), mat, bone)
   }
   add(name, new T.SphereGeometry(size * 0.2, 16, 10).scale(1, 1.1, 0.7).translate(x, y, z + size * 0.08), mat, bone)
-}
-
-export function ribbonTails(T, add, name, mat, [x, y, z], width) {
-  for (const side of [-1, 1]) {
-    const points = [0, 0.3, 0.65, 1].map((t) => {
-      const [, , surface] = garmentFront(x + side * t * 0.03, y - t * 0.085, 0.018)
-      return [x + side * (0.004 + t * 0.03), y - 0.006 - t * 0.085, Math.max(surface, z - 0.004 - t * 0.012)]
-    })
-    add(name, scarfTail(T, points, width), mat, 'chest')
-  }
-}
-
-/** Edge a→b moved `inset` into the panel, toward its third corner `inner`. */
-export function insetEdge([ax, ay], [bx, by], [cx, cy], inset) {
-  const length = Math.hypot(bx - ax, by - ay)
-  let nx = -(by - ay) / length
-  let ny = (bx - ax) / length
-  if (nx * (cx - ax) + ny * (cy - ay) < 0) [nx, ny] = [-nx, -ny]
-  return [
-    [ax + nx * inset, ay + ny * inset],
-    [bx + nx * inset, by + ny * inset],
-  ]
 }
 
 // Sampled densely on the body surface: a spline through a few projected points cuts through the chest.
