@@ -14,6 +14,7 @@ resultado sairia errado). O original está no histórico: `git show d16b130:apps
 Mudanças:
   • cabelo: preto na raiz, azul nas pontas (Hair_00 e HairBack_00 + sombra/rim do material)
   • jaqueta: rosa pastel com estampa de pixel-art (corações, estrelas, controle) e mangas lilás
+  • colisores do cabelo: medidos pela roupa, não pelo corpo VRoid por baixo dela
 """
 import argparse
 import io
@@ -253,6 +254,27 @@ def restyle_jacket(gltf, binbuf):
         mtoon["outlineColorFactor"] = [0.42, 0.18, 0.3] if mat_name == "Renewal_Jacket" else [0.34, 0.26, 0.48]
 
 
+# Raio (m) medido pela roupa: jaqueta/camisa ficam ~2-4 cm por fora do tronco VRoid e as mangas ~1 cm por
+# fora do braço, e o cabelo atravessava a roupa nos gestos que inclinam o tronco.
+GARMENT_COLLIDER_RADIUS = {
+    ("J_Bip_C_Spine", "sphere"): 0.134,
+    ("J_Bip_C_UpperChest", "sphere"): 0.13,
+    ("J_Bip_C_UpperChest", "capsule"): 0.097,
+    ("J_Bip_L_UpperArm", "capsule"): 0.058,
+    ("J_Bip_R_UpperArm", "capsule"): 0.058,
+    ("J_Bip_L_LowerArm", "capsule"): 0.037,
+    ("J_Bip_R_LowerArm", "capsule"): 0.037,
+}
+
+
+def fit_colliders(gltf):
+    for collider in gltf["extensions"]["VRMC_springBone"]["colliders"]:
+        ((kind, shape),) = collider["shape"].items()
+        radius = GARMENT_COLLIDER_RADIUS.get((gltf["nodes"][collider["node"]]["name"], kind))
+        if radius:
+            shape["radius"] = radius
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--source", required=True)
@@ -261,6 +283,7 @@ def main():
     gltf, binbuf = read_glb(args.source)
     restyle_hair(gltf, binbuf)
     restyle_jacket(gltf, binbuf)
+    fit_colliders(gltf)
     write_glb(args.out, gltf, binbuf)
     print(f"ok → {args.out}")
 
