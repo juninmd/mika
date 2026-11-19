@@ -1286,6 +1286,13 @@ export const zhCN: TranslationDict = {
     '在你的电脑上运行：llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': '无故障',
   'settings.vision.panel.decisionStatus.failing': '服务器无响应',
+  'settings.tab.decision': '决策',
+  'settings.decision.panel.title': '决策模型',
+  'settings.decision.panel.description': '一个本地小模型在完整视觉分析之前查看每一帧，并决定是否值得分析。',
+  'settings.decision.hero.on': '已开启',
+  'settings.decision.hero.off': '已关闭',
+  'settings.decision.hero.visionOff': '视觉已关闭',
+  'settings.decision.section.description': '本地服务器、阈值和筛选状态。',
   'settings.vision.field.decisionEnabled.label': '用决策模型筛选屏幕',
   'settings.vision.field.decisionEnabled.description':
     '本地模型（d1-2B）查看每一帧，只有出现游戏关键时刻、危险或值得评论的内容时才调用完整视觉分析。游戏中每 3 秒检查一次屏幕。',

@@ -1392,6 +1392,14 @@ export const esES: TranslationDict = {
     'Ejecútalo en tu PC: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': 'Sin fallos',
   'settings.vision.panel.decisionStatus.failing': 'Sin respuesta del servidor',
+  'settings.tab.decision': 'Decisión',
+  'settings.decision.panel.title': 'Modelo de decisión',
+  'settings.decision.panel.description':
+    'Un modelo local pequeño mira cada fotograma antes de la visión completa y decide si vale la pena analizarlo.',
+  'settings.decision.hero.on': 'Activado',
+  'settings.decision.hero.off': 'Desactivado',
+  'settings.decision.hero.visionOff': 'Visión desactivada',
+  'settings.decision.section.description': 'Servidor local, umbral y estado del filtro.',
   'settings.vision.field.decisionEnabled.label': 'Filtrar la pantalla con el modelo de decisión',
   'settings.vision.field.decisionEnabled.description':
     'Un modelo local (d1-2B) mira cada fotograma y solo llama a la visión completa ante un momento de juego, un peligro o algo que merezca un comentario. En juegos, la pantalla se revisa cada 3 s.',

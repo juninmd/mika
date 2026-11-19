@@ -1391,6 +1391,14 @@ export const ruRU: TranslationDict = {
     'Запустите на своём ПК: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': 'Без сбоев',
   'settings.vision.panel.decisionStatus.failing': 'Сервер не отвечает',
+  'settings.tab.decision': 'Решения',
+  'settings.decision.panel.title': 'Модель решений',
+  'settings.decision.panel.description':
+    'Небольшая локальная модель смотрит каждый кадр до полного зрения и решает, стоит ли его анализировать.',
+  'settings.decision.hero.on': 'Вкл.',
+  'settings.decision.hero.off': 'Выкл.',
+  'settings.decision.hero.visionOff': 'Зрение выключено',
+  'settings.decision.section.description': 'Локальный сервер, порог и состояние фильтра.',
   'settings.vision.field.decisionEnabled.label': 'Фильтровать экран моделью решений',
   'settings.vision.field.decisionEnabled.description':
     'Локальная модель (d1-2B) смотрит каждый кадр и вызывает полное зрение только при игровом моменте, опасности или чём-то, что стоит прокомментировать. В играх экран проверяется каждые 3 с.',

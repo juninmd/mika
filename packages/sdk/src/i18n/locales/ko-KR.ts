@@ -1336,6 +1336,14 @@ export const koKR: TranslationDict = {
   'settings.vision.panel.decisionHint': 'PC에서 실행: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': '오류 없음',
   'settings.vision.panel.decisionStatus.failing': '서버 응답 없음',
+  'settings.tab.decision': '판단',
+  'settings.decision.panel.title': '판단 모델',
+  'settings.decision.panel.description':
+    '작은 로컬 모델이 전체 비전 전에 각 화면 프레임을 보고 분석할 가치가 있는지 판단합니다.',
+  'settings.decision.hero.on': '켜짐',
+  'settings.decision.hero.off': '꺼짐',
+  'settings.decision.hero.visionOff': '비전 꺼짐',
+  'settings.decision.section.description': '로컬 서버, 임계값, 필터 상태.',
   'settings.vision.field.decisionEnabled.label': '판단 모델로 화면 거르기',
   'settings.vision.field.decisionEnabled.description':
     '로컬 모델(d1-2B)이 프레임마다 확인하고 게임의 결정적 순간, 위험, 말할 만한 것이 있을 때만 전체 비전을 호출합니다. 게임 중에는 3초마다 화면을 확인합니다.',

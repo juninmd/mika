@@ -1340,6 +1340,14 @@ export const jaJP: TranslationDict = {
   'settings.vision.panel.decisionHint': 'PCで実行: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': 'エラーなし',
   'settings.vision.panel.decisionStatus.failing': 'サーバーから応答がありません',
+  'settings.tab.decision': '判断',
+  'settings.decision.panel.title': '判断モデル',
+  'settings.decision.panel.description':
+    '小さなローカルモデルが本格的な画像解析の前に各フレームを見て、解析する価値があるかを判断します。',
+  'settings.decision.hero.on': 'オン',
+  'settings.decision.hero.off': 'オフ',
+  'settings.decision.hero.visionOff': '画像解析はオフです',
+  'settings.decision.section.description': 'ローカルサーバー、しきい値、フィルターの状態。',
   'settings.vision.field.decisionEnabled.label': '判断モデルで画面をふるい分ける',
   'settings.vision.field.decisionEnabled.description':
     'ローカルモデル（d1-2B）が各フレームを見て、ゲームの山場、危険、コメントに値するものがあるときだけ本格的な画像解析を呼びます。ゲーム中は3秒ごとに画面を確認します。',

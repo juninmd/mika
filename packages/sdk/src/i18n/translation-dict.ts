@@ -1268,6 +1268,13 @@ export type TranslationDict = {
   'settings.vision.panel.decisionHint': string
   'settings.vision.panel.decisionStatus.ok': string
   'settings.vision.panel.decisionStatus.failing': string
+  'settings.tab.decision': string
+  'settings.decision.panel.title': string
+  'settings.decision.panel.description': string
+  'settings.decision.hero.on': string
+  'settings.decision.hero.off': string
+  'settings.decision.hero.visionOff': string
+  'settings.decision.section.description': string
   'settings.vision.field.decisionEnabled.label': string
   'settings.vision.field.decisionEnabled.description': string
   'settings.vision.field.decisionBaseUrl.label': string

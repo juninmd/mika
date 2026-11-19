@@ -1361,6 +1361,14 @@ export const enUS: TranslationDict = {
   'settings.vision.panel.decisionHint': 'Run on your PC: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': 'No failures',
   'settings.vision.panel.decisionStatus.failing': 'No answer from the server',
+  'settings.tab.decision': 'Decision',
+  'settings.decision.panel.title': 'Decision model',
+  'settings.decision.panel.description':
+    'A small local model looks at each screen frame before full vision and decides whether it is worth an analysis.',
+  'settings.decision.hero.on': 'On',
+  'settings.decision.hero.off': 'Off',
+  'settings.decision.hero.visionOff': 'Vision is off',
+  'settings.decision.section.description': 'Local server, threshold and filter status.',
   'settings.vision.field.decisionEnabled.label': 'Filter the screen with the decision model',
   'settings.vision.field.decisionEnabled.description':
     'A local model (d1-2B) looks at each frame and only calls full vision for a game moment, a danger or something worth a comment. In games the screen is checked every 3 s.',

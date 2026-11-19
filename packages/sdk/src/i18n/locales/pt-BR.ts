@@ -1372,6 +1372,14 @@ export const ptBR: TranslationDict = {
   'settings.vision.panel.decisionHint': 'Rode no seu PC: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': 'Sem falhas',
   'settings.vision.panel.decisionStatus.failing': 'Sem resposta do servidor',
+  'settings.tab.decision': 'Decisão',
+  'settings.decision.panel.title': 'Modelo de decisão',
+  'settings.decision.panel.description':
+    'Um modelo local pequeno olha cada quadro da tela antes da visão completa e decide se vale gastar uma análise.',
+  'settings.decision.hero.on': 'Ligado',
+  'settings.decision.hero.off': 'Desligado',
+  'settings.decision.hero.visionOff': 'Visão desligada',
+  'settings.decision.section.description': 'Servidor local, limiar e estado do filtro.',
   'settings.vision.field.decisionEnabled.label': 'Filtrar a tela com o modelo de decisão',
   'settings.vision.field.decisionEnabled.description':
     'Um modelo local (d1-2B) olha cada quadro e só chama a visão completa quando há um momento de jogo, perigo ou algo que vale comentar. Em jogo, a tela é checada a cada 3 s.',

@@ -2,6 +2,7 @@ import { PROFILE_COMPONENT_HANDLED_FIELDS } from './feature-component-fields-pro
 import { VOICE_COMPONENT_HANDLED_FIELDS } from './feature-component-fields-voice'
 
 export const FEATURE_COMPONENT_HANDLED_FIELDS = {
+  DecisionPanel: ['vision.decisionEnabled', 'vision.decisionBaseUrl', 'vision.decisionThreshold'],
   BehaviorPanel: [
     'character.moodBaseline',
     'character.energyLevel',
@@ -120,9 +121,6 @@ export const FEATURE_COMPONENT_HANDLED_FIELDS = {
     'vision.captureBlocklist',
     'vision.mediaReactions',
     'vision.mediaReactionCooldownSec',
-    'vision.decisionEnabled',
-    'vision.decisionBaseUrl',
-    'vision.decisionThreshold',
   ],
   GamerCompanionPanel: [
     'gamer-companion.enabled',

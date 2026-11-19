@@ -1385,6 +1385,14 @@ export const itIT: TranslationDict = {
     'Avvialo sul tuo PC: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
   'settings.vision.panel.decisionStatus.ok': 'Nessun errore',
   'settings.vision.panel.decisionStatus.failing': 'Nessuna risposta dal server',
+  'settings.tab.decision': 'Decisione',
+  'settings.decision.panel.title': 'Modello decisionale',
+  'settings.decision.panel.description':
+    'Un piccolo modello locale guarda ogni fotogramma prima della visione completa e decide se vale un’analisi.',
+  'settings.decision.hero.on': 'Attivo',
+  'settings.decision.hero.off': 'Disattivo',
+  'settings.decision.hero.visionOff': 'Visione disattivata',
+  'settings.decision.section.description': 'Server locale, soglia e stato del filtro.',
   'settings.vision.field.decisionEnabled.label': 'Filtra lo schermo con il modello decisionale',
   'settings.vision.field.decisionEnabled.description':
     'Un modello locale (d1-2B) guarda ogni fotogramma e chiama la visione completa solo per un momento di gioco, un pericolo o qualcosa da commentare. Nei giochi lo schermo viene controllato ogni 3 s.',

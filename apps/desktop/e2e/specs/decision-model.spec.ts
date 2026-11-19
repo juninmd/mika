@@ -5,7 +5,7 @@ import type { FakeOllama } from '../fixtures/fake-ollama-server'
 import { clickDockButton } from '../fixtures/dock'
 import { callE2eHook, expect, test } from '../fixtures/tauri-app'
 
-// Decision-model pre-filter (`vision::decision`): turned on from the Vision tab, the watcher asks the
+// Decision-model pre-filter (`vision::decision`): turned on from its own tab, the watcher asks the
 // local decision server about every frame and only pays for the vision LLM when the frame matters.
 // A calm frame never reaches the LLM; an urgent one does. The watcher only looks at a frame that
 // changed, and the test display does not change, so each verdict gets its own app run.
@@ -23,18 +23,18 @@ const save = (page: Page, path: string, value: unknown) =>
 
 const ticks = (llm: FakeOllama) => llm.requests.filter((r) => JSON.stringify(r.body).includes(TICK_PROMPT)).length
 
-async function openVisionTab(page: Page): Promise<Page> {
+async function openDecisionTab(page: Page): Promise<Page> {
   const settingsPromise = page.context().waitForEvent('page')
   await clickDockButton(page, 'Configurações')
   const settings = await settingsPromise
   await settings.waitForLoadState('domcontentloaded')
   await settings.getByLabel('Abrir paleta de comandos').click()
-  await settings.getByLabel('Buscar configurações').fill('Visão')
+  await settings.getByLabel('Buscar configurações').fill('Decisão')
   await settings.keyboard.press('Enter')
   return settings
 }
 
-test('turned on from the Vision tab, a calm frame never reaches the vision LLM', async ({ app, llm }) => {
+test('turned on from its own tab, a calm frame never reaches the vision LLM', async ({ app, llm }) => {
   test.setTimeout(420_000)
   const decision = await startFakeDecision()
   try {
@@ -47,7 +47,7 @@ test('turned on from the Vision tab, a calm frame never reaches the vision LLM',
     await save(page, 'vision.enabled', true)
     await callE2eHook(page, 'set-active-window', { title: 'Xonotic', owner: 'xonotic' })
 
-    const settings = await openVisionTab(page)
+    const settings = await openDecisionTab(page)
     const toggle = settings.getByRole('switch', { name: 'Filtrar a tela com o modelo de decisão' })
     await expect(toggle).toHaveAttribute('aria-checked', 'false')
     await toggle.click()
