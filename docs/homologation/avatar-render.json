@@ -5,7 +5,7 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "26848157be21955a3820d7a2d11b0e44600fad55+dirty",
+    "commit": "894e54522d3bbf050d5ae11ca8bf39313be9a86f+dirty",
     "tree": "191af57df94d3115",
     "contract": "893740008582a12f",
     "deps": {
@@ -57,7 +57,7 @@
     {
       "id": "contrato",
       "status": "ok",
-      "detail": "35 arquivo(s) de teste"
+      "detail": "36 arquivo(s) de teste"
     }
   ],
   "estado": "aprovado",
