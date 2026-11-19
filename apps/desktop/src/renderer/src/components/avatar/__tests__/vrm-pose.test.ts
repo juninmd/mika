@@ -26,8 +26,8 @@ describe('writeArmPose', () => {
       const sign = side === 'left' ? -1 : 1
       expect(vrm.nodes.get(`${side}IndexProximal`)?.rotation.values[2]).toBeCloseTo(0)
       expect(vrm.nodes.get(`${side}MiddleProximal`)?.rotation.values[2]).toBeCloseTo(0)
-      expect(vrm.nodes.get(`${side}RingProximal`)?.rotation.values[2]).toBeCloseTo(sign * 0.99)
-      expect(vrm.nodes.get(`${side}LittleProximal`)?.rotation.values[2]).toBeCloseTo(sign * 0.99)
+      expect(vrm.nodes.get(`${side}RingProximal`)?.rotation.values[2]).toBeCloseTo(sign * 1.0065)
+      expect(vrm.nodes.get(`${side}LittleProximal`)?.rotation.values[2]).toBeCloseTo(sign * 1.0065)
       expect(vrm.nodes.get(`${side}ThumbMetacarpal`)?.rotation.values).toEqual([0, -sign * 0.35, sign * 0.5])
       expect(vrm.nodes.get(`${side}ThumbProximal`)?.rotation.values).toEqual([0, -sign * 0.3, sign * 0.55])
       expect(vrm.nodes.get(`${side}ThumbDistal`)?.rotation.values).toEqual([0, 0, sign * 0.45])
@@ -71,5 +71,37 @@ describe('suavidade da cabeça e da fala', () => {
     let last = first
     for (let i = 0; i < 90; i++) last = envelope.advance(false, 0, FRAME)
     expect(last).toBeLessThan(0.05)
+  })
+})
+
+// O "paz e amor" ligava o polegar e o dedo anelar no primeiro quadro em que o peso passava de zero.
+describe('mão do sinal de paz', () => {
+  it('um começo de paz move os dedos só um começo', () => {
+    const at = (rightPeace: number) => {
+      const vrm = fakeVrm()
+      writeArmPose(vrm, { ...ARM_REST, rightGrip: 1, rightPeace })
+      return vrm.nodes
+    }
+    const rest = at(0)
+    const start = at(0.02)
+    for (const [name, node] of start) {
+      const before = rest.get(name)?.rotation.values ?? []
+      node.rotation.values.forEach((value, i) => {
+        expect(Math.abs(value - (before[i] ?? 0)), `${name}[${i}]`).toBeLessThan(0.05)
+      })
+    }
+  })
+})
+
+// Mão aberta com grip 0 deixava os dedos retos como tábua (aceno, chamar, dar de ombros); mão viva
+// em repouso sempre curva um pouco, mais no mindinho que no indicador.
+describe('mão aberta relaxada', () => {
+  it('grip 0 ainda curva os dedos de leve, em cascata até o mindinho', () => {
+    const vrm = fakeVrm()
+    writeArmPose(vrm, { ...ARM_REST, rightGrip: 0 })
+    const curl = (finger: string) => Math.abs(vrm.nodes.get(`right${finger}Proximal`)?.rotation.values[2] ?? 0)
+    expect(curl('Index')).toBeGreaterThan(0.1)
+    expect(curl('Index')).toBeLessThan(0.35)
+    expect(curl('Little')).toBeGreaterThan(curl('Index'))
   })
 })

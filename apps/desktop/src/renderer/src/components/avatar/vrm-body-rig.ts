@@ -79,9 +79,10 @@ export const ARM_REST: ArmPose = {
   headY: 0,
   headZ: 0.07,
   leftUpperLegX: 0,
-  rightUpperLegX: 0,
+  // Weight on the left leg, right knee eased: two locked knees read as a mannequin.
+  rightUpperLegX: -0.06,
   leftLowerLegX: 0,
-  rightLowerLegX: 0.06,
+  rightLowerLegX: 0.16,
   hipsY: 0,
 }
 
@@ -349,6 +350,10 @@ export class VrmArmDriver {
 
   get playing(): boolean {
     return this.action !== null
+  }
+
+  get name(): VrmBodyAction | null {
+    return this.action
   }
 
   /** Pose do quadro, ou null sem ação; o objeto devolvido é o buffer interno (só leitura). */
