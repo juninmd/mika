@@ -20,10 +20,9 @@ const RAW_COLOR_ALLOWLIST: Record<string, { count: number; reason: string }> = {
   'apps/desktop/src/renderer/src/themes-extra.ts': { count: 70, reason: 'paleta dos temas extras' },
   'packages/sdk-ui/src/utils/accent.ts': { count: 5, reason: 'deriva os tokens de acento a partir do hue' },
   'apps/desktop/src/renderer/src/components/avatar/vrm-look.ts': {
-    count: 62,
+    count: 14,
     reason: 'material do modelo 3D (three.js)',
   },
-  'apps/desktop/src/renderer/src/components/avatar/vrm-accessories.ts': { count: 14, reason: 'material do modelo 3D' },
   'apps/desktop/src/renderer/src/components/avatar/vrm-blush.ts': { count: 3, reason: 'tinta de pele do modelo 3D' },
   'apps/desktop/src/renderer/src/components/avatar/vrm-props.ts': {
     count: 15,

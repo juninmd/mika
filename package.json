@@ -30,7 +30,6 @@
     "vrm:previews": "tsx scripts/generators/render-vrm-previews.mts",
     "live2d:analyze": "tsx scripts/live2d/live2d-analyze-model.mts",
     "live2d:gen": "tsx scripts/live2d/live2d-gen-motions.ts",
-    "live2d:thumbs": "tsx scripts/live2d/live2d-gen-thumbs.mts",
     "check:versions": "tsx scripts/checks/versions.mts",
     "check:topology": "tsx scripts/checks/topology.mts",
     "check:file-naming": "tsx scripts/checks/file-naming.mts",

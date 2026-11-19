@@ -1,6 +1,6 @@
 # Haru — Celestial Greeter VRM 3
 
-Variante 3D fiel à Haru Live2D (`public/live2d/haru`), cuja textura serviu de referência de paleta e
+Variante 3D fiel à Haru Live2D (amostra oficial, fora do repositório), cuja textura serviu de referência de paleta e
 desenho, sem copiar pixels: chanel lavanda-acinzentado com cacho em espiral preso por elástico
 listrado, olhos azuis, blazer grafite com debrum claro no barrado, lapelas e punhos, V claro, lenço
 listrado em diagonal, saia lápis, meia-calça escura translúcida no joelho e sapatilhas com laço.
