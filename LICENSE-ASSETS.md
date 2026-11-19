@@ -42,7 +42,7 @@ Conferido em 2026-10-06: depois de `pnpm build`, `apps/desktop/out/renderer` con
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `apps/desktop/src/renderer/public/vrm/mika/mika.vrm`                | `Mika Aurora — Arcade`, derivada de `VRM1_Constraint_Twist_Sample` (c) 2022 pixiv Inc.                                                                  | VRM Public License 1.0; metadados embutidos: `commercialUsage=corporation`, redistribuição e modificação permitidas, crédito dispensável, uso antissocial e discurso de ódio proibidos | Termos retidos da base e lidos do bloco `VRMC_vrm.meta`; a base original está preservada em `scripts/generators/assets/mika-base.vrm`                                          |
 | `apps/desktop/src/renderer/public/vrm/mika/haru.vrm`                | Derivado da base imutável `scripts/generators/assets/mika-base.vrm`; roupa e cabelo procedurais do projeto (`scripts/generators/generate-haru-vrm.mjs`) | Mesmos metadados da base                                                                                                                                                               | A regeneração não usa o `mika.vrm` oficial                                                                                                                                     |
-| `apps/desktop/src/renderer/public/vrm/mika/preview-*.png`           | Miniaturas das skins, geradas pelo próprio app (`pnpm vrm:previews`)                                                                                    | Autoral                                                                                                                                                                                | Os nomes `hiyori`, `mao`, `mark`, `rice` são presets de cor do VRM, **não** têm relação com os modelos Live2D de mesmo nome; considerar renomear para evitar confusão de marca |
+| `apps/desktop/src/renderer/public/vrm/mika/preview-*.png`           | Miniaturas das skins, geradas pelo próprio app (`pnpm vrm:previews`)                                                                                    | Autoral                                                                                                                                                                                | Restam `original`, `haru` e `maid` |
 | `apps/desktop/src/renderer/public/vrm/animations/*.vrma`            | Ver a próxima tabela e `CREDITS.md` na mesma pasta                                                                                                      | MIT e termos do VRoid Project                                                                                                                                                          | 14 clipes, todos referenciados em `vrm-clips.ts`                                                                                                                               |
 | `apps/desktop/src/renderer/public/live2dcubismcore.min.js`          | Live2D Cubism Core (runtime JS)                                                                                                                         | Live2D Proprietary Software License Agreement                                                                                                                                          | É runtime, não material. Verificar se o faturamento exige o contrato de publicação do Cubism SDK                                                                               |
 | Fontes `@fontsource` (Inter variável, IBM Plex Mono, Space Grotesk) | npm                                                                                                                                                     | SIL OFL 1.1                                                                                                                                                                            | Empacotadas localmente (sem Google Fonts); o texto da OFL vem em `THIRD-PARTY-NOTICES.md`                                                                                      |
@@ -107,35 +107,15 @@ voz mostra um aviso e manda escolher um provedor de nuvem (Azure Speech, Google 
 O binário do Piper não é distribuído: o usuário o instala. Antes de ampliar a lista de vozes, leia o
 `MODEL_CARD` de cada uma **e** de onde ela foi ajustada.
 
-## O que NÃO vai no instalador
+## Modelo próprio (Live2D ou VRM)
 
-Os modelos Live2D em `apps/desktop/src/renderer/public/live2d/` são **amostras de terceiros**,
-removidas do bundle pelo passo `closeBundle` descrito acima.
+Nenhum modelo Live2D vem no repositório nem no instalador. O app abre no VRM oficial; para usar
+outro avatar, **Configurações → Skin → Importar modelo** abre o seletor do sistema, aceita um `.vrm`
+ou o `.model3.json` de um Live2D Cubism e copia o modelo (a pasta inteira, no Live2D) para
+`<pasta de dados>/live2d/<nome>/` (no Windows, `%APPDATA%/com.mika.desktop/live2d/<nome>/`), a pasta
+que o protocolo `mika-live2d` serve. A licença do modelo importado é responsabilidade de quem importa.
 
-| Pasta   | Modelo                                           | Licença                                                                                                              |
-| ------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `haru/` | haru_greeter_t05, amostra oficial da Live2D Inc. | [Live2D Free Material License Agreement](https://www.live2d.com/eula/live2d-free-material-license-agreement_en.html) |
-| `Mao/`  | Amostra oficial do Cubism SDK                    | Live2D Free Material License Agreement                                                                               |
-
-A Free Material License permite uso e modificação, mas impõe condições sobre **redistribuição** e
-sobre uso comercial acima de um teto de faturamento. Empacotar as amostras num instalador assinado é
-redistribuição. Fora do pacote, o desenvolvedor que roda o repositório continua usando as amostras
-sob a licença original.
-
-As `motion/*.motion3.json` dentro dessas pastas são autorais deste projeto — geradas por
-`pnpm live2d:gen` a partir de `scripts/live2d/action-defs.ts`. A licença acima cobre o `.moc3`, as
-texturas e o `physics3.json`, não as motions.
-
-### Como usar Live2D numa instalação
-
-O app abre no VRM por padrão. Para usar um modelo Live2D:
-
-1. Baixe as amostras oficiais em <https://www.live2d.com/en/learn/sample/> e aceite a licença.
-2. Coloque cada modelo em `<pasta de dados>/live2d/<nome>/` (no Windows,
-   `%APPDATA%/com.mika.desktop/live2d/<nome>/`; é a pasta que o protocolo `mika-live2d` serve).
-3. Escolha na aba **Skin** das configurações.
-
-Um modelo Live2D ausente falha com erro nomeado na tela — nunca com um avatar em branco.
+Um modelo ausente ou quebrado falha com erro nomeado na tela, nunca com um avatar em branco.
 
 ## Só no build Steam
 

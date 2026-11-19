@@ -62,15 +62,6 @@ export const MANUAL_ASSETS: readonly ManualAsset[] = [
     note: 'Runtime redistribuível, não material. Verificar se a publicação comercial exige o contrato de publicação do Cubism SDK (Release License) para a faixa de faturamento da empresa.',
   },
   {
-    name: 'Modelos de amostra Live2D (haru, Mao)',
-    role: 'Avatares Live2D de exemplo, só no repositório de desenvolvimento',
-    license: 'Live2D Free Material License Agreement',
-    holder: 'Live2D Inc.',
-    source: 'https://www.live2d.com/eula/live2d-free-material-license-agreement_en.html',
-    delivery: 'not-shipped',
-    note: 'Removidos do bundle pelo passo closeBundle de vite.tauri.config.ts. O usuário os instala por conta própria em <dados do app>/live2d/<nome>/.',
-  },
-  {
     name: 'mika.vrm (Mika Aurora — Arcade, derivada de VRM1_Constraint_Twist_Sample)',
     role: 'Avatar 3D oficial padrão',
     license:

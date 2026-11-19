@@ -43,7 +43,7 @@ pub(crate) fn context_from_label(label: &str) -> InvokeContext {
 /// nome errado aqui não dá erro, só faz a ação cair no sidecar e nunca acontecer.
 ///
 /// `auto-launch:*` NÃO entra: é registro/arquivo de sistema, que o sidecar Node resolve.
-pub const SHELL_CHANNELS: [&str; 14] = [
+pub const SHELL_CHANNELS: [&str; 15] = [
     "open-settings",
     "window-close",
     "window-toggle-always-on-top",
@@ -57,6 +57,7 @@ pub const SHELL_CHANNELS: [&str; 14] = [
     "plugin-view:open",
     "open-external",
     "reveal-path",
+    "import-avatar-model",
     "app-quit",
 ];
 
@@ -102,6 +103,8 @@ fn handle_shell(app: &AppHandle, caller: &str, channel: &str, payload: &Value) -
         // Allowlist de hosts / nome fechado de pasta: a validação mora em `shell_actions`.
         "open-external" => shell_actions::handle(app, "openExternal", payload.clone()),
         "reveal-path" => shell_actions::handle(app, "revealPath", payload.clone()),
+        // Sem payload de propósito: o arquivo vem do diálogo nativo aberto no Rust.
+        "import-avatar-model" => crate::modules::features::character::import_model::import(app),
         "app-quit" => {
             shell_actions::quit_app(app);
             Ok(Value::Null)

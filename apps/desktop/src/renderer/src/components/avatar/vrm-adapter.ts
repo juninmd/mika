@@ -7,13 +7,6 @@ import { rendererLog } from '../../lib/renderer-logger'
 import { useEffectsStore } from '../../store/useEffectsStore'
 import type { AvatarEngine, AvatarEngineCapabilities, NumberRef, VowelsRef } from './avatar-engine'
 import { mountHaruLighting } from './haru-lighting'
-import {
-  ACCESSORIES_BY_LOOK,
-  type MountedAccessory,
-  mountAccessories,
-  syncAccessories,
-  unmountAccessories,
-} from './vrm-accessories'
 import { VrmActionClock } from './vrm-action-clock'
 import { BlinkDriver } from './vrm-blink'
 import { blushTarget, VrmBlush } from './vrm-blush'
@@ -86,7 +79,6 @@ export class VrmAvatar implements AvatarEngine {
   private postFx?: AnimePostFx
   private postFxEnabled = true
   private idleEnabled = true
-  private accessories: MountedAccessory[] = []
   private elapsed = 0
   private releaseHaruLighting?: () => void
   private width = 1
@@ -206,8 +198,6 @@ export class VrmAvatar implements AvatarEngine {
     this.blush.attach(vrm)
     this.applyLook(look)
     vrm.update(0)
-    // Accessories spawn at the origin; unsynced, framing would measure Mao's hat at her feet.
-    syncAccessories(this.accessories)
     this.scene.add(vrm.scene)
     this.postFx?.trackGlow(vrm.scene)
     const rest = this.modelFrame()
@@ -229,7 +219,6 @@ export class VrmAvatar implements AvatarEngine {
   }
 
   applyLook(look: VrmLook): void {
-    if (this.vrm) this.accessories = mountAccessories(this.vrm, ACCESSORIES_BY_LOOK[look.id] ?? [])
     applyLookTints(this.vrm?.scene, look)
   }
 
@@ -342,7 +331,6 @@ export class VrmAvatar implements AvatarEngine {
     this.wind?.apply(this.windNow)
     stepVrm(vrm, dt)
     if (this.headOnly) this.followHead(vrm, dt)
-    syncAccessories(this.accessories)
     this.props.update(dt, this.action.name, this.action.progress)
     this.katana.update(dt, this.action.name, this.action.progress, this.windNow)
     this.blush.update(blushTarget(this.expressionName, this.action.name, this.action.pulse), dt)
@@ -395,8 +383,6 @@ export class VrmAvatar implements AvatarEngine {
     this.props.dispose()
     this.katana.dispose()
     if (this.vrm) {
-      unmountAccessories(this.vrm)
-      this.accessories = []
       disposeVrmScene(this.scene, this.vrm)
       this.vrm = null
     }
