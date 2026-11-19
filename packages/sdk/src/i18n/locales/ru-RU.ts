@@ -2998,9 +2998,13 @@ export const ruRU: TranslationDict = {
   'settings.skin.modelStation.thirdPartyBadge': 'сторонняя',
   'settings.skin.modelStation.thirdPartyTooltip': 'Эта модель не входила в состав приложения',
   'settings.skin.modelStation.customPathLabel': 'Путь к своей модели',
-  'settings.skin.modelStation.customPathPlaceholder': 'например, C:\\models\\my-model.model3.json',
-  'settings.skin.modelStation.customPathDescription':
-    'Укажи свой .vrm или .model3.json — заменит скин, выбранный выше.',
+  'settings.skin.modelStation.customPathPlaceholder': 'например, live2d/my-skin/my-skin.vrm',
+  'settings.skin.import.title': 'Импорт своей модели',
+  'settings.skin.import.description':
+    'Выберите .vrm или .model3.json модели Live2D: Мика скопирует модель в свою папку данных и применит её. Путь ниже указывает на текущую модель.',
+  'settings.skin.import.button': 'Импортировать модель…',
+  'settings.skin.import.success': 'Модель импортирована и применена.',
+  'settings.skin.import.error': 'Не удалось импортировать модель.',
   'settings.skin.stage.ariaLabel': 'Сцена предпросмотра: {{name}}',
   'settings.skin.stage.loading': 'Загружаю модель…',
   'settings.skin.stage.error': 'Не удалось загрузить эту модель на сцену.',

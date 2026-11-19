@@ -257,7 +257,7 @@ mod tests {
 
         let result = handler.call(json!({ "action": "inspect_model" })).await.unwrap();
         assert_eq!(result["success"], json!(true));
-        assert_eq!(result["data"]["kind"], json!("live2d"), "sem character.modelName/modelPath configurados, cai no demo Live2D");
+        assert_eq!(result["data"]["kind"], json!("vrm"), "sem character.modelName/modelPath configurados, cai no VRM oficial");
         assert_eq!(result["data"]["supportedExpressions"].as_array().unwrap().len(), EXPRESSIONS.len());
     }
 

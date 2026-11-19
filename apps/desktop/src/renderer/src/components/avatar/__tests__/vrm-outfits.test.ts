@@ -6,9 +6,9 @@ import { HARU_OUTFITS, meshVisibleInLook, ORIGINAL_LOOK, parseVrmModelPath, tint
 // render two garments through each other, and the plain Haru skin must never show any of them.
 describe('trajes da Haru', () => {
   const byId = (id: string) => HARU_OUTFITS.find((look) => look.id === id)
-  const outfitIds = ['seifuku', 'maid', 'idol']
+  const outfitIds = ['maid']
 
-  it('seifuku, maid e idol existem e carregam o haru.vrm pelo fragmento', () => {
+  it('o traje maid existe e carrega o haru.vrm pelo fragmento', () => {
     expect(HARU_OUTFITS.map((look) => look.id)).toEqual(outfitIds)
     for (const id of outfitIds) {
       const path = vrmModelPath('vrm/mika/mika.vrm', id)
@@ -20,7 +20,6 @@ describe('trajes da Haru', () => {
   it('a Haru original não mostra peça de traje nenhum e mantém o blazer', () => {
     const { look } = parseVrmModelPath('vrm/mika/haru.vrm')
     expect(look).toBe(ORIGINAL_LOOK)
-    expect(meshVisibleInLook('Outfit_Seifuku_Collar', look)).toBe(false)
     expect(meshVisibleInLook('Outfit_Maid_HeadFrill', look)).toBe(false)
     expect(meshVisibleInLook('Haru_Skirt', look)).toBe(true)
     expect(meshVisibleInLook('Haru_Lapel', look)).toBe(true)
@@ -32,9 +31,7 @@ describe('trajes da Haru', () => {
       if (!look) throw new Error(id)
       const own = `Outfit_${id[0]?.toUpperCase()}${id.slice(1)}_Skirt`
       expect(meshVisibleInLook(own, look), own).toBe(true)
-      for (const other of outfitIds.filter((o) => o !== id)) {
-        expect(meshVisibleInLook(`Outfit_${other[0]?.toUpperCase()}${other.slice(1)}_Skirt`, look)).toBe(false)
-      }
+      expect(meshVisibleInLook('Outfit_Other_Skirt', look), `${id}: peça de outro traje`).toBe(false)
       expect(meshVisibleInLook('Haru_Skirt', look), `${id}: saia lápis`).toBe(false)
       expect(meshVisibleInLook('Haru_SkirtHem', look), `${id}: barra da saia lápis`).toBe(false)
       expect(meshVisibleInLook('Haru_ScarfTail_1', look), `${id}: lenço`).toBe(false)

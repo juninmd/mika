@@ -76,7 +76,7 @@ const address = server.address()
 if (!address || typeof address === 'string') throw new Error('preview server has no TCP port')
 
 // `pnpm vrm:previews msedge|chrome` uses an installed browser when Playwright's Chromium was not downloaded;
-// a third argument (`seifuku,maid`) renders only those looks.
+// a third argument (`haru,maid`) renders only those looks.
 const only = process.argv[3]?.split(',')
 // A path instead of a channel (`pnpm vrm:previews /opt/pw-browsers/chromium`) launches that binary —
 // for a machine whose Chromium does not match Playwright's pinned build.

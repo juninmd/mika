@@ -2706,7 +2706,11 @@ export type TranslationDict = {
   'settings.skin.modelStation.thirdPartyTooltip': string
   'settings.skin.modelStation.customPathLabel': string
   'settings.skin.modelStation.customPathPlaceholder': string
-  'settings.skin.modelStation.customPathDescription': string
+  'settings.skin.import.title': string
+  'settings.skin.import.description': string
+  'settings.skin.import.button': string
+  'settings.skin.import.success': string
+  'settings.skin.import.error': string
   'settings.skin.stage.ariaLabel': string
   'settings.skin.stage.loading': string
   'settings.skin.stage.error': string

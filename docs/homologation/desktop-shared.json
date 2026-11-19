@@ -5,9 +5,9 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "e1e84c8b32cde6f8bcc4a0b2008fd36140a239cc+dirty",
-    "tree": "3b333664d2b970b8",
-    "contract": "8463e0deae4d0c8e",
+    "commit": "b873a4e9bd069a8e33e852ae2562cec8b94dbf1c+dirty",
+    "tree": "7e6b9515d7a36c0f",
+    "contract": "0dfb1eea489efd46",
     "deps": {
       "@fontsource-variable/inter": "^5.3.0",
       "@fontsource/ibm-plex-mono": "^5.3.0",
@@ -36,7 +36,7 @@
   "ambiente": {
     "plataforma": "linux",
     "node": "v24.22.3",
-    "data": "2026-11-17"
+    "data": "2026-11-18"
   },
   "criterios": [
     {
@@ -47,7 +47,7 @@
     {
       "id": "vivo",
       "status": "ok",
-      "detail": "33 arquivo(s) fora do módulo o referenciam"
+      "detail": "34 arquivo(s) fora do módulo o referenciam"
     },
     {
       "id": "headless",

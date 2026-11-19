@@ -9,7 +9,7 @@ atribuição dessas licenças. Nada aqui concede direitos sobre o Mika em si —
 Arquivo gerado por `scripts/generators/third-party-notices.mts` (`pnpm notices:gen`). Não edite à
 mão: a próxima geração apaga a edição.
 
-<!-- mika-notices-input-sha256: a18efa5567b31f055c58497154b65d969afd33153ebeaa04ae4cf02015592233 -->
+<!-- mika-notices-input-sha256: 914690cf301e29fc97d0e7fb33bacb8c442aaa0efed1b240b8ab2af9b16332fb -->
 
 ## 1. Assets, modelos e runtimes
 
@@ -23,15 +23,6 @@ Inventário conferido na fonte de cada item. Itens marcados "verificar" ou "NÃO
 - **Origem:** https://www.live2d.com/en/sdk/license/
 - **Distribuição:** dentro do instalador
 - **Nota:** Runtime redistribuível, não material. Verificar se a publicação comercial exige o contrato de publicação do Cubism SDK (Release License) para a faixa de faturamento da empresa.
-
-### Modelos de amostra Live2D (haru, Mao)
-
-- **Uso:** Avatares Live2D de exemplo, só no repositório de desenvolvimento
-- **Licença:** Live2D Free Material License Agreement
-- **Titular:** Live2D Inc.
-- **Origem:** https://www.live2d.com/eula/live2d-free-material-license-agreement_en.html
-- **Distribuição:** não distribuído
-- **Nota:** Removidos do bundle pelo passo closeBundle de vite.tauri.config.ts. O usuário os instala por conta própria em <dados do app>/live2d/<nome>/.
 
 ### mika.vrm (Mika Aurora — Arcade, derivada de VRM1_Constraint_Twist_Sample)
 
