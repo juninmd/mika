@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { EXPRESSION_ACTION_MAP } from '../../live2d/live2d-animator-config'
-import { AVATAR_MODELS, LIVE2D_MODELS, VRM_MODELS } from '../../live2d/model-path'
+import { AVATAR_MODELS, VRM_MODELS } from '../../live2d/model-path'
 import {
   ACTION_EXPRESSION,
   actionFaceWeight,
@@ -63,15 +63,15 @@ describe('avatar VRM — parte pura', () => {
     }
   })
 
-  it('o modelo VRM entra na lista do painel sem colidir com os Live2D', () => {
-    expect(AVATAR_MODELS).toHaveLength(LIVE2D_MODELS.length + VRM_MODELS.length)
+  it('a lista do painel só oferece VRM embarcado, sem id repetido', () => {
+    expect(AVATAR_MODELS).toEqual(VRM_MODELS)
     const ids = AVATAR_MODELS.map((m) => m.id)
     expect(new Set(ids).size).toBe(ids.length)
     for (const model of VRM_MODELS) {
       expect(isVrmModelPath(model.path), model.id).toBe(true)
       const { url, look } = parseVrmModelPath(model.path)
       // A skin haru virou um modelo próprio (47408f55): arquivo redesenhado, sem tinta por cima.
-      // Os trajes (seifuku, maid, idol) são peças ocultas dentro do haru.vrm.
+      // O traje maid é peça oculta dentro do haru.vrm.
       const outfit = HARU_OUTFITS.some((l) => `vrm-${l.id}` === model.id)
       const expected =
         model.id === 'vrm-haru'
@@ -84,19 +84,14 @@ describe('avatar VRM — parte pura', () => {
 
   it('o fragmento #look escolhe a skin e o original não tinta nada', () => {
     expect(parseVrmModelPath('vrm/mika/mika.vrm').look).toBe(ORIGINAL_LOOK)
-    expect(parseVrmModelPath('vrm/mika/mika.vrm#look=mao').look).toBe(VRM_LOOKS.find((l) => l.id === 'mao'))
     expect(parseVrmModelPath('vrm/mika/mika.vrm#look=haru')).toEqual({ url: 'vrm/mika/haru.vrm', look: ORIGINAL_LOOK })
     expect(parseVrmModelPath('vrm/mika/mika.vrm#look=nao-existe').look).toBe(ORIGINAL_LOOK)
     expect(vrmModelPath('vrm/mika/mika.vrm', 'original')).toBe('vrm/mika/mika.vrm')
-    expect(vrmModelPath('vrm/mika/mika.vrm', 'rice')).toBe('vrm/mika/mika.vrm#look=rice')
     expect(ORIGINAL_LOOK.tints).toHaveLength(0)
   })
 
-  // e91eed70 tirou os Live2D Hiyori/Mark/Rice e manteve as skins VRM deles: cobertura, não bijeção.
-  it('há uma skin VRM para cada modelo Live2D embarcado, mais a original', () => {
-    const lookIds = VRM_LOOKS.map((l) => l.id)
-    expect(lookIds).toContain('original')
-    for (const model of LIVE2D_MODELS) expect(lookIds, model.id).toContain(model.id)
+  it('toda skin VRM além da original tinge cabelo, íris e roupa', () => {
+    expect(VRM_LOOKS.map((l) => l.id)).toContain('original')
     for (const look of VRM_LOOKS) {
       if (look.id === 'original') continue
       for (const material of ['Hair_00_HAIR', 'EyeIris_00_EYE', 'Tops_01_CLOTH']) {

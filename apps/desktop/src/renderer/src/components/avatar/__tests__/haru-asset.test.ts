@@ -180,9 +180,11 @@ describe('artefato Haru VRM distribuído', () => {
     }
   })
 
-  it('cacho, lenço e saia têm cadeias físicas com colisores válidos', () => {
+  it('cachos, lenço e saia têm cadeias físicas com colisores válidos', () => {
     const springs = asset.extensions.VRMC_springBone.springs.filter((spring) => spring.name.startsWith('Haru_'))
-    expect(springs).toHaveLength(11)
+    expect(springs).toHaveLength(12)
+    // Uma cadeia por maria-chiquinha: sem ela, um dos lados fica duro enquanto o outro balança.
+    expect(springs.filter((spring) => spring.name.startsWith('Haru_CurlSpring'))).toHaveLength(2)
     expect(springs.filter((spring) => spring.name.startsWith('Haru_Skirt'))).toHaveLength(8)
     const seen = new Set<number>()
     for (const spring of springs) {

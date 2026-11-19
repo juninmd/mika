@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { AVATAR_MODELS, LIVE2D_MODELS } from '../../renderer/src/components/live2d/model-path'
+import { AVATAR_MODELS } from '../../renderer/src/components/live2d/model-path'
 import { DEFAULT_MODEL_PATH } from '../avatar-model'
 
 /** O par schema↔renderer do modelo default vive em Rust (`config/schemas/character.rs`). */
@@ -14,11 +14,9 @@ describe('avatar padrão', () => {
     expect(model?.bundled).toBe(true)
   })
 
-  it('nenhuma amostra Live2D não distribuída pode ser o padrão', () => {
-    const unbundled = LIVE2D_MODELS.filter((option) => !option.bundled).map((option) => option.path)
-
-    expect(unbundled).not.toContain(DEFAULT_MODEL_PATH)
-    expect(unbundled.length).toBeGreaterThan(0)
+  // Live2D de terceiro não pode ir no instalador: só entra como modelo próprio do usuário.
+  it('a lista só oferece modelos que vão dentro do instalador', () => {
+    expect(AVATAR_MODELS.filter((option) => !option.bundled)).toEqual([])
   })
 })
 

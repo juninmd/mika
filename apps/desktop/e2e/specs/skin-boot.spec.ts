@@ -26,7 +26,7 @@ test.describe('@skin boot da skin selecionada', () => {
 
     // Sem `MIKA_E2E_SKIN`, o app abre no default — o VRM próprio da Mika, único asset de avatar que
     // vai dentro do instalador. O canvas do VRM é o próprio elemento com a classe; o do Live2D é um
-    // `<canvas>` dentro dela (esse caminho é coberto por `live2d-arm-probe`, que fixa a skin).
+    // `<canvas>` dentro dela (só existe com um modelo Live2D importado pelo usuário).
     await expect(page.locator('canvas.live2d-container')).toHaveCount(1, { timeout: 30_000 })
 
     await expect.poll(() => modelRequests.length, { timeout: 30_000 }).toBeGreaterThan(0)

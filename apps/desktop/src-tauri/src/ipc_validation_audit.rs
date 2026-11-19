@@ -43,6 +43,7 @@ const ROUTE_AUDIT: &[(&str, RouteAudit)] = &[
     ("plugin-view:open", RouteAudit::Validated("shell_actions::handle: pluginId/viewId contra regex [a-z0-9.-]")),
     ("open-external", RouteAudit::Validated("shell_actions::external_url_allowed: https sem credencial/porta e host na allowlist EXTERNAL_HOSTS")),
     ("reveal-path", RouteAudit::Validated("shell_actions::reveal_target: kind por match fechado (data|logs), nunca caminho do payload")),
+    ("import-avatar-model", RouteAudit::Validated("import_model::import: payload ignorado, arquivo vem do diálogo nativo; glTF/Moc conferidos, cópia com teto e sem symlink")),
     ("app-quit", RouteAudit::Allowlisted("payload ignorado; encerra o app, mesma sequência do item Sair da bandeja")),
     // -- modules/credentials/mod.rs ------------------------------------------------------------------
     (
