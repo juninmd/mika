@@ -264,7 +264,7 @@ async fn a_tense_game_moment_suppresses_the_screen_observation_but_still_publish
     let mut last_hash = String::new();
     let mut suspended = false;
     let mut diary_counter: u64 = 0;
-    run_tick(&store, bus, None, None, &mut last_hash, Some(&tension), &mut suspended, &mut diary_counter, None, None).await;
+    run_tick(&store, bus, None, None, &mut last_hash, Some(&tension), &mut suspended, &mut diary_counter, None, None, &mut 0, 0).await;
 }
 
 // -- parse_people ---------------------------------------------------------------------------

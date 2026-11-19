@@ -1386,6 +1386,40 @@ export const ruRU: TranslationDict = {
   'settings.vision.field.mediaReactionCooldownSec.label': 'Минимальный интервал между реакциями',
   'settings.vision.field.mediaReactionCooldownSec.description':
     'Наименьший промежуток между двумя комментариями. То же видео или песня вернётся только через три интервала.',
+  'settings.vision.panel.decisionHeader': 'Модель решений',
+  'settings.vision.panel.decisionHint':
+    'Запустите на своём ПК: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
+  'settings.vision.panel.decisionStatus.ok': 'Без сбоев',
+  'settings.vision.panel.decisionStatus.failing': 'Сервер не отвечает',
+  'settings.vision.field.decisionProvider.label': 'Провайдер модели решений',
+  'settings.decision.providerSection.description':
+    'Выберите локальную модель, которая решает, стоит ли анализировать кадр.',
+  'settings.decision.provider.llamaServer.label': 'llama-server (d1-2B)',
+  'settings.decision.provider.llamaServer.desc':
+    'Модель, созданная для решений: отвечает на вопросы за один проход, с вероятностями. Самая быстрая.',
+  'settings.decision.provider.ollama.label': 'Ollama',
+  'settings.decision.provider.ollama.desc':
+    'Небольшая модель зрения, которая уже есть в Ollama, например Qwen3.5 0.8B. Использует адрес Ollama из вкладки LLM.',
+  'settings.vision.field.decisionModel.label': 'Модель',
+  'settings.vision.field.decisionModel.description':
+    'Модель зрения Ollama, которая смотрит каждый кадр. Лучше небольшая.',
+  'settings.tab.decision': 'Решения',
+  'settings.decision.panel.title': 'Модель решений',
+  'settings.decision.panel.description':
+    'Небольшая локальная модель смотрит каждый кадр до полного зрения и решает, стоит ли его анализировать.',
+  'settings.decision.hero.on': 'Вкл.',
+  'settings.decision.hero.off': 'Выкл.',
+  'settings.decision.hero.visionOff': 'Зрение выключено',
+  'settings.decision.section.description': 'Локальный сервер, порог и состояние фильтра.',
+  'settings.vision.field.decisionEnabled.label': 'Фильтровать экран моделью решений',
+  'settings.vision.field.decisionEnabled.description':
+    'Локальная модель смотрит каждый кадр и вызывает полное зрение только при игровом моменте, опасности или чём-то, что стоит прокомментировать. В играх экран проверяется каждые 3 с.',
+  'settings.vision.field.decisionBaseUrl.label': 'Адрес сервера',
+  'settings.vision.field.decisionBaseUrl.description':
+    'Локальный llama-server с d1-2B. Принимаются только адреса этого компьютера (127.0.0.1 или localhost).',
+  'settings.vision.field.decisionThreshold.label': 'Порог решения',
+  'settings.vision.field.decisionThreshold.description':
+    'Минимальная вероятность, при которой сигнал засчитывается. Выше — меньше вызовов зрения.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Интервал визуального дневника (циклы)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Каждые N циклов захвата делает запись в визуальный дневник.',

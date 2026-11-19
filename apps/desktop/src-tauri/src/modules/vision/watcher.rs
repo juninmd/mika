@@ -49,6 +49,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use rand::RngExt;
 use serde_json::{json, Value};
 
+use super::decision;
 use super::image_hash::{compute_images_hash, has_screen_changed};
 use super::llm_client;
 use super::screen_capture::capture_screen_frames;
@@ -459,10 +460,15 @@ async fn run_tick(
     diary_counter: &mut u64,
     app: Option<&tauri::AppHandle>,
     gaming: Option<&GamingState>,
+    last_analyzed_ms: &mut u64,
+    cadence_ms: u64,
 ) {
     let cfg = read_tick_config(store);
     let roll: f64 = rand::rng().random::<f64>();
-    if !should_tick(cfg.enabled, cfg.assist_active, cfg.auto_describe, roll, cfg.chance) {
+    let rolled = should_tick(cfg.enabled, cfg.assist_active, cfg.auto_describe, roll, cfg.chance);
+    // The decision model sees every frame; the roll and the cadence only gate the non-urgent LLM call.
+    let gated = decision::enabled(store) && cfg.enabled && cfg.assist_active;
+    if !rolled && !gated {
         return;
     }
 
@@ -486,6 +492,25 @@ async fn run_tick(
     // `vision.analysisMode`: quantas das imagens capturadas (multi-monitor) de fato vão pro LLM —
     // ver o cabeçalho de [`select_images_for_mode`].
     let llm_images = select_images_for_mode(images, &cfg.analysis_mode);
+
+    if gated {
+        let cadence_due = now_ms().saturating_sub(*last_analyzed_ms) >= cadence_ms;
+        if cadence_due && !rolled {
+            // One roll per cadence slot, as without the decision model, not one every 3 s tick.
+            *last_analyzed_ms = now_ms();
+        }
+        let verdict = decision::decide(store, &llm_images).await;
+        match decision::gate(verdict, cadence_due && rolled) {
+            decision::Gate::Analyze => {}
+            decision::Gate::Boring => {
+                *last_hash = hash_after_tick(last_hash, &settled_hash, TickOutcome::GateSkipped).to_string();
+                return;
+            }
+            // Not due yet: the frame stays unseen so a later tick can still analyze it.
+            decision::Gate::NotDue => return,
+        }
+    }
+    *last_analyzed_ms = now_ms();
 
     match llm_client::analyze_with_usage(store, "vision:watcher:tick", DEFAULT_TICK_PROMPT, &llm_images).await {
         Ok(outcome) => {
@@ -910,6 +935,7 @@ pub fn spawn_screen_watcher(
         let mut last_hash = String::new();
         let mut suspended = false;
         let mut diary_counter: u64 = 0;
+        let mut last_analyzed_ms: u64 = 0;
         let mut shutdown_rx = crate::shutdown::subscribe();
         loop {
             // Intervalo adaptativo (specs/06-vision.md): jogo em foco encurta a cadência — ver o
@@ -918,7 +944,10 @@ pub fn spawn_screen_watcher(
             // `GameChanged`/`GameStopped` (injetada por `modules/mod.rs`, mesmo padrão de `tension`
             // acima) — `None` degrada para "nunca em modo jogo pela leitura local".
             let game_active = gaming.as_deref().is_some_and(GamingState::is_active);
-            let interval_ms = active_interval_ms(get_u64(&store, "vision.captureIntervalMs", MIN_INTERVAL_MS), game_active);
+            let cadence_ms = active_interval_ms(get_u64(&store, "vision.captureIntervalMs", MIN_INTERVAL_MS), game_active);
+            let interval_ms = if game_active && decision::enabled(&store) { decision::GAME_INTERVAL_MS } else { cadence_ms };
+            // The governor's scale applies to the LLM cadence too, not only to the loop sleep.
+            let cadence_ms = crate::modules::system::governor::vision(Duration::from_millis(cadence_ms)).as_millis() as u64;
             tokio::select! {
                 _ = crate::shutdown::until_triggered(&mut shutdown_rx) => break,
                 // Governador de energia: ocioso/jogando/bateria espaçam a captura+análise (o LLM de
@@ -949,6 +978,8 @@ pub fn spawn_screen_watcher(
                 &mut diary_counter,
                 Some(&app),
                 gaming.as_deref(),
+                &mut last_analyzed_ms,
+                cadence_ms,
             )
             .await;
         }
