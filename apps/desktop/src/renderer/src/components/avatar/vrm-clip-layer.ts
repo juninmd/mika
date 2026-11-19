@@ -22,6 +22,15 @@ export class VrmClipLayer {
   private fadeRate = 3
   private bones: THREE.Object3D[] = []
   private readonly held = new Map<THREE.Object3D, THREE.Quaternion>()
+  /**
+   * What the mixer last wrote per bone. three's PropertyMixer only writes a value that changed, so in a
+   * still stretch of a capture it writes nothing; the procedural frame had already reset the bone and
+   * the body snapped ("teleported") to rest. Restoring this before `mixer.update` keeps the clip there.
+   */
+  private readonly written = new Map<THREE.Object3D, THREE.Quaternion>()
+  private readonly fades = new Map<THREE.AnimationAction, { from: number; to: number; t: number; span: number }>()
+  private readonly hipsWritten = new THREE.Vector3()
+  private primed = false
   private readonly hipsRest = new THREE.Vector3()
   private readonly hipsBase = new THREE.Vector3()
   private hips?: THREE.Object3D
@@ -63,6 +72,7 @@ export class VrmClipLayer {
     lower = new Set<THREE.Object3D>(),
   ): void {
     this.mixer = new THREE.AnimationMixer(root)
+    this.fades.clear()
     this.lower = lower
     this.hips = hips
     if (hips) this.hipsRest.copy(hips.position)
@@ -76,7 +86,11 @@ export class VrmClipLayer {
     }
     this.bones = [...tracked]
     // One scratch quaternion per bone, reused every frame by `blend`.
-    for (const bone of this.bones) this.held.set(bone, new THREE.Quaternion())
+    for (const bone of this.bones) {
+      this.held.set(bone, new THREE.Quaternion())
+      this.written.set(bone, new THREE.Quaternion())
+    }
+    this.primed = false
   }
 
   has(name: string): boolean {
@@ -113,13 +127,35 @@ export class VrmClipLayer {
     next.clampWhenFinished = true
     next.timeScale = speed
     next.play()
-    if (this.current && this.current !== next) next.crossFadeFrom(this.current, fade, false)
+    this.handOver(next, fade)
     this.current = next
     this.currentName = name
     this.target = 1
     this.fadeRate = 1 / Math.max(0.05, fade)
     this.holdLeft = loop ? Number.POSITIVE_INFINITY : hold
     return true
+  }
+
+  /**
+   * Eased crossfade. three's `crossFadeFrom` ramps linearly (motion starts at full speed and stops dead)
+   * and fades the outgoing action from weight 1, so a gesture landing mid-crossfade snapped the idle
+   * from 0.1 to full in one frame. Every live action fades from its visible weight instead.
+   */
+  private handOver(next: THREE.AnimationAction, fade: number): void {
+    for (const [action, f] of this.fades) {
+      if (action !== next) Object.assign(f, { from: action.weight, to: 0, t: 0, span: fade })
+    }
+    this.fades.set(next, { from: this.current ? 0 : 1, to: 1, t: 0, span: fade })
+  }
+
+  private advanceFades(dt: number): void {
+    for (const [action, f] of this.fades) {
+      f.t = Math.min(f.span, f.t + dt)
+      action.weight = f.from + (f.to - f.from) * smooth(f.t / f.span)
+      if (f.t < f.span || f.to > 0) continue
+      action.stop()
+      this.fades.delete(action)
+    }
   }
 
   private twin(name: string, clip: THREE.AnimationClip): THREE.AnimationClip {
@@ -157,9 +193,8 @@ export class VrmClipLayer {
       if (this.target === 0) this.current.stop()
       return
     }
-    for (const bone of this.bones) this.held.get(bone)?.copy(bone.quaternion)
     const hipsBase = this.hipsBase.copy(this.hipsRest)
-    mixer.update(dt)
+    this.sample(mixer, dt)
     this.upper +=
       Math.sign(this.upperTarget - this.upper) * Math.min(Math.abs(this.upperTarget - this.upper), dt * this.upperRate)
     const w = smooth(this.weight)
@@ -169,6 +204,31 @@ export class VrmClipLayer {
       if (base) bone.quaternion.copy(base.slerp(bone.quaternion, this.lower.has(bone) ? w : wUpper))
     }
     if (this.hips) this.hips.position.lerpVectors(hipsBase, this.hips.position, w)
+  }
+
+  /**
+   * Runs the mixer on its own last output, not on the procedural pose: the mixer skips a write when
+   * the clip value is unchanged, which left the rest pose on screen during still stretches.
+   */
+  private sample(mixer: THREE.AnimationMixer, dt: number): void {
+    // First run: the mixer's change cache starts at the bones' current values, so ours does too.
+    if (!this.primed) this.prime()
+    for (const bone of this.bones) {
+      this.held.get(bone)?.copy(bone.quaternion)
+      const written = this.written.get(bone)
+      if (written) bone.quaternion.copy(written)
+    }
+    this.hips?.position.copy(this.hipsWritten)
+    this.advanceFades(dt)
+    mixer.update(dt)
+    for (const bone of this.bones) this.written.get(bone)?.copy(bone.quaternion)
+    if (this.hips) this.hipsWritten.copy(this.hips.position)
+  }
+
+  private prime(): void {
+    for (const bone of this.bones) this.written.get(bone)?.copy(bone.quaternion)
+    if (this.hips) this.hipsWritten.copy(this.hips.position)
+    this.primed = true
   }
 
   /** Resets the hips the clip may have translated, so the procedural frame starts from rest. */
