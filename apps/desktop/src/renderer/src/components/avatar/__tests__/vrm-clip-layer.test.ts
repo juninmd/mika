@@ -93,3 +93,124 @@ describe('gesto procedural sobre a postura capturada', () => {
     expect(worst).toBeLessThan(0.05)
   })
 })
+
+// O mixer do three só reescreve um osso quando o valor do clipe muda. Num trecho parado da captura, o
+// rig procedural reescrevia o repouso e o clipe não voltava: o corpo "teletransportava" para o repouso.
+describe('trecho parado do clipe', () => {
+  it('osso e quadril seguem o clipe mesmo quando a captura fica parada', () => {
+    const root = new THREE.Object3D()
+    const arm = new THREE.Object3D()
+    const hips = new THREE.Object3D()
+    arm.name = 'arm'
+    hips.name = 'hips'
+    root.add(arm, hips)
+    const bent = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), 0.6).toArray()
+    const turn = new THREE.QuaternionKeyframeTrack('arm.quaternion', [0, 1, 4], [0, 0, 0, 1, ...bent, ...bent])
+    const shift = new THREE.VectorKeyframeTrack('hips.position', [0, 1, 4], [0, 0, 0, 0.2, 0, 0, 0.2, 0, 0])
+    const layer = new VrmClipLayer()
+    layer.adopt(root, hips, new Map([['hold', new THREE.AnimationClip('hold', 4, [turn, shift])]]))
+    layer.play('hold', { fade: 0.2 })
+    for (let t = 0; t < 2; t += FRAME) {
+      arm.quaternion.identity()
+      layer.resetRoot()
+      layer.blend(FRAME)
+    }
+    expect(2 * Math.acos(Math.min(1, Math.abs(arm.quaternion.w)))).toBeCloseTo(0.6, 2)
+    expect(hips.position.x).toBeCloseTo(0.2, 3)
+  })
+})
+
+function held() {
+  const root = new THREE.Object3D()
+  const bone = new THREE.Object3D()
+  bone.name = 'arm'
+  root.add(bone)
+  const clip = (name: string, angle: number) => {
+    const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), angle).toArray()
+    return new THREE.AnimationClip(name, 10, [
+      new THREE.QuaternionKeyframeTrack('arm.quaternion', [0, 10], [...q, ...q]),
+    ])
+  }
+  const layer = new VrmClipLayer()
+  layer.adopt(
+    root,
+    undefined,
+    new Map([
+      ['a', clip('a', 0)],
+      ['b', clip('b', 1.2)],
+      ['c', clip('c', 0.3)],
+    ]),
+  )
+  const step = () => {
+    bone.quaternion.identity()
+    layer.blend(FRAME)
+    return 2 * Math.acos(Math.min(1, Math.abs(bone.quaternion.w)))
+  }
+  return { layer, step }
+}
+
+// O three agenda o fade-out de `crossFadeFrom` a partir do peso 1: um gesto que chegava no meio do
+// crossfade do idle levava o idle de 0,1 para 1 num quadro só — o "teletransporte" entre gestos.
+describe('gesto que interrompe um crossfade', () => {
+  it('parte da pose visível, sem salto', () => {
+    const { layer, step } = held()
+    layer.play('a', { loop: true, fade: 0.05 })
+    for (let t = 0; t < 1; t += FRAME) step()
+    layer.play('b', { loop: true, fade: 0.8 })
+    let prev = 0
+    for (let i = 0; i < 6; i++) prev = step()
+    layer.play('c', { fade: 0.35 })
+    let worst = 0
+    for (let i = 0; i < 40; i++) {
+      const angle = step()
+      worst = Math.max(worst, Math.abs(angle - prev))
+      prev = angle
+    }
+    expect(worst).toBeLessThan(0.05)
+  })
+
+  // A rampa linear do three largava o braço a toda velocidade e o parava seco ao fim dos 0,35 s.
+  it('o crossfade acelera e freia', () => {
+    const { layer, step } = held()
+    layer.play('a', { loop: true, fade: 0.05 })
+    let prev = 0
+    for (let t = 0; t < 1; t += FRAME) prev = step()
+    layer.play('b', { loop: true, fade: 0.35 })
+    const speeds: number[] = []
+    for (let i = 0; i < 30; i++) {
+      const angle = step()
+      speeds.push(Math.abs(angle - prev))
+      prev = angle
+    }
+    const peak = Math.max(...speeds)
+    expect(speeds[0]).toBeLessThan(peak * 0.25)
+    expect(speeds[20]).toBeLessThan(peak * 0.25)
+  })
+})
+
+// Achados da revisão do PR #58: casos de borda do crossfade suave.
+describe('crossfade suave nas bordas', () => {
+  // `twin` alterna entre duas ações; no terceiro replay a "nova" ação ainda estava saindo e era zerada.
+  it('repetir o mesmo clipe três vezes seguidas não salta', () => {
+    const { layer, step } = held()
+    layer.play('b', { fade: 0.05 })
+    for (let t = 0; t < 1; t += FRAME) step()
+    let worst = 0
+    for (let play = 0; play < 3; play++) {
+      layer.play('b', { fade: 0.35 })
+      for (let i = 0; i < 6; i++) worst = Math.max(worst, Math.abs(step() - 1.2))
+    }
+    expect(worst).toBeLessThan(0.05)
+  })
+
+  // span 0 virava 0/0 = NaN no peso: o clipe nunca entrava.
+  it('fade zero entra na hora', () => {
+    const { layer, step } = held()
+    layer.play('a', { loop: true, fade: 0.05 })
+    for (let t = 0; t < 1; t += FRAME) step()
+    layer.play('b', { loop: true, fade: 0 })
+    let angle = 0
+    for (let t = 0; t < 0.5; t += FRAME) angle = step()
+    expect(angle).toBeCloseTo(1.2, 2)
+  })
+})
