@@ -46,7 +46,6 @@ VTuber AI companion para games, código e cultura nerd. Roda local no PC do usu�
 | `pnpm test:e2e:headed` | Roda testes E2E com janela visível |
 | `pnpm dev` | Inicia o app em modo desenvolvimento (`tauri dev`) |
 | `pnpm live2d:gen` | Regenera motions do avatar (`scripts/live2d/live2d-gen-motions.ts`) |
-| `pnpm live2d:thumbs` | Regenera miniaturas das skins |
 
 ---
 

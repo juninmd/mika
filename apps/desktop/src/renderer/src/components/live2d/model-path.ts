@@ -1,10 +1,8 @@
+import { DEFAULT_MODEL_PATH } from '../../../../shared/avatar-model'
 import { HARU_OUTFITS, VRM_LOOKS, vrmModelPath } from '../avatar/vrm-look'
 
-// Default is the bundled VRM; Live2D samples are third-party and excluded from the distributed package (LICENSE-ASSETS.md).
-export { DEFAULT_MODEL_PATH } from '../../../../shared/avatar-model'
-
-// Fallback inside the Live2D loader only — a `.vrm` here would break Cubism.
-export const FALLBACK_LIVE2D_MODEL_PATH = 'live2d/haru/haru_greeter_t05.model3.json'
+// Default is the bundled VRM; Live2D only loads from a user-provided path (no sample ships).
+export { DEFAULT_MODEL_PATH }
 
 export type Live2DModelOption = {
   id: string
@@ -16,29 +14,9 @@ export type Live2DModelOption = {
   /** Zoom (from the top) that turns a full-body preview into the roster card's bust crop. */
   previewZoom?: number
 
-  /** Whether the asset ships in the installer (Live2D samples are excluded, see LICENSE-ASSETS.md). */
+  /** Whether the asset ships in the installer. */
   bundled: boolean
 }
-
-export const LIVE2D_MODELS: readonly Live2DModelOption[] = [
-  {
-    id: 'haru',
-    label: 'Haru',
-    path: FALLBACK_LIVE2D_MODEL_PATH,
-    catalogKey: 'haru_greeter_t05',
-    preview: 'live2d/haru/preview.png',
-    bundled: false,
-  },
-  {
-    id: 'mao',
-    label: 'Mao',
-    path: 'live2d/Mao/Mao.model3.json',
-    catalogKey: 'Mao',
-    preview: 'live2d/Mao/preview.png',
-    previewZoom: 1.9,
-    bundled: false,
-  },
-]
 
 const VRM_BASE = 'vrm/mika/mika.vrm'
 
@@ -51,7 +29,7 @@ export const VRM_MODELS: readonly Live2DModelOption[] = [...VRM_LOOKS, ...HARU_O
   bundled: true,
 }))
 
-export const AVATAR_MODELS: readonly Live2DModelOption[] = [...LIVE2D_MODELS, ...VRM_MODELS]
+export const AVATAR_MODELS: readonly Live2DModelOption[] = VRM_MODELS
 
 type Live2DModelPathInput = {
   modelName?: string | null
@@ -70,5 +48,5 @@ export function resolveLive2DModelPath(input: Live2DModelPathInput): string {
     return `live2d/${modelName}/${modelName}.model3.json`
   }
 
-  return FALLBACK_LIVE2D_MODEL_PATH
+  return DEFAULT_MODEL_PATH
 }

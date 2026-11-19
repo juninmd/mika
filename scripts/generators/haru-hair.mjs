@@ -1,4 +1,4 @@
-/** Cabelo da Haru: penteado preso a partir das mechas VRoid e rabo lateral de cachos em espiral. */
+/** Cabelo da Haru: penteado preso a partir das mechas VRoid e maria-chiquinha de cachos em espiral. */
 
 import { smooth } from './haru-warp.mjs'
 
@@ -6,7 +6,7 @@ const STYLE = { eyes: 1.47, longest: 1.03, brow: 1.452, jaw: 1.3, nape: 1.39, ce
 /**
  * Penteado da Haru Live2D a partir das mechas longas VRoid, sem cortar triângulos (as pontas
  * afiladas continuam sendo o fim de cada mecha): franja até a sobrancelha, mechas laterais até
- * a mandíbula na frente das orelhas, e a nuca presa rente ao crânio, puxada para o lado do rabo.
+ * a mandíbula na frente das orelhas, e a nuca presa rente ao crânio, dividida entre as duas maria-chiquinhas.
  */
 export function haruStylePoint([x, y, z]) {
   if (y >= STYLE.eyes) return [x, y, z]
@@ -20,9 +20,9 @@ export function haruStylePoint([x, y, z]) {
   const radius = Math.hypot(x, z - STYLE.center)
   const pull = smooth(depth, 0.06, 0.6)
   const hug = 1 + (Math.min(1, STYLE.hugRadius / Math.max(radius, 1e-6)) - 1) * pull
-  // Presa: a nuca escorrega para o lado direito dela, onde fica o rabo.
-  const gather = (1 - front) * smooth(depth, 0.3, 1) * 0.022
-  const cx = x * hug - gather
+  // Presa: a nuca se divide entre as duas maria-chiquinhas atrás das orelhas.
+  const gather = (1 - front) * smooth(depth, 0.3, 1) * 0.022 * Math.sign(x)
+  const cx = x * hug + gather
   const cz = STYLE.center + (z - STYLE.center) * hug
   // Mechas laterais encostam no rosto em vez de abrir como leque.
   const lock = front * (1 - fringe) * smooth(depth, 0, 0.8)

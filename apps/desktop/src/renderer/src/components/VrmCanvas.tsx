@@ -16,6 +16,7 @@ import { installVrmDebugBridge } from './avatar/vrm-debug-bridge'
 import { frameDelta, gateFrame, vrmFramePolicy } from './avatar/vrm-frame-policy'
 import { parseVrmModelPath } from './avatar/vrm-look'
 import { projectVrmFace } from './hud/vrm-face-projection'
+import { resolveLive2DAssetUrl } from './live2d/live2d-loader'
 
 const QUALITY_RECHECK_MS = 500
 /** The HUD anchors around her face; head sway is ignored by the bus, so twice a second is plenty. */
@@ -170,8 +171,9 @@ export const VrmCanvas = React.memo(function VrmCanvas({
     let removeDebugBridge: (() => void) | null = null
 
     const { url, look } = parseVrmModelPath(modelPath)
+    // An imported .vrm lives in the profile (`live2d/<nome>/`), not in the bundle.
     avatar
-      .load(url, look)
+      .load(url.startsWith('live2d/') ? resolveLive2DAssetUrl(url) : url, look)
       .then(() => {
         if (!mounted) return
         setLoading(false)
