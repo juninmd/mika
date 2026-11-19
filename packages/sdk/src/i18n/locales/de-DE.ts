@@ -1395,6 +1395,40 @@ export const deDE: TranslationDict = {
   'settings.vision.field.mediaReactionCooldownSec.label': 'Mindestabstand zwischen Reaktionen',
   'settings.vision.field.mediaReactionCooldownSec.description':
     'Kürzester Abstand zwischen zwei Kommentaren. Dasselbe Video oder derselbe Song kommt erst nach drei Abständen wieder.',
+  'settings.vision.panel.decisionHeader': 'Entscheidungsmodell',
+  'settings.vision.panel.decisionHint':
+    'Auf deinem PC starten: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
+  'settings.vision.panel.decisionStatus.ok': 'Keine Fehler',
+  'settings.vision.panel.decisionStatus.failing': 'Keine Antwort vom Server',
+  'settings.vision.field.decisionProvider.label': 'Anbieter des Entscheidungsmodells',
+  'settings.decision.providerSection.description':
+    'Wähle, welches lokale Modell entscheidet, ob sich ein Bild für eine Analyse lohnt.',
+  'settings.decision.provider.llamaServer.label': 'llama-server (d1-2B)',
+  'settings.decision.provider.llamaServer.desc':
+    'Ein Modell zum Entscheiden: beantwortet die Fragen in einem Durchlauf mit Wahrscheinlichkeiten. Am schnellsten.',
+  'settings.decision.provider.ollama.label': 'Ollama',
+  'settings.decision.provider.ollama.desc':
+    'Ein kleines Bildmodell, das du schon in Ollama hast, etwa Qwen3.5 0.8B. Nutzt die Ollama-Adresse aus dem LLM-Tab.',
+  'settings.vision.field.decisionModel.label': 'Modell',
+  'settings.vision.field.decisionModel.description':
+    'Ollama-Bildmodell, das jedes Bild ansieht. Am besten ein kleines.',
+  'settings.tab.decision': 'Entscheidung',
+  'settings.decision.panel.title': 'Entscheidungsmodell',
+  'settings.decision.panel.description':
+    'Ein kleines lokales Modell prüft jedes Bild vor der vollen Bildanalyse und entscheidet, ob sich eine Analyse lohnt.',
+  'settings.decision.hero.on': 'An',
+  'settings.decision.hero.off': 'Aus',
+  'settings.decision.hero.visionOff': 'Bildanalyse aus',
+  'settings.decision.section.description': 'Lokaler Server, Schwelle und Filterstatus.',
+  'settings.vision.field.decisionEnabled.label': 'Bildschirm mit dem Entscheidungsmodell filtern',
+  'settings.vision.field.decisionEnabled.description':
+    'Ein lokales Modell prüft jedes Bild und ruft die volle Bildanalyse nur bei einem Spielmoment, einer Gefahr oder etwas Kommentierenswertem auf. In Spielen wird der Bildschirm alle 3 s geprüft.',
+  'settings.vision.field.decisionBaseUrl.label': 'Serveradresse',
+  'settings.vision.field.decisionBaseUrl.description':
+    'Lokaler llama-server mit d1-2B. Nur Adressen dieses Computers (127.0.0.1 oder localhost) sind erlaubt.',
+  'settings.vision.field.decisionThreshold.label': 'Entscheidungsschwelle',
+  'settings.vision.field.decisionThreshold.description':
+    'Mindestwahrscheinlichkeit, ab der ein Signal zählt. Höher heißt weniger Bildanalysen.',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'Intervall des visuellen Tagebuchs (Zyklen)',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Schreibt alle N Aufnahmezyklen einen Eintrag ins visuelle Tagebuch.',

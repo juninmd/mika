@@ -6,6 +6,7 @@ const BUILT_IN_TAB_LABEL_KEYS: Record<string, keyof TranslationDict> = {
   'audio-devices': 'settings.tab.audioDevices',
   backup: 'settings.tab.backup',
   credentials: 'settings.tab.credentials',
+  decision: 'settings.tab.decision',
   homologation: 'settings.tab.homologation',
   logs: 'settings.tab.logs',
   modules: 'settings.tab.modules',
