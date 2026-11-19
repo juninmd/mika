@@ -1336,6 +1336,36 @@ export const jaJP: TranslationDict = {
   'settings.vision.field.mediaReactionCooldownSec.label': 'リアクションの最小間隔',
   'settings.vision.field.mediaReactionCooldownSec.description':
     '2つのコメントの最短間隔。同じ動画や曲は3間隔後まで繰り返しません。',
+  'settings.vision.panel.decisionHeader': '判断モデル',
+  'settings.vision.panel.decisionHint': 'PCで実行: llama-server -hf LiquidAI/d1-2B-GGUF:Q4_K_M -b 8192 -ub 8192',
+  'settings.vision.panel.decisionStatus.ok': 'エラーなし',
+  'settings.vision.panel.decisionStatus.failing': 'サーバーから応答がありません',
+  'settings.vision.field.decisionProvider.label': '判断モデルのプロバイダー',
+  'settings.decision.providerSection.description': 'フレームを解析する価値があるかを判断するローカルモデルを選びます。',
+  'settings.decision.provider.llamaServer.label': 'llama-server (d1-2B)',
+  'settings.decision.provider.llamaServer.desc': '判断専用のモデル。質問に1回のパスで確率付きで答えます。最速です。',
+  'settings.decision.provider.ollama.label': 'Ollama',
+  'settings.decision.provider.ollama.desc':
+    'Ollama にある小さな画像モデル（例：Qwen3.5 0.8B）。LLM タブの Ollama アドレスを使います。',
+  'settings.vision.field.decisionModel.label': 'モデル',
+  'settings.vision.field.decisionModel.description': '各フレームを見る Ollama の画像モデル。小さいものがおすすめです。',
+  'settings.tab.decision': '判断',
+  'settings.decision.panel.title': '判断モデル',
+  'settings.decision.panel.description':
+    '小さなローカルモデルが本格的な画像解析の前に各フレームを見て、解析する価値があるかを判断します。',
+  'settings.decision.hero.on': 'オン',
+  'settings.decision.hero.off': 'オフ',
+  'settings.decision.hero.visionOff': '画像解析はオフです',
+  'settings.decision.section.description': 'ローカルサーバー、しきい値、フィルターの状態。',
+  'settings.vision.field.decisionEnabled.label': '判断モデルで画面をふるい分ける',
+  'settings.vision.field.decisionEnabled.description':
+    'ローカルモデルが各フレームを見て、ゲームの山場、危険、コメントに値するものがあるときだけ本格的な画像解析を呼びます。ゲーム中は3秒ごとに画面を確認します。',
+  'settings.vision.field.decisionBaseUrl.label': 'サーバーのアドレス',
+  'settings.vision.field.decisionBaseUrl.description':
+    'd1-2B を動かすローカルの llama-server。このPCのアドレス（127.0.0.1 または localhost）のみ使えます。',
+  'settings.vision.field.decisionThreshold.label': '判断のしきい値',
+  'settings.vision.field.decisionThreshold.description':
+    'シグナルとして数える最小確率。高いほど画像解析の呼び出しが減ります。',
   'settings.vision.field.visualDiaryIntervalCycles.label': 'ビジュアル日記の間隔（サイクル）',
   'settings.vision.field.visualDiaryIntervalCycles.description':
     'Nキャプチャサイクルごとにビジュアル日記へエントリを記録します。',

@@ -226,6 +226,11 @@ fn every_reqwest_client_construction_site_is_an_allowlisted_funnel_that_calls_as
             "provedor de TTS remoto configurado pelo usuário — mesmo motivo do STT",
         ),
         (
+            "modules/vision/decision.rs",
+            "modelo de decisão local (llama-server `/v1/systemone`) — só loopback, sem redirect e sem \
+             proxy para o quadro da tela não sair da máquina; também passa por `assert_network_allowed`",
+        ),
+        (
             "modules/voice/tts/providers/piper.rs",
             "download do modelo de voz do Piper (endpoint fixo do repositório de vozes) — mesmo \
              chokepoint (`assert_network_allowed`) que `providers/supertonic/assets.rs` já usa para \
