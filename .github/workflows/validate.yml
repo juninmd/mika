@@ -7,7 +7,8 @@ on:
 
 concurrency:
   group: validate-${{ github.ref }}
-  cancel-in-progress: true
+  # Na `main` cada push é validado até o fim; só PR cancela o run superado.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
