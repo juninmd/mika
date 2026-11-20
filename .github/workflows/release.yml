@@ -43,6 +43,7 @@ permissions:
 
 env:
   CI: true
+  APT_DEB_CACHE: /home/runner/.cache/apt-debs
   # Actions fixadas por SHA nos `uses:` abaixo: tag móvel redefine em silêncio o que roda com
   # permissão de escrita. Dependências nativas do Tauri no Linux (webkit, tray, áudio, captura, X11):
   LINUX_DEPS: >-
@@ -201,6 +202,11 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      # A imagem do runner troca o rustc no meio do rollout (1.99.1 e 1.100.0 no mesmo dia): o hash do
+      # rust-cache muda junto, o job compila tudo do zero e as duas variantes disputam os 10 GB de cache.
+      - name: Rust stable atualizado
+        run: rustup update stable --no-self-update && rustup default stable
+
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: validate-windows
@@ -244,14 +250,35 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      # A imagem do runner troca o rustc no meio do rollout (1.99.1 e 1.100.0 no mesmo dia): o hash do
+      # rust-cache muda junto, o job compila tudo do zero e as duas variantes disputam os 10 GB de cache.
+      - name: Rust stable atualizado
+        run: rustup update stable --no-self-update && rustup default stable
+
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: direct-${{ matrix.name }}
           cache-on-failure: true
 
+      # Só leitura do cache de .deb que o ci.yml grava na `main` (nenhum PR escreve nele): o download
+      # nos mirrors levou 7-13 min aqui. O apt confere cada .deb contra o índice assinado antes de usar.
+      - name: Chave do cache do apt
+        if: runner.os == 'Linux'
+        id: apt
+        run: |
+          echo "key=apt-debs-$ImageOS-$ImageVersion-" >> "$GITHUB_OUTPUT"
+          echo "prefix=apt-debs-$ImageOS-" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: runner.os == 'Linux'
+        with:
+          path: ${{ env.APT_DEB_CACHE }}
+          key: ${{ steps.apt.outputs.key }}
+          restore-keys: ${{ steps.apt.outputs.prefix }}
+
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS
+        run: ./.github/scripts/apt-install.sh $LINUX_DEPS
 
       # Sem scripts de instalação de dependência neste job (ele assina release). O único que o build
       # precisa é o do esbuild (vite/tsx), rodado de forma explícita.
@@ -425,14 +452,35 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      # A imagem do runner troca o rustc no meio do rollout (1.99.1 e 1.100.0 no mesmo dia): o hash do
+      # rust-cache muda junto, o job compila tudo do zero e as duas variantes disputam os 10 GB de cache.
+      - name: Rust stable atualizado
+        run: rustup update stable --no-self-update && rustup default stable
+
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: steam-${{ matrix.name }}
           cache-on-failure: true
 
+      # Só leitura do cache de .deb que o ci.yml grava na `main` (nenhum PR escreve nele): o download
+      # nos mirrors levou 7-13 min aqui. O apt confere cada .deb contra o índice assinado antes de usar.
+      - name: Chave do cache do apt
+        if: runner.os == 'Linux'
+        id: apt
+        run: |
+          echo "key=apt-debs-$ImageOS-$ImageVersion-" >> "$GITHUB_OUTPUT"
+          echo "prefix=apt-debs-$ImageOS-" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: runner.os == 'Linux'
+        with:
+          path: ${{ env.APT_DEB_CACHE }}
+          key: ${{ steps.apt.outputs.key }}
+          restore-keys: ${{ steps.apt.outputs.prefix }}
+
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $LINUX_DEPS
+        run: ./.github/scripts/apt-install.sh $LINUX_DEPS
 
       - run: pnpm install --frozen-lockfile
 

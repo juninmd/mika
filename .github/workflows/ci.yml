@@ -85,6 +85,11 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      # A imagem do runner troca o rustc no meio do rollout (1.99.1 e 1.100.0 no mesmo dia): o hash do
+      # rust-cache muda junto, o job compila tudo do zero e as duas variantes disputam os 10 GB de cache.
+      - name: Rust stable atualizado
+        run: rustup update stable --no-self-update && rustup default stable
+
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: ci-verify
@@ -95,7 +100,9 @@ jobs:
       - name: Chave do cache do apt
         if: runner.os == 'Linux'
         id: apt
-        run: echo "key=apt-debs-$ImageOS-$ImageVersion-${{ hashFiles('.github/workflows/ci.yml') }}" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "key=apt-debs-$ImageOS-$ImageVersion-${{ hashFiles('.github/workflows/ci.yml') }}" >> "$GITHUB_OUTPUT"
+          echo "prefix=apt-debs-$ImageOS-" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: runner.os == 'Linux'
@@ -103,6 +110,10 @@ jobs:
         with:
           path: ${{ env.APT_DEB_CACHE }}
           key: ${{ steps.apt.outputs.key }}
+          # Imagem nova do runner (o rollout convive dias com a anterior) ou ci.yml alterado: sem
+          # fallback era download do zero nos mirrors (17,9 min no run 44675103775). O apt confere cada
+          # .deb do cache contra o índice assinado e baixa só o que mudou de versão.
+          restore-keys: ${{ steps.apt.outputs.prefix }}
 
       - name: Dependências do sistema (Linux)
         run: ./.github/scripts/apt-install.sh $LINUX_DEPS
@@ -138,6 +149,11 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      # A imagem do runner troca o rustc no meio do rollout (1.99.1 e 1.100.0 no mesmo dia): o hash do
+      # rust-cache muda junto, o job compila tudo do zero e as duas variantes disputam os 10 GB de cache.
+      - name: Rust stable atualizado
+        run: rustup update stable --no-self-update && rustup default stable
+
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: ci-check-${{ matrix.os }}
@@ -148,7 +164,9 @@ jobs:
       - name: Chave do cache do apt
         if: runner.os == 'Linux'
         id: apt
-        run: echo "key=apt-debs-$ImageOS-$ImageVersion-${{ hashFiles('.github/workflows/ci.yml') }}" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "key=apt-debs-$ImageOS-$ImageVersion-${{ hashFiles('.github/workflows/ci.yml') }}" >> "$GITHUB_OUTPUT"
+          echo "prefix=apt-debs-$ImageOS-" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: runner.os == 'Linux'
@@ -156,6 +174,10 @@ jobs:
         with:
           path: ${{ env.APT_DEB_CACHE }}
           key: ${{ steps.apt.outputs.key }}
+          # Imagem nova do runner (o rollout convive dias com a anterior) ou ci.yml alterado: sem
+          # fallback era download do zero nos mirrors (17,9 min no run 44675103775). O apt confere cada
+          # .deb do cache contra o índice assinado e baixa só o que mudou de versão.
+          restore-keys: ${{ steps.apt.outputs.prefix }}
 
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
@@ -197,6 +219,11 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      # A imagem do runner troca o rustc no meio do rollout (1.99.1 e 1.100.0 no mesmo dia): o hash do
+      # rust-cache muda junto, o job compila tudo do zero e as duas variantes disputam os 10 GB de cache.
+      - name: Rust stable atualizado
+        run: rustup update stable --no-self-update && rustup default stable
+
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           shared-key: ci-e2e-${{ matrix.os }}
@@ -207,7 +234,9 @@ jobs:
       - name: Chave do cache do apt
         if: runner.os == 'Linux'
         id: apt
-        run: echo "key=apt-debs-$ImageOS-$ImageVersion-${{ hashFiles('.github/workflows/ci.yml') }}" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "key=apt-debs-$ImageOS-$ImageVersion-${{ hashFiles('.github/workflows/ci.yml') }}" >> "$GITHUB_OUTPUT"
+          echo "prefix=apt-debs-$ImageOS-" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: runner.os == 'Linux'
@@ -215,6 +244,10 @@ jobs:
         with:
           path: ${{ env.APT_DEB_CACHE }}
           key: ${{ steps.apt.outputs.key }}
+          # Imagem nova do runner (o rollout convive dias com a anterior) ou ci.yml alterado: sem
+          # fallback era download do zero nos mirrors (17,9 min no run 44675103775). O apt confere cada
+          # .deb do cache contra o índice assinado e baixa só o que mudou de versão.
+          restore-keys: ${{ steps.apt.outputs.prefix }}
 
       - name: Dependências do sistema (Linux)
         if: runner.os == 'Linux'
