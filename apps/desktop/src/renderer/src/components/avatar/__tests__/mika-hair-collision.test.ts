@@ -5,6 +5,7 @@ import { createVRMAnimationClip, type VRMAnimation, VRMAnimationLoaderPlugin } f
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { describe, expect, it } from 'vitest'
+import { applySpringBoneLimits } from '../vrm-spring-limit'
 
 /**
  * Os colisores do cabelo vieram do corpo VRoid; a jaqueta, a camisa e as mangas ficam 1 a 4 cm por fora
@@ -14,10 +15,16 @@ import { describe, expect, it } from 'vitest'
 const PUBLIC = 'apps/desktop/src/renderer/public/vrm'
 const GARMENT = /Jacket|Sleeves|Cuff|Inner|Crewneck|Skirt|Hem/
 
-/** Textures need a DOM to decode; the physics doesn't use them. */
-function withoutTextures(file: Buffer): ArrayBuffer {
+type Json = {
+  nodes: { name: string }[]
+  extensions: { VRMC_springBone: { springs: { joints: { node: number; extensions?: unknown }[] }[] } }
+}
+
+/** Textures need a DOM to decode; the physics doesn't use them. `edit` rewrites the glTF JSON before loading. */
+function withoutTextures(file: Buffer, edit?: (gltf: Json) => void): ArrayBuffer {
   const length = file.readUInt32LE(12)
   const gltf = JSON.parse(file.subarray(20, 20 + length).toString())
+  edit?.(gltf)
   const strip = (node: unknown): void => {
     if (!node || typeof node !== 'object') return
     for (const [key, value] of Object.entries(node)) {
@@ -41,15 +48,16 @@ function withoutTextures(file: Buffer): ArrayBuffer {
   return out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength)
 }
 
-async function load(path: string): Promise<{ vrm?: VRM; vrmAnimations?: VRMAnimation[] }> {
+async function load(path: string, edit?: (gltf: Json) => void): Promise<{ vrm?: VRM; vrmAnimations?: VRMAnimation[] }> {
   const loader = new GLTFLoader()
   loader.register((parser) => new VRMLoaderPlugin(parser))
   loader.register((parser) => new VRMAnimationLoaderPlugin(parser))
   const file = readFileSync(resolve(PUBLIC, path))
   const data = path.endsWith('.vrm')
-    ? withoutTextures(file)
+    ? withoutTextures(file, edit)
     : file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength)
   const gltf = await loader.parseAsync(data, '')
+  if (gltf.userData.vrm) applySpringBoneLimits(gltf, gltf.userData.vrm)
   return gltf.userData
 }
 
@@ -133,5 +141,76 @@ describe('cabelo da Mika contra a roupa', () => {
   // Antes do ajuste: 66 cruzamentos em Blush e 51 em Thinking (até 8 mechas na roupa no mesmo quadro).
   it.each(['Blush', 'Thinking'])('mechas não atravessam a roupa durante %s', { timeout: 20_000 }, async (clip) => {
     expect(await crossingsDuring(clip)).toBeLessThanOrEqual(6)
+  })
+})
+
+/** Puts `limit` on every hair joint, as VRMC_springBone_limit writes it. */
+function limitHair(limit: Record<string, unknown>): (gltf: Json) => void {
+  return (gltf) => {
+    for (const spring of gltf.extensions.VRMC_springBone.springs)
+      for (const joint of spring.joints)
+        if (/Hair/.test(gltf.nodes[joint.node].name))
+          joint.extensions = { VRMC_springBone_limit: { specVersion: '1.0-draft', limit } }
+  }
+}
+
+/** Rest direction and the limit space's x axis (the hinge normal, spherical yaw axis), in the bone's parent space. */
+function restFrame(bone: THREE.Object3D, child: THREE.Object3D): { rest: THREE.Vector3; side: THREE.Vector3 } {
+  const axis = child.position.clone().normalize()
+  const turn = new THREE.Quaternion(axis.z, 0, -axis.x, axis.y + 1).normalize()
+  return {
+    rest: axis.clone().applyQuaternion(bone.quaternion),
+    side: new THREE.Vector3(1, 0, 0).applyQuaternion(turn).applyQuaternion(bone.quaternion),
+  }
+}
+
+type Swing = { total: number; side: number }
+
+/** Widest swing of any hair joint during the clip, in radians: off its rest direction, and out of the limit's y-z plane. */
+async function widestHairSwing(edit?: (gltf: Json) => void): Promise<Swing> {
+  const { vrm } = await load('mika/mika.vrm', edit)
+  const { vrmAnimations } = await load('animations/Thinking.vrma')
+  if (!vrm || !vrmAnimations?.[0]) throw new Error('asset sem VRM')
+  const hair = [...(vrm.springBoneManager?.joints ?? [])].flatMap(({ bone, child }) =>
+    child && /Hair/.test(bone.name) ? [{ bone, child, ...restFrame(bone, child) }] : [],
+  )
+  const mixer = new THREE.AnimationMixer(vrm.scene)
+  mixer.clipAction(createVRMAnimationClip(vrmAnimations[0], vrm)).play()
+  const widest = { total: 0, side: 0 }
+  const now = new THREE.Vector3()
+  for (let frame = 1; frame <= 180; frame++) {
+    mixer.update(1 / 60)
+    vrm.update(1 / 60)
+    for (const { bone, child, rest, side } of hair) {
+      now.copy(child.position).normalize().applyQuaternion(bone.quaternion)
+      widest.total = Math.max(widest.total, now.angleTo(rest))
+      widest.side = Math.max(widest.side, Math.asin(Math.min(1, Math.abs(now.dot(side)))))
+    }
+  }
+  return widest
+}
+
+describe('VRMC_springBone_limit', () => {
+  const CONE = 0.15
+  const TOL = 1e-3
+  it('sem limite o clipe balança o cabelo além do cone e fora do plano (controle)', { timeout: 20_000 }, async () => {
+    const swing = await widestHairSwing()
+    expect(swing.total).toBeGreaterThan(CONE * 1.5)
+    expect(swing.side).toBeGreaterThan(0.05)
+  })
+  it('um cone segura cada junta dentro do ângulo', { timeout: 20_000 }, async () => {
+    expect((await widestHairSwing(limitHair({ cone: { angle: CONE } }))).total).toBeLessThanOrEqual(CONE + TOL)
+  })
+  it('uma dobradiça segura a junta no plano e dentro do ângulo', { timeout: 20_000 }, async () => {
+    const swing = await widestHairSwing(limitHair({ hinge: { angle: CONE } }))
+    expect(swing.total).toBeLessThanOrEqual(CONE + TOL)
+    expect(swing.side).toBeLessThanOrEqual(TOL)
+  })
+  it('um esférico segura yaw e pitch cada um no seu eixo', { timeout: 20_000 }, async () => {
+    const [pitch, yaw] = [0.3, 0.05]
+    const swing = await widestHairSwing(limitHair({ spherical: { pitch, yaw } }))
+    expect(swing.side).toBeLessThanOrEqual(yaw + TOL)
+    expect(swing.total).toBeLessThanOrEqual(Math.acos(Math.cos(pitch) * Math.cos(yaw)) + TOL)
+    expect(swing.total).toBeGreaterThan(yaw * 2)
   })
 })
