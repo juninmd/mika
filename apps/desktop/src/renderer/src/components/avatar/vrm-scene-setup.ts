@@ -7,6 +7,7 @@ import type { BlinkDriver } from './vrm-blink'
 import type { VrmLifeSnapshot } from './vrm-debug-bridge'
 import { tightenEyeRange } from './vrm-gaze'
 import { actionFaceWeight, meshVisibleInLook, tintFor, VRM_PRESETS, type VrmLook } from './vrm-look'
+import { applySpringBoneLimits } from './vrm-spring-limit'
 import { forceImgTextureLoader, type TextureLoaderHost } from './vrm-texture-loader'
 
 type MToonLike = THREE.Material & {
@@ -91,6 +92,7 @@ export async function loadVrmGltf(url: string): Promise<{ gltf: GLTF; vrm: VRM }
   loader.register((parser) => new VRMLoaderPlugin(parser))
   const gltf = await loader.loadAsync(url)
   const vrm = gltf.userData.vrm as VRM
+  applySpringBoneLimits(gltf, vrm)
   VRMUtils.removeUnnecessaryVertices(gltf.scene)
   VRMUtils.combineSkeletons(gltf.scene)
   VRMUtils.rotateVRM0(vrm)
