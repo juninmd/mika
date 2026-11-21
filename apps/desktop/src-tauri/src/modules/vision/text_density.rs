@@ -16,7 +16,7 @@
 //!   antes de checar `.some()`, mas o resultado booleano é idêntico — só a ordem de computação
 //!   muda, e nenhuma das duas tem efeito colateral observável.
 
-use super::bitmap::resize_to_bitmap;
+use super::bitmap::frame_bitmap;
 
 const TEXT_DENSITY_GRID_SIZE: u32 = 64;
 const TEXT_DENSITY_BLOCK_SIZE: u32 = 8;
@@ -44,10 +44,8 @@ fn block_has_edge(bitmap: &[u8], width: u32, block_x: u32, block_y: u32) -> bool
 }
 
 /// `estimateTextDensity` — 0.0 (tela lisa/sem UI perceptível) a 1.0 (tela densa de texto/UI).
-pub(super) fn estimate_text_density(data_url: &str) -> f64 {
-    let Some(bitmap) = resize_to_bitmap(data_url, TEXT_DENSITY_GRID_SIZE, TEXT_DENSITY_GRID_SIZE) else {
-        return 0.0;
-    };
+pub(super) fn estimate_text_density(frame: &image::DynamicImage) -> f64 {
+    let bitmap = frame_bitmap(frame, TEXT_DENSITY_GRID_SIZE, TEXT_DENSITY_GRID_SIZE);
 
     let mut edge_blocks = 0u32;
     for by in 0..TEXT_DENSITY_BLOCKS_PER_SIDE {
@@ -61,44 +59,28 @@ pub(super) fn estimate_text_density(data_url: &str) -> f64 {
 }
 
 /// `hasEnoughTextDensity`.
-pub(super) fn has_enough_text_density(data_urls: &[&str], threshold: f64) -> bool {
-    if data_urls.is_empty() {
+pub(super) fn has_enough_text_density(frames: &[image::DynamicImage], threshold: f64) -> bool {
+    if frames.is_empty() {
         return true;
     }
-    data_urls.iter().any(|url| estimate_text_density(url) >= threshold)
+    frames.iter().any(|frame| estimate_text_density(frame) >= threshold)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use base64::Engine as _;
-    use image::{ExtendedColorType, ImageEncoder, RgbaImage};
+    use image::RgbaImage;
 
-    /// Mesma fixture sintética de `image_hash.rs` — duplicada de propósito (é curta e o teste que
-    /// a usa é o único dono do formato que precisa), em vez de um módulo de fixtures compartilhado
-    /// entre arquivos só para 15 linhas.
-    fn png_data_url(width: u32, height: u32, pixel: impl Fn(u32, u32) -> [u8; 4]) -> String {
-        let mut image = RgbaImage::new(width, height);
-        for y in 0..height {
-            for x in 0..width {
-                image.put_pixel(x, y, image::Rgba(pixel(x, y)));
-            }
-        }
-        let mut buffer = Vec::new();
-        image::codecs::png::PngEncoder::new(&mut buffer)
-            .write_image(image.as_raw(), width, height, ExtendedColorType::Rgba8)
-            .expect("encode fixture PNG");
-        format!(
-            "data:image/png;base64,{}",
-            base64::engine::general_purpose::STANDARD.encode(&buffer)
-        )
+    /// Synthetic frame, as the capture hands it to the gate — never a real screen.
+    fn frame_of(width: u32, height: u32, pixel: impl Fn(u32, u32) -> [u8; 4]) -> image::DynamicImage {
+        image::DynamicImage::ImageRgba8(RgbaImage::from_fn(width, height, |x, y| image::Rgba(pixel(x, y))))
     }
 
-    fn solid(width: u32, height: u32, rgba: [u8; 4]) -> String {
-        png_data_url(width, height, |_, _| rgba)
+    fn solid(width: u32, height: u32, rgba: [u8; 4]) -> image::DynamicImage {
+        frame_of(width, height, |_, _| rgba)
     }
 
-    fn tiny_one_by_one_image_upscales_without_panicking() -> String {
+    fn tiny_one_by_one_image_upscales_without_panicking() -> image::DynamicImage {
         solid(1, 1, [128, 64, 32, 255])
     }
 
@@ -156,11 +138,6 @@ mod tests {
     // -- estimate_text_density / has_enough_text_density (integração via PNG sintético) ---------
 
     #[test]
-    fn text_density_of_empty_data_url_is_zero() {
-        assert_eq!(estimate_text_density(""), 0.0);
-    }
-
-    #[test]
     fn text_density_of_flat_image_is_zero() {
         assert_eq!(estimate_text_density(&solid(64, 64, [50, 50, 50, 255])), 0.0);
     }
@@ -175,7 +152,7 @@ mod tests {
     fn text_density_of_fine_stripes_is_maximal() {
         // Listras de 1px alternando preto/branco: toda coluna de todo bloco 8x8 tem
         // max-min = 255 >= 18 — os 64 blocos viram borda, densidade = 1.0.
-        let stripes = png_data_url(64, 64, |x, _| if x % 2 == 0 { [0, 0, 0, 255] } else { [255, 255, 255, 255] });
+        let stripes = frame_of(64, 64, |x, _| if x % 2 == 0 { [0, 0, 0, 255] } else { [255, 255, 255, 255] });
         assert_eq!(estimate_text_density(&stripes), 1.0);
     }
 
@@ -187,13 +164,13 @@ mod tests {
     #[test]
     fn has_enough_text_density_is_true_when_any_image_meets_the_threshold() {
         let flat = solid(64, 64, [10, 10, 10, 255]);
-        let stripes = png_data_url(64, 64, |x, _| if x % 2 == 0 { [0, 0, 0, 255] } else { [255, 255, 255, 255] });
-        assert!(has_enough_text_density(&[&flat, &stripes], 0.5));
+        let stripes = frame_of(64, 64, |x, _| if x % 2 == 0 { [0, 0, 0, 255] } else { [255, 255, 255, 255] });
+        assert!(has_enough_text_density(&[flat, stripes], 0.5));
     }
 
     #[test]
     fn has_enough_text_density_is_false_when_no_image_meets_the_threshold() {
         let flat = solid(64, 64, [10, 10, 10, 255]);
-        assert!(!has_enough_text_density(&[&flat], 0.5));
+        assert!(!has_enough_text_density(&[flat], 0.5));
     }
 }

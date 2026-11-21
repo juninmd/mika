@@ -115,8 +115,9 @@
 //!   que fechava a lacuna acima: porte de `vision-proactive.ts::analyzeClipboardImage` (análise via
 //!   [`llm_client`] + publicação de `EventKey::BrainProactiveThought`).
 //!
-//! Nenhuma das duas heurísticas reimplementa decode/resize (reusam [`bitmap::resize_to_bitmap`], que
-//! por sua vez reusa `images::resize_bitmap`, já portado).
+//! Nenhuma das duas heurísticas reimplementa resize: o laço de tela lê os pixels crus da captura
+//! ([`bitmap::frame_bitmap`]) antes de qualquer JPEG; o clipboard decodifica a data URL
+//! ([`bitmap::resize_to_bitmap`]).
 //!
 //! **Os dois laços RODAM em produção** — `modules/mod.rs::register_config_bound_tools` já chama os
 //! dois (esta nota ficou parada de uma rodada anterior; corrigida em 2026-09-22 junto da assinatura
