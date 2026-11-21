@@ -644,3 +644,38 @@ fn a_copilot_flag_becomes_an_alert_only_inside_a_confirmed_game() {
     assert_eq!(copilot_alert_payload(&split_game_signal(&raw(true, "boss")).1), None, "tipo desconhecido");
     assert_eq!(copilot_alert_payload(&apply_game_awareness(signal, false)), None, "gameAwareness desligado");
 }
+
+// -- unchanged-tick cost -------------------------------------------------------------------------
+
+fn median_ms(mut samples: Vec<f64>) -> f64 {
+    samples.sort_by(f64::total_cmp);
+    samples[samples.len() / 2]
+}
+
+fn time_ms(runs: usize, mut work: impl FnMut()) -> f64 {
+    median_ms((0..runs).map(|_| {
+        let start = std::time::Instant::now();
+        work();
+        start.elapsed().as_secs_f64() * 1000.0
+    }).collect())
+}
+
+/// Most ticks see the same screen: the watcher must learn that from raw pixels (hash + density gate)
+/// without paying the resize + adaptive JPEG that only a changed capture needs.
+///   cargo test --release --lib unchanged_tick_bench -- --ignored --nocapture
+#[test]
+#[ignore = "benchmark: run with --release"]
+fn unchanged_tick_bench() {
+    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../../../docs/screenshots/smoke/journey-09-vision-settings.png");
+    let screen = image::open(path).expect("smoke screenshot fixture");
+    let cfg = super::super::compression::CompressionConfig { adaptive: true, max_size_kb: 500, target_size_kb: 300, llm_quality: 60, max_dimension: 1280 };
+    let frames = vec![screen];
+    let gate = time_ms(9, || {
+        std::hint::black_box((compute_frames_hash(&frames), has_enough_text_density(&frames, 0.1)));
+    });
+    let encode = time_ms(9, || {
+        std::hint::black_box(super::super::compression::encode_frames_for_llm(frames.clone(), &cfg, 100));
+    });
+    println!("unchanged tick: gate {gate:.2} ms, JPEG encode it skips {encode:.1} ms");
+    assert!(gate * 5.0 < encode, "the change gate must stay far cheaper than the encode it guards");
+}

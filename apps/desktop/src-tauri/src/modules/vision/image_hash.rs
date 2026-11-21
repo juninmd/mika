@@ -21,7 +21,7 @@
 //!   (fase 6), não do algoritmo de comparação em si — misturar log com estado mutável global numa
 //!   função pura tornaria este código dependente de ordem de chamada para testar.
 
-use super::bitmap::resize_to_bitmap;
+use super::bitmap::{frame_bitmap, resize_to_bitmap};
 
 const HASH_SIZE: u32 = 8;
 const HASH_WIDTH: u32 = HASH_SIZE + 1;
@@ -35,30 +35,24 @@ fn gray_sum(bitmap: &[u8], width: u32, x: u32, y: u32) -> u32 {
 
 /// `computeImageHash` — string de 64 '0'/'1', ou `""` quando a imagem falha ao decodificar.
 pub(super) fn compute_image_hash(data_url: &str) -> String {
-    let Some(bitmap) = resize_to_bitmap(data_url, HASH_WIDTH, HASH_SIZE) else {
-        return String::new();
-    };
+    resize_to_bitmap(data_url, HASH_WIDTH, HASH_SIZE).map_or_else(String::new, |bitmap| dhash(&bitmap))
+}
 
+fn dhash(bitmap: &[u8]) -> String {
     let mut bits = String::with_capacity((HASH_SIZE * HASH_SIZE) as usize);
     for y in 0..HASH_SIZE {
         for x in 0..HASH_SIZE {
-            let bit = gray_sum(&bitmap, HASH_WIDTH, x, y) > gray_sum(&bitmap, HASH_WIDTH, x + 1, y);
+            let bit = gray_sum(bitmap, HASH_WIDTH, x, y) > gray_sum(bitmap, HASH_WIDTH, x + 1, y);
             bits.push(if bit { '1' } else { '0' });
         }
     }
     bits
 }
 
-/// `computeImagesHash` — um hash por imagem (multi-monitor), hashes vazios descartados, o resto
-/// junto por `:`. Preserva a peculiaridade do TS: o `:` vira só mais um caractere para
-/// `hamming_distance` comparar depois, não um separador estrutural.
-pub(super) fn compute_images_hash(data_urls: &[&str]) -> String {
-    data_urls
-        .iter()
-        .map(|url| compute_image_hash(url))
-        .filter(|hash| !hash.is_empty())
-        .collect::<Vec<_>>()
-        .join(":")
+/// `computeImagesHash` over raw captured frames — one hash per monitor joined by `:`. Preserva a
+/// peculiaridade do TS: o `:` vira só mais um caractere para `hamming_distance` comparar depois.
+pub(super) fn compute_frames_hash(frames: &[image::DynamicImage]) -> String {
+    frames.iter().map(|frame| dhash(&frame_bitmap(frame, HASH_WIDTH, HASH_SIZE))).collect::<Vec<_>>().join(":")
 }
 
 /// Distância de Hamming em POSIÇÕES DE CARACTERE (mesma unidade do laço `for` do TS), mais a
@@ -172,18 +166,23 @@ mod tests {
         assert_eq!(hash, "0".repeat(64));
     }
 
+    fn frame(data_url: &str) -> image::DynamicImage {
+        crate::images::decode_data_url(data_url).expect("fixture decodes")
+    }
+
+    /// The watcher now hashes the raw frame, the clipboard still hashes a data URL: both must give
+    /// the same bits, or switching sources would read as "the screen changed".
     #[test]
-    fn images_hash_joins_non_empty_hashes_and_drops_empty_ones() {
-        let a = solid(16, 16, [1, 1, 1, 255]);
-        let joined = compute_images_hash(&[&a, "", "not a data url"]);
-        assert_eq!(joined, compute_image_hash(&a));
+    fn frame_hash_matches_the_data_url_hash_of_the_same_pixels() {
+        let gradient = png_data_url(64, 48, |x, y| [(x * 4) as u8, (y * 5) as u8, ((x + y) * 2) as u8, 255]);
+        assert_eq!(compute_frames_hash(&[frame(&gradient)]), compute_image_hash(&gradient));
     }
 
     #[test]
-    fn images_hash_of_two_screens_joins_with_colon() {
+    fn frames_hash_of_two_screens_joins_with_colon() {
         let a = solid(16, 16, [1, 1, 1, 255]);
         let b = solid(16, 16, [2, 2, 2, 255]);
-        let joined = compute_images_hash(&[&a, &b]);
+        let joined = compute_frames_hash(&[frame(&a), frame(&b)]);
         assert_eq!(joined, format!("{}:{}", compute_image_hash(&a), compute_image_hash(&b)));
     }
 

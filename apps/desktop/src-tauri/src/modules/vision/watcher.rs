@@ -46,11 +46,12 @@
 use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
+use image::DynamicImage;
 use rand::RngExt;
 use serde_json::{json, Value};
 
 use super::decision;
-use super::image_hash::{compute_images_hash, has_screen_changed};
+use super::image_hash::{compute_frames_hash, has_screen_changed};
 use super::llm_client;
 use super::screen_capture::capture_screen_frames;
 use super::text_density::has_enough_text_density;
@@ -367,18 +368,27 @@ fn suspend_for_provider_health(provider: &str, model: &str, suspended: &mut bool
 /// para não duplicar o boilerplate `Arc::clone` + `spawn_blocking` + tratamento de erro entre a
 /// captura inicial e as recapturas de [`run_tick`].
 ///
-/// Returns the LLM-ready JPEGs: pixels are resized and encoded once, here, off the runtime
-/// (`compression::encode_frames_for_llm`) — hash, density gate and the LLM all read the same
-/// images, and nothing is decoded to be re-encoded. `quality` (`vision.captureQuality`) caps it.
-async fn capture_images_blocking(store: &Arc<ConfigStore>, quality: u8) -> Option<Vec<String>> {
+/// Returns raw frames plus their hash: an unchanged screen (most ticks) stops here, before the
+/// resize + adaptive JPEG that only the settled, changed capture needs ([`encode_settled`]).
+async fn capture_frames_blocking(store: &Arc<ConfigStore>) -> Option<(Vec<DynamicImage>, String)> {
     let capture_store = Arc::clone(store);
-    let cfg = super::compression::read_compression_config(store);
-    let images = tokio::task::spawn_blocking(move || {
-        capture_screen_frames(&capture_store).map(|frames| super::compression::encode_frames_for_llm(frames, &cfg, quality))
+    let captured = tokio::task::spawn_blocking(move || {
+        capture_screen_frames(&capture_store).map(|frames| {
+            let hash = compute_frames_hash(&frames);
+            (frames, hash)
+        })
     })
     .await
     .ok()?
     .ok()?;
+    (!captured.0.is_empty()).then_some(captured)
+}
+
+/// The LLM-ready JPEGs of the settled capture, encoded once, off the runtime
+/// (`compression::encode_frames_for_llm`). `quality` (`vision.captureQuality`) caps it.
+async fn encode_settled(store: &Arc<ConfigStore>, frames: Vec<DynamicImage>, quality: u8) -> Option<Vec<String>> {
+    let cfg = super::compression::read_compression_config(store);
+    let images = tokio::task::spawn_blocking(move || super::compression::encode_frames_for_llm(frames, &cfg, quality)).await.ok()?;
     (!images.is_empty()).then_some(images)
 }
 
@@ -413,14 +423,12 @@ fn periodic_capture_ready(probe_supported: bool, has_snapshot: bool) -> bool {
 /// Captura, pula se a tela não mudou desde o último tick e segura o debounce (specs/06-vision.md):
 /// rajada de mudanças vira UMA análise só. Devolve as imagens e o hash da captura assentada; quem
 /// chama grava o hash em `last_hash` conforme o desfecho ([`hash_after_tick`]).
-async fn capture_changed_screen(store: &Arc<ConfigStore>, quality: u8, last_hash: &str) -> Option<(Vec<String>, String)> {
-    let Some(mut images) = capture_images_blocking(store, quality).await else {
+async fn capture_changed_screen(store: &Arc<ConfigStore>, last_hash: &str) -> Option<(Vec<DynamicImage>, String)> {
+    let Some((mut frames, mut hash)) = capture_frames_blocking(store).await else {
         log::debug!("vision watcher: captura recusada (plugin desligado, consentimento, blocklist ou falha de captura)");
         return None;
     };
 
-    let refs: Vec<&str> = images.iter().map(String::as_str).collect();
-    let mut hash = compute_images_hash(&refs);
     let previous = if last_hash.is_empty() { None } else { Some(last_hash) };
     if !has_screen_changed(&hash, previous) {
         log::debug!("vision watcher: tela sem mudança perceptível, tick pulado");
@@ -432,17 +440,15 @@ async fn capture_changed_screen(store: &Arc<ConfigStore>, quality: u8, last_hash
     // [`DEBOUNCE_MAX_ROUNDS`] — nunca trava o tick esperando a tela "acalmar" para sempre.
     for _ in 0..DEBOUNCE_MAX_ROUNDS {
         tokio::time::sleep(Duration::from_millis(DEBOUNCE_WINDOW_MS)).await;
-        let Some(next_images) = capture_images_blocking(store, quality).await else { break };
-        let next_refs: Vec<&str> = next_images.iter().map(String::as_str).collect();
-        let next_hash = compute_images_hash(&next_refs);
+        let Some((next_frames, next_hash)) = capture_frames_blocking(store).await else { break };
         let settled = is_debounce_settled(&hash, &next_hash);
-        images = next_images;
+        frames = next_frames;
         hash = next_hash;
         if settled {
             break;
         }
     }
-    Some((images, hash))
+    Some((frames, hash))
 }
 
 /// Um tick do laço — captura, dedup, gate de densidade, análise, publicação. Nunca propaga panic:
@@ -479,15 +485,14 @@ async fn run_tick(
         return;
     }
 
-    let Some((images, settled_hash)) = capture_changed_screen(store, cfg.quality, last_hash).await else { return };
+    let Some((frames, settled_hash)) = capture_changed_screen(store, last_hash).await else { return };
 
-    let refs: Vec<&str> = images.iter().map(String::as_str).collect();
-
-    if cfg.code_awareness && !has_enough_text_density(&refs, cfg.text_density_threshold) {
+    if cfg.code_awareness && !has_enough_text_density(&frames, cfg.text_density_threshold) {
         log::debug!("vision watcher: densidade de texto/UI abaixo do limiar, análise evitada");
         *last_hash = hash_after_tick(last_hash, &settled_hash, TickOutcome::GateSkipped).to_string();
         return;
     }
+    let Some(images) = encode_settled(store, frames, cfg.quality).await else { return };
 
     // `vision.analysisMode`: quantas das imagens capturadas (multi-monitor) de fato vão pro LLM —
     // ver o cabeçalho de [`select_images_for_mode`].
