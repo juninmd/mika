@@ -57,7 +57,7 @@ Run commands in quiet mode (`--quiet`, `--silent`) to save tokens.
   - UI reference: the `character` and `user` screens. Hero at the top, `GlassSection`, `BentoGrid` with `GlassCard`, `uppercase tracking-[0.12em]` headers, `SectionDivider`
   - Controls only via `@mika/sdk-ui/settings` (`AuroraField`, `GlassSelect`, `GlassSlider`, `GlassToggle`, `StatusPill`, `StatTile`), with semantic color tokens and no literal colors
 
-## Gotchas
+## Testing
 - Test first. For a bug, write the failing test that reproduces it, then fix. A unit test written after the code only to cover lines or raise `thresholds` is rejected
 - E2E is the valid proof for UI and for the real app. Unit and contract tests (Vitest) are for pure logic
 - Every E2E spec ends with a deterministic, repeatable artifact: a PNG in `apps/desktop/e2e/screenshots/` and/or a JSON with the asserted state. A trace or video that exists only on failure does not count
