@@ -129,12 +129,11 @@ impl ApprovalGateService {
             Ok(tx) => tx,
         };
 
+        // The guard also runs if this future is dropped mid-wait (turn aborted): otherwise the id
+        // stays pending with a dead sender and every later request with it is denied unasked.
+        let guard = PendingGuard { pending: &self.pending, id: &request.tool_call_id };
         let decision = self.wait_for_decision(handler, &request).await;
-
-        {
-            let mut pending = self.pending.lock().unwrap_or_else(|e| e.into_inner());
-            pending.remove(&request.tool_call_id);
-        }
+        drop(guard);
         let _ = tx.send(Some(decision));
 
         decision
@@ -160,6 +159,17 @@ impl ApprovalGateService {
     #[cfg(test)]
     pub fn clear_pending(&self) {
         self.pending.lock().unwrap_or_else(|e| e.into_inner()).clear();
+    }
+}
+
+struct PendingGuard<'a> {
+    pending: &'a std::sync::Mutex<HashMap<String, watch::Receiver<Option<ApprovalDecision>>>>,
+    id: &'a str,
+}
+
+impl Drop for PendingGuard<'_> {
+    fn drop(&mut self) {
+        self.pending.lock().unwrap_or_else(|e| e.into_inner()).remove(self.id);
     }
 }
 
@@ -301,5 +311,29 @@ mod tests {
         }
         gate.clear_pending();
         assert!(gate.pending.lock().unwrap().is_empty());
+    }
+
+    struct NeverAnswers;
+    #[async_trait]
+    impl ApprovalHandler for NeverAnswers {
+        async fn decide(&self, _request: ApprovalRequest) -> Result<ApprovalDecision, String> {
+            std::future::pending().await
+        }
+    }
+
+    // A turn aborted mid-approval (chat abort_all) drops the future; the id must not stay pending
+    // and auto-deny the next request with the same id without asking the user.
+    #[tokio::test]
+    async fn a_dropped_request_does_not_leave_its_id_pending() {
+        let gate = ApprovalGateService::new();
+        gate.set_handler(Arc::new(NeverAnswers));
+        let aborted = tokio::time::timeout(Duration::from_millis(20), gate.request_approval(req("call_0"))).await;
+        assert!(aborted.is_err());
+        assert!(gate.pending.lock().unwrap().is_empty());
+
+        let calls = Arc::new(AtomicUsize::new(0));
+        gate.set_handler(Arc::new(CountsCalls { calls: calls.clone() }));
+        assert!(gate.request_approval(req("call_0")).await.approved);
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
     }
 }
