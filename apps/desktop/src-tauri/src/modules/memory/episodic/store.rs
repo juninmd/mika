@@ -111,6 +111,17 @@ mod tests {
         assert_eq!(locate_tier(&store, "ghost").unwrap(), None);
     }
 
+    /// Parsed vectors are cached by their text: a rewritten embedding must come back new, never
+    /// the cached old one.
+    #[test]
+    fn load_tier_returns_a_rewritten_embedding_not_the_cached_one() {
+        let store = store();
+        write_entry(&store, MemoryTier::Short, "a", "texto", "conversation", 1, "{}", 3600, Some(&[1.0, 0.0])).unwrap();
+        assert_eq!(load_tier(&store, MemoryTier::Short, None).unwrap()[0].embedding, Some(vec![1.0, 0.0]));
+        write_entry(&store, MemoryTier::Short, "a", "texto", "conversation", 1, "{}", 3600, Some(&[0.0, 1.0])).unwrap();
+        assert_eq!(load_tier(&store, MemoryTier::Short, None).unwrap()[0].embedding, Some(vec![0.0, 1.0]));
+    }
+
     #[test]
     fn load_tier_orders_newest_first_and_respects_count() {
         let store = store();

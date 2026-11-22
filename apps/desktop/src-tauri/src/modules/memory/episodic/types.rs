@@ -64,8 +64,45 @@ pub struct MemoryEntry {
 }
 
 /// = `parseEmbedding`: `None` para ausente OU JSON inválido/não-array-de-números — nunca panica.
+/// Recall reads up to 5,500 stored vectors per chat turn and the JSON parse was 60% of it, so a
+/// parsed vector is kept by the hash of its text: the same text always parses to the same vector,
+/// and a rewritten embedding has new text, so nothing can go stale.
 pub fn parse_embedding(raw: Option<&String>) -> Option<Vec<f64>> {
-    serde_json::from_str(raw?).ok()
+    let raw = raw?;
+    let id = text_id(raw);
+    if let Some(hit) = parsed_cache().lock().ok()?.get(&id) {
+        return Some(hit.clone());
+    }
+    let vector: Vec<f64> = serde_json::from_str(raw).ok()?;
+    if let Ok(mut cache) = parsed_cache().lock() {
+        if cache.len() >= PARSED_CACHE_CAP {
+            cache.clear();
+        }
+        cache.insert(id, vector.clone());
+    }
+    Some(vector)
+}
+
+/// Both scan limits: one turn's recall fits, so the cache never thrashes inside a turn.
+const PARSED_CACHE_CAP: usize = (EMBEDDING_SCAN_LIMIT + LONG_TIER_SCAN_LIMIT) as usize;
+
+fn text_id(raw: &str) -> (usize, u64) {
+    use std::hash::{Hash, Hasher};
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    raw.hash(&mut hasher);
+    (raw.len(), hasher.finish())
+}
+
+fn parsed_cache() -> &'static std::sync::Mutex<HashMap<(usize, u64), Vec<f64>>> {
+    static CACHE: std::sync::OnceLock<std::sync::Mutex<HashMap<(usize, u64), Vec<f64>>>> = std::sync::OnceLock::new();
+    CACHE.get_or_init(Default::default)
+}
+
+/// Drops every parsed vector: "clear memory" must not leave the user's vectors in RAM.
+pub(crate) fn clear_parsed_embeddings() {
+    if let Ok(mut cache) = parsed_cache().lock() {
+        cache.clear();
+    }
 }
 
 /// = `hashToEntry`: `None` quando o hash não tem `content` (chave nunca escrita, ou registro

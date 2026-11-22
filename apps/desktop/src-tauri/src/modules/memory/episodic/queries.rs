@@ -341,3 +341,40 @@ mod tests {
         assert_eq!(results[0].content, "perto");
     }
 }
+
+#[cfg(test)]
+mod recall_bench {
+    use super::super::store::write_entry;
+    use super::*;
+
+    fn vector(seed: usize) -> Vec<f64> {
+        (0..384).map(|i| (((seed * 31 + i * 17) % 997) as f64 / 997.0) - 0.5).collect()
+    }
+
+    /// Recall on every chat turn scans up to 500 short + 5,000 long memories (384-dim local embedder).
+    ///   cargo test --release --lib recall_bench -- --ignored --nocapture
+    #[test]
+    #[ignore = "benchmark: run with --release"]
+    fn recall_bench() {
+        let kv = MemoryStore::open_in_memory().unwrap();
+        let now = now_millis();
+        for i in 0..500 {
+            write_entry(&kv, MemoryTier::Short, &format!("s{i}"), &format!("conversa {i} sobre jogos"), "conversation", now - i as i64, "{}", 86_400, Some(&vector(i))).unwrap();
+        }
+        for i in 0..5_000 {
+            write_entry(&kv, MemoryTier::Long, &format!("l{i}"), &format!("resumo {i}"), "summary", now - 1_000_000 - i as i64, "{}", 864_000, Some(&vector(i + 10_000))).unwrap();
+        }
+        let cfg = QueryConfig { get_all_limit: 500, min_similarity: 0.25, score_flags: ScoreFlags { reranking_enabled: true, emotional_tagging: true }, lexical_rerank_weight: 0.15 };
+        let query = vector(42);
+        let mut runs: Vec<f64> = (0..9)
+            .map(|_| {
+                let start = std::time::Instant::now();
+                std::hint::black_box(search_semantic(&kv, &cfg, &query, 5, 0.2, None, "jogos").unwrap());
+                start.elapsed().as_secs_f64() * 1000.0
+            })
+            .collect();
+        let first = runs[0];
+        runs.sort_by(f64::total_cmp);
+        println!("recall over 5,500 memories: first turn {first:.1} ms, later turns median {:.1} ms", runs[4]);
+    }
+}

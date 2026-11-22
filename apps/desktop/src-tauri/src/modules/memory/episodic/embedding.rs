@@ -287,6 +287,7 @@ static FACT_CACHE: EmbeddingCache = EmbeddingCache::with_capacity(256);
 pub(crate) fn clear_caches() {
     QUERY_CACHE.clear();
     FACT_CACHE.clear();
+    super::types::clear_parsed_embeddings();
 }
 
 #[cfg(test)]
