@@ -101,6 +101,31 @@ describe('ipcRenderer não inventa payload', () => {
     expect(args.payload.samples).toEqual([0.5, -0.25])
   })
 
+  /*
+   * O PCM16 da fala ia como `audioBase64` (+33% de bytes e um encode por fala). Pelo caminho JSON
+   * um `Uint8Array` viraria `number[]` (`toJsonSafe`), ainda pior; por isso vai como corpo binário.
+   */
+  it('transcrição com Uint8Array vai binário (mika_transcribe_pcm), mime/idioma nos headers', async () => {
+    const audio = new Uint8Array([1, 2, 3, 4])
+    await ipcRenderer.invoke('mika:voice-transcribe', { audio, mimeType: 'audio/pcm;rate=16000', language: 'pt' })
+
+    const [command, body, options] = invoke.mock.calls[0] as unknown as [
+      string,
+      Uint8Array,
+      { headers: Record<string, string> },
+    ]
+    expect(command).toBe('mika_transcribe_pcm')
+    expect(Array.from(body)).toEqual([1, 2, 3, 4])
+    expect(options.headers).toEqual({ 'x-mika-mime-type': 'audio/pcm;rate=16000', 'x-mika-language': 'pt' })
+  })
+
+  it('transcrição sem idioma não manda o header — o Rust cai no idioma configurado', async () => {
+    await ipcRenderer.invoke('mika:voice-transcribe', { audio: new Uint8Array([1]), mimeType: 'audio/pcm' })
+
+    const [, , options] = invoke.mock.calls[0] as unknown as [string, Uint8Array, { headers: Record<string, string> }]
+    expect(options.headers).toEqual({ 'x-mika-mime-type': 'audio/pcm' })
+  })
+
   it('a conversão alcança TypedArray aninhado, não só o topo do payload', async () => {
     await ipcRenderer.invoke('mika:algum-canal', { a: { b: [new Uint8Array([1, 2])] }, c: 'texto' })
 

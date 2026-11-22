@@ -21,7 +21,7 @@ export function createChatRuntimeApi(): ChatRuntimeApi {
     cancelChatMessage: () => ipcRenderer.invoke(DESKTOP_INVOKE_CHANNELS.ChatCancel),
     reportChatResponse: (content: string) =>
       ipcRenderer.invoke(DESKTOP_INVOKE_CHANNELS.ChatReport, { content }) as Promise<{ file: string }>,
-    transcribeAudio: (payload: { audioBase64: string; mimeType?: string; language?: string }) =>
+    transcribeAudio: (payload: { audio: Uint8Array; mimeType?: string; language?: string }) =>
       ipcRenderer.invoke(DESKTOP_INVOKE_CHANNELS.VoiceTranscribe, payload),
     checkSilenceCommand: (payload: { text: string }) =>
       ipcRenderer.invoke(DESKTOP_INVOKE_CHANNELS.VoiceSilenceCommand, payload) as Promise<{

@@ -19,6 +19,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use base64::Engine as _;
 use async_trait::async_trait;
 use serde_json::{json, Value};
 use tauri::AppHandle;
@@ -112,8 +113,11 @@ impl ToolHandler for VoiceToolHandler {
                         "errorCode": "invalid_args",
                     }));
                 };
+                let Ok(audio) = base64::engine::general_purpose::STANDARD.decode(audio_base64) else {
+                    return Ok(json!({ "success": false, "error": "audioBase64 inválido", "errorCode": "invalid_args" }));
+                };
                 let req = TranscribeRequest {
-                    audio_base64: audio_base64.to_string(),
+                    audio,
                     mime_type: args.get("mimeType").and_then(Value::as_str).map(str::to_string),
                     language: args.get("language").and_then(Value::as_str).map(str::to_string),
                 };

@@ -80,14 +80,6 @@ function isIgnorableTranscribeError(error: string): boolean {
   return IGNORABLE_TRANSCRIBE_ERROR.test(error)
 }
 
-export function bytesToBase64(bytes: Uint8Array): string {
-  let binary = ''
-
-  for (const byte of bytes) binary += String.fromCharCode(byte)
-
-  return btoa(binary)
-}
-
 const PCM_SAMPLE_RATE = 16_000
 
 export const PCM_MIME_TYPE = `audio/pcm;rate=${PCM_SAMPLE_RATE}`
@@ -143,7 +135,7 @@ export function requestTranscript(pcm: Uint8Array, context: MediaRecorderContext
   const startedAt = performance.now()
   const pending = (
     context.runtime.transcribeAudio({
-      audioBase64: bytesToBase64(pcm),
+      audio: pcm,
       mimeType: PCM_MIME_TYPE,
       language: context.lang,
     }) as Promise<TranscribeResponse>

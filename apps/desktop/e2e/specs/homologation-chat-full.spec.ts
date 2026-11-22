@@ -31,7 +31,7 @@ type BridgeWindow = Window & {
       saveSetting: (k: string, v: unknown) => Promise<unknown>
       onAssistantMessage: (cb: (msg: { content: string }) => void) => void
       onChatError: (cb: (err: { message: string }) => void) => void
-      transcribeAudio: (opts: { audioBase64: string; mimeType: string }) => Promise<unknown>
+      transcribeAudio: (opts: { audio: Uint8Array; mimeType: string }) => Promise<unknown>
       speakText: (text: string) => Promise<{ audio?: unknown; mimeType?: string }>
     }
   }
@@ -210,7 +210,7 @@ test.describe('Homologação — Chat + Tools + Vision + Voice', () => {
     const sttResult = await p.evaluate(async () => {
       try {
         return await (window as unknown as BridgeWindow).electronAPI?.runtime.transcribeAudio({
-          audioBase64: '',
+          audio: new Uint8Array(0),
           mimeType: 'audio/webm',
         })
       } catch (e) {

@@ -10,7 +10,7 @@
 //!   dispatch, sem caminho paralelo. `browser` já era renderer-only no lado TS (`runSttProvider`
 //!   lança para esse valor) e continua sem porte: [`unsupported_provider_response`] cobre esse e
 //!   qualquer provider desconhecido.
-//! - Áudio chega sempre como PCM16 mono cru em base64 (`audio/pcm;rate=16000`,
+//! - Áudio chega sempre como PCM16 mono cru (`audio/pcm;rate=16000`,
 //!   `speech-transcribe.ts::PCM_MIME_TYPE`) para o caminho normal de fala; qualquer outro
 //!   `mimeType` (webm/ogg do `MediaRecorder`, usado pela tela de homologação) já era rejeitado
 //!   pelo Whisper local no lado TS também (`stt-provider-runner.ts` lança a mesma mensagem) —
@@ -64,15 +64,18 @@ const NEURAL_VAD_NO_SPEECH: &str = "sem fala: o VAD neural (Silero) não ouviu v
 /// AGENTS.md §"Isolamento de processo") mas sem limite superior de tamanho: um payload de centenas
 /// de MB passaria pelo `min(1)` do schema TS e chegaria inteiro ao Whisper, tudo em memória.
 const MAX_AUDIO_BASE64_CHARS: usize = 16_000_000;
+/// Teto do corpo binário (`bridge::mika_transcribe_pcm`), espelhado no schema TS: 5 min exatos de
+/// PCM16 mono 16 kHz (o teto em chars acima é a mesma ordem, com folga de arredondamento).
+const MAX_AUDIO_BYTES: usize = 5 * 60 * DEFAULT_PCM_SAMPLE_RATE as usize * 2;
 
-/// Payload de `mika:voice-transcribe`, espelhando `desktopTranscribeRequestSchema`
-/// (`audioBase64` obrigatório e não-vazio; `mimeType`/`language` opcionais).
+/// Pedido de transcrição já com o PCM decodificado: chega como corpo binário do renderer
+/// (`desktopTranscribeRequestSchema`) ou como `audioBase64` no JSON (tool `voice`, rota legada).
 ///
 /// `pub(crate)`: `voice::voice_tool` (ação `transcribe` da tool `voice`, TS `tools/voice.ts`)
 /// monta este MESMO tipo para reusar [`transcribe_pcm`] em vez de duplicar a resolução de
 /// provedor/mimeType/sample-rate.
 pub(crate) struct TranscribeRequest {
-    pub(crate) audio_base64: String,
+    pub(crate) audio: Vec<u8>,
     pub(crate) mime_type: Option<String>,
     pub(crate) language: Option<String>,
 }
@@ -91,11 +94,25 @@ fn parse_payload(payload: &Value) -> Result<TranscribeRequest, String> {
             "'audioBase64' excede o teto de {MAX_AUDIO_BASE64_CHARS} caracteres (~5min de PCM16 mono 16kHz)"
         ));
     }
+    let audio = base64::engine::general_purpose::STANDARD
+        .decode(audio_base64.as_bytes())
+        .map_err(|e| format!("'audioBase64' inválido: {e}"))?;
     Ok(TranscribeRequest {
-        audio_base64,
+        audio,
         mime_type: payload["mimeType"].as_str().map(str::to_string),
         language: payload["language"].as_str().map(str::to_string),
     })
+}
+
+/// Corpo binário de `mika_transcribe_pcm`: mesmas regras do JSON (não-vazio, teto de ~5 min).
+fn request_from_bytes(audio: Vec<u8>, mime_type: Option<String>, language: Option<String>) -> Result<TranscribeRequest, String> {
+    if audio.is_empty() {
+        return Err("áudio ausente ou vazio".to_string());
+    }
+    if audio.len() > MAX_AUDIO_BYTES {
+        return Err(format!("áudio excede o teto de {MAX_AUDIO_BYTES} bytes (~5min de PCM16 mono 16kHz)"));
+    }
+    Ok(TranscribeRequest { audio, mime_type, language })
 }
 
 /// `true` = descartar: o VAD rodou sem ouvir voz (Silero + `speech_gate.rs`) E o motor é `silero`, ou
@@ -104,10 +121,9 @@ pub(super) fn neural_vad_rejects(engine: &str, ignore_typing: bool, verdict: Opt
     verdict == Some(false) && (engine == "silero" || (ignore_typing && keystrokes))
 }
 
-/// Duração do PCM16 mono 16 kHz vinda em base64, mais [`NEURAL_VAD_SLACK_MS`].
-fn pcm_window_ms(base64_len: usize) -> u64 {
-    let bytes = (base64_len as u64) * 3 / 4;
-    bytes / 2 * 1_000 / u64::from(DEFAULT_PCM_SAMPLE_RATE) + NEURAL_VAD_SLACK_MS
+/// Duração do PCM16 mono 16 kHz, mais [`NEURAL_VAD_SLACK_MS`].
+fn pcm_window_ms(pcm_len: usize) -> u64 {
+    pcm_len as u64 / 2 * 1_000 / u64::from(DEFAULT_PCM_SAMPLE_RATE) + NEURAL_VAD_SLACK_MS
 }
 
 fn now_ms() -> u64 {
@@ -258,11 +274,7 @@ pub(crate) async fn transcribe_pcm(store: &ConfigStore, data_dir: PathBuf, req: 
         let mime_type = req.mime_type.as_deref().unwrap_or("").to_string();
         let sample_rate = pcm_sample_rate(&mime_type);
         let language = resolve_language(store, req.language);
-        let audio = match base64::engine::general_purpose::STANDARD.decode(req.audio_base64.as_bytes()) {
-            Ok(bytes) => bytes,
-            Err(e) => return json!({ "success": false, "error": format!("audioBase64 inválido: {e}") }),
-        };
-        return super::stt_cloud::transcribe(store, cloud, audio, &mime_type, sample_rate, language).await;
+        return super::stt_cloud::transcribe(store, cloud, req.audio, &mime_type, sample_rate, language).await;
     }
 
     if !is_local_provider(&provider) {
@@ -277,12 +289,7 @@ pub(crate) async fn transcribe_pcm(store: &ConfigStore, data_dir: PathBuf, req: 
     let language = resolve_language(store, req.language);
     let whisper_model = resolve_whisper_model(store);
 
-    let pcm = match base64::engine::general_purpose::STANDARD.decode(req.audio_base64.as_bytes()) {
-        Ok(bytes) => bytes,
-        Err(e) => return json!({ "success": false, "error": format!("audioBase64 inválido: {e}") }),
-    };
-
-    match transcribe_local(&provider, &whisper_model, data_dir, pcm, sample_rate, language).await {
+    match transcribe_local(&provider, &whisper_model, data_dir, req.audio, sample_rate, language).await {
         Ok(Some(text)) => json!({ "success": true, "data": { "text": without_annotations(&text) } }),
         // Áudio curto demais (< 100ms) não é erro — mesmo contrato do "no-speech" que o gate do TS
         // já devolvia como texto vazio, e não como falha.
@@ -318,7 +325,25 @@ pub fn prewarm_local_stt(app: &AppHandle) {
 /// `{success:false, error}` — mesmo contrato de `voiceTranscribe` em `ipc.ts`, que também envolve
 /// tudo num `try/catch` e nunca deixa a promessa do IPC rejeitar por uma falha de ASR.
 pub async fn handle(app: &AppHandle, payload: &Value) -> Result<Value, String> {
-    let req = parse_payload(payload)?;
+    run(app, parse_payload(payload)?).await
+}
+
+/// Caminho binário (`bridge::mika_transcribe_pcm`): fora do roteador de canais, então a guarda de
+/// superfície de `voice/mod.rs::VoiceModule::invoke` é refeita aqui (como `vad_audio::handle_binary`).
+pub async fn handle_binary(
+    app: &AppHandle,
+    ctx: &crate::protocol::InvokeContext,
+    audio: Vec<u8>,
+    mime_type: Option<String>,
+    language: Option<String>,
+) -> Result<Value, String> {
+    if !crate::shell_actions::is_owner_surface(ctx.window_type) {
+        return Err(format!("mika:voice-transcribe recusado para {:?}", ctx.window_type));
+    }
+    run(app, request_from_bytes(audio, mime_type, language)?).await
+}
+
+async fn run(app: &AppHandle, req: TranscribeRequest) -> Result<Value, String> {
     // "Pausar mic e tela" (bandeja): nenhum áudio vira texto, nem local nem na nuvem.
     if crate::modules::privacy::senses::paused() {
         return Ok(json!({ "success": false, "error": "mic paused" }));
@@ -336,7 +361,7 @@ pub async fn handle(app: &AppHandle, payload: &Value) -> Result<Value, String> {
 
     let engine = store.get(CFG_VAD_ENGINE).and_then(|v| v.as_str().map(str::to_string)).unwrap_or_default();
     let ignore_typing = super::speech_gate::ignore_typing(&store);
-    let (window_ms, now) = (pcm_window_ms(req.audio_base64.len()), now_ms());
+    let (window_ms, now) = (pcm_window_ms(req.audio.len()), now_ms());
     let activity = super::user_speech_activity::global();
     let verdict = activity.heard_voice_within(window_ms, now);
     if neural_vad_rejects(&engine, ignore_typing, verdict, activity.heard_keystrokes_within(window_ms, now)) {

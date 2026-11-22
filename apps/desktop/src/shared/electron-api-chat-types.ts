@@ -70,7 +70,8 @@ export type ChatRuntimeApi = {
   /** "Report this response": saves `reports/<ts>.json` on this computer (response text, model, persona) and returns its path. Nothing is sent. */
   reportChatResponse: (content: string) => Promise<{ file: string }>
   transcribeAudio: (payload: {
-    audioBase64: string
+    /** PCM16 mono cru; atravessa o IPC como corpo binário (`mika_transcribe_pcm`). */
+    audio: Uint8Array
     mimeType?: string
     language?: string
   }) => Promise<{ success: boolean; data?: { text: string }; error?: string }>

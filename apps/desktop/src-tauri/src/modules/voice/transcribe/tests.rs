@@ -17,7 +17,7 @@ fn parse_payload_reads_optional_fields_when_present() {
         "language": "pt",
     }))
     .unwrap();
-    assert_eq!(req.audio_base64, "AAA=");
+    assert_eq!(req.audio, vec![0, 0]);
     assert_eq!(req.mime_type.as_deref(), Some("audio/pcm;rate=16000"));
     assert_eq!(req.language.as_deref(), Some("pt"));
 }
@@ -44,6 +44,21 @@ fn parse_payload_rejects_audio_base64_over_the_size_cap() {
 fn parse_payload_accepts_audio_base64_at_the_size_cap() {
     let at_cap = "A".repeat(MAX_AUDIO_BASE64_CHARS);
     assert!(parse_payload(&json!({ "audioBase64": at_cap })).is_ok());
+}
+
+/// Base64 malformado é violação de contrato como o vazio: rejeita na borda, antes do STT.
+#[test]
+fn parse_payload_rejects_invalid_base64() {
+    assert!(parse_payload(&json!({ "audioBase64": "não é base64" })).is_err());
+}
+
+/// Caminho binário (`mika_transcribe_pcm`): mesmo teto do JSON, medido em bytes de PCM.
+#[test]
+fn request_from_bytes_enforces_non_empty_and_the_size_cap() {
+    assert!(request_from_bytes(Vec::new(), None, None).is_err());
+    assert!(request_from_bytes(vec![0; MAX_AUDIO_BYTES + 1], None, None).err().unwrap().contains("excede o teto"));
+    let req = request_from_bytes(vec![0; MAX_AUDIO_BYTES], Some("audio/pcm".into()), Some("pt".into())).unwrap();
+    assert_eq!((req.audio.len(), req.mime_type.as_deref(), req.language.as_deref()), (MAX_AUDIO_BYTES, Some("audio/pcm"), Some("pt")));
 }
 
 #[test]
@@ -185,7 +200,7 @@ async fn transcribe_pcm_routes_cloud_providers_to_stt_cloud_instead_of_unsupport
     let (store, _dir) = test_store();
     store.set(CFG_ASR_PROVIDER, json!("groq-whisper")).unwrap();
 
-    let req = TranscribeRequest { audio_base64: "AAA=".to_string(), mime_type: Some("audio/pcm;rate=16000".to_string()), language: None };
+    let req = TranscribeRequest { audio: vec![0, 0], mime_type: Some("audio/pcm;rate=16000".to_string()), language: None };
     let result = transcribe_pcm(&store, std::env::temp_dir(), req).await;
 
     assert_eq!(result["success"], json!(false));
@@ -238,9 +253,10 @@ fn energy_engine_drops_a_window_that_was_only_typing_when_ignore_typing_is_on() 
     assert!(!neural_vad_rejects("energy", true, Some(false), false), "sem tecla vista: energia decide");
 }
 
-/// 16 kHz PCM16 mono: 32_000 bytes = 1 s = 42_668 chars de base64 (arredondado para cima).
+/// 16 kHz PCM16 mono: 32_000 bytes = 1 s. Mede bytes de PCM, não chars de base64: o caminho
+/// binário (`mika_transcribe_pcm`) e o JSON têm de abrir a mesma janela para a mesma fala.
 #[test]
 fn pcm_window_covers_the_utterance_plus_slack() {
-    assert_eq!(pcm_window_ms(42_668), 1_000 + NEURAL_VAD_SLACK_MS);
+    assert_eq!(pcm_window_ms(32_000), 1_000 + NEURAL_VAD_SLACK_MS);
     assert_eq!(pcm_window_ms(0), NEURAL_VAD_SLACK_MS);
 }

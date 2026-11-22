@@ -153,14 +153,16 @@ export const desktopChatClearResponseSchema = z.object({
   success: z.boolean(),
 })
 
-// ~5min de PCM16 mono a 16kHz em base64 — espelha `MAX_AUDIO_BASE64_CHARS`
+// ~5min de PCM16 mono a 16kHz — espelha `MAX_AUDIO_BYTES`
 // (`apps/desktop/src-tauri/src/modules/voice/transcribe.rs`). Os dois lados têm de rejeitar o
-// mesmo payload oversized: sem o `.max()` aqui, um cliente TS confiaria no schema e só descobriria
-// o teto na resposta de erro do Rust.
-const MAX_AUDIO_BASE64_CHARS = 16_000_000
+// mesmo payload oversized: sem o teto aqui, um cliente TS confiaria no schema e só descobriria
+// o teto na resposta de erro do Rust. O PCM atravessa o IPC como corpo binário (`mika_transcribe_pcm`).
+const MAX_AUDIO_BYTES = 5 * 60 * 16_000 * 2
 
 export const desktopTranscribeRequestSchema = z.object({
-  audioBase64: z.string().min(1).max(MAX_AUDIO_BASE64_CHARS),
+  audio: z
+    .instanceof(Uint8Array)
+    .refine((audio) => audio.byteLength > 0 && audio.byteLength <= MAX_AUDIO_BYTES, 'áudio vazio ou acima do teto'),
   mimeType: z.string().optional(),
   language: z.string().optional(),
 })

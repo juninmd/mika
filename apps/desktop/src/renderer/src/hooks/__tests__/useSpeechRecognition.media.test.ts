@@ -184,7 +184,7 @@ describe('startMediaRecorderTranscription', () => {
 
     const pushAudio = (samples: number) =>
       workletPort?.onmessage?.({ data: { type: 'audio', audio: new Float32Array(samples).fill(0.2) } } as MessageEvent)
-    const sentBytes = (call: number) => atob(transcribeAudio.mock.calls[call]?.[0].audioBase64).length
+    const sentBytes = (call: number) => transcribeAudio.mock.calls[call]?.[0].audio.byteLength
 
     beforeEach(() => {
       vi.useFakeTimers()

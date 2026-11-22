@@ -143,7 +143,7 @@ const ROUTE_AUDIT: &[(&str, RouteAudit)] = &[
     ("voice:mic-state-request", RouteAudit::Allowlisted("sem payload; devolve o estado atual do microfone")),
     (
         "mika:voice-transcribe",
-        RouteAudit::Validated("parse_payload: audioBase64 não vazio e agora com teto MAX_AUDIO_BASE64_CHARS"),
+        RouteAudit::Validated("parse_payload (audioBase64, teto MAX_AUDIO_BASE64_CHARS) e request_from_bytes (corpo binário, teto MAX_AUDIO_BYTES): não vazio e com teto"),
     ),
     (
         "voice:vad-audio",
