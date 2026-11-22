@@ -1,7 +1,7 @@
 import { t } from '@mika/sdk/i18n'
 import { toDisplayError } from '@mika/sdk-ui'
 import { useEffect, useRef, useState } from 'react'
-import { blobToPcm16, bytesToBase64, PCM_MIME_TYPE } from '../../hooks/speech-transcribe'
+import { blobToPcm16, PCM_MIME_TYPE } from '../../hooks/speech-transcribe'
 import { AUDIO_INPUT_DEVICE_KEY } from '../../lib/audio-storage-keys'
 import { getUserMediaWithFallback } from '../../lib/mic-analyser'
 import { createGenerationGuard, openMicIfCurrent } from '../../lib/mic-stream'
@@ -41,7 +41,7 @@ export function useHomologationVad() {
 
       const api = getElectronApi()
       const res = await api.runtime.transcribeAudio({
-        audioBase64: bytesToBase64(pcm),
+        audio: pcm,
         mimeType: PCM_MIME_TYPE,
       })
 

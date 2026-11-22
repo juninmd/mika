@@ -74,7 +74,7 @@ mod stt_smoke;
 // `pub(crate)` só por causa de `stt_cloud::validate_credentials`, que a tela de Configurações
 // chama para o botão "testar conexão" — o resto do módulo continua interno a `voice`.
 pub(crate) mod stt_cloud;
-mod transcribe;
+pub mod transcribe;
 pub mod tts;
 // `pub` só porque `brain::awareness::engine` lê o tracker de atividade de voz para gatear a fala
 // proativa (defects.md "barge-in", item 3) — o resto do módulo segue interno a `voice`.

@@ -118,9 +118,31 @@ function isBinaryVadPayload(
   return samples instanceof Float32Array && typeof amplitude === 'number'
 }
 
+const TRANSCRIBE_CHANNEL = 'mika:voice-transcribe'
+
+/**
+ * PCM16 da fala como corpo binário: base64 custava +33% de bytes e um encode por fala, e o JSON
+ * puro viraria `number[]` (`toJsonSafe`). `mimeType`/`language` vão nos headers.
+ */
+function transcribeBinary(payload: { audio: Uint8Array; mimeType?: string; language?: string }): Promise<unknown> {
+  const headers: Record<string, string> = {}
+  if (payload.mimeType !== undefined) headers['x-mika-mime-type'] = payload.mimeType
+  if (payload.language !== undefined) headers['x-mika-language'] = payload.language
+  return invoke('mika_transcribe_pcm', payload.audio, { headers })
+}
+
+function isBinaryTranscribePayload(
+  channel: string,
+  payload: unknown,
+): payload is { audio: Uint8Array; mimeType?: string; language?: string } {
+  if (channel !== TRANSCRIBE_CHANNEL || typeof payload !== 'object' || payload === null) return false
+  return (payload as { audio?: unknown }).audio instanceof Uint8Array
+}
+
 export const ipcRenderer = {
   // biome-ignore lint/suspicious/noExplicitAny: mesma permissividade de Promise<any> do ipcRenderer.invoke real do Electron — cada chamador em src/renderer/bridge/ já tipa o retorno.
   invoke(channel: string, payload?: unknown): Promise<any> {
+    if (isBinaryTranscribePayload(channel, payload)) return transcribeBinary(payload)
     return invoke('mika_invoke', args(channel, payload))
   },
 

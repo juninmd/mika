@@ -130,7 +130,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             bridge::mika_invoke,
             bridge::mika_send,
-            bridge::mika_send_pcm
+            bridge::mika_send_pcm,
+            bridge::mika_transcribe_pcm
         ])
         .setup(|app| {
             let handle = app.handle().clone();

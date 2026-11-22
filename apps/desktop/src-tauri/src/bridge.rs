@@ -187,6 +187,23 @@ pub async fn mika_send_pcm(webview: Webview, app: AppHandle, request: tauri::ipc
     crate::modules::voice::vad_audio::handle_binary(&app, &ctx, bytes, amplitude, playing).await
 }
 
+/// Fala recortada (`mika:voice-transcribe`) como corpo binário PCM16 — sem o base64 de antes.
+/// `mimeType`/`language` vão nos headers (ver `tauri-renderer-runtime.ts`).
+#[tauri::command]
+pub async fn mika_transcribe_pcm(webview: Webview, app: AppHandle, request: tauri::ipc::Request<'_>) -> Result<Value, String> {
+    let ctx = context_from(&webview);
+    let tauri::ipc::InvokeBody::Raw(bytes) = request.body() else {
+        return Err("mika_transcribe_pcm espera corpo binário".to_string());
+    };
+    let (mime_type, language) = parse_transcribe_headers(request.headers());
+    crate::modules::voice::transcribe::handle_binary(&app, &ctx, bytes.clone(), mime_type, language).await
+}
+
+fn parse_transcribe_headers(headers: &tauri::http::HeaderMap) -> (Option<String>, Option<String>) {
+    let text = |name: &str| headers.get(name).and_then(|v| v.to_str().ok()).map(str::to_string);
+    (text("x-mika-mime-type"), text("x-mika-language"))
+}
+
 fn parse_vad_headers(headers: &tauri::http::HeaderMap) -> Result<(f32, Option<bool>), String> {
     let text = |name: &str| headers.get(name).and_then(|v| v.to_str().ok());
     let amplitude = text("x-mika-amplitude")
@@ -197,7 +214,16 @@ fn parse_vad_headers(headers: &tauri::http::HeaderMap) -> Result<(f32, Option<bo
 
 #[cfg(test)]
 mod tests {
-    use super::{parse_vad_headers, SHELL_CHANNELS};
+    use super::{parse_transcribe_headers, parse_vad_headers, SHELL_CHANNELS};
+
+    #[test]
+    fn transcribe_headers_carry_optional_mime_and_language() {
+        let mut headers = tauri::http::HeaderMap::new();
+        assert_eq!(parse_transcribe_headers(&headers), (None, None));
+        headers.insert("x-mika-mime-type", "audio/pcm;rate=16000".parse().unwrap());
+        headers.insert("x-mika-language", "pt".parse().unwrap());
+        assert_eq!(parse_transcribe_headers(&headers), (Some("audio/pcm;rate=16000".into()), Some("pt".into())));
+    }
 
     #[test]
     fn vad_headers_carry_amplitude_and_optional_playing() {

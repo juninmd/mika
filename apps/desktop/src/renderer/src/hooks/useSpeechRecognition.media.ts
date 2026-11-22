@@ -8,7 +8,6 @@ import { logVadSetupFailure, VAD_WORKLET_PATH } from './audio-playback-vad'
 import { createPartialTranscriber } from './speech-partials'
 import { createPreRollBuffer, preRollDurationMs } from './speech-preroll'
 import {
-  bytesToBase64,
   capturedPcm16,
   deliverTranscript,
   dropReason,
@@ -149,7 +148,7 @@ export async function startMediaRecorderTranscription({
     ? createPartialTranscriber({
         transcribe: (pcm) =>
           runtime.transcribeAudio({
-            audioBase64: bytesToBase64(pcm),
+            audio: pcm,
             mimeType: PCM_MIME_TYPE,
             language: lang,
           }) as Promise<TranscribeResponse>,
