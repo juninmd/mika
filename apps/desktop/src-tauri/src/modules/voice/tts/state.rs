@@ -9,7 +9,7 @@ use crate::config::store::ConfigStore;
 use crate::modules::voice::tts::preprocessor::TextPreprocessorOptions;
 use crate::modules::voice::tts::providers::remote::{AzureTtsOptions, ElevenLabsOptions, GoogleTtsOptions, OpenAiTtsOptions};
 
-pub const DEFAULT_SUPERTONIC_STEPS: u32 = 8;
+pub const DEFAULT_SUPERTONIC_STEPS: u32 = 5;
 
 #[derive(Clone)]
 pub struct TtsState {
@@ -123,7 +123,7 @@ mod tests {
         let state = TtsState::default();
         assert_eq!(state.provider, "supertonic");
         assert_eq!(state.supertonic_voice, "F3");
-        assert_eq!(state.supertonic_steps, 8);
+        assert_eq!(state.supertonic_steps, 5);
         assert_eq!(state.piper_voice, "pt_BR-faber-medium");
         assert_eq!(state.piper_binary_path, "");
         assert_eq!(state.piper_rate, 1.0);
