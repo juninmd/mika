@@ -283,7 +283,16 @@ impl ConfigStore {
 /// v0 é o arquivo gravado antes do campo `schemaVersion` existir; v1 é só o carimbo (a forma do
 /// arquivo não mudou). Mudança incompatível de chave/forma = um passo novo aqui, nunca editar um
 /// passo já distribuído.
-const CONFIG_MIGRATIONS: &[fn(&mut Map<String, Value>)] = &[|_| {}, drop_untouched_capture_blocklist, keep_previous_defaults, drop_retired_piper_voice];
+const CONFIG_MIGRATIONS: &[fn(&mut Map<String, Value>)] = &[|_| {}, drop_untouched_capture_blocklist, keep_previous_defaults, drop_retired_piper_voice, drop_old_supertonic_steps_default];
+
+/// v4→v5: o default do Supertonic caiu de 8 para 5 passos. O snapshot gravado não separa "nunca
+/// mexeu" de "escolheu 8", então o 8 antigo perde a chave e ganha o default novo; outro valor fica.
+fn drop_old_supertonic_steps_default(root: &mut Map<String, Value>) {
+    let Some(voice) = root.get_mut("voice").and_then(Value::as_object_mut) else { return };
+    if voice.get("supertonicSteps").and_then(Value::as_u64) == Some(8) {
+        voice.remove("supertonicSteps");
+    }
+}
 
 /// v3→v4: vozes Piper que saíram do catálogo (`piper/catalog.rs`: licença do dataset não verificada
 /// ou só-pesquisa). Quem as tinha salva perde a chave e ganha o default; voz do catálogo fica.
@@ -736,6 +745,19 @@ mod tests {
             fs::write(dir.path().join("config.json"), body.to_string()).unwrap();
             let store = ConfigStore::open(dir.path(), crate::config::schemas::registry()).unwrap();
             assert_eq!(store.get("voice.piperVoice"), Some(json!(expected)), "{saved}");
+        }
+    }
+
+    /// v4→v5: o default do Supertonic caiu de 8 para 5 passos (TTFA 764 → 529 ms). O snapshot gravado
+    /// tem o 8 antigo mesmo para quem nunca mexeu: ele volta ao default; outro valor salvo fica.
+    #[test]
+    fn the_old_supertonic_steps_default_moves_to_the_new_one_and_a_custom_value_is_kept() {
+        for (saved, expected) in [(8, 5), (12, 12), (3, 3)] {
+            let dir = tempdir::Dir::new();
+            let body = json!({ "schemaVersion": 4, "voice": { "supertonicSteps": saved } });
+            fs::write(dir.path().join("config.json"), body.to_string()).unwrap();
+            let store = ConfigStore::open(dir.path(), crate::config::schemas::registry()).unwrap();
+            assert_eq!(store.get("voice.supertonicSteps"), Some(json!(expected)), "{saved}");
         }
     }
 

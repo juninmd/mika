@@ -341,7 +341,7 @@ fn supertonic_fields() -> Vec<FieldSchema> {
                 .control("number")
                 .helper("settings.voiceTts.field.supertonicRate.helperText"),
         ),
-        int_range("supertonicSteps", 8, 2, 32).with_ui(
+        int_range("supertonicSteps", 5, 2, 32).with_ui(
             FieldUi::new("settings.voiceTts.field.supertonicSteps.label")
                 .control("number")
                 .helper("settings.voiceTts.field.supertonicSteps.helperText"),
