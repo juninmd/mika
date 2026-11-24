@@ -71,7 +71,8 @@
       "!**/playwright-report",
       "!**/apps/desktop/Python",
       "!**/live2d-action-catalog.generated.ts",
-      "!**/e2e"
+      "!**/e2e",
+      "!**/apps/mobile/src-tauri/gen"
     ]
   }
 }

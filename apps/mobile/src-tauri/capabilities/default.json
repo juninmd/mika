@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/mobile-schema.json",
+  "identifier": "default",
+  "description": "Janela principal do protótipo",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

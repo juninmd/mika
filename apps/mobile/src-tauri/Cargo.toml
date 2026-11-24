@@ -1,0 +1,24 @@
+[package]
+name = "mika-mobile"
+version = "0.0.1"
+description = "Mika Android prototype"
+license-file = "../../../LICENSE"
+publish = false
+edition = "2021"
+
+# Own workspace: the prototype never touches the desktop crate's lockfile or build.
+[workspace]
+
+[lib]
+name = "mika_mobile_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+log = "0.4"
