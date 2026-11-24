@@ -88,6 +88,17 @@ export function killStaleInstances(): void {
   }
 }
 
+/**
+ * Mata o app e espera o `exit`. Sem esperar, o Node não colhe o filho enquanto o `spawnSync` de
+ * `killStaleInstances` bloqueia o event loop: o zumbi segue casando com `pgrep` e o laço gastava os 5 s inteiros.
+ */
+async function stopApp(child: ChildProcess): Promise<void> {
+  if (child.exitCode !== null || child.signalCode !== null) return
+  const exited = new Promise<void>((resolveExit) => child.once('exit', () => resolveExit()))
+  killProcessTree(child)
+  await Promise.race([exited, new Promise((r) => setTimeout(r, 5_000))])
+}
+
 /** Encerra o app e os filhos dele (WebView, MCP): árvore pelo `taskkill`, grupo de processos fora do Windows. */
 export function killProcessTree(child: ChildProcess): void {
   if (!child.pid) {
@@ -455,7 +466,7 @@ export const test = base.extend<MikaFixtures & MikaOptions>({
               await browser?.close()
               await host?.close()
             } catch {}
-            killProcessTree(child)
+            await stopApp(child)
           },
         }
 
@@ -465,7 +476,7 @@ export const test = base.extend<MikaFixtures & MikaOptions>({
           await browser?.close()
           await host?.close()
         } catch {}
-        if (child.exitCode === null && !child.killed) killProcessTree(child)
+        await stopApp(child)
         killStaleInstances()
       }
     },
