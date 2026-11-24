@@ -231,7 +231,8 @@ jobs:
         include:
           - { name: windows-x86_64, os: windows-latest, bundles: nsis }
           - { name: linux-x86_64, os: ubuntu-24.04, bundles: appimage }
-          - { name: darwin-aarch64, os: macos-latest, bundles: "app,dmg" }
+          # macOS desativado a pedido (2026-11-24); para religar, descomente aqui, no `add_platform` e no `Publicar`.
+          # - { name: darwin-aarch64, os: macos-latest, bundles: "app,dmg" }
     defaults:
       run:
         shell: bash
@@ -405,7 +406,7 @@ jobs:
           }
           add_platform windows-x86_64 '*-setup.exe'
           add_platform linux-x86_64 '*.AppImage'
-          add_platform darwin-aarch64 '*.app.tar.gz'
+          # add_platform darwin-aarch64 '*.app.tar.gz'
           cat latest.json
 
       - name: Publicar
@@ -415,7 +416,8 @@ jobs:
           gh release delete "v$VERSION" --repo "$GITHUB_REPOSITORY" --yes || true
           gh release create "v$VERSION" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
             --title "Mika $VERSION" --notes-file notes.md --generate-notes --draft \
-            *-setup.exe *-setup.exe.sig *.AppImage *.AppImage.sig *.dmg *.app.tar.gz *.app.tar.gz.sig latest.json
+            *-setup.exe *-setup.exe.sig *.AppImage *.AppImage.sig latest.json
+          # Com macOS: *.dmg *.app.tar.gz *.app.tar.gz.sig
           gh release edit "v$VERSION" --repo "$GITHUB_REPOSITORY" --draft=false --latest
 
   steam:
