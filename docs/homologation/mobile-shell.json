@@ -1,0 +1,54 @@
+{
+  "identidade": {
+    "id": "mobile-shell",
+    "titulo": "Protótipo Android: avatar VRM e chat remoto",
+    "perfil": "adapter"
+  },
+  "artefato": {
+    "commit": "26667828dbb80a0d27485a026e87987a23110615+dirty",
+    "tree": "26eb4f34173be0f7",
+    "contract": "79a9f87760dfc4f0",
+    "deps": {
+      "@mika/sdk": "workspace:*",
+      "@pixiv/three-vrm": "3.5.5",
+      "@pixiv/three-vrm-animation": "3.5.5",
+      "@tauri-apps/api": "^2.12.4",
+      "react": "catalog:",
+      "react-dom": "catalog:",
+      "three": "0.187.0",
+      "zustand": "^5.1.0"
+    },
+    "lockfile": "12dd644f878388bd"
+  },
+  "ambiente": {
+    "plataforma": "linux",
+    "node": "v24.22.3",
+    "data": "2026-11-24"
+  },
+  "criterios": [
+    {
+      "id": "fronteira",
+      "status": "ok",
+      "detail": "manifesto × código"
+    },
+    {
+      "id": "vivo",
+      "status": "ok",
+      "detail": "136 arquivo(s) fora do módulo o referenciam"
+    },
+    {
+      "id": "headless",
+      "status": "ok",
+      "detail": "1 arquivo(s) do contrato fora do Electron"
+    },
+    {
+      "id": "contrato",
+      "status": "ok",
+      "detail": "1 arquivo(s) de teste"
+    }
+  ],
+  "estado": "aprovado",
+  "limites": [
+    "Sem prova de carga, GPU ou matriz por SO; o E2E cobre montagem, não desempenho."
+  ]
+}
