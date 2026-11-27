@@ -1,0 +1,32 @@
+[
+  {
+    "provider": "parakeet",
+    "texto": "Ah, e ela voltou? Ela tá diferente, ela. Eu tô mudando ela. Ah.",
+    "ms": [
+      284.29999999701977,
+      334.70000000298023,
+      298.40000000596046
+    ],
+    "mediana": 298
+  },
+  {
+    "provider": "nemotron",
+    "texto": "Ela voltou ela tá diferente ela tô mudando ela",
+    "ms": [
+      1280.2999999970198,
+      1157.9000000059605,
+      1185.4000000059605
+    ],
+    "mediana": 1185
+  },
+  {
+    "provider": "local-whisper",
+    "texto": "Ah, ela voltou! A pra diferente ela, eu tô mudando ela.",
+    "ms": [
+      432.8999999910593,
+      897.3999999910593,
+      741.7000000029802
+    ],
+    "mediana": 742
+  }
+]
