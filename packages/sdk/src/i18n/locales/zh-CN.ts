@@ -139,7 +139,6 @@ export const zhCN: TranslationDict = {
   'sdkUi.section.collapse': '收起{{name}}',
   'sdkUi.confirmButton.confirm': '确认',
   'sdkUi.confirmButton.cancel': '取消',
-  'sdkUi.confirmButton.confirmationPrefix': '确认',
   'sdkUi.auroraField.saved': '已保存',
   'sdkUi.auroraField.modifiedUnsaved': '已修改，未保存',
   'sdkUi.auroraField.hidePassword': '隐藏密码',

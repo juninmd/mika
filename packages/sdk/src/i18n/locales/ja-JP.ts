@@ -140,7 +140,6 @@ export const jaJP: TranslationDict = {
   'sdkUi.section.collapse': '{{name}}を折りたたむ',
   'sdkUi.confirmButton.confirm': '確認',
   'sdkUi.confirmButton.cancel': 'キャンセル',
-  'sdkUi.confirmButton.confirmationPrefix': '確認',
   'sdkUi.auroraField.saved': '保存済み',
   'sdkUi.auroraField.modifiedUnsaved': '変更あり、未保存',
   'sdkUi.auroraField.hidePassword': 'パスワードを隠す',

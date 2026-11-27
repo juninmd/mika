@@ -141,7 +141,6 @@ export const ruRU: TranslationDict = {
   'sdkUi.section.collapse': 'Свернуть: {{name}}',
   'sdkUi.confirmButton.confirm': 'Подтвердить',
   'sdkUi.confirmButton.cancel': 'Отмена',
-  'sdkUi.confirmButton.confirmationPrefix': 'Подтверждение',
   'sdkUi.auroraField.saved': 'Сохранено',
   'sdkUi.auroraField.modifiedUnsaved': 'Изменено, не сохранено',
   'sdkUi.auroraField.hidePassword': 'Скрыть пароль',

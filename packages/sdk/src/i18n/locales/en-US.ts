@@ -140,7 +140,6 @@ export const enUS: TranslationDict = {
   'sdkUi.section.collapse': 'Collapse {{name}}',
   'sdkUi.confirmButton.confirm': 'Confirm',
   'sdkUi.confirmButton.cancel': 'Cancel',
-  'sdkUi.confirmButton.confirmationPrefix': 'Confirmation',
   'sdkUi.auroraField.saved': 'Saved',
   'sdkUi.auroraField.modifiedUnsaved': 'Modified, not saved',
   'sdkUi.auroraField.hidePassword': 'Hide password',

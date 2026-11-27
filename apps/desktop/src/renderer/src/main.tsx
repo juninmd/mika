@@ -1,4 +1,7 @@
 import './lib/expose-plugin-globals'
+// Tokens, base and component CSS come first: `./styles.css` (Tailwind + the app's theme tokens)
+// is imported later and keeps the last word on body/typography.
+import '@juninmd/sonido/styles.css'
 import { MotionConfig } from 'framer-motion'
 import React, { lazy, Suspense } from 'react'
 import ReactDOM from 'react-dom/client'

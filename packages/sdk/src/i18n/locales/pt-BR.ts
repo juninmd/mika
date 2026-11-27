@@ -140,7 +140,6 @@ export const ptBR: TranslationDict = {
   'sdkUi.section.collapse': 'Recolher {{name}}',
   'sdkUi.confirmButton.confirm': 'Confirmar',
   'sdkUi.confirmButton.cancel': 'Cancelar',
-  'sdkUi.confirmButton.confirmationPrefix': 'Confirmação',
   'sdkUi.auroraField.saved': 'Salvo',
   'sdkUi.auroraField.modifiedUnsaved': 'Modificado, não salvo',
   'sdkUi.auroraField.hidePassword': 'Ocultar senha',

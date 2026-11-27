@@ -5,13 +5,13 @@
     "perfil": "contract"
   },
   "artefato": {
-    "commit": "85d4c3246d6822ea38363f7ff20a585bd91f27d9+dirty",
-    "tree": "c5d3fbd12fd98ac3",
+    "commit": "b3e17f7430d068948e3cbaf5d5bd8b52d7c2b805+dirty",
+    "tree": "ebe190b633cfb23c",
     "contract": "65d0586d5991ee80",
     "deps": {
       "zod": "catalog:"
     },
-    "lockfile": "12dd644f878388bd"
+    "lockfile": "e0996adfb0556765"
   },
   "ambiente": {
     "plataforma": "win32",

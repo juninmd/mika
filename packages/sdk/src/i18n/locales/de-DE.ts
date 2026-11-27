@@ -142,7 +142,6 @@ export const deDE: TranslationDict = {
   'sdkUi.section.collapse': '{{name}} einklappen',
   'sdkUi.confirmButton.confirm': 'Bestätigen',
   'sdkUi.confirmButton.cancel': 'Abbrechen',
-  'sdkUi.confirmButton.confirmationPrefix': 'Bestätigung',
   'sdkUi.auroraField.saved': 'Gespeichert',
   'sdkUi.auroraField.modifiedUnsaved': 'Geändert, nicht gespeichert',
   'sdkUi.auroraField.hidePassword': 'Passwort verbergen',
