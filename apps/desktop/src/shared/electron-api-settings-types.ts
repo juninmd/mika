@@ -61,7 +61,7 @@ export type SettingsRuntimeApi = {
   }>
   wizardReact: (payload: { step: WizardReactStep }) => Promise<{ text: string }>
   prepareWizardAsset: (payload: {
-    assetId: 'vad' | 'whisper' | 'nemotron' | 'local-embedding' | 'tts' | 'ollama-llm' | 'ollama-embedding'
+    assetId: 'vad' | 'whisper' | 'nemotron' | 'parakeet' | 'local-embedding' | 'tts' | 'ollama-llm' | 'ollama-embedding'
     ttsProvider?: string
     ttsVoice?: string
     llmProvider?: string

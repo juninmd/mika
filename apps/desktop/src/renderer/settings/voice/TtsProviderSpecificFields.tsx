@@ -2,6 +2,7 @@ import type { TranslationDict } from '@mika/sdk/i18n'
 import { renderAzureFields, renderElevenLabsFields, renderGoogleFields } from './tts-cloud-provider-fields'
 import {
   renderOpenAiFields,
+  renderPhononFields,
   renderPiperFields,
   renderSupertonicFields,
   renderSystemFields,
@@ -30,6 +31,9 @@ export type ProviderSpecificFieldsProps = {
   azureTtsTextLimit: number
   azureTtsTimeoutMs: number
   piperRate: number
+  phononModel: string
+  phononVoice: string
+  huggingFaceToken: string
   supertonicRate: number
   supertonicSteps: number
   openaiTtsSpeed: number
@@ -45,6 +49,7 @@ export function ProviderSpecificFields(props: ProviderSpecificFieldsProps) {
   if (ttsProvider === 'elevenlabs') return renderElevenLabsFields(props)
   if (ttsProvider === 'azure-tts') return renderAzureFields(props)
   if (ttsProvider === 'piper') return renderPiperFields(props)
+  if (ttsProvider === 'phonon') return renderPhononFields(props)
   if (ttsProvider === 'supertonic') return renderSupertonicFields(props)
   if (ttsProvider === 'google-tts') return renderGoogleFields(props)
   if (ttsProvider === 'openai-tts') return renderOpenAiFields(props)

@@ -201,6 +201,8 @@ export const ruRU: WizardCopy = {
     vadDetail: 'Silero VAD: лёгкое и точное нейросетевое обнаружение',
     sttLabel: 'Распознавание речи (STT)',
     sttDetail: 'Локальная Nemotron (~790 МБ): понимает вашу речь, не выдумывая текст из шума',
+    sttParakeetDetail:
+      'Локальная Parakeet (~670 МБ): многоязычная, с пунктуацией и регистром, не выдумывает текст из шума',
     ttsLabel: 'Голос Mika (TTS)',
     ttsSupertonic: 'Локальный голос Supertonic (F3)',
     ttsCloud: 'Выбран облачный провайдер',

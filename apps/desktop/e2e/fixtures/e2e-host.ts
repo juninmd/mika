@@ -54,6 +54,27 @@ function shimSource(label: string, token: string, platform: string): string {
       if (cmd === 'mika_send_pcm') {
         return unwrap(await post('pcm', args, { 'content-type': 'application/octet-stream', 'x-mika-label': label, ...(options?.headers ?? {}) }))
       }
+      if (cmd === 'mika_transcribe_pcm') {
+        // The production renderer sends PCM as a binary body (tauri-renderer-runtime.ts), but the
+        // host has no binary transcribe route. Re-encode to the SAME channel's JSON payload
+        // (handle -> parse_payload -> transcribe_pcm), which is the legacy path the voice tool
+        // already uses; the backend work being measured is identical.
+        const bytes = args instanceof Uint8Array ? args : new Uint8Array(args ?? [])
+        let binary = ''
+        for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+          binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000))
+        }
+        const transcribeHeaders = options?.headers ?? {}
+        return unwrap(await post('invoke', JSON.stringify({
+          label,
+          channel: 'mika:voice-transcribe',
+          payload: {
+            audioBase64: btoa(binary),
+            mimeType: transcribeHeaders['x-mika-mime-type'],
+            language: transcribeHeaders['x-mika-language'],
+          },
+        })))
+      }
       if (cmd === 'plugin:event|listen') {
         listenState.inflight++
         try {

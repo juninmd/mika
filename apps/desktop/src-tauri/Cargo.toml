@@ -142,6 +142,12 @@ rmcp = { version = "3.10", features = ["client", "transport-child-process", "whi
 ort = "2.0.0-rc.15"
 realfft = "3.5"
 tokenizers = { version = "1.0.0-rc.4", features = ["regex"] }
+# TTS local Phonon (provedor `phonon`, `modules/voice/tts/providers/phonon/`): inferência 100% Rust
+# (`xn`), sem Python nem PyTorch. `hf` liga o tokenizer que lê o `tokenizer.json` do checkpoint;
+# `hub` FICA DE FORA de propósito — quem baixa os arquivos é a Mika (`phonon/assets.rs`), de revisão
+# fixa e com SHA-256/SHA-1 conferidos no streaming, como todo asset de modelo do app. O crate já
+# traz `tokenizers 0.23` (separado do 1.0.0-rc.4 acima; convivem no grafo). MIT OR Apache-2.0.
+ptts = { version = "0.7.1", default-features = false, features = ["hf"] }
 rusqlite = { version = "0.42", features = ["bundled"] }
 sysinfo = "0.39"
 # Idioma do SO no primeiro boot (`config/locale.rs`): Windows (GetUserPreferredUILanguages), macOS
@@ -193,6 +199,10 @@ scraper = "0.29"
 # SHA-256 escrita à mão reprovar nos vetores do NIST: hash próprio não se depura, se substitui —
 # e um hash errado no caminho de integridade aceita binário adulterado dizendo que conferiu.
 sha2 = "0.11"
+# SHA-1 do blob git (`blob {len}\0` + bytes): é o `blobId` que a API do Hugging Face devolve para
+# arquivos pequenos que NÃO são LFS (`config.json`/`tokenizer.json`). Repos com gate não deixam medir
+# SHA-256 sem token; o blobId continua verificável. Mesmo papel de `sha2`: integridade, não cripto.
+sha1 = "0.11"
 keepawake = { version = "0.6", default-features = false }
 user-idle = "0.6"
 # Origem de permissão de mídia é comparada como URL, nunca por prefixo de string.

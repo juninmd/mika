@@ -27,6 +27,12 @@ e confirmado em log de produção); Whisper como alternativa local está preso n
 ~5,5% WER no FLEURS, atrás de Whisper large-v3 ~3,65% e Canary-1B-v2 ~4,39% — números do próprio
 fabricante, não medidos aqui).
 
+**SHOULD**: oferecer Parakeet TDT 0.6B v3 como alternativa local **opt-in** (id `parakeet`), baixada
+sob demanda (~670 MB, nunca no instalador). O motivo é qualidade: melhor WER multilíngue, pontuação e
+caixa preservadas, e detecção automática do idioma (o `asrLanguage` é ignorado nesse motor). Mantém
+o contrato PCM16 mono 16 kHz e o mesmo descarregamento ocioso dos outros modelos. Licença CC-BY-4.0,
+com atribuição obrigatória a NVIDIA e à conversão ONNX de istupakov.
+
 **MUST**: não existe pontuação de confiança do STT hoje em nenhum dos dois motores nem na nuvem —
 `is_implausible_transcript` é heurística (densidade de caracteres, frases-clichê), não confiança
 real do modelo. **SHOULD**: expor a confiança quando o motor a fornecer (Nemotron RNNT expõe score
@@ -36,6 +42,27 @@ de joiner) e usar como sinal adicional, não só a heurística.
 
 **MUST**: o backend aceita exclusivamente PCM16 mono 16 kHz. Decodificação de qualquer outro formato
 de áudio é responsabilidade do renderer, nunca do Rust.
+
+## Vozes locais de TTS
+
+**MUST**: a voz local padrão é o Supertonic 3, com Piper como alternativa por subprocesso e Phonon
+(`ptts`, Rust puro, in-process) como alternativa neural adicional. Os três são locais de verdade:
+nada do texto falado sai da máquina quando um deles está ativo.
+
+**MUST**: peso de modelo local é baixado SOB DEMANDA, de revisão fixa e com integridade conferida —
+nunca embarcado no instalador nem no build Steam. O check de licença e o `LICENSE-ASSETS.md` registram
+cada modelo e sua licença.
+
+**MUST** (Phonon): os modelos `phonon-40m-pt` e `phonon-40m-multilingual` são CC BY-NC 4.0 — uso
+**NÃO comercial** — e vivem atrás do gate do Hugging Face. A UI avisa a restrição, explica que o
+modelo é baixado sob demanda e nunca distribuído, e pede um token em `apiKeys.huggingFace` (cifrado
+como qualquer credencial). 401/403 viram erro nomeado que manda aceitar os termos na página do
+modelo — silêncio, áudio falso ou queda para outro provedor sem aviso são proibidos.
+`phonon-31m-en` é Apache-2.0 e não pede token.
+
+**MUST**: o seletor de modelo/voz de um provedor local só oferece o que o catálogo Rust daquele
+provedor realmente baixa e consegue falar. O aviso de idioma da aba de voz acompanha o modelo
+escolhido, não só o provedor.
 
 ## Pré-roll (não perder o começo da fala)
 

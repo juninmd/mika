@@ -22,6 +22,8 @@ pub struct TtsState {
     pub piper_voice: String,
     pub piper_binary_path: String,
     pub piper_rate: f32,
+    pub phonon_model: String,
+    pub phonon_voice: String,
     pub eleven_labs: ElevenLabsOptions,
     pub openai_tts: OpenAiTtsOptions,
     pub azure_tts: AzureTtsOptions,
@@ -41,6 +43,8 @@ impl Default for TtsState {
             piper_voice: "pt_BR-faber-medium".into(),
             piper_binary_path: String::new(),
             piper_rate: 1.0,
+            phonon_model: super::providers::phonon::DEFAULT_MODEL.into(),
+            phonon_voice: "default".into(),
             eleven_labs: ElevenLabsOptions::default(),
             openai_tts: OpenAiTtsOptions::default(),
             azure_tts: AzureTtsOptions::default(),
@@ -87,6 +91,8 @@ impl TtsState {
             piper_voice: get_str(store, "voice.piperVoice", &defaults.piper_voice),
             piper_binary_path: get_str(store, "voice.piperBinaryPath", &defaults.piper_binary_path),
             piper_rate: get_f32(store, "voice.piperRate", defaults.piper_rate),
+            phonon_model: get_str(store, "voice.phononModel", &defaults.phonon_model),
+            phonon_voice: get_str(store, "voice.phononVoice", &defaults.phonon_voice),
             eleven_labs: ElevenLabsOptions::from_config(store),
             openai_tts: OpenAiTtsOptions::from_config(store),
             azure_tts: AzureTtsOptions::from_config(store),
@@ -154,6 +160,31 @@ mod tests {
         assert_eq!(state.piper_voice, "de_DE-thorsten-medium");
         assert_eq!(state.piper_binary_path, "/opt/piper/piper");
         assert_eq!(state.piper_rate, 1.5);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn from_config_reads_the_phonon_fields_and_defaults_to_the_pt_model() {
+        use crate::config::registry::{Namespace, SchemaRegistry};
+        use crate::config::schema::{choice, text};
+        let dir = std::env::temp_dir().join(format!("mika-tts-state-phonon-test-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let schema = SchemaRegistry::new(vec![Namespace {
+            name: "voice",
+            fields: vec![
+                choice("phononModel", "phonon-40m-pt", &["phonon-40m-pt", "phonon-40m-multilingual", "phonon-31m-en"]),
+                text("phononVoice", "default"),
+            ],
+        }]);
+        let store = ConfigStore::open(&dir, schema).unwrap();
+        let state = TtsState::from_config(&store);
+        assert_eq!(state.phonon_model, "phonon-40m-pt");
+        assert_eq!(state.phonon_voice, "default");
+
+        store.set("voice.phononModel", serde_json::json!("phonon-31m-en")).unwrap();
+        store.set("voice.phononVoice", serde_json::json!("default")).unwrap();
+        let state = TtsState::from_config(&store);
+        assert_eq!(state.phonon_model, "phonon-31m-en");
         let _ = std::fs::remove_dir_all(&dir);
     }
 

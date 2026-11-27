@@ -1692,6 +1692,7 @@ export const koKR: TranslationDict = {
   'settings.voiceStt.field.asrProvider.label': '듣기 제공자 (STT)',
   'settings.voiceStt.field.asrProvider.option.electron': '로컬 Whisper (앱 내장)',
   'settings.voiceStt.field.asrProvider.option.nemotron': '로컬 Nemotron (권장, 환각 없음)',
+  'settings.voiceStt.field.asrProvider.option.parakeet': '로컬 Parakeet v3 (다국어)',
   'settings.voiceStt.field.asrProvider.option.browser': '브라우저 (Web Speech)',
   'settings.voiceStt.field.asrProvider.option.groq': 'Groq Whisper (초고속)',
   'settings.voiceStt.field.asrProvider.option.openai': 'OpenAI Whisper',
@@ -1735,6 +1736,12 @@ export const koKR: TranslationDict = {
   'settings.voiceStt.panel.nemotronDownload': '모델 다운로드/확인 (~790 MB)',
   'settings.voiceStt.panel.nemotronDownloading': '모델을 내려받는 중…',
   'settings.voiceStt.panel.nemotronReady': 'Nemotron 모델 준비 완료',
+  'settings.voiceStt.panel.parakeetHint':
+    '내 PC에서 무료로 실행돼요. 다국어 지원으로 언어를 스스로 감지해요. 처음에는 모델을 내려받아야 해요.',
+  'settings.voiceStt.panel.parakeetDownload': '모델 다운로드/확인 (~670 MB)',
+  'settings.voiceStt.panel.parakeetDownloading': '모델을 내려받는 중…',
+  'settings.voiceStt.panel.parakeetReady': 'Parakeet 모델 준비 완료',
+  'settings.voiceStt.panel.parakeetAttribution': 'Parakeet TDT 0.6B v3 © NVIDIA, CC-BY-4.0',
   'settings.voiceStt.panel.whisperDownloadHint': '위에서 고른 Whisper 크기의 파일을 내려받고 확인해요.',
   'settings.voiceStt.providerSection.description':
     '내 목소리를 텍스트로 바꿔 주는 엔진이에요. 카드를 선택하면 자세한 내용을 볼 수 있어요.',
@@ -2622,6 +2629,7 @@ export const koKR: TranslationDict = {
   'settings.performance.accel.model.whisperEncoder': 'Whisper (인코더)',
   'settings.performance.accel.model.whisperDecoder': 'Whisper (디코더)',
   'settings.performance.accel.model.nemotron': 'Nemotron',
+  'settings.performance.accel.model.parakeet': 'Parakeet',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
   'settings.performance.accel.model.smartTurn': 'Smart Turn',
@@ -3076,6 +3084,9 @@ export const koKR: TranslationDict = {
   'settings.stt.provider.nemotron': '로컬 Nemotron (권장, 환각 없음)',
   'settings.stt.provider.nemotron.desc':
     '내 PC에서 돌아가는 NVIDIA Nemotron이에요. 말하는 동안 받아쓰고, 오디오는 기기 밖으로 나가지 않아요.',
+  'settings.stt.provider.parakeet': 'Parakeet v3 (로컬, 다국어)',
+  'settings.stt.provider.parakeet.desc':
+    '내 PC에서 돌아가는 NVIDIA Parakeet: 문장 부호와 대소문자를 살려 받아쓰고, 언어를 스스로 감지하며, 오디오를 보내지 않아요.',
   'settings.stt.provider.localWhisper.desc':
     '로컬에서 실행되는 Whisper(OpenAI)예요. tiny, base, small 크기가 있고 GPU 가속을 지원해요.',
   'settings.stt.provider.browser.desc': '웹 엔진 인식이에요. 네트워크와 브라우저의 서비스에 의존해요.',
@@ -3369,6 +3380,8 @@ export const koKR: TranslationDict = {
   'wizard.assetDownload.nemotronFailed': 'Nemotron: {{file}}: {{detail}}',
   'wizard.assetDownload.embeddingFailed': '로컬 임베딩: {{file}}: {{detail}}',
   'wizard.assetDownload.nemotronReady': 'Nemotron 음성 인식이 준비되었습니다',
+  'wizard.assetDownload.parakeetFailed': 'Parakeet: {{file}}: {{detail}}',
+  'wizard.assetDownload.parakeetReady': 'Parakeet 음성 인식이 준비되었습니다',
   'wizard.assetDownload.embeddingReady': '로컬 임베딩이 준비되었습니다',
   'settings.voiceTts.coverage.title': '음성이 인터페이스 언어를 지원하지 않습니다',
   'settings.voiceTts.coverage.unsupported':
@@ -3531,4 +3544,35 @@ export const koKR: TranslationDict = {
   'shell.tray.pauseSenses': '마이크와 화면 일시 중지',
   'shell.tray.statusPaused': '마이크와 화면 일시 중지됨',
   'shell.tray.statusResumed': '마이크와 화면이 다시 켜졌어요',
+  'settings.voiceTts.group.phonon': 'Phonon(로컬)',
+  'settings.voiceTts.field.ttsProvider.option.phonon': 'Phonon',
+  'settings.voiceTts.field.phononModel.label': 'Phonon 모델',
+  'settings.voiceTts.field.phononModel.helperText': 'Hugging Face에서 필요할 때 내려받으며 Mika에 포함되지 않습니다.',
+  'settings.voiceTts.field.phononModel.option.pt': 'Phonon 40M PT — 포르투갈어(CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.multilingual': 'Phonon 40M 다국어 — EN/FR/DE/ES/PT(CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.en': 'Phonon 31M EN — 영어(Apache-2.0)',
+  'settings.voiceTts.field.phononVoice.label': '목소리',
+  'settings.voiceTts.field.phononVoice.option.default': '기본(체크포인트)',
+  'settings.voiceTts.field.huggingFaceToken.label': 'Hugging Face 토큰',
+  'settings.voiceTts.field.huggingFaceToken.helperText':
+    'CC BY-NC 모델에는 필수입니다. 모델 페이지에서 약관에 동의하고 읽기 권한이 있는 토큰을 붙여넣으세요.',
+  'settings.voiceTts.panel.phononHint':
+    '로컬 인프로세스 TTS입니다(Rust, Python 없음). 첫 발화 때 모델을 내려받아 캐시하며 이후에는 오프라인으로 동작합니다.',
+  'settings.voiceTts.panel.phononNonCommercial':
+    '비상업적 용도 전용(CC BY-NC 4.0): 이 모델은 필요할 때 내려받으며 Mika에 절대 포함되지 않고, 유료 또는 상업 프로젝트에 사용할 수 없습니다.',
+  'settings.voiceTts.panel.phononApache':
+    'Apache-2.0 라이선스: 상업적 사용 가능. 필요할 때 내려받으며 Mika에 포함되지 않습니다.',
+  'settings.voiceTts.panel.phononModelPage': '모델 페이지 열기',
+  'settings.voiceTts.panel.phononOpenPageError': '브라우저에서 모델 페이지를 열 수 없습니다.',
+  'voice.tts.phonon.emptyText': 'Phonon: 텍스트가 비어 있습니다.',
+  'voice.tts.phonon.modelNotInCatalog': 'Phonon: 모델 "{{model}}"이(가) 카탈로그에 없습니다.',
+  'voice.tts.phonon.voiceNotInCatalog': 'Phonon: 이 모델에는 목소리 "{{voice}}"이(가) 없습니다.',
+  'voice.tts.phonon.gated':
+    'Phonon: 모델 "{{model}}"은(는) 승인이 필요합니다. {{url}}에서 약관에 동의하고 음성 설정에 Hugging Face 토큰을 입력하세요.',
+  'voice.tts.phonon.downloadFailed': 'Phonon: "{{model}}"에서 {{file}} 다운로드 실패: {{detail}}',
+  'voice.tts.phonon.digestMismatch': 'Phonon: {{file}}이(가) 측정된 해시와 일치하지 않아 다운로드를 폐기했습니다.',
+  'voice.tts.phonon.writeFailed': 'Phonon: {{path}}에 쓸 수 없습니다: {{detail}}',
+  'voice.tts.phonon.loadFailed': 'Phonon: 모델을 불러올 수 없습니다: {{detail}}',
+  'voice.tts.phonon.synthesisFailed': 'Phonon: 합성 실패: {{detail}}',
+  'voice.tts.phonon.emptyAudio': 'Phonon: 빈 오디오를 반환했습니다.',
 }

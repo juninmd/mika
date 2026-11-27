@@ -57,6 +57,7 @@ use crate::shell_actions::is_owner_surface;
 
 mod embedding_download;
 mod nemotron_download;
+mod parakeet_download;
 
 const CHANNELS: &[&str] = &["auto-launch:get", "auto-launch:set", "mika:wizard-prepare-asset"];
 
@@ -747,6 +748,7 @@ async fn prepare_wizard_asset(app: &AppHandle, req: &WizardAssetRequest) -> Wiza
         "vad" => prepare_vad(&store, &data_dir).await,
         "whisper" => prepare_whisper(&store, &data_dir).await,
         "nemotron" => nemotron_download::prepare_nemotron(&store, &data_dir).await,
+        "parakeet" => parakeet_download::prepare_parakeet(&store, &data_dir).await,
         "local-embedding" => embedding_download::prepare_local_embedding(&store, &data_dir).await,
         "tts" => prepare_tts(&store, &data_dir, req).await,
         "ollama-llm" => prepare_ollama_llm(&store, req).await,

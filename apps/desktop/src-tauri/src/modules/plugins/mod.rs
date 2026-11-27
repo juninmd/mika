@@ -284,7 +284,7 @@ mod tests {
         // A versão anterior deste teste perguntava se cada literal aparecia EM ALGUM LUGAR do
         // arquivo, e continuou VERDE quando os quatro provedores remotos foram portados: os braços
         // novos do `match` contêm os mesmos literais. Gate de substring mede o texto, não a decisão.
-        for ported in ["elevenlabs", "openai-tts", "azure-tts", "google-tts", "piper", "system"] {
+        for ported in ["elevenlabs", "openai-tts", "azure-tts", "google-tts", "piper", "phonon", "system"] {
             assert!(!cut.contains(&ported), "`{ported}` voltou para CUT_PROVIDERS — o provedor regrediu");
         }
     }

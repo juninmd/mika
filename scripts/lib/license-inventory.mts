@@ -168,6 +168,16 @@ export const MANUAL_ASSETS: readonly ManualAsset[] = [
     textFile: 'openmdw-1.1.txt',
   },
   {
+    name: 'Parakeet TDT 0.6B v3 (conversão ONNX int8)',
+    role: 'Reconhecimento de fala local opcional (multilíngue)',
+    license: 'CC-BY-4.0',
+    holder: 'NVIDIA Corporation (modelo); istupakov (conversão ONNX)',
+    source: 'https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx',
+    delivery: 'on-demand',
+    note: 'Modelo original nvidia/parakeet-tdt-0.6b-v3 e a conversão ONNX sob CC-BY-4.0; a atribuição "Parakeet TDT 0.6B v3 © NVIDIA, CC-BY-4.0" aparece no card do provedor. Baixado de revisão fixa (8f23f0c) com SHA-256 por arquivo; nunca no instalador.',
+    textFile: 'cc-by-4.0.txt',
+  },
+  {
     name: 'Supertonic 3 (ONNX)',
     role: 'Voz local padrão (TTS)',
     license: 'BigScience OpenRAIL-M (modelo); MIT (código de exemplo)',
@@ -176,6 +186,15 @@ export const MANUAL_ASSETS: readonly ManualAsset[] = [
     delivery: 'on-demand',
     note: 'A OpenRAIL-M impõe restrições de uso (Attachment A) que o distribuidor DEVE repassar aos usuários (cláusula 5): o EULA as incorpora. A Supertone encerrou as atividades em 2026 e moveu pesos e código para a organização supertone-oss-archive; a licença do modelo não mudou. Revisão fixa (aafc6e3) com SHA-256 por arquivo.',
     textFile: 'openrail-m-bigscience.txt',
+  },
+  {
+    name: 'Phonon 40M PT / 40M Multilingual / 31M EN (ptts)',
+    role: 'Voz local alternativa (TTS) — in-process, Rust puro',
+    license: 'CC BY-NC 4.0 (40M PT e 40M Multilingual — uso NÃO comercial, gate do Hugging Face); Apache-2.0 (31M EN)',
+    holder: 'Gradium AI',
+    source: 'https://huggingface.co/gradium/phonon-40m-pt',
+    delivery: 'on-demand',
+    note: 'Baixado na primeira fala para <dados>/supertonic/phonon/<modelo>/, em revisão fixa, com SHA-256 (LFS) e SHA-1 de blob git (JSON) conferidos. Nada é embarcado no instalador. Os 40M exigem aceite dos termos na página do modelo e token do Hugging Face; o 31M EN é público. O crate ptts (MIT OR Apache-2.0) entra na lista Rust do cargo metadata.',
   },
   {
     name: 'Kokoro-82M v1.0 (ONNX)',

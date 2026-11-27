@@ -1447,6 +1447,7 @@ export type TranslationDict = {
   'settings.voiceTts.group.runtime': string
   'settings.voiceTts.group.elevenlabs': string
   'settings.voiceTts.group.supertonic': string
+  'settings.voiceTts.group.phonon': string
   'settings.voiceTts.group.piper': string
   'settings.voiceTts.group.azure': string
   'settings.voiceTts.group.google': string
@@ -1456,6 +1457,7 @@ export type TranslationDict = {
   'settings.voiceTts.field.ttsProvider.helperText': string
   'settings.voiceTts.field.ttsProvider.option.supertonic': string
   'settings.voiceTts.field.ttsProvider.option.piper': string
+  'settings.voiceTts.field.ttsProvider.option.phonon': string
   'settings.voiceTts.field.ttsProvider.option.elevenlabs': string
   'settings.voiceTts.field.ttsProvider.option.azure': string
   'settings.voiceTts.field.ttsProvider.option.google': string
@@ -1497,6 +1499,20 @@ export type TranslationDict = {
   'settings.voiceTts.field.supertonicRate.label': string
   'settings.voiceTts.field.supertonicRate.helperText': string
   'settings.voiceTts.field.supertonicSteps.label': string
+  'settings.voiceTts.field.phononModel.label': string
+  'settings.voiceTts.field.phononModel.helperText': string
+  'settings.voiceTts.field.phononModel.option.pt': string
+  'settings.voiceTts.field.phononModel.option.multilingual': string
+  'settings.voiceTts.field.phononModel.option.en': string
+  'settings.voiceTts.field.phononVoice.label': string
+  'settings.voiceTts.field.phononVoice.option.default': string
+  'settings.voiceTts.field.huggingFaceToken.label': string
+  'settings.voiceTts.field.huggingFaceToken.helperText': string
+  'settings.voiceTts.panel.phononHint': string
+  'settings.voiceTts.panel.phononNonCommercial': string
+  'settings.voiceTts.panel.phononApache': string
+  'settings.voiceTts.panel.phononModelPage': string
+  'settings.voiceTts.panel.phononOpenPageError': string
   'settings.voiceTts.field.supertonicLanguage.label': string
   'settings.voiceTts.language.ko': string
   'settings.voiceTts.language.fr': string
@@ -1597,6 +1613,7 @@ export type TranslationDict = {
   'settings.voiceStt.field.asrProvider.label': string
   'settings.voiceStt.field.asrProvider.option.electron': string
   'settings.voiceStt.field.asrProvider.option.nemotron': string
+  'settings.voiceStt.field.asrProvider.option.parakeet': string
   'settings.voiceStt.field.asrProvider.option.browser': string
   'settings.voiceStt.field.asrProvider.option.groq': string
   'settings.voiceStt.field.asrProvider.option.openai': string
@@ -1635,6 +1652,11 @@ export type TranslationDict = {
   'settings.voiceStt.panel.whisperDownloadHint': string
   'settings.voiceStt.providerSection.description': string
   'settings.voiceStt.panel.nemotronHint': string
+  'settings.voiceStt.panel.parakeetHint': string
+  'settings.voiceStt.panel.parakeetDownload': string
+  'settings.voiceStt.panel.parakeetDownloading': string
+  'settings.voiceStt.panel.parakeetReady': string
+  'settings.voiceStt.panel.parakeetAttribution': string
   'settings.voiceStt.panel.whisperModel.option.tiny': string
   'settings.voiceStt.panel.whisperModel.option.base': string
   'settings.voiceStt.panel.whisperModel.option.small': string
@@ -2451,6 +2473,7 @@ export type TranslationDict = {
   'settings.performance.accel.model.whisperEncoder': string
   'settings.performance.accel.model.whisperDecoder': string
   'settings.performance.accel.model.nemotron': string
+  'settings.performance.accel.model.parakeet': string
   'settings.performance.accel.model.supertonic': string
   'settings.performance.accel.model.silero': string
   'settings.performance.accel.model.smartTurn': string
@@ -2883,6 +2906,8 @@ export type TranslationDict = {
   'settings.stt.provider.localWhisper': string
   'settings.stt.provider.nemotron': string
   'settings.stt.provider.nemotron.desc': string
+  'settings.stt.provider.parakeet': string
+  'settings.stt.provider.parakeet.desc': string
   'settings.stt.provider.localWhisper.desc': string
   'settings.stt.provider.browser.desc': string
   'settings.stt.provider.groqWhisper.desc': string
@@ -3261,6 +3286,16 @@ export type TranslationDict = {
   'voice.tts.piper.synthesisCancelled': string
   'voice.tts.piper.readFailed': string
   'voice.tts.piper.emptyAudio': string
+  'voice.tts.phonon.emptyText': string
+  'voice.tts.phonon.modelNotInCatalog': string
+  'voice.tts.phonon.voiceNotInCatalog': string
+  'voice.tts.phonon.gated': string
+  'voice.tts.phonon.downloadFailed': string
+  'voice.tts.phonon.digestMismatch': string
+  'voice.tts.phonon.writeFailed': string
+  'voice.tts.phonon.loadFailed': string
+  'voice.tts.phonon.synthesisFailed': string
+  'voice.tts.phonon.emptyAudio': string
   'voice.tts.google.authFailed': string
   'voice.tts.google.quota': string
   'voice.tts.google.badRequest': string
@@ -3275,6 +3310,8 @@ export type TranslationDict = {
   'wizard.assetDownload.nemotronFailed': string
   'wizard.assetDownload.embeddingFailed': string
   'wizard.assetDownload.nemotronReady': string
+  'wizard.assetDownload.parakeetFailed': string
+  'wizard.assetDownload.parakeetReady': string
   'wizard.assetDownload.embeddingReady': string
   'settings.voiceTts.coverage.title': string
   'settings.voiceTts.coverage.unsupported': string

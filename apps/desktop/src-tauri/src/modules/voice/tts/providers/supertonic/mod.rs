@@ -8,6 +8,9 @@ mod text;
 mod wav;
 
 pub(crate) use model::evict_if_idle;
+/// O encoder WAV `f32` → PCM16 também serve ao Phonon (mesma saída mono, mesmo cabeçalho de
+/// `hound`); reexportar evita uma segunda cópia do RIFF que pode divergir.
+pub(crate) use wav::encode_wav_pcm16;
 
 use std::path::PathBuf;
 

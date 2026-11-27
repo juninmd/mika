@@ -31,6 +31,7 @@ fn runtime_fields() -> Vec<FieldSchema> {
                 "azure-tts",
                 "google-tts",
                 "piper",
+                "phonon",
                 "kokoro",
                 "supertonic",
             ],
@@ -47,6 +48,10 @@ fn runtime_fields() -> Vec<FieldSchema> {
                     UiOption {
                         label: "settings.voiceTts.field.ttsProvider.option.piper",
                         value: "piper",
+                    },
+                    UiOption {
+                        label: "settings.voiceTts.field.ttsProvider.option.phonon",
+                        value: "phonon",
                     },
                     UiOption {
                         label: "settings.voiceTts.field.ttsProvider.option.elevenlabs",
@@ -287,6 +292,41 @@ fn piper_fields() -> Vec<FieldSchema> {
     ]
 }
 
+/// `voice-local-tts-config.schema.ts` (Phonon, provedor `phonon` — TTS local em Rust puro).
+fn phonon_fields() -> Vec<FieldSchema> {
+    use crate::modules::voice::tts::providers::phonon::catalog;
+    vec![
+        choice("phononModel", catalog::DEFAULT_MODEL, &["phonon-40m-pt", "phonon-40m-multilingual", "phonon-31m-en"])
+            .with_ui(
+                FieldUi::new("settings.voiceTts.field.phononModel.label")
+                    .control("select")
+                    .helper("settings.voiceTts.field.phononModel.helperText")
+                    .options(&[
+                        UiOption {
+                            label: "settings.voiceTts.field.phononModel.option.pt",
+                            value: "phonon-40m-pt",
+                        },
+                        UiOption {
+                            label: "settings.voiceTts.field.phononModel.option.multilingual",
+                            value: "phonon-40m-multilingual",
+                        },
+                        UiOption {
+                            label: "settings.voiceTts.field.phononModel.option.en",
+                            value: "phonon-31m-en",
+                        },
+                    ]),
+            ),
+        text("phononVoice", "default").with_ui(
+            FieldUi::new("settings.voiceTts.field.phononVoice.label")
+                .control("select")
+                .options(&[UiOption {
+                    label: "settings.voiceTts.field.phononVoice.option.default",
+                    value: "default",
+                }]),
+        ),
+    ]
+}
+
 /// `voice-local-tts-config.schema.ts` (Supertonic)
 fn supertonic_fields() -> Vec<FieldSchema> {
     vec![
@@ -437,13 +477,13 @@ fn stt_fields() -> Vec<FieldSchema> {
                     },
                 ]),
         ),
-        // AMBÍGUO: o enum Zod aceita 5 variantes (inclui `local-whisper`), mas as `options` do
-        // `m({...})` só listam 4 — o próprio TypeScript não oferece `local-whisper` na UI, embora o
-        // valor seja válido. Portado como está: `choice` valida as 5, `options` mostra as 4.
+        // AMBÍGUO: o enum Zod aceita `local-whisper`, mas as `options` do `m({...})` não o listam —
+        // o próprio TypeScript não oferece esse alias na UI, embora o valor seja válido. Portado
+        // como está: `choice` valida todos, `options` mostra os oferecidos (inclui `parakeet`).
         choice(
             "asrProvider",
             "nemotron",
-            &["nemotron", "browser", "electron", "groq-whisper", "openai-whisper", "local-whisper"],
+            &["nemotron", "parakeet", "browser", "electron", "groq-whisper", "openai-whisper", "local-whisper"],
         )
         .with_ui(
             FieldUi::new("settings.voiceStt.field.asrProvider.label")
@@ -452,6 +492,10 @@ fn stt_fields() -> Vec<FieldSchema> {
                     UiOption {
                         label: "settings.voiceStt.field.asrProvider.option.nemotron",
                         value: "nemotron",
+                    },
+                    UiOption {
+                        label: "settings.voiceStt.field.asrProvider.option.parakeet",
+                        value: "parakeet",
                     },
                     UiOption {
                         label: "settings.voiceStt.field.asrProvider.option.electron",
@@ -528,6 +572,7 @@ pub fn namespaces() -> Vec<Namespace> {
     fields.extend(google_fields());
     fields.extend(openai_fields());
     fields.extend(piper_fields());
+    fields.extend(phonon_fields());
     fields.extend(supertonic_fields());
     fields.extend(stt_fields());
 
@@ -555,8 +600,9 @@ mod tests {
         // + 6 parâmetros de provedor que eram fixos no código (velocidade/tom de TTS, modelo de STT),
         // + `vadEngine` (energia vs. Silero), que entrou sem subir este número nem entrar em `STT_GROUP`.
         // + `vadIgnoreTyping` (rejeição de digitação no VAD, `voice/speech_gate.rs`).
+        // + `phononModel`/`phononVoice` (TTS local Phonon, `providers/phonon/`).
         // + `smartTurnEnabled` (classificador de fim de turno opt-in, `voice/smart_turn.rs`).
-        assert_eq!(ns.fields.len(), 65);
+        assert_eq!(ns.fields.len(), 67);
     }
 
     /// A credencial do ElevenLabs é de `apiKeys.elevenLabs` (o `m({ configPath })` do Zod aponta
@@ -600,6 +646,31 @@ mod tests {
         assert_eq!(field("openaiTtsModel").default, json!("kokoro"));
         assert_eq!(field("piperVoice").default, json!("pt_BR-faber-medium"));
         assert_eq!(field("supertonicVoice").default, json!("F3"));
+        assert_eq!(field("phononModel").default, json!("phonon-40m-pt"));
+        assert_eq!(field("phononVoice").default, json!("default"));
+    }
+
+    /// O seletor de modelo Phonon e o catálogo Rust são a MESMA lista: um id que só existe numa das
+    /// pontas baixa um repo errado (ou recusa um modelo que a UI oferece) em silêncio.
+    #[test]
+    fn phonon_model_options_match_the_rust_catalog_in_both_directions() {
+        use crate::modules::voice::tts::providers::phonon;
+        let options = namespace()
+            .fields
+            .into_iter()
+            .find(|f| f.key == "phononModel")
+            .and_then(|f| f.ui)
+            .expect("phononModel")
+            .options;
+        let ui: std::collections::BTreeSet<&str> = options.iter().map(|option| option.value).collect();
+        let catalog: std::collections::BTreeSet<&str> = phonon::catalog::MODELS.iter().map(|model| model.key).collect();
+        assert_eq!(ui, catalog);
+
+        // O `PHONON_MODELS` do renderer é a terceira cópia: também tem de bater.
+        let source = include_str!("../../../../src/renderer/settings/voice/tts-provider-constants.ts");
+        let line = source.lines().find(|line| line.contains("PHONON_MODELS:")).expect("PHONON_MODELS no renderer");
+        let renderer: std::collections::BTreeSet<&str> = line.split('\'').skip(1).step_by(2).collect();
+        assert_eq!(renderer, catalog);
     }
 
     #[test]
@@ -658,12 +729,20 @@ mod tests {
     /// `choice` tem de aceitá-lo mesmo que `options` não o liste.
     #[test]
     fn asr_provider_accepts_the_ui_less_variant() {
-        let registry_field = namespace()
-            .fields
-            .into_iter()
-            .find(|f| f.key == "asrProvider")
-            .expect("asrProvider ausente");
+        let ns = namespace();
+        let registry_field = ns.fields.iter().find(|f| f.key == "asrProvider").expect("asrProvider ausente");
 
         assert!(registry_field.validate("voice.asrProvider", &json!("local-whisper")).is_ok());
+    }
+
+    /// Parakeet is opt-in but a first-class local provider: it must validate and appear in the
+    /// selector, otherwise the card would be reachable only by a hand-edited config.
+    #[test]
+    fn parakeet_is_a_selector_choice_not_only_a_valid_value() {
+        let ns = namespace();
+        let field = ns.fields.iter().find(|f| f.key == "asrProvider").expect("asrProvider ausente");
+        assert!(field.validate("voice.asrProvider", &json!("parakeet")).is_ok());
+        let options = field.ui.as_ref().expect("ui do asrProvider").options;
+        assert!(options.iter().any(|option| option.value == "parakeet"), "Parakeet fora das opções do seletor");
     }
 }

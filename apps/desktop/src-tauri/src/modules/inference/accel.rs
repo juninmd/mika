@@ -6,8 +6,10 @@
 //! - `Tiny` (Silero VAD, janela de 32 ms num LSTM minúsculo) e `PerToken` (decoder do Whisper,
 //!   autoregressivo: uma cópia CPU↔GPU por token, nenhum ganho medido) ficam SEMPRE na CPU — nem a
 //!   escolha "GPU" muda isso, o despacho custa mais que o cálculo.
-//! - `CpuMeasured` (Nemotron): medido numa RTX 4060 Ti com DirectML — o encoder int4 nem inicializa
-//!   e decoder/joiner ficam mais lentos. Automático = CPU; "GPU" explícito tenta, com queda.
+//! - `CpuMeasured` (Nemotron int4, Parakeet int8): Nemotron medido numa RTX 4060 Ti com DirectML — o
+//!   encoder int4 nem inicializa e decoder/joiner ficam mais lentos. O Parakeet int8 segue a mesma
+//!   decisão (kernels quantizados de CPU; sem medição de GPU para este export). Automático = CPU;
+//!   "GPU" explícito tenta, com queda.
 //! - `Interactive` (encoder do Whisper 453 → 89 ms, Supertonic): a pessoa está esperando a
 //!   resposta. GPU em TODO estado do governador, inclusive jogando: a rajada na GPU é curta (dezenas
 //!   de ms por fala) e a alternativa — o mesmo cálculo na CPU com as threads já cortadas pela metade
@@ -74,6 +76,7 @@ pub enum Model {
     WhisperEncoder,
     WhisperDecoder,
     Nemotron,
+    Parakeet,
     Supertonic,
     Silero,
     SmartTurn,
@@ -87,6 +90,7 @@ impl Model {
             Self::WhisperEncoder => "whisperEncoder",
             Self::WhisperDecoder => "whisperDecoder",
             Self::Nemotron => "nemotron",
+            Self::Parakeet => "parakeet",
             Self::Supertonic => "supertonic",
             Self::Silero => "silero",
             Self::SmartTurn => "smartTurn",
@@ -100,6 +104,7 @@ impl Model {
             Self::SmartTurn => Workload::Tiny,
             Self::WhisperDecoder => Workload::PerToken,
             Self::Nemotron => Workload::CpuMeasured,
+            Self::Parakeet => Workload::CpuMeasured,
             Self::WhisperEncoder | Self::Supertonic => Workload::Interactive,
             Self::E5 => Workload::Background,
         }
@@ -317,6 +322,13 @@ mod tests {
         assert_eq!(auto(Workload::CpuMeasured, Profile::Quality, PowerState::Active), cpu(Reason::MeasuredCpu));
     }
 
+    /// Parakeet int8 follows Nemotron's CPU-measured policy: Auto is CPU, "GPU" stays opt-in.
+    #[test]
+    fn parakeet_stays_on_cpu_in_auto() {
+        assert_eq!(Model::Parakeet.workload(), Workload::CpuMeasured);
+        assert_eq!(auto(Model::Parakeet.workload(), Profile::Quality, PowerState::Active), cpu(Reason::MeasuredCpu));
+    }
+
     /// O pedido do governador: jogando, trabalho de fundo deixa a GPU para o jogo.
     #[test]
     fn background_work_yields_the_gpu_to_a_game_the_battery_and_economy() {
@@ -342,7 +354,16 @@ mod tests {
     #[test]
     fn ids_and_reasons_exist_in_the_typescript_contract() {
         let contract = include_str!("../../../../../../packages/sdk/src/contracts/desktop-ipc-core-schemas.ts");
-        let models = [Model::WhisperEncoder, Model::WhisperDecoder, Model::Nemotron, Model::Supertonic, Model::Silero, Model::SmartTurn, Model::E5];
+        let models = [
+            Model::WhisperEncoder,
+            Model::WhisperDecoder,
+            Model::Nemotron,
+            Model::Parakeet,
+            Model::Supertonic,
+            Model::Silero,
+            Model::SmartTurn,
+            Model::E5,
+        ];
         let reasons = [
             Reason::UserCpu,
             Reason::TinyModel,

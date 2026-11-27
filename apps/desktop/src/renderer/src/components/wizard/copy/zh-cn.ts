@@ -189,6 +189,7 @@ export const zhCN: WizardCopy = {
     vadDetail: 'Silero VAD：轻量且精准的神经检测',
     sttLabel: '语音识别（STT）',
     sttDetail: '本地 Nemotron（约 790 MB）：识别你的语音，不会从噪音中编造文字',
+    sttParakeetDetail: '本地 Parakeet（约 670 MB）：多语言，带标点与大小写，不会从噪音中编造文字',
     ttsLabel: 'Mika 的声音（TTS）',
     ttsSupertonic: '本地 Supertonic 语音（F3）',
     ttsCloud: '已选择云端提供商',

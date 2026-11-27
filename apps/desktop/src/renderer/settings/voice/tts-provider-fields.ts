@@ -41,6 +41,9 @@ type Props = {
   piperVoice: string
   piperBinaryPath: string
   piperRate: number
+  phononModel: string
+  phononVoice: string
+  huggingFaceToken: string
   supertonicVoice: string
   supertonicRate: number
   supertonicSteps: number
@@ -127,6 +130,10 @@ export function resolveTtsFields(props: TTSProviderPanelProps, rawCfg: Record<st
     piperVoice: pick(props.piperVoice, () => configStr(rawCfg, 'voice.piperVoice', 'pt_BR-faber-medium')),
     piperBinaryPath: pick(props.piperBinaryPath, () => configStr(rawCfg, 'voice.piperBinaryPath')),
     piperRate: pick(props.piperRate, () => configNum(rawCfg, 'voice.piperRate', 1.0)),
+    phononModel: pick(props.phononModel, () => configStr(rawCfg, 'voice.phononModel', 'phonon-40m-pt')),
+    phononVoice: pick(props.phononVoice, () => configStr(rawCfg, 'voice.phononVoice', 'default')),
+    // Credencial mascarada (`[REDACTED]`) quando salva — o backend usa a real.
+    huggingFaceToken: pick(props.huggingFaceToken, () => configStr(rawCfg, 'apiKeys.huggingFace')),
     supertonicVoice: pick(props.supertonicVoice, () => configStr(rawCfg, 'voice.supertonicVoice', 'F3')),
     supertonicRate: pick(props.supertonicRate, () => configNum(rawCfg, 'voice.supertonicRate', 1.0)),
     supertonicSteps: pick(props.supertonicSteps, () => configNum(rawCfg, 'voice.supertonicSteps', 5)),
@@ -161,6 +168,8 @@ export function buildTtsCfg(fields: TtsFields): Record<string, unknown> {
     'voice.googleTtsLanguageCode': fields.googleTtsLanguageCode,
     'voice.piperVoice': fields.piperVoice,
     'voice.piperBinaryPath': fields.piperBinaryPath,
+    'voice.phononModel': fields.phononModel,
+    'voice.phononVoice': fields.phononVoice,
     'voice.supertonicVoice': fields.supertonicVoice,
     'voice.supertonicRate': fields.supertonicRate,
     'voice.supertonicSteps': fields.supertonicSteps,

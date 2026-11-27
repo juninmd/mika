@@ -1,7 +1,8 @@
 //! Smoke test de escuta (STT + VAD) sobre os fixtures versionados em `e2e/fixtures/voice/`.
 //!
-//! Não roda no gate padrão: precisa dos pesos (Silero, Whisper base, Nemotron) num diretório de
-//! dados com o mesmo layout do app (`vad-cache/`, `whisper-cache/whisper-base/`, `nemotron-cache/`).
+//! Não roda no gate padrão: precisa dos pesos (Silero, Whisper base, Nemotron e/ou Parakeet) num
+//! diretório de dados com o mesmo layout do app (`vad-cache/`, `whisper-cache/whisper-base/`,
+//! `nemotron-cache/`, `parakeet-cache/`).
 //!
 //! ```text
 //! MIKA_STT_SMOKE_DIR=<dados> MIKA_STT_SMOKE_OUT=<relatorio.json> CARGO_PROFILE_TEST_OPT_LEVEL=2 \
@@ -117,13 +118,13 @@ fn cases() -> Vec<(String, PathBuf, bool)> {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore = "precisa dos pesos Silero/Whisper/Nemotron em MIKA_STT_SMOKE_DIR"]
+#[ignore = "precisa dos pesos Silero/Whisper/Nemotron/Parakeet em MIKA_STT_SMOKE_DIR"]
 async fn stt_smoke_report() {
     let data_dir = PathBuf::from(std::env::var("MIKA_STT_SMOKE_DIR").expect("MIKA_STT_SMOKE_DIR"));
     let mut vad = SileroVad::load(&data_dir.join("vad-cache/silero_vad.onnx"))
         .await
         .unwrap();
-    let providers = ["local-whisper", "nemotron"];
+    let providers = ["local-whisper", "nemotron", "parakeet"];
     let warm = read_wav(&fixtures_dir().join("fala-usuario-pt-br.wav"));
     for p in providers {
         stt(p, &data_dir, &warm).await; // carga das sessões fora da medida
