@@ -71,6 +71,7 @@ export function STTProviderPanel(props: STTProviderPanelProps) {
   )
   const vadSpeechThreshold = configNum(rawCfg, 'voice.vadSpeechThreshold', 0.35)
   const vadEndpointingEnabled = configBool(rawCfg, 'voice.vadEndpointingEnabled', true)
+  const smartTurnEnabled = configBool(rawCfg, 'voice.smartTurnEnabled', false)
   // Matches the schema default (config/schemas/voice.rs) — the main listening path's hangover.
   const vadSilenceMs = configNum(rawCfg, 'voice.vadSilenceMs', 1200)
   const inputMode = (props.inputMode ?? configStr(rawCfg, 'voice.inputMode', 'continuous')) as 'ptt' | 'continuous'
@@ -109,6 +110,7 @@ export function STTProviderPanel(props: STTProviderPanelProps) {
     'voice.openaiSttModel': configStr(rawCfg, 'voice.openaiSttModel', 'gpt-transcribe'),
     'voice.vadEngine': configStr(rawCfg, 'voice.vadEngine', 'energy'),
     'voice.vadIgnoreTyping': configBool(rawCfg, 'voice.vadIgnoreTyping', true),
+    'voice.smartTurnEnabled': smartTurnEnabled,
   }
 
   const numSave = onSave as (p: string, v: number) => Promise<void>
@@ -158,6 +160,7 @@ export function STTProviderPanel(props: STTProviderPanelProps) {
           vadSpeechThreshold={vadSpeechThreshold}
           vadEndpointingEnabled={vadEndpointingEnabled}
           vadSilenceMs={vadSilenceMs}
+          smartTurnEnabled={smartTurnEnabled}
           inputModeDraft={inputModeDraft}
           setInputModeDraft={setInputModeDraft}
           asrProviderDraft={asrProviderDraft}

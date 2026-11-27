@@ -27,6 +27,7 @@ type Props = {
   vadSpeechThreshold: number
   vadEndpointingEnabled: boolean
   vadSilenceMs: number
+  smartTurnEnabled: boolean
   vadIgnoreTyping: boolean
   browserStt: boolean
   numSave: (p: string, v: number) => Promise<void>
@@ -274,6 +275,16 @@ export function MicCalibrationCard(props: Props) {
             disabled={browserStt}
             onSave={boolSave}
           />
+          <div className="mt-3">
+            <GlassToggle
+              label={t('settings.voiceStt.field.smartTurnEnabled.label')}
+              description={t('settings.voiceStt.field.smartTurnEnabled.helperText')}
+              configPath="voice.smartTurnEnabled"
+              value={props.smartTurnEnabled}
+              disabled={!props.vadEndpointingEnabled || browserStt}
+              onSave={boolSave}
+            />
+          </div>
           <div className="mt-3">
             <GlassSlider
               label={t('settings.voiceTts.panel.vadSilenceMs')}

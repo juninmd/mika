@@ -27,6 +27,7 @@ type Params = {
   vadThreshold: number
   vadSilenceMs: number
   vadEndpointingEnabled: boolean
+  smartTurnEnabled: boolean
   offlineMode: boolean
   micEnabled: boolean
   setMicEnabled: (v: boolean | ((prev: boolean) => boolean)) => void
@@ -48,6 +49,7 @@ export function useShellVoice({
   vadThreshold,
   vadSilenceMs,
   vadEndpointingEnabled,
+  smartTurnEnabled,
   offlineMode,
   micEnabled,
   setMicEnabled,
@@ -133,6 +135,7 @@ export function useShellVoice({
     vadThreshold,
     vadSilenceMs,
     vadEndpointingEnabled,
+    smartTurnEnabled,
     offlineMode,
     livePartials: true,
     onTranscript: (text, meta) => {
@@ -204,6 +207,7 @@ export function useShellVoice({
     vadThreshold,
     vadSilenceMs,
     vadEndpointingEnabled,
+    smartTurnEnabled,
   ])
 
   return { vadIsSpeaking, setSpeechPaused }

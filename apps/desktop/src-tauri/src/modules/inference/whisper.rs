@@ -144,7 +144,7 @@ const MIN_SAMPLES: usize = REQUIRED_SAMPLE_RATE as usize / 10;
 
 /// PCM16LE mono para `f32` em `[-1, 1]` — mesma divisão de `pcm16ToFloat32` em `whisper.runtime.ts`.
 /// Erro alto (não conversão silenciosa) quando a entrada não é o que o contrato promete.
-fn pcm16_to_f32(pcm: &[u8], sample_rate: u32) -> Result<Vec<f32>, String> {
+pub(crate) fn pcm16_to_f32(pcm: &[u8], sample_rate: u32) -> Result<Vec<f32>, String> {
     if sample_rate != REQUIRED_SAMPLE_RATE {
         return Err(format!("Whisper espera {REQUIRED_SAMPLE_RATE} Hz e recebeu {sample_rate} Hz"));
     }
@@ -157,9 +157,9 @@ fn pcm16_to_f32(pcm: &[u8], sample_rate: u32) -> Result<Vec<f32>, String> {
 // --- Espectrograma log-mel — espelha `WhisperFeatureExtractor` (preprocessor_config.json do
 // modelo: n_fft=400, hop=160, 80 mels, 16 kHz, 30s/3000 frames) ----------------------------------
 
-const N_FFT: usize = 400;
+pub(super) const N_FFT: usize = 400;
 const HOP_LENGTH: usize = 160;
-const N_MELS: usize = 80;
+pub(super) const N_MELS: usize = 80;
 const N_SAMPLES_30S: usize = 480_000;
 const N_FRAMES_30S: usize = 3000;
 const SAMPLE_RATE_F64: f64 = REQUIRED_SAMPLE_RATE as f64;
@@ -267,7 +267,7 @@ fn frame_mel_energies(padded_signal: &[f32], frame_idx: usize, window: &[f32], f
 /// Espectrograma log-mel completo, parametrizado em duração para permitir um teste barato (poucos
 /// frames) sem duplicar a fórmula. Produção sempre chama com `n_samples`/`n_frames` = 30s/3000,
 /// porque o encoder ONNX exporta `last_hidden_state` com comprimento fixo (1500 = 3000/2).
-fn log_mel_spectrogram_with(samples: &[f32], filters: &[Vec<f32>], n_samples: usize, n_frames: usize) -> Vec<f32> {
+pub(super) fn log_mel_spectrogram_with(samples: &[f32], filters: &[Vec<f32>], n_samples: usize, n_frames: usize) -> Vec<f32> {
     let mut padded_audio = vec![0.0f32; n_samples];
     let n = samples.len().min(n_samples);
     padded_audio[..n].copy_from_slice(&samples[..n]);

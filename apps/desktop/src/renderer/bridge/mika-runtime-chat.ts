@@ -23,6 +23,13 @@ export function createChatRuntimeApi(): ChatRuntimeApi {
       ipcRenderer.invoke(DESKTOP_INVOKE_CHANNELS.ChatReport, { content }) as Promise<{ file: string }>,
     transcribeAudio: (payload: { audio: Uint8Array; mimeType?: string; language?: string }) =>
       ipcRenderer.invoke(DESKTOP_INVOKE_CHANNELS.VoiceTranscribe, payload),
+    classifyTurnEnd: (payload: { audio: Uint8Array; mimeType?: string }) =>
+      ipcRenderer.invoke(DESKTOP_INVOKE_CHANNELS.VoiceSmartTurn, payload) as Promise<{
+        complete: boolean
+        probability: number | null
+        latencyMs: number
+        reason: 'probability' | 'shortAudio' | 'modelUnavailable' | 'classifierError' | 'disabled'
+      }>,
     checkSilenceCommand: (payload: { text: string }) =>
       ipcRenderer.invoke(DESKTOP_INVOKE_CHANNELS.VoiceSilenceCommand, payload) as Promise<{
         matched: boolean

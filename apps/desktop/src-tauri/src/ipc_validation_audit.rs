@@ -150,6 +150,10 @@ const ROUTE_AUDIT: &[(&str, RouteAudit)] = &[
         RouteAudit::Validated("parse_samples/parse_amplitude: array numérico com teto MAX_SAMPLES_PER_CALL + amplitude f64 obrigatória"),
     ),
     (
+        "voice:smart-turn",
+        RouteAudit::Validated("parse_payload/request_from_bytes: áudio não vazio com teto de 60s + pcm16_to_f32 exige 16 kHz; toggle voice.smartTurnEnabled só liga a inferência"),
+    ),
+    (
         "mika:voice-silence-command",
         RouteAudit::Validated("silence_command::parse_text: exige 'text' string; comando não reconhecido vira {matched:false}, nunca Err"),
     ),

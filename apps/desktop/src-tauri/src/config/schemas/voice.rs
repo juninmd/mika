@@ -517,6 +517,13 @@ fn stt_fields() -> Vec<FieldSchema> {
         ),
         // Vazio = fala no idioma de `app.locale` (`transcribe::configured_language`).
         text("asrLanguage", "").with_ui(FieldUi::new("settings.voiceStt.field.asrLanguage.label")),
+        // Opt-in: o primeiro uso baixa ~8,7 MB e muda o comportamento de escuta (o silêncio deixa
+        // de encerrar uma frase que parece incompleta). Desligado, `voice:smart-turn` responde
+        // `disabled` sem carregar nada — ver `modules/voice/smart_turn.rs`.
+        boolean("smartTurnEnabled", false).with_ui(
+            FieldUi::new("settings.voiceStt.field.smartTurnEnabled.label")
+                .helper("settings.voiceStt.field.smartTurnEnabled.helperText"),
+        ),
         choice(
             "whisperModel",
             "onnx-community/whisper-base",
@@ -594,7 +601,8 @@ mod tests {
         // + `vadEngine` (energia vs. Silero), que entrou sem subir este número nem entrar em `STT_GROUP`.
         // + `vadIgnoreTyping` (rejeição de digitação no VAD, `voice/speech_gate.rs`).
         // + `phononModel`/`phononVoice` (TTS local Phonon, `providers/phonon/`).
-        assert_eq!(ns.fields.len(), 66);
+        // + `smartTurnEnabled` (classificador de fim de turno opt-in, `voice/smart_turn.rs`).
+        assert_eq!(ns.fields.len(), 67);
     }
 
     /// A credencial do ElevenLabs é de `apiKeys.elevenLabs` (o `m({ configPath })` do Zod aponta
@@ -675,6 +683,7 @@ mod tests {
         assert_eq!(field("asrProvider").default, json!("nemotron"));
         assert_eq!(field("whisperModel").default, json!("onnx-community/whisper-base"));
         assert_eq!(field("vadIgnoreTyping").default, json!(true), "rejeição de digitação nasce ligada");
+        assert_eq!(field("smartTurnEnabled").default, json!(false), "classificador de fim de turno é opt-in");
     }
 
     /// Regressão: as opções de `googleTtsVoice` já gravaram nomes sem o prefixo (`"Wavenet-A"`), que a

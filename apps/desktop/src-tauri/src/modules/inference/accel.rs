@@ -79,6 +79,7 @@ pub enum Model {
     Parakeet,
     Supertonic,
     Silero,
+    SmartTurn,
     E5,
 }
 
@@ -92,6 +93,7 @@ impl Model {
             Self::Parakeet => "parakeet",
             Self::Supertonic => "supertonic",
             Self::Silero => "silero",
+            Self::SmartTurn => "smartTurn",
             Self::E5 => "e5",
         }
     }
@@ -99,6 +101,7 @@ impl Model {
     pub fn workload(self) -> Workload {
         match self {
             Self::Silero => Workload::Tiny,
+            Self::SmartTurn => Workload::Tiny,
             Self::WhisperDecoder => Workload::PerToken,
             Self::Nemotron => Workload::CpuMeasured,
             Self::Parakeet => Workload::CpuMeasured,
@@ -351,7 +354,16 @@ mod tests {
     #[test]
     fn ids_and_reasons_exist_in_the_typescript_contract() {
         let contract = include_str!("../../../../../../packages/sdk/src/contracts/desktop-ipc-core-schemas.ts");
-        let models = [Model::WhisperEncoder, Model::WhisperDecoder, Model::Nemotron, Model::Parakeet, Model::Supertonic, Model::Silero, Model::E5];
+        let models = [
+            Model::WhisperEncoder,
+            Model::WhisperDecoder,
+            Model::Nemotron,
+            Model::Parakeet,
+            Model::Supertonic,
+            Model::Silero,
+            Model::SmartTurn,
+            Model::E5,
+        ];
         let reasons = [
             Reason::UserCpu,
             Reason::TinyModel,

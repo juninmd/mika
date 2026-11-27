@@ -99,7 +99,7 @@ fn field_json(field: &FieldSchema) -> Value {
     Value::Object(out)
 }
 
-/// Os 66 campos do namespace `voice` (`config/schemas/voice.rs`), sem agrupar — igual ao que
+/// Os 67 campos do namespace `voice` (`config/schemas/voice.rs`), sem agrupar — igual ao que
 /// `declare_fields` devolveria, se pudesse ser chamado daqui. `None` se o namespace não existir.
 pub(super) fn declare_fields(schema: &SchemaRegistry) -> Option<Vec<Value>> {
     let declaration = schema.declarations().into_iter().find(|entry| entry.namespace == NAMESPACE)?;
@@ -231,7 +231,7 @@ pub(super) const VOICE_GROUPS: &[GroupSpec] = &[
     },
 ];
 
-/// `STT_SETTINGS.groups[0]` (`voice.schema.ts`) — `VoiceAsrGroupSchema` inteiro, 8 campos, sem
+/// `STT_SETTINGS.groups[0]` (`voice.schema.ts`) — `VoiceAsrGroupSchema` inteiro, 13 campos, sem
 /// `visibleWhen`.
 pub(super) const STT_GROUP: GroupSpec = GroupSpec {
     title: "settings.voiceStt.group.asr",
@@ -244,6 +244,7 @@ pub(super) const STT_GROUP: GroupSpec = GroupSpec {
         "asrProvider",
         "asrLanguage",
         "whisperModel",
+        "smartTurnEnabled",
         "groqApiKey",
         "openaiApiKey",
         "groqSttModel",

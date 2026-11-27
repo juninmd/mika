@@ -41,6 +41,7 @@ describe('parseVoiceConfig — bulk config load só toca os campos presentes', (
         voiceActivityThreshold: 0.7,
         vadSilenceMs: 1200,
         vadEndpointingEnabled: false,
+        smartTurnEnabled: true,
         volume: 0.8,
       }),
     ).toEqual({
@@ -53,6 +54,7 @@ describe('parseVoiceConfig — bulk config load só toca os campos presentes', (
       vadThreshold: 0.7,
       vadSilenceMs: 1200,
       vadEndpointingEnabled: false,
+      smartTurnEnabled: true,
       ttsVolume: 0.8,
     })
   })
@@ -107,6 +109,13 @@ describe('parseConfigChange — cada path do evento onConfigChanged mapeia para 
 
   it('voice.vadEndpointingEnabled desligado suspende o auto-fim por silêncio', () => {
     expect(parseConfigChange('voice.vadEndpointingEnabled', false)).toEqual({ vadEndpointingEnabled: false })
+  })
+
+  it('voice.smartTurnEnabled é opt-in: só liga com true explícito, como o default false do schema', () => {
+    expect(parseVoiceConfig({ smartTurnEnabled: true })).toEqual({ smartTurnEnabled: true })
+    expect(parseVoiceConfig({ smartTurnEnabled: null })).toEqual({ smartTurnEnabled: false })
+    expect(parseConfigChange('voice.smartTurnEnabled', true)).toEqual({ smartTurnEnabled: true })
+    expect(parseConfigChange('voice.smartTurnEnabled', 'true')).toEqual({ smartTurnEnabled: false })
   })
 })
 

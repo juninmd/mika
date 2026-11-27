@@ -1,0 +1,18 @@
+{
+  "hangover_ms": 1200,
+  "max_silence_ms": 3000,
+  "check1_ms": 5180,
+  "p_pause": 0.1502,
+  "check2_ms": 7680,
+  "p_end": 0.8643,
+  "modelo": "pipecat-ai/smart-turn-v3 @ f766f81d smart-turn-v3.2-cpu.onnx",
+  "rust_teste_real": {
+    "completa.wav": 0.919975,
+    "hesitacao_pausa.wav": 0.015142
+  },
+  "python_referencia": {
+    "completa.wav": 0.92,
+    "completa2.wav": 0.9673,
+    "hesitacao_pausa.wav": 0.0151
+  }
+}

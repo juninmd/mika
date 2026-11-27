@@ -2476,6 +2476,7 @@ export type TranslationDict = {
   'settings.performance.accel.model.parakeet': string
   'settings.performance.accel.model.supertonic': string
   'settings.performance.accel.model.silero': string
+  'settings.performance.accel.model.smartTurn': string
   'settings.performance.accel.model.e5': string
   'settings.performance.accel.reason.userCpu': string
   'settings.performance.accel.reason.tinyModel': string
@@ -2986,6 +2987,8 @@ export type TranslationDict = {
   'settings.voiceStt.calibration.endpointingHint': string
   'settings.voiceStt.calibration.ignoreTypingHint': string
   'settings.voiceStt.field.vadIgnoreTyping': string
+  'settings.voiceStt.field.smartTurnEnabled.label': string
+  'settings.voiceStt.field.smartTurnEnabled.helperText': string
   'settings.voiceStt.calibration.silenceHint': string
   'settings.voiceStt.calibration.zoneSilence': string
   'settings.voiceStt.calibration.zoneSpeech': string

@@ -1644,6 +1644,9 @@ export const zhCN: TranslationDict = {
   'settings.voiceStt.field.whisperModel.option.small': 'Small(约 250MB,准确率略高但慢约 3 倍)',
   'settings.voiceStt.field.whisperModel.helperText':
     '在应用内(ONNX)运行,无需 Python。模型会在首次转录时下载并缓存。实测:Base 的转录耗时约为语音时长的 1/3;Small 准确率略高,但耗时超过语音本身。',
+  'settings.voiceStt.field.smartTurnEnabled.label': '智能结束话轮（Smart Turn）',
+  'settings.voiceStt.field.smartTurnEnabled.helperText':
+    '在停顿处结束语音之前，本地模型（Smart Turn v3，约 8.7 MB，首次使用时下载）会检查句子是否结束。如果听起来不完整，Mika 会最多等待 3 秒。',
   'settings.voiceStt.field.groqApiKey.label': 'Groq API Key',
   'settings.voiceStt.field.openaiApiKey.label': 'OpenAI API Key',
   'settings.voiceStt.panel.testing': '测试中...',
@@ -2523,6 +2526,7 @@ export const zhCN: TranslationDict = {
   'settings.performance.accel.model.parakeet': 'Parakeet',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
+  'settings.performance.accel.model.smartTurn': 'Smart Turn',
   'settings.performance.accel.model.e5': 'granite 嵌入',
   'settings.performance.accel.reason.userCpu': '设置中选择了 CPU',
   'settings.performance.accel.reason.tinyModel': '极小模型：送到 GPU 的开销大于计算本身',

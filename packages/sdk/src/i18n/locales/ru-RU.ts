@@ -1770,6 +1770,9 @@ export const ruRU: TranslationDict = {
   'settings.voiceStt.field.whisperModel.option.small': 'Small (~250 МБ, чуть точнее и примерно в 3 раза медленнее)',
   'settings.voiceStt.field.whisperModel.helperText':
     'Работает внутри приложения (ONNX), без Python. Модель скачивается при первой транскрибации и кэшируется. По нашим замерам: Base транскрибирует примерно за 1/3 длительности речи; Small чуть точнее, но работает дольше самой речи.',
+  'settings.voiceStt.field.smartTurnEnabled.label': 'Умное завершение хода (Smart Turn)',
+  'settings.voiceStt.field.smartTurnEnabled.helperText':
+    'Прежде чем завершить речь на паузе, локальная модель (Smart Turn v3, ~8,7 МБ, скачивается при первом использовании) проверяет, закончилась ли фраза. Если она звучит незаконченной, Mika ждёт до 3 с.',
   'settings.voiceStt.field.groqApiKey.label': 'API-ключ Groq',
   'settings.voiceStt.field.openaiApiKey.label': 'API-ключ OpenAI',
   'settings.voiceStt.panel.testing': 'Проверяю...',
@@ -2739,6 +2742,7 @@ export const ruRU: TranslationDict = {
   'settings.performance.accel.model.parakeet': 'Parakeet',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
+  'settings.performance.accel.model.smartTurn': 'Smart Turn',
   'settings.performance.accel.model.e5': 'Эмбеддинги granite',
   'settings.performance.accel.reason.userCpu': 'CPU выбран в настройках',
   'settings.performance.accel.reason.tinyModel': 'крошечная модель: отправка на GPU обходится дороже самих вычислений',

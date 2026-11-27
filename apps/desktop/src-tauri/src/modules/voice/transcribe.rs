@@ -219,7 +219,7 @@ fn non_pcm_response(mime_type: &str) -> Value {
 /// Extrai `rate=N` de `audio/pcm;rate=16000`; sem o parâmetro (ou malformado), assume o único rate
 /// que o renderer já usa hoje. Não valida — `inference::whisper::transcribe` é quem recusa, alto e
 /// explícito, qualquer valor que não seja 16 kHz (contrato PCM16 mono 16 kHz, AGENTS.md §2).
-fn pcm_sample_rate(mime_type: &str) -> u32 {
+pub(super) fn pcm_sample_rate(mime_type: &str) -> u32 {
     mime_type
         .split(';')
         .find_map(|part| part.trim().strip_prefix("rate="))

@@ -1704,6 +1704,9 @@ export const koKR: TranslationDict = {
   'settings.voiceStt.field.whisperModel.option.small': 'Small (~250 MB, 조금 더 정확하고 약 3배 느림)',
   'settings.voiceStt.field.whisperModel.helperText':
     '앱 안(ONNX)에서 실행되고 Python은 필요 없어요. 모델은 첫 받아쓰기 때 내려받아 캐시해요. 여기서 측정한 결과: Base는 말한 시간의 약 1/3 만에 받아쓰고, Small은 조금 더 정확하지만 말한 시간보다 오래 걸려요.',
+  'settings.voiceStt.field.smartTurnEnabled.label': '지능형 발화 종료 (Smart Turn)',
+  'settings.voiceStt.field.smartTurnEnabled.helperText':
+    '무음에서 발화를 끝내기 전에 로컬 모델(Smart Turn v3, 약 8.7MB, 처음 사용 시 다운로드)이 문장이 끝났는지 확인합니다. 미완성으로 들리면 Mika는 최대 3초 기다립니다.',
   'settings.voiceStt.field.groqApiKey.label': 'Groq API 키',
   'settings.voiceStt.field.openaiApiKey.label': 'OpenAI API 키',
   'settings.voiceStt.panel.testing': '테스트 중...',
@@ -2629,6 +2632,7 @@ export const koKR: TranslationDict = {
   'settings.performance.accel.model.parakeet': 'Parakeet',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
+  'settings.performance.accel.model.smartTurn': 'Smart Turn',
   'settings.performance.accel.model.e5': 'granite 임베딩',
   'settings.performance.accel.reason.userCpu': '설정에서 CPU를 선택함',
   'settings.performance.accel.reason.tinyModel': '아주 작은 모델: GPU로 보내는 비용이 계산하는 비용보다 커요',

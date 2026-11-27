@@ -5,9 +5,9 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "decee8352fc782ae139794b696581d8fdcdcbaf6+dirty",
-    "tree": "c4657407a3289073",
-    "contract": "1fb6b39ca400672e",
+    "commit": "4cbb7b98c79d9289312927a8954c4d38e6b2d5d7+dirty",
+    "tree": "5cdc46b0dca81582",
+    "contract": "ec00928a2ae5eee9",
     "deps": {
       "@fontsource-variable/inter": "^5.3.0",
       "@fontsource/ibm-plex-mono": "^5.3.0",
@@ -31,12 +31,12 @@
       "zod": "catalog:",
       "zustand": "^5.1.0"
     },
-    "lockfile": "f0c04416b62f016b"
+    "lockfile": "12dd644f878388bd"
   },
   "ambiente": {
     "plataforma": "linux",
-    "node": "v24.22.3",
-    "data": "2026-11-22"
+    "node": "v24.22.1",
+    "data": "2026-11-27"
   },
   "criterios": [
     {

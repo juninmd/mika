@@ -24,6 +24,7 @@ export function useShellVoiceConfig(eAPI: ElectronApi, ttsVolumeRef: { current: 
   // getSettingsConfig() resolves.
   const [vadSilenceMs, setVadSilenceMs] = useState(1200)
   const [vadEndpointingEnabled, setVadEndpointingEnabled] = useState(true)
+  const [smartTurnEnabled, setSmartTurnEnabled] = useState(false)
   const [vadEngine, setVadEngine] = useState<VadEngine>('energy')
   const [vadIgnoreTyping, setVadIgnoreTyping] = useState(true)
   const [offlineMode, setOfflineMode] = useState(false)
@@ -43,6 +44,7 @@ export function useShellVoiceConfig(eAPI: ElectronApi, ttsVolumeRef: { current: 
       vadThreshold: setVadThreshold,
       vadSilenceMs: setVadSilenceMs,
       vadEndpointingEnabled: setVadEndpointingEnabled,
+      smartTurnEnabled: setSmartTurnEnabled,
       vadEngine: setVadEngine,
       vadIgnoreTyping: setVadIgnoreTyping,
       ttsVolume: (v) => {
@@ -85,6 +87,7 @@ export function useShellVoiceConfig(eAPI: ElectronApi, ttsVolumeRef: { current: 
     vadThreshold,
     vadSilenceMs,
     vadEndpointingEnabled,
+    smartTurnEnabled,
     vadEngine,
     vadIgnoreTyping,
     offlineMode,

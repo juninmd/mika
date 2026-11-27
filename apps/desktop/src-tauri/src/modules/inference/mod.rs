@@ -23,6 +23,7 @@ pub mod embedder;
 pub mod nemotron;
 pub mod parakeet;
 pub mod session;
+pub mod smart_turn;
 pub mod vad;
 pub mod whisper;
 #[cfg(test)]
