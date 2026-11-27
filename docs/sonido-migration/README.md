@@ -38,27 +38,7 @@ O CSS do Sonido (o `styles.css` do pacote) entra uma vez em `renderer/src/main.t
 - `Toast`/`Spinner`: o app usa notificações próprias ligadas ao store e spinners do `lucide-react`;
   sem cópia local equivalente para comparar.
 
-## Como as imagens foram geradas
+## Comparações
 
-`preview.html` + `preview.tsx` montam a mesma página com os dois lados. O lado **Antes** importa
-cópias literais de `origin/main` em `legacy/` (só o caminho dos imports relativos mudou); o lado
-**Depois** importa os arquivos do app já apoiados no Sonido. A página carrega o CSS real do app
-(`apps/desktop/src/renderer/src/styles.css`, com Tailwind 4 e as fontes) mais o CSS do Sonido.
+As capturas (`antes-depois.png`, `confirmacao.png`) foram geradas antes do merge, em Chromium 1180×900 (`deviceScaleFactor: 2`, `fullPage`), com dados fictícios. O harness que montava os dois lados (`preview*` e as cópias em `legacy/`) foi removido depois da revisão; as imagens ficam como registro da troca.
 
-```bash
-pnpm --filter @mika/desktop exec vite -c vite.sonido-preview.config.ts
-# http://localhost:5302/preview.html
-
-node C:/Users/jr_ac/AppData/Local/Temp/opencode/shot/full.cjs \
-  "http://localhost:5302/preview.html" \
-  "D:/Solutions/pessoal/wt-sonido/mika/docs/sonido-migration/antes-depois.png"
-
-# variante com as duas perguntas do ConfirmButton abertas
-node C:/Users/jr_ac/AppData/Local/Temp/opencode/shot/full.cjs \
-  "http://localhost:5302/preview.html" \
-  "D:/Solutions/pessoal/wt-sonido/mika/docs/sonido-migration/confirmacao.png" \
-  confirm
-```
-
-As capturas usam Chromium 1180×900, `deviceScaleFactor: 2`, `fullPage`, com dados fictícios
-(“Visão geral”, 128 mensagens, 42 memórias, provedor Ollama).
