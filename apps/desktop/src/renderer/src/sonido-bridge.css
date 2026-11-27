@@ -1,0 +1,18 @@
+/*
+ * Mika's palette is painted inline on <html> from the selected theme. Sonido reads its own
+ * --sn-* tokens, so the bridge points them at the app's tokens: without it the PageHeader and
+ * the cards fall back to Sonido's gray/coral instead of the page's color.
+ */
+:root[data-theme] {
+  --sn-color-bg: var(--bg);
+  --sn-color-surface: var(--surface);
+  --sn-color-surface-2: var(--surface-raise);
+  --sn-color-surface-hover: var(--surface-raise-strong);
+  --sn-color-border: var(--border);
+  --sn-color-border-soft: var(--border-subtle);
+  --sn-color-text: var(--text);
+  --sn-color-text-dim: var(--text-muted);
+  --sn-color-accent: var(--accent);
+  --sn-color-accent-2: var(--accent-text);
+  --sn-gradient: linear-gradient(135deg, var(--accent), var(--accent-text));
+}
