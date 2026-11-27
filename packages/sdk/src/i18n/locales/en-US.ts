@@ -3594,4 +3594,36 @@ export const enUS: TranslationDict = {
   'shell.tray.pauseSenses': 'Pause mic and screen',
   'shell.tray.statusPaused': 'mic and screen paused',
   'shell.tray.statusResumed': 'Mic and screen are back on',
+  'settings.voiceTts.group.phonon': 'Phonon (local)',
+  'settings.voiceTts.field.ttsProvider.option.phonon': 'Phonon',
+  'settings.voiceTts.field.phononModel.label': 'Phonon model',
+  'settings.voiceTts.field.phononModel.helperText':
+    'Downloaded on demand from Hugging Face; nothing is bundled with Mika.',
+  'settings.voiceTts.field.phononModel.option.pt': 'Phonon 40M PT — Portuguese (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.multilingual': 'Phonon 40M Multilingual — EN/FR/DE/ES/PT (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.en': 'Phonon 31M EN — English (Apache-2.0)',
+  'settings.voiceTts.field.phononVoice.label': 'Voice',
+  'settings.voiceTts.field.phononVoice.option.default': 'Default (from the checkpoint)',
+  'settings.voiceTts.field.huggingFaceToken.label': 'Hugging Face token',
+  'settings.voiceTts.field.huggingFaceToken.helperText':
+    'Required for the CC BY-NC models. Accept the terms on the model page and paste a token with read access.',
+  'settings.voiceTts.panel.phononHint':
+    'Local, in-process TTS (Rust, no Python). The model is downloaded on the first speech and cached; after that it works offline.',
+  'settings.voiceTts.panel.phononNonCommercial':
+    'NON-COMMERCIAL use only (CC BY-NC 4.0): this model is downloaded on demand, never shipped with Mika, and cannot be used in paid or commercial projects.',
+  'settings.voiceTts.panel.phononApache':
+    'Apache-2.0 license: free for commercial use. Downloaded on demand, never shipped with Mika.',
+  'settings.voiceTts.panel.phononModelPage': 'Open model page',
+  'settings.voiceTts.panel.phononOpenPageError': 'Could not open the model page in your browser.',
+  'voice.tts.phonon.emptyText': 'Phonon: empty text.',
+  'voice.tts.phonon.modelNotInCatalog': 'Phonon: model "{{model}}" is not in the catalog.',
+  'voice.tts.phonon.voiceNotInCatalog': 'Phonon: voice "{{voice}}" is not available for this model.',
+  'voice.tts.phonon.gated':
+    'Phonon: the model "{{model}}" is gated. Accept the terms at {{url}} and paste a Hugging Face token in the voice settings.',
+  'voice.tts.phonon.downloadFailed': 'Phonon: failed to download {{file}} from "{{model}}": {{detail}}',
+  'voice.tts.phonon.digestMismatch': 'Phonon: {{file}} does not match the measured hash; the download was discarded.',
+  'voice.tts.phonon.writeFailed': 'Phonon: could not write {{path}}: {{detail}}',
+  'voice.tts.phonon.loadFailed': 'Phonon: could not load the model: {{detail}}',
+  'voice.tts.phonon.synthesisFailed': 'Phonon: synthesis failed: {{detail}}',
+  'voice.tts.phonon.emptyAudio': 'Phonon: returned empty audio.',
 }

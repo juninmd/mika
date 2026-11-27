@@ -7,9 +7,9 @@
 //!
 //! ## Duas abas, UM namespace — e por que o grupo "outros" mora só em `voice`
 //!
-//! `declare_fields` (local, [`feature_fields`]) devolve os MESMOS 55 campos do namespace `voice`
-//! para as duas chamadas abaixo. [`declaration_voice`] reivindica 47 (`VOICE_GROUPS`: runtime + 6
-//! grupos de provedor de TTS); [`declaration_stt`] reivindica os 8 do ASR (`STT_GROUP`).
+//! `declare_fields` (local, [`feature_fields`]) devolve os MESMOS 66 campos do namespace `voice`
+//! para as duas chamadas abaixo. [`declaration_voice`] reivindica 54 (`VOICE_GROUPS`: runtime + 7
+//! grupos de provedor de TTS); [`declaration_stt`] reivindica os 12 do ASR (`STT_GROUP`).
 //!
 //! Se as DUAS calculassem leftover e emitissem "outros", cada campo do ASR apareceria como "não
 //! agrupado" dentro da aba `voice` — e vice-versa: cada chamada só enxerga o namespace inteiro, não
@@ -18,14 +18,14 @@
 //! nunca cria um: se `voice-stt-config.schema.ts` ganhar campo sem entrar em `STT_GROUP`, ele sobra
 //! no `by_key` de `declaration_voice` e cai no "outros" DAQUELA aba — visível, nunca mudo.
 //!
-//! ## Contagem: 55, não 63
+//! ## Contagem: 66
 //!
 //! Uma rodada de "só deixa o que faz sentido" cortou 8 campos sem leitor Rust nenhum (dead config
 //! da UI) e o grupo `kokoro` (provedor cortado em `dispatch.rs::CUT_PROVIDERS`, sem sair do enum
 //! `ttsProvider` — ver `voice.rs::runtime_fields`). `config/schemas/
-//! voice.rs::ports_every_field_from_the_nine_source_files` prova 55 (17 runtime + 8 elevenlabs + 5
-//! azure + 7 google + 4 openai + 3 piper + 3 supertonic + 8 stt) — 47 (`VOICE_GROUPS`) +
-//! 8 (`STT_GROUP`) = 55.
+//! voice.rs::ports_every_field_from_the_nine_source_files` prova 66 (17 runtime + 8 elevenlabs + 5
+//! azure + 7 google + 4 openai + 3 piper + 2 phonon + 4 supertonic + 12 stt) — 54 (`VOICE_GROUPS`) +
+//! 12 (`STT_GROUP`) = 66.
 
 mod feature_fields;
 
@@ -127,7 +127,7 @@ mod tests {
     }
 
     #[test]
-    fn voice_tab_has_the_seven_ts_groups_in_order_no_leftover() {
+    fn voice_tab_has_the_eight_ts_groups_in_order_no_leftover() {
         let d = declaration_voice(&schema()).unwrap();
         assert_eq!(d["tabId"], json!("voice"));
         assert_eq!(d["tabIcon"], json!("Volume2"));
@@ -137,9 +137,9 @@ mod tests {
         assert!(d.get("enabledConfigPath").is_none());
 
         let groups = d["groups"].as_array().unwrap();
-        // 7, nunca 8: se aparecer um 8º grupo é porque "outros" não ficou vazio. `kokoro` saiu
+        // 8, nunca 9: se aparecer um 9º grupo é porque "outros" não ficou vazio. `kokoro` saiu
         // (provedor cortado, `dispatch.rs::CUT_PROVIDERS`) sem deixar campo órfão para trás.
-        assert_eq!(groups.len(), 7, "grupo 'outros' apareceu na aba voice — algum campo não foi reivindicado");
+        assert_eq!(groups.len(), 8, "grupo 'outros' apareceu na aba voice — algum campo não foi reivindicado");
 
         let titles: Vec<&str> = groups.iter().map(|g| g["title"].as_str().unwrap()).collect();
         assert_eq!(
@@ -148,6 +148,7 @@ mod tests {
                 "settings.voiceTts.group.runtime",
                 "settings.voiceTts.group.elevenlabs",
                 "settings.voiceTts.group.supertonic",
+                "settings.voiceTts.group.phonon",
                 "settings.voiceTts.group.piper",
                 "settings.voiceTts.group.azure",
                 "settings.voiceTts.group.google",
@@ -156,8 +157,8 @@ mod tests {
         );
 
         let counts: Vec<usize> = groups.iter().map(|g| g["fields"].as_array().unwrap().len()).collect();
-        assert_eq!(counts, vec![17, 9, 4, 3, 7, 7, 5]);
-        assert_eq!(counts.iter().sum::<usize>(), 52);
+        assert_eq!(counts, vec![17, 9, 4, 2, 3, 7, 7, 5]);
+        assert_eq!(counts.iter().sum::<usize>(), 54);
     }
 
     #[test]
@@ -167,7 +168,7 @@ mod tests {
     }
 
     /// `visibleWhen: { configPath: 'voice.ttsProvider', equals: <provider> }` em cada grupo de
-    /// provedor — sem ele os 7 grupos aparecem juntos na tela em vez de trocar com `ttsProvider`.
+    /// provedor — sem ele os 8 grupos aparecem juntos na tela em vez de trocar com `ttsProvider`.
     #[test]
     fn voice_tab_provider_groups_carry_visible_when() {
         let d = declaration_voice(&schema()).unwrap();
@@ -175,10 +176,11 @@ mod tests {
         let expected = [
             (1, "elevenlabs"),
             (2, "supertonic"),
-            (3, "piper"),
-            (4, "azure-tts"),
-            (5, "google-tts"),
-            (6, "openai-tts"),
+            (3, "phonon"),
+            (4, "piper"),
+            (5, "azure-tts"),
+            (6, "google-tts"),
+            (7, "openai-tts"),
         ];
         for (index, equals) in expected {
             assert_eq!(groups[index]["visibleWhen"]["configPath"], json!("voice.ttsProvider"), "grupo {index}");
@@ -191,7 +193,7 @@ mod tests {
         let d = declaration_voice(&schema()).unwrap();
         assert_eq!(d["groups"][1]["testAction"]["label"], json!("settings.voiceTts.testAction.label"));
         // Nenhum outro grupo tem `testAction` — só `elevenlabs` em `voice.schema.ts`.
-        for index in [0, 2, 3, 4, 5, 6] {
+        for index in [0, 2, 3, 4, 5, 6, 7] {
             assert!(d["groups"][index].get("testAction").is_none(), "grupo {index} não devia ter testAction");
         }
     }
@@ -231,14 +233,14 @@ mod tests {
         );
     }
 
-    /// NEGATIVO — a classe de defeito que este arquivo existe para não repetir: os 55 campos do
+    /// NEGATIVO — a classe de defeito que este arquivo existe para não repetir: os 66 campos do
     /// namespace `voice` aparecem exatamente uma vez, somando as duas abas. Um campo em falta
     /// deriva de uma chave errada em `VOICE_GROUPS`/`STT_GROUP`; um campo em dobro, de uma chave
     /// repetida entre os dois.
     #[test]
     fn every_field_of_the_namespace_appears_exactly_once_across_both_tabs() {
         let all_fields = declare_fields(&schema()).unwrap();
-        assert_eq!(all_fields.len(), 64, "config/schemas/voice.rs mudou de tamanho — releia antes de ajustar isto");
+        assert_eq!(all_fields.len(), 66, "config/schemas/voice.rs mudou de tamanho — releia antes de ajustar isto");
 
         let voice = declaration_voice(&schema()).unwrap();
         let stt = declaration_stt(&schema()).unwrap();
@@ -279,6 +281,7 @@ mod tests {
             "settings.voiceTts.group.runtime",
             "settings.voiceTts.group.elevenlabs",
             "settings.voiceTts.group.supertonic",
+            "settings.voiceTts.group.phonon",
             "settings.voiceTts.group.piper",
             "settings.voiceTts.group.azure",
             "settings.voiceTts.group.google",

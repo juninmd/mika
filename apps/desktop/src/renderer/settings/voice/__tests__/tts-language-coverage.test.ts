@@ -6,6 +6,10 @@ import {
   googleLanguageCodeForLocale,
   googleVoiceForLocale,
   googleVoices,
+  phononIsNonCommercial,
+  phononModelLanguages,
+  phononModels,
+  phononVoices,
   piperVoices,
 } from '../tts-provider-constants'
 
@@ -35,6 +39,30 @@ describe('ttsCoverageNotice', () => {
     for (const provider of ['elevenlabs', 'azure-tts', 'google-tts', 'openai-tts', 'system'] as const) {
       expect(ttsCoverageNotice(provider, 'ja-JP', 'x')).toBeNull()
     }
+  })
+
+  it('Phonon warns only when the selected checkpoint does not speak the interface language', () => {
+    expect(ttsCoverageNotice('phonon', 'pt-BR', 'x', 'phonon-40m-pt')).toBeNull()
+    expect(ttsCoverageNotice('phonon', 'fr-FR', 'x', 'phonon-40m-multilingual')).toBeNull()
+    expect(ttsCoverageNotice('phonon', 'ja-JP', 'x', 'phonon-40m-multilingual')).toBe(
+      'settings.voiceTts.coverage.unsupported',
+    )
+    expect(ttsCoverageNotice('phonon', 'pt-BR', 'x', 'phonon-31m-en')).toBe('settings.voiceTts.coverage.unsupported')
+  })
+})
+
+describe('Phonon catalog mirrors the Rust provider', () => {
+  it('offers exactly the three pinned models, with the two CC BY-NC marked non-commercial', () => {
+    expect(phononModels(t).map((o) => String(o.value))).toEqual([
+      'phonon-40m-pt',
+      'phonon-40m-multilingual',
+      'phonon-31m-en',
+    ])
+    expect(phononIsNonCommercial('phonon-40m-pt')).toBe(true)
+    expect(phononIsNonCommercial('phonon-40m-multilingual')).toBe(true)
+    expect(phononIsNonCommercial('phonon-31m-en')).toBe(false)
+    expect(phononModelLanguages('phonon-40m-multilingual')).toEqual(['en', 'fr', 'de', 'es', 'pt'])
+    expect(phononVoices(t).map((o) => String(o.value))).toEqual(['default'])
   })
 })
 

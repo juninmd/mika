@@ -68,7 +68,13 @@ export function TTSProviderPanel(props: TTSProviderPanelProps) {
       }}
     >
       <BentoGrid cols="auto">
-        <TtsLanguageNotice t={t} locale={locale} provider={ttsProvider} piperVoice={fields.piperVoice} />
+        <TtsLanguageNotice
+          t={t}
+          locale={locale}
+          provider={ttsProvider}
+          piperVoice={fields.piperVoice}
+          phononModel={fields.phononModel}
+        />
 
         <GlassCard span="full">
           <SectionHeader

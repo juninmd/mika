@@ -201,6 +201,9 @@ const EXTERNAL_HOSTS: &[&str] = &[
     "docs.astral.sh",
     // `learnMoreUrl` da chave do proxy OpenAI-compatível (`modules/llm/feature_fields.rs`).
     "docs.litellm.ai",
+    // Página dos modelos Phonon (aceite do gate + termos CC BY-NC/Apache): `phononModelPage` no
+    // painel de voz.
+    "huggingface.co",
 ];
 
 fn external_url_allowed(raw: &str) -> Result<url::Url, String> {
@@ -463,6 +466,10 @@ mod tests {
             ),
             ("llm/feature_fields.rs", include_str!("modules/llm/feature_fields.rs")),
             ("gamer/feature.rs", include_str!("modules/gamer/feature.rs")),
+            (
+                "tts-provider-constants.ts",
+                include_str!("../../src/renderer/settings/voice/tts-provider-constants.ts"),
+            ),
         ];
         let link = regex::Regex::new(r#"(?:keyUrl|docsUrl|learnMoreUrl|_URL)"?\s*[:=]\s*["'](https://[^"']+)"#).unwrap();
         let mut refused = Vec::new();

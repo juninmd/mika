@@ -3684,4 +3684,37 @@ export const deDE: TranslationDict = {
   'shell.tray.pauseSenses': 'Mikrofon und Bildschirm pausieren',
   'shell.tray.statusPaused': 'Mikrofon und Bildschirm pausiert',
   'shell.tray.statusResumed': 'Mikrofon und Bildschirm sind wieder an',
+  'settings.voiceTts.group.phonon': 'Phonon (lokal)',
+  'settings.voiceTts.field.ttsProvider.option.phonon': 'Phonon',
+  'settings.voiceTts.field.phononModel.label': 'Phonon-Modell',
+  'settings.voiceTts.field.phononModel.helperText':
+    'Wird bei Bedarf von Hugging Face geladen; nichts ist in Mika enthalten.',
+  'settings.voiceTts.field.phononModel.option.pt': 'Phonon 40M PT — Portugiesisch (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.multilingual': 'Phonon 40M Mehrsprachig — EN/FR/DE/ES/PT (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.en': 'Phonon 31M EN — Englisch (Apache-2.0)',
+  'settings.voiceTts.field.phononVoice.label': 'Stimme',
+  'settings.voiceTts.field.phononVoice.option.default': 'Standard (aus dem Checkpoint)',
+  'settings.voiceTts.field.huggingFaceToken.label': 'Hugging-Face-Token',
+  'settings.voiceTts.field.huggingFaceToken.helperText':
+    'Für die CC-BY-NC-Modelle erforderlich. Akzeptiere die Bedingungen auf der Modellseite und füge ein Token mit Lesezugriff ein.',
+  'settings.voiceTts.panel.phononHint':
+    'Lokales TTS im selben Prozess (Rust, kein Python). Das Modell wird beim ersten Sprechen geladen und zwischengespeichert; danach funktioniert es offline.',
+  'settings.voiceTts.panel.phononNonCommercial':
+    'Nur NICHT-kommerzielle Nutzung (CC BY-NC 4.0): Dieses Modell wird bei Bedarf geladen, niemals mit Mika ausgeliefert und darf nicht in bezahlten oder kommerziellen Projekten verwendet werden.',
+  'settings.voiceTts.panel.phononApache':
+    'Apache-2.0-Lizenz: frei für kommerzielle Nutzung. Wird bei Bedarf geladen, niemals mit Mika ausgeliefert.',
+  'settings.voiceTts.panel.phononModelPage': 'Modellseite öffnen',
+  'settings.voiceTts.panel.phononOpenPageError': 'Die Modellseite konnte nicht im Browser geöffnet werden.',
+  'voice.tts.phonon.emptyText': 'Phonon: leerer Text.',
+  'voice.tts.phonon.modelNotInCatalog': 'Phonon: Modell „{{model}}“ ist nicht im Katalog.',
+  'voice.tts.phonon.voiceNotInCatalog': 'Phonon: Stimme „{{voice}}“ gibt es für dieses Modell nicht.',
+  'voice.tts.phonon.gated':
+    'Phonon: Das Modell „{{model}}“ ist zugangsbeschränkt. Akzeptiere die Bedingungen unter {{url}} und trage einen Hugging-Face-Token in den Spracheinstellungen ein.',
+  'voice.tts.phonon.downloadFailed': 'Phonon: {{file}} konnte nicht von „{{model}}“ geladen werden: {{detail}}',
+  'voice.tts.phonon.digestMismatch':
+    'Phonon: {{file}} stimmt nicht mit dem gemessenen Hash überein; der Download wurde verworfen.',
+  'voice.tts.phonon.writeFailed': 'Phonon: {{path}} konnte nicht geschrieben werden: {{detail}}',
+  'voice.tts.phonon.loadFailed': 'Phonon: Modell konnte nicht geladen werden: {{detail}}',
+  'voice.tts.phonon.synthesisFailed': 'Phonon: Synthese fehlgeschlagen: {{detail}}',
+  'voice.tts.phonon.emptyAudio': 'Phonon: leeres Audio zurückgegeben.',
 }
