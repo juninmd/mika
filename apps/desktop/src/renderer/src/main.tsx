@@ -8,6 +8,7 @@ import ReactDOM from 'react-dom/client'
 import { AppBoundary } from './components/AppBoundary'
 import { ShellFallback } from './components/app/ShellFallbacks'
 import './styles.css'
+import './sonido-bridge.css'
 import { useI18n } from './hooks/useI18n'
 import { startLongTaskProbe } from './lib/long-task-probe'
 

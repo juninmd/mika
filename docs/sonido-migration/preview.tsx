@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import '../../apps/desktop/src/renderer/src/styles.css'
 import '@juninmd/sonido/styles.css'
+import '../../apps/desktop/src/renderer/src/sonido-bridge.css'
 
 // Depois: o mesmo arquivo do app, agora apoiado no Sonido.
 import { ConfirmButton, EmptyState, PageHero, StatTile, StatusPill } from '../../packages/sdk-ui/src/settings'
