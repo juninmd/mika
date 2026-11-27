@@ -334,7 +334,9 @@ async function collectButtons(main: Locator): Promise<ButtonMeta[]> {
         const text = (el.textContent ?? '').trim()
         const disabled = (el as HTMLButtonElement).disabled
         const inNav = Boolean(el.closest('[role="tablist"], nav, [role="navigation"], [role="toolbar"]'))
-        const inConfirmGroup = Boolean(el.closest('[role="group"][aria-label^="Confirmação:"]'))
+        // Armed ConfirmButton (Sonido): the inline group is `.sn-confirm`; its cancel/confirm
+        // pair is excluded from the button sweep below.
+        const inConfirmGroup = Boolean(el.closest('.sn-confirm'))
         const isTopBar = topBarNames.includes(label)
         const eligible = !role && !hasPopup && !disabled && !inNav && !inConfirmGroup && !isTopBar
         return eligible ? { index, label, text } : null
@@ -397,7 +399,9 @@ async function auditPanelButtons(settings: Page): Promise<ControlResult[]> {
       }
       results.push({ kind: 'button', name, status: 'opened-dialog' })
     } else {
-      const confirmGroup = settings.getByRole('group', { name: /^Confirmação:/ }).first()
+      // Sonido's ConfirmButton exposes the armed pair as `.sn-confirm` (same role="group", but
+      // the accessible name now comes from the buttons instead of a fieldset label).
+      const confirmGroup = settings.locator('.sn-confirm').first()
       if (await confirmGroup.isVisible().catch(() => false)) {
         // Armed ConfirmButton: test the real confirm click (isolated test profile).
         const confirmBtn = confirmGroup

@@ -36,10 +36,26 @@ export function toAccentTriple(color: string): { h: number; s: number; l: number
   return { h, s: Math.round(s * 100), l: Math.round(l * 100) }
 }
 
+/**
+ * Mika's `data-theme` never had a CSS consumer; it is now the Sonido theme key. The app's own
+ * palette is painted by the inline tokens below, so both layers stay on the same polarity:
+ * light schemes get Sonido's light theme, aurora keeps its name, every other theme is Sonido dark.
+ */
+const SONIDO_THEME: Record<string, string> = {
+  light: 'light',
+  sakura: 'light',
+  aurora: 'aurora',
+}
+
+function sonidoThemeFor(theme: Theme): string {
+  return SONIDO_THEME[theme.id] ?? 'dark'
+}
+
 export function applyTheme(theme: Theme): void {
   const root = document.documentElement
   const { colors } = theme
-  root.dataset.theme = theme.id
+  root.dataset.mikaTheme = theme.id
+  root.dataset.theme = sonidoThemeFor(theme)
 
   root.dataset.scheme = theme.scheme
 

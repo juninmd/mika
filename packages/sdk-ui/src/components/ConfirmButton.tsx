@@ -1,6 +1,7 @@
+import { ConfirmButton as SonidoConfirmButton } from '@juninmd/sonido'
 import { t } from '@mika/sdk/i18n'
 import type { LucideIcon } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface ConfirmButtonProps {
   label?: string
@@ -13,6 +14,13 @@ export interface ConfirmButtonProps {
   className?: string
 }
 
+/**
+ * Two-step destructive action. The flow, Esc handling and focus return are Sonido's; the app
+ * keeps its labels, icon, aria-label and the 4 s auto-dismiss (a question left open closes by
+ * itself). `key` closes a pending question when `disabled` flips or the timer expires, which is
+ * what the old local `useEffect` did. An empty `confirmLabel` (icon-only clear buttons) falls back
+ * to the translated "Confirmar" so the armed button is never nameless.
+ */
 export function ConfirmButton({
   label,
   confirmLabel = t('sdkUi.confirmButton.confirm'),
@@ -23,59 +31,41 @@ export function ConfirmButton({
   disabled = false,
   className = '',
 }: ConfirmButtonProps) {
-  const [armed, setArmed] = useState(false)
-  const confirmBtnRef = useRef<HTMLButtonElement>(null)
+  const [cycle, setCycle] = useState(0)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  useEffect(() => {
-    if (!armed) return
-    confirmBtnRef.current?.focus()
-    const timer = setTimeout(() => setArmed(false), 4000)
-    return () => clearTimeout(timer)
-  }, [armed])
+  const scheduleClose = useCallback(() => {
+    if (timer.current) clearTimeout(timer.current)
+    timer.current = setTimeout(() => setCycle((n) => n + 1), 4000)
+  }, [])
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current)
+    },
+    [],
+  )
 
-  if (!armed) {
-    return (
-      <button
-        type="button"
-        onClick={() => setArmed(true)}
-        disabled={disabled}
-        aria-label={ariaLabel}
-        className={`inline-flex min-h-8 shrink-0 items-center gap-1.5 rounded border border-border-subtle bg-surface-raise px-2.5 py-1.5 text-caption text-text-muted transition-colors hover:border-danger-rim hover:bg-danger-soft hover:text-danger focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus disabled:opacity-50 ${className}`}
-      >
-        {Icon ? <Icon size={11} aria-hidden="true" /> : null}
-        {label}
-      </button>
-    )
-  }
-
-  return (
-    <fieldset
-      aria-label={`${t('sdkUi.confirmButton.confirmationPrefix')}: ${ariaLabel}`}
-      className="inline-flex shrink-0 items-center gap-1 border-0 m-0 p-0"
-      onKeyDown={(event) => {
-        if (event.key === 'Escape') setArmed(false)
-      }}
+  const button = (
+    <SonidoConfirmButton
+      key={`${disabled ? 'disabled' : 'ready'}-${cycle}`}
+      ask=""
+      confirmLabel={confirmLabel || t('sdkUi.confirmButton.confirm')}
+      cancelLabel={cancelLabel}
+      onConfirm={onConfirm}
+      disabled={disabled}
+      size="sm"
+      aria-label={ariaLabel}
+      iconStart={Icon ? <Icon size={11} aria-hidden="true" /> : undefined}
     >
-      <button
-        type="button"
-        onClick={() => setArmed(false)}
-        className="min-h-8 rounded border border-border-subtle px-2.5 py-1.5 text-caption font-semibold text-text-muted transition-colors hover:border-border-strong hover:bg-surface-raise hover:text-text-main focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-focus"
-      >
-        {cancelLabel}
-      </button>
-      <button
-        ref={confirmBtnRef}
-        type="button"
-        onClick={() => {
-          setArmed(false)
-          onConfirm()
-        }}
-        disabled={disabled}
-        aria-label={confirmLabel ? `${confirmLabel}: ${ariaLabel}` : ariaLabel}
-        className="min-h-8 rounded bg-danger px-2.5 py-1.5 text-caption font-bold text-white transition-[filter,transform] duration-150 shadow-sm shadow-danger/30 hover:brightness-110 active:scale-[0.98] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-      >
-        {confirmLabel}
-      </button>
-    </fieldset>
+      {label || undefined}
+    </SonidoConfirmButton>
+  )
+  // Sonido drops `className` in the asking state; the wrapper keeps layout classes (ml-auto,
+  // mb-3) stable across both steps. `display: contents` keeps the extra event wrapper out of
+  // layout, so the two-step button still sits exactly where the old <button> sat.
+  return (
+    <div style={{ display: 'contents' }} onClickCapture={scheduleClose}>
+      {className ? <div className={className}>{button}</div> : button}
+    </div>
   )
 }

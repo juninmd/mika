@@ -1,6 +1,6 @@
+import { Badge, type BadgeTone } from '@juninmd/sonido'
 import type { TranslationDict } from '@mika/sdk/i18n'
 import { t } from '@mika/sdk/i18n'
-import { cn } from '../utils/cn'
 
 export type PillVariant =
   | 'ok'
@@ -41,59 +41,36 @@ function defaultLabel(variant: PillVariant): string {
   return key ? t(key) : ''
 }
 
-const VARIANTS: Record<PillVariant, string> = {
-  ok: 'bg-ok-soft text-ok border-ok-rim',
-  warn: 'bg-warn-soft text-warn border-warn-rim',
-  error: 'bg-danger-soft text-danger border-danger-rim',
-  loading: 'bg-accent-soft text-accent border-accent-rim animate-pulse',
-
-  inactive: 'bg-surface-raise text-text-subtle border-border-subtle',
-  new: 'bg-accent-soft text-accent-text border-accent-rim',
-  pending: 'bg-surface-raise text-text-muted border-border-subtle',
-  neutral: 'bg-surface-raise text-text-muted border-border-subtle',
-  accent: 'bg-accent-soft text-accent border-accent-rim',
-  info: 'bg-info-soft text-info border-info-rim',
+/** The app's variants, mapped to the Sonido tone vocabulary (`ok`/`warn`/`error` are the old names). */
+const TONES: Record<PillVariant, BadgeTone> = {
+  ok: 'success',
+  warn: 'warning',
+  error: 'danger',
+  loading: 'accent',
+  inactive: 'neutral',
+  new: 'accent',
+  pending: 'neutral',
+  neutral: 'neutral',
+  accent: 'accent',
+  // Sonido's Badge has no `info` tone; aqua is its cool "informação" tone.
+  info: 'aqua',
 }
 
-const DOT_COLORS: Record<PillVariant, string> = {
-  ok: 'bg-ok',
-  warn: 'bg-warn',
-  error: 'bg-danger',
-  loading: 'bg-accent',
-  inactive: 'bg-text-subtle',
-  new: 'bg-accent',
-  pending: 'bg-text-muted',
-  neutral: 'bg-text-muted',
-  accent: 'bg-accent',
-  info: 'bg-info',
-}
-
-/** Estados "ao vivo": o ponto emite um pulso para dizer que algo está ativo agora. */
+/** States that are live right now: the point pulses, as it did in the local implementation. */
 const LIVE_VARIANTS: ReadonlySet<PillVariant> = new Set(['ok', 'loading'])
 
+/** Status/count pill. Tone vocabulary from Sonido's `Badge`; the app keeps its variant names. */
 export function StatusPill({ variant, label, className, dot = false, title }: StatusPillProps) {
   const text = label ?? defaultLabel(variant)
   return (
-    <span
+    <Badge
+      tone={TONES[variant]}
+      dot={dot}
+      live={dot && LIVE_VARIANTS.has(variant)}
       title={title ?? text}
-      className={cn(
-        'inline-flex items-center justify-center rounded-full border px-2 py-px text-micro font-black uppercase tracking-[0.12em]',
-        VARIANTS[variant],
-        className,
-      )}
+      className={className}
     >
-      {dot && (
-        <span className="relative mr-1.5 inline-flex h-1.5 w-1.5">
-          {LIVE_VARIANTS.has(variant) && (
-            <span
-              aria-hidden="true"
-              className={cn('absolute inset-0 rounded-full opacity-60 motion-safe:animate-ping', DOT_COLORS[variant])}
-            />
-          )}
-          <span className={cn('relative h-1.5 w-1.5 rounded-full', DOT_COLORS[variant])} />
-        </span>
-      )}
       {text}
-    </span>
+    </Badge>
   )
 }

@@ -1,7 +1,6 @@
-import { motion } from 'framer-motion'
+import { EmptyState as SonidoEmptyState } from '@juninmd/sonido'
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { cn } from '../utils/cn'
 
 interface EmptyStateProps {
   title: string
@@ -15,30 +14,22 @@ interface EmptyStateProps {
   className?: string
 }
 
+/**
+ * Empty/error state. Icon size follows `size` (the compact list variant vs the page variant);
+ * the wording, icon and action are the app's. `role="status"` stays on a wrapper so the
+ * existing announcements and E2E locators keep working.
+ */
 export function EmptyState({ title, hint, icon: Icon, action, size = 'inline', className }: EmptyStateProps) {
   const block = size === 'block'
   return (
-    <div
-      role="status"
-      className={cn(
-        'flex flex-col items-center justify-center gap-2 text-center',
-        block ? 'gap-3 py-14' : 'gap-1.5 py-6',
-        className,
-      )}
-    >
-      {Icon && (
-        <motion.span
-          aria-hidden="true"
-          className="inline-flex"
-          animate={{ y: [0, -3, 0] }}
-          transition={{ duration: 3.4, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' }}
-        >
-          <Icon size={block ? 24 : 16} className="text-text-subtle opacity-60" />
-        </motion.span>
-      )}
-      <p className={cn('font-medium text-text-muted', block ? 'text-sm' : 'text-caption')}>{title}</p>
-      {hint && <p className="max-w-sm text-caption leading-snug text-text-subtle">{hint}</p>}
-      {action}
+    <div role="status">
+      <SonidoEmptyState
+        icon={Icon ? <Icon size={block ? 24 : 16} aria-hidden="true" /> : undefined}
+        title={title}
+        description={hint}
+        action={action}
+        className={className}
+      />
     </div>
   )
 }
