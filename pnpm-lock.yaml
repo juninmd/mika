@@ -97,8 +97,8 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       '@juninmd/sonido':
-        specifier: ^2.2.2
-        version: 2.2.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: ^2.5.0
+        version: 2.5.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mika/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
@@ -253,8 +253,8 @@ importers:
   packages/sdk-ui:
     dependencies:
       '@juninmd/sonido':
-        specifier: ^2.2.2
-        version: 2.2.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: ^2.5.0
+        version: 2.5.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mika/sdk':
         specifier: workspace:*
         version: link:../sdk
@@ -599,8 +599,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@juninmd/sonido@2.2.2':
-    resolution: {integrity: sha512-9xNJohHzGDc6rYZiKFViXiI/SvQMo/R/Ftfk+FS83kFmvRDPa9s/DTE0QuCnW39YKqsiNxToQlgQ+NPFyhD81w==}
+  '@juninmd/sonido@2.5.0':
+    resolution: {integrity: sha512-BDDPug2RiI+B5Q88lc0Y32phpWnnlixAdso3XydR9qGmONuUZG8a+OzKiqxyZwrgPnOMPY7m+Oi39WycO1xErg==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18'
@@ -2776,7 +2776,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@juninmd/sonido@2.2.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@juninmd/sonido@2.5.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)

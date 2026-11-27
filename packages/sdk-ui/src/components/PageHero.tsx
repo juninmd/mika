@@ -56,6 +56,7 @@ export function PageHero({
     ) : undefined
   return (
     <SonidoPageHeader
+      accent
       title={title}
       icon={<HeroIcon icon={icon} />}
       pills={pills ?? eyebrowNode}
