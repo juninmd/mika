@@ -58,6 +58,7 @@ export const VOICE_COMPONENT_HANDLED_FIELDS = {
     'voice.voiceActivityThreshold',
     'voice.vadEndpointingEnabled',
     'voice.vadSilenceMs',
+    'voice.smartTurnEnabled',
     'voice.vadSpeechThreshold',
     'voice.vadEngine',
     'voice.vadIgnoreTyping',

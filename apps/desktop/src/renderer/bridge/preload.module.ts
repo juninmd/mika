@@ -16,5 +16,5 @@ export const PreloadModule = defineModule({
   consumes: [],
   emits: [],
   config: [],
-  frozen: { at: '2026-11-17', hash: 'e36998f67bd11b46' },
+  frozen: { at: '2026-11-26', hash: '4af931c4023dba75' },
 })

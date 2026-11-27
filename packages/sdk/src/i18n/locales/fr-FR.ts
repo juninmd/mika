@@ -1797,6 +1797,9 @@ export const frFR: TranslationDict = {
   'settings.voiceStt.field.whisperModel.option.small': 'Small (~250 Mo, un peu plus précis et ~3x plus lent)',
   'settings.voiceStt.field.whisperModel.helperText':
     "Fonctionne dans l'application (ONNX), sans Python. Le modèle est téléchargé lors de la première transcription et mis en cache. Mesuré ici : Base transcrit en ~1/3 du temps de la parole ; Small est un peu plus précis mais prend plus de temps que la parole elle-même.",
+  'settings.voiceStt.field.smartTurnEnabled.label': 'Fin de tour intelligente (Smart Turn)',
+  'settings.voiceStt.field.smartTurnEnabled.helperText':
+    "Avant de terminer votre parole sur une pause, un modèle local (Smart Turn v3, ~8,7 Mo, téléchargé la première fois) vérifie si la phrase est terminée. Si elle semble incomplète, Mika attend jusqu'à 3 s.",
   'settings.voiceStt.field.groqApiKey.label': 'Groq API Key',
   'settings.voiceStt.field.openaiApiKey.label': 'OpenAI API Key',
   'settings.voiceStt.panel.testing': 'Test en cours...',
@@ -2753,6 +2756,7 @@ export const frFR: TranslationDict = {
   'settings.performance.accel.model.nemotron': 'Nemotron',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
+  'settings.performance.accel.model.smartTurn': 'Smart Turn',
   'settings.performance.accel.model.e5': 'Embeddings granite',
   'settings.performance.accel.reason.userCpu': 'CPU choisi dans les Paramètres',
   'settings.performance.accel.reason.tinyModel': "petit modèle : l'envoyer au GPU coûte plus que le calculer",

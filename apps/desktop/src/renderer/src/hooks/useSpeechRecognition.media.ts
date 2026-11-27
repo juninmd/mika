@@ -5,6 +5,13 @@ import { stopStream } from '../lib/mic-stream'
 import { rendererLog } from '../lib/renderer-logger'
 import { getElectronApi } from '../lib/shell-api'
 import { logVadSetupFailure, VAD_WORKLET_PATH } from './audio-playback-vad'
+import {
+  decideEndOfTurn,
+  type EndOfTurnCheck,
+  lastSmartTurnWindow,
+  SMART_TURN_CHECK_TIMEOUT_MS,
+  SMART_TURN_MAX_SILENCE_MS,
+} from './speech-end-of-turn'
 import { createPartialTranscriber } from './speech-partials'
 import { createPreRollBuffer, preRollDurationMs } from './speech-preroll'
 import {
@@ -22,7 +29,6 @@ import {
   requestTranscript,
   SILENCE_HANGOVER_MS,
   scaleVadGates,
-  shouldFinishUtterance,
   type TranscribeResponse,
   transcribeUtterance,
   VAD_POLL_MS,
@@ -48,6 +54,23 @@ const EARLY_TRANSCRIPT_HANGOVER_FRACTION = 1 / 3
 
 /** Silence shorter than this still counts as talking for partials (gaps between words). */
 const PARTIAL_VOICE_WINDOW_MS = 300
+
+/** Uma classificação que não volta nesse prazo vira erro e o VAD encerra — nunca prende a escuta. */
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('smart-turn-timeout')), timeoutMs)
+    promise.then(
+      (value) => {
+        clearTimeout(timer)
+        resolve(value)
+      },
+      (error) => {
+        clearTimeout(timer)
+        reject(error)
+      },
+    )
+  })
+}
 
 /** Continuous 16kHz mono tap, same worklet the barge-in path already loads — feeds the pre-roll
  * ring buffer so onset clipping (the gate-opening syllable) doesn't lose audio while nothing is
@@ -110,6 +133,7 @@ export async function startMediaRecorderTranscription({
   vadThreshold,
   vadSilenceMs,
   vadEndpointingEnabled = true,
+  smartTurnEnabled = false,
   asrProvider,
   livePartials = false,
   onTranscript,
@@ -142,6 +166,7 @@ export async function startMediaRecorderTranscription({
   const { runtime, context, meter } = setup
   const gates = scaleVadGates(vadThreshold)
   const hangoverMs = vadSilenceMs ?? SILENCE_HANGOVER_MS
+  const maxSilenceMs = Math.max(SMART_TURN_MAX_SILENCE_MS, hangoverMs)
 
   // Partials skip `requestTranscript`: its latency milestone measures the final transcript only.
   const partials = livePartials
@@ -188,10 +213,18 @@ export async function startMediaRecorderTranscription({
 
   let verdict = { confirmed: false, peak: 0 }
 
+  // Uma classificação por pausa. `voiceAt` amarra o resultado ao silêncio que o pediu: voz depois
+  // disso torna o estado obsoleto e a próxima pausa começa outra checagem.
+  let endOfTurnCheck: EndOfTurnCheck = { status: 'idle' }
+  let endOfTurnCheckToken = 0
+
   const finishUtterance = () => {
     if (!recorder) return
     const active = recorder
     recorder = null
+    // Invalida qualquer classificação em voo: o `then` tardio não pode mexer na próxima utterance.
+    endOfTurnCheckToken += 1
+    endOfTurnCheck = { status: 'idle' }
     // Ended by the ceiling or a pause, not by silence: an early transcript may predate the last words.
     if (current?.early && current.early.voiceAt !== lastVoiceAt) current.early = null
     current = null
@@ -220,6 +253,8 @@ export async function startMediaRecorderTranscription({
     // so this closure — not `preRoll` at emit time — is the onset audio for THIS utterance.
     const utterance: Utterance = { preRoll: preRoll.snapshot(), pcm: tapLive ? [] : null, early: null }
     current = utterance
+    endOfTurnCheckToken += 1
+    endOfTurnCheck = { status: 'idle' }
     logSttMilestone(runtime, 'utterance-start')
 
     rec.ondataavailable = (event) => {
@@ -287,6 +322,45 @@ export async function startMediaRecorderTranscription({
     }
   }
 
+  // Uma pausa, uma classificação. A chamada é limitada por timeout e o resultado só é aceito se a
+  // utterance e o `lastVoiceAt` que a pediu ainda forem os atuais — voz depois da pausa invalida.
+  const startSmartTurnCheck = (utterance: Utterance, voiceAt: number) => {
+    const token = ++endOfTurnCheckToken
+    endOfTurnCheck = { status: 'pending', voiceAt }
+    if (typeof runtime.classifyTurnEnd !== 'function') {
+      endOfTurnCheck = { status: 'error', voiceAt }
+      return
+    }
+
+    const pcm = lastSmartTurnWindow(capturedPcm16(utterance.pcm ?? [], utterance.preRoll))
+    const startedAt = performance.now()
+    const request = Promise.resolve().then(() => runtime.classifyTurnEnd({ audio: pcm, mimeType: PCM_MIME_TYPE }))
+    void withTimeout(request, SMART_TURN_CHECK_TIMEOUT_MS)
+      .then((result) => {
+        if (token !== endOfTurnCheckToken || current !== utterance || lastVoiceAt !== voiceAt) return
+        endOfTurnCheck = {
+          status: result.complete ? 'complete' : 'incomplete',
+          voiceAt,
+          probability: result.probability,
+          latencyMs: result.latencyMs,
+        }
+        logSttMilestone(runtime, 'smart-turn', {
+          complete: result.complete,
+          probability: result.probability,
+          latencyMs: result.latencyMs,
+          wallMs: Math.round(performance.now() - startedAt),
+          reason: result.reason,
+        })
+      })
+      .catch((error: unknown) => {
+        if (token !== endOfTurnCheckToken || current !== utterance || lastVoiceAt !== voiceAt) return
+        endOfTurnCheck = { status: 'error', voiceAt }
+        rendererLog.debug('[STT] smart turn indisponível — encerrando pelo VAD', {
+          error: error instanceof Error ? error.message : String(error),
+        })
+      })
+  }
+
   const tickPartials = (now: number, silentFor: number) => {
     if (!partials || !verdict.confirmed || !current) return
     const { pcm, preRoll: onset } = current
@@ -311,6 +385,32 @@ export async function startMediaRecorderTranscription({
     if (level >= gate.speech) lastVoiceAt = now
   }
 
+  const tickRecording = (level: number, now: number) => {
+    observeLevel(level, now)
+
+    const silentFor = now - lastVoiceAt
+    const elapsed = now - utteranceStart
+    const utterance = current
+    const action = decideEndOfTurn({
+      silentForMs: silentFor,
+      elapsedMs: elapsed,
+      hangoverMs,
+      maxSilenceMs,
+      endpointingEnabled: vadEndpointingEnabled,
+      // Sem tap de PCM não há o que classificar: cai no comportamento puramente acústico.
+      smartTurnEnabled: smartTurnEnabled && Boolean(utterance?.pcm?.length),
+      lastVoiceAt,
+      check: endOfTurnCheck,
+    })
+    if (action === 'finish') {
+      finishUtterance()
+      return
+    }
+    if (action === 'check' && utterance?.pcm?.length) startSmartTurnCheck(utterance, lastVoiceAt)
+    tickPartials(now, silentFor)
+    transcribeEarly(silentFor)
+  }
+
   const vadTimer = setInterval(() => {
     if (context.closed || paused) return
     const level = meter.level()
@@ -325,16 +425,7 @@ export async function startMediaRecorderTranscription({
       return
     }
 
-    observeLevel(level, now)
-
-    const silentFor = now - lastVoiceAt
-    const elapsed = now - utteranceStart
-    if (shouldFinishUtterance(silentFor, elapsed, hangoverMs, vadEndpointingEnabled)) {
-      finishUtterance()
-      return
-    }
-    tickPartials(now, silentFor)
-    transcribeEarly(silentFor)
+    tickRecording(level, now)
   }, VAD_POLL_MS)
 
   rendererLog.info('[STT] escuta iniciada', {

@@ -287,14 +287,14 @@ fn set_auto_launch(app: &AppHandle, enable: bool) -> Result<(), String> {
 
 // --- `mika:wizard-prepare-asset` (port de `wizard-assets.ts`) -----------------------------------
 
-fn sha256_hex(bytes: &[u8]) -> String {
+pub(crate) fn sha256_hex(bytes: &[u8]) -> String {
     hex::encode(Sha256::digest(bytes))
 }
 
 /// Escreve em `<target>.part` e renomeia — mesmo padrão de `writeModelFileAtomic`
 /// (`model-file-cache.ts`). Numa corrida perdida (outro processo já escreveu `target` com o MESMO
 /// tamanho esperado), trata como sucesso em vez de sobrescrever; tamanho diferente nunca é aceito.
-fn write_model_file_atomic(target: &Path, bytes: &[u8]) -> Result<(), String> {
+pub(crate) fn write_model_file_atomic(target: &Path, bytes: &[u8]) -> Result<(), String> {
     let partial = PathBuf::from(format!("{}.part", target.to_string_lossy()));
     let result = std::fs::write(&partial, bytes).and_then(|()| std::fs::rename(&partial, target));
     match result {
@@ -316,7 +316,7 @@ fn file_matches_size(path: &Path, expected: usize) -> bool {
         .unwrap_or(false)
 }
 
-fn ensure_parent_dir(path: &Path) -> Result<(), String> {
+pub(crate) fn ensure_parent_dir(path: &Path) -> Result<(), String> {
     let Some(parent) = path.parent() else { return Ok(()) };
     std::fs::create_dir_all(parent).map_err(|e| format!("não criou {}: {e}", parent.display()))
 }
@@ -325,7 +325,7 @@ fn ensure_parent_dir(path: &Path) -> Result<(), String> {
 /// jeito) e passando primeiro pelo chokepoint
 /// de privacidade — mesmo ponto único que `createLoggedFetch` é no lado TS
 /// (`assertNetworkAllowed` antes de todo `fetch`).
-async fn download_bytes(store: &ConfigStore, provider_tag: &str, url: &str, timeout: Duration) -> Result<Vec<u8>, String> {
+pub(crate) async fn download_bytes(store: &ConfigStore, provider_tag: &str, url: &str, timeout: Duration) -> Result<Vec<u8>, String> {
     privacy::assert_network_allowed(store, url, provider_tag)?;
 
     let response = privacy::fixed_endpoint_client()
@@ -412,7 +412,7 @@ pub(crate) fn vad_model_path(data_dir: &Path) -> PathBuf {
     data_dir.join("vad-cache").join(VAD_MODEL_FILE)
 }
 
-fn file_matches_sha256(path: &Path, expected_hex: &str) -> bool {
+pub(crate) fn file_matches_sha256(path: &Path, expected_hex: &str) -> bool {
     std::fs::read(path).map(|bytes| sha256_hex(&bytes) == expected_hex).unwrap_or(false)
 }
 

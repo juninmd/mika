@@ -204,6 +204,18 @@ fn parse_transcribe_headers(headers: &tauri::http::HeaderMap) -> (Option<String>
     (text("x-mika-mime-type"), text("x-mika-language"))
 }
 
+/// Fim de turno (`voice:smart-turn`) como corpo binário PCM16 — mesmo formato e mesmo motivo do
+/// transcribe: `Uint8Array` custa um `invoke` cru, sem base64 nem `number[]` no JSON.
+#[tauri::command]
+pub async fn mika_smart_turn_pcm(webview: Webview, app: AppHandle, request: tauri::ipc::Request<'_>) -> Result<Value, String> {
+    let ctx = context_from(&webview);
+    let tauri::ipc::InvokeBody::Raw(bytes) = request.body() else {
+        return Err("mika_smart_turn_pcm espera corpo binário".to_string());
+    };
+    let (mime_type, _language) = parse_transcribe_headers(request.headers());
+    crate::modules::voice::smart_turn::handle_binary(&app, &ctx, bytes.clone(), mime_type).await
+}
+
 fn parse_vad_headers(headers: &tauri::http::HeaderMap) -> Result<(f32, Option<bool>), String> {
     let text = |name: &str| headers.get(name).and_then(|v| v.to_str().ok());
     let amplitude = text("x-mika-amplitude")

@@ -9,6 +9,7 @@ export type ShellConfigPatch = Partial<{
   vadThreshold: number
   vadSilenceMs: number
   vadEndpointingEnabled: boolean
+  smartTurnEnabled: boolean
   vadEngine: VadEngine
   vadIgnoreTyping: boolean
   ttsVolume: number
@@ -52,6 +53,7 @@ export function parseVoiceConfig(cfg: ConfigRecord): ShellConfigPatch {
   if (typeof cfg.voiceActivityThreshold === 'number') patch.vadThreshold = cfg.voiceActivityThreshold
   if (typeof cfg.vadSilenceMs === 'number') patch.vadSilenceMs = cfg.vadSilenceMs
   if (cfg.vadEndpointingEnabled !== undefined) patch.vadEndpointingEnabled = cfg.vadEndpointingEnabled !== false
+  if (cfg.smartTurnEnabled !== undefined) patch.smartTurnEnabled = cfg.smartTurnEnabled === true
   if (isVadEngine(cfg.vadEngine)) patch.vadEngine = cfg.vadEngine
   if (cfg.vadIgnoreTyping !== undefined) patch.vadIgnoreTyping = cfg.vadIgnoreTyping !== false
   if (typeof cfg.volume === 'number') patch.ttsVolume = cfg.volume
@@ -76,6 +78,7 @@ const CHANGE_PATH_PARSERS: Record<string, (value: unknown) => ShellConfigPatch> 
   'voice.voiceActivityThreshold': (v) => (typeof v === 'number' ? { vadThreshold: v } : {}),
   'voice.vadSilenceMs': (v) => (typeof v === 'number' ? { vadSilenceMs: v } : {}),
   'voice.vadEndpointingEnabled': (v) => ({ vadEndpointingEnabled: v !== false }),
+  'voice.smartTurnEnabled': (v) => ({ smartTurnEnabled: v === true }),
   'voice.vadEngine': (v) => (isVadEngine(v) ? { vadEngine: v } : {}),
   'voice.vadIgnoreTyping': (v) => ({ vadIgnoreTyping: v !== false }),
   'voice.volume': (v) => (typeof v === 'number' ? { ttsVolume: v } : {}),

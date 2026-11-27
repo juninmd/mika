@@ -139,10 +139,28 @@ function isBinaryTranscribePayload(
   return (payload as { audio?: unknown }).audio instanceof Uint8Array
 }
 
+const SMART_TURN_CHANNEL = 'voice:smart-turn'
+
+/** Fim de turno: mesmo corpo binário do transcribe, sem `language` — o modelo é acústico. */
+function smartTurnBinary(payload: { audio: Uint8Array; mimeType?: string }): Promise<unknown> {
+  const headers: Record<string, string> = {}
+  if (payload.mimeType !== undefined) headers['x-mika-mime-type'] = payload.mimeType
+  return invoke('mika_smart_turn_pcm', payload.audio, { headers })
+}
+
+function isBinarySmartTurnPayload(
+  channel: string,
+  payload: unknown,
+): payload is { audio: Uint8Array; mimeType?: string } {
+  if (channel !== SMART_TURN_CHANNEL || typeof payload !== 'object' || payload === null) return false
+  return (payload as { audio?: unknown }).audio instanceof Uint8Array
+}
+
 export const ipcRenderer = {
   // biome-ignore lint/suspicious/noExplicitAny: mesma permissividade de Promise<any> do ipcRenderer.invoke real do Electron — cada chamador em src/renderer/bridge/ já tipa o retorno.
   invoke(channel: string, payload?: unknown): Promise<any> {
     if (isBinaryTranscribePayload(channel, payload)) return transcribeBinary(payload)
+    if (isBinarySmartTurnPayload(channel, payload)) return smartTurnBinary(payload)
     return invoke('mika_invoke', args(channel, payload))
   },
 

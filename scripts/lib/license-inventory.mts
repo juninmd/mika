@@ -137,6 +137,16 @@ export const MANUAL_ASSETS: readonly ManualAsset[] = [
     textFile: 'silero-vad-mit.txt',
   },
   {
+    name: 'Smart Turn v3.2 (smart-turn-v3.2-cpu.onnx)',
+    role: 'Classificador de fim de turno (opt-in)',
+    license: 'BSD-2-Clause',
+    holder: 'Daily (pipecat-ai)',
+    source: 'https://huggingface.co/pipecat-ai/smart-turn-v3',
+    delivery: 'on-demand',
+    note: 'Baixado no primeiro uso do toggle voice.smartTurnEnabled, da revisão fixa f766f81d3cfdf7737ac64aad813d91bbfd56bf93, com SHA-256 conferido (2bb02631…). O log-mel reaproveita o extrator do Whisper já embarcado; o modelo roda localmente em CPU (~8,7 MB).',
+    textFile: 'bsd-2-clause.txt',
+  },
+  {
     name: 'Whisper tiny/base/small (conversão ONNX onnx-community)',
     role: 'Reconhecimento de fala local',
     license: 'Apache-2.0 (conforme declarado em openai/whisper-base); código do Whisper: MIT',

@@ -7,9 +7,9 @@
 //!
 //! ## Duas abas, UM namespace — e por que o grupo "outros" mora só em `voice`
 //!
-//! `declare_fields` (local, [`feature_fields`]) devolve os MESMOS 55 campos do namespace `voice`
-//! para as duas chamadas abaixo. [`declaration_voice`] reivindica 47 (`VOICE_GROUPS`: runtime + 6
-//! grupos de provedor de TTS); [`declaration_stt`] reivindica os 8 do ASR (`STT_GROUP`).
+//! `declare_fields` (local, [`feature_fields`]) devolve os MESMOS 65 campos do namespace `voice`
+//! para as duas chamadas abaixo. [`declaration_voice`] reivindica 52 (`VOICE_GROUPS`: runtime + 6
+//! grupos de provedor de TTS); [`declaration_stt`] reivindica os 13 do ASR (`STT_GROUP`).
 //!
 //! Se as DUAS calculassem leftover e emitissem "outros", cada campo do ASR apareceria como "não
 //! agrupado" dentro da aba `voice` — e vice-versa: cada chamada só enxerga o namespace inteiro, não
@@ -18,14 +18,14 @@
 //! nunca cria um: se `voice-stt-config.schema.ts` ganhar campo sem entrar em `STT_GROUP`, ele sobra
 //! no `by_key` de `declaration_voice` e cai no "outros" DAQUELA aba — visível, nunca mudo.
 //!
-//! ## Contagem: 55, não 63
+//! ## Contagem: 65, não 63
 //!
 //! Uma rodada de "só deixa o que faz sentido" cortou 8 campos sem leitor Rust nenhum (dead config
 //! da UI) e o grupo `kokoro` (provedor cortado em `dispatch.rs::CUT_PROVIDERS`, sem sair do enum
 //! `ttsProvider` — ver `voice.rs::runtime_fields`). `config/schemas/
-//! voice.rs::ports_every_field_from_the_nine_source_files` prova 55 (17 runtime + 8 elevenlabs + 5
-//! azure + 7 google + 4 openai + 3 piper + 3 supertonic + 8 stt) — 47 (`VOICE_GROUPS`) +
-//! 8 (`STT_GROUP`) = 55.
+//! voice.rs::ports_every_field_from_the_nine_source_files` prova 65 (17 runtime + 9 elevenlabs + 7
+//! azure + 7 google + 5 openai + 3 piper + 4 supertonic + 13 stt) — 52 (`VOICE_GROUPS`) +
+//! 13 (`STT_GROUP`) = 65.
 
 mod feature_fields;
 
@@ -60,7 +60,7 @@ pub fn declaration_voice(schema: &SchemaRegistry) -> Option<Value> {
 
     let mut groups: Vec<Value> = VOICE_GROUPS.iter().map(|spec| build_group(spec, &mut by_key)).collect();
 
-    // As 8 chaves do ASR pertencem à aba `stt` — descontadas aqui SEM virar grupo (cabeçalho acima).
+    // As 13 chaves do ASR pertencem à aba `stt` — descontadas aqui SEM virar grupo (cabeçalho acima).
     for key in STT_GROUP.keys {
         by_key.remove(*key);
     }
@@ -197,7 +197,7 @@ mod tests {
     }
 
     #[test]
-    fn stt_tab_has_the_one_asr_group_with_eight_fields_no_leftover() {
+    fn stt_tab_has_the_one_asr_group_with_thirteen_fields_no_leftover() {
         let d = declaration_stt(&schema()).unwrap();
         assert_eq!(d["tabId"], json!("stt"));
         assert_eq!(d["tabIcon"], json!("Mic"));
@@ -223,6 +223,7 @@ mod tests {
                 "voice.asrProvider",
                 "voice.asrLanguage",
                 "voice.whisperModel",
+                "voice.smartTurnEnabled",
                 "voice.groqApiKey",
                 "voice.openaiApiKey",
                 "voice.groqSttModel",
@@ -231,14 +232,14 @@ mod tests {
         );
     }
 
-    /// NEGATIVO — a classe de defeito que este arquivo existe para não repetir: os 55 campos do
+    /// NEGATIVO — a classe de defeito que este arquivo existe para não repetir: os 65 campos do
     /// namespace `voice` aparecem exatamente uma vez, somando as duas abas. Um campo em falta
     /// deriva de uma chave errada em `VOICE_GROUPS`/`STT_GROUP`; um campo em dobro, de uma chave
     /// repetida entre os dois.
     #[test]
     fn every_field_of_the_namespace_appears_exactly_once_across_both_tabs() {
         let all_fields = declare_fields(&schema()).unwrap();
-        assert_eq!(all_fields.len(), 64, "config/schemas/voice.rs mudou de tamanho — releia antes de ajustar isto");
+        assert_eq!(all_fields.len(), 65, "config/schemas/voice.rs mudou de tamanho — releia antes de ajustar isto");
 
         let voice = declaration_voice(&schema()).unwrap();
         let stt = declaration_stt(&schema()).unwrap();

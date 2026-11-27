@@ -48,6 +48,7 @@ export const inferenceModelIdSchema = z.enum([
   'nemotron',
   'supertonic',
   'silero',
+  'smartTurn',
   'e5',
 ])
 export const inferenceReasonSchema = z.enum([
@@ -171,6 +172,32 @@ export const desktopTranscribeResponseSchema = z.object({
   success: z.boolean(),
   data: z.object({ text: z.string() }).optional(),
   error: z.string().optional(),
+})
+
+/**
+ * Fim de turno (`voice:smart-turn`): mesmo PCM16 mono 16 kHz do transcribe, atravessando o IPC como
+ * corpo binário (`mika_smart_turn_pcm`). O Rust só usa os últimos 8 s.
+ */
+export const desktopSmartTurnRequestSchema = z.object({
+  audio: z
+    .instanceof(Uint8Array)
+    .refine((audio) => audio.byteLength > 0 && audio.byteLength <= 60 * 16_000 * 2, 'áudio vazio ou acima do teto'),
+  mimeType: z.string().optional(),
+})
+
+export const smartTurnReasonSchema = z.enum([
+  'probability',
+  'shortAudio',
+  'modelUnavailable',
+  'classifierError',
+  'disabled',
+])
+
+export const desktopSmartTurnResponseSchema = z.object({
+  complete: z.boolean(),
+  probability: z.number().min(0).max(1).nullable(),
+  latencyMs: z.number().int().nonnegative(),
+  reason: smartTurnReasonSchema,
 })
 
 export const desktopSettingsDeclarationsResponseSchema = z.object({

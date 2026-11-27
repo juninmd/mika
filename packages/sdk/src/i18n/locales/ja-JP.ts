@@ -1711,6 +1711,9 @@ export const jaJP: TranslationDict = {
   'settings.voiceStt.field.whisperModel.option.small': 'Small(約250MB、やや高精度で約3倍遅い)',
   'settings.voiceStt.field.whisperModel.helperText':
     'アプリ内(ONNX)で動作し、Python は不要です。モデルは最初の文字起こし時にダウンロードされキャッシュされます。実測:Base は発話時間の約1/3で文字起こしし、Small はやや精度が高いものの発話自体より時間がかかります。',
+  'settings.voiceStt.field.smartTurnEnabled.label': 'スマートな発話終了（Smart Turn）',
+  'settings.voiceStt.field.smartTurnEnabled.helperText':
+    '発話を無音で終える前に、ローカルモデル（Smart Turn v3、約8.7 MB、初回にダウンロード）が文が終わったか確認します。未完成に聞こえる場合、Mika は最大3秒待ちます。',
   'settings.voiceStt.field.groqApiKey.label': 'Groq API Key',
   'settings.voiceStt.field.openaiApiKey.label': 'OpenAI API Key',
   'settings.voiceStt.panel.testing': 'テスト中...',
@@ -2630,6 +2633,7 @@ export const jaJP: TranslationDict = {
   'settings.performance.accel.model.nemotron': 'Nemotron',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
+  'settings.performance.accel.model.smartTurn': 'Smart Turn',
   'settings.performance.accel.model.e5': 'granite 埋め込み',
   'settings.performance.accel.reason.userCpu': '設定で CPU を選択',
   'settings.performance.accel.reason.tinyModel': '極小モデル：GPU に送るコストが計算より大きい',

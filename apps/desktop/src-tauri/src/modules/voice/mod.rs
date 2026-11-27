@@ -57,6 +57,7 @@
 mod auto_speak;
 pub(crate) use auto_speak::speech_text::strip_emotion_tags;
 mod barge_in_recorder;
+mod end_of_turn;
 mod expression_sync;
 pub mod feature;
 mod interruption_detector;
@@ -65,6 +66,7 @@ mod listen_actions;
 mod listening_state;
 mod pcm_wav;
 mod silence_command;
+pub(crate) mod smart_turn;
 mod speak_guard;
 mod speak_tool;
 mod speech_gate;
@@ -115,11 +117,12 @@ use crate::native::NativeModule;
 use crate::protocol::InvokeContext;
 use crate::shell_actions::is_owner_surface;
 
-const CHANNELS: [&str; 5] = [
+const CHANNELS: [&str; 6] = [
     "voice:mic-state",
     "voice:mic-state-request",
     "mika:voice-transcribe",
     "voice:vad-audio",
+    "voice:smart-turn",
     "mika:voice-silence-command",
 ];
 
@@ -261,6 +264,7 @@ impl NativeModule for VoiceModule {
             "voice:mic-state-request" => handle_mic_state_request(app, ctx, &self.mic),
             "mika:voice-transcribe" => transcribe::handle(app, &payload).await,
             "voice:vad-audio" => vad_audio::handle(app, ctx, &payload).await,
+            "voice:smart-turn" => smart_turn::handle(app, &payload).await,
             "mika:voice-silence-command" => silence_command::handle(&payload),
             other => Err(format!("canal '{other}' declarado por 'voice' mas não tratado")),
         }
@@ -291,7 +295,7 @@ mod tests {
     /// quatro — `voice:vad-audio` nunca escapa dela. `owner_surface_matches_ts_policy` (abaixo)
     /// prova a política em si (quem passa, quem é recusado).
     #[test]
-    fn claims_exactly_the_four_declared_channels() {
+    fn claims_exactly_the_declared_channels() {
         let module = VoiceModule {
             mic: Mutex::new(MicStateBreaker::new()),
         };
@@ -302,6 +306,7 @@ mod tests {
                 "voice:mic-state-request",
                 "mika:voice-transcribe",
                 "voice:vad-audio",
+                "voice:smart-turn",
                 "mika:voice-silence-command",
             ]
         );

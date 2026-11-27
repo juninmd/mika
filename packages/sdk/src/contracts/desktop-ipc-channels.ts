@@ -7,6 +7,7 @@ export const DESKTOP_INVOKE_CHANNELS = {
   ChatCancel: 'mika:chat-cancel',
   ChatReport: 'mika:chat-report',
   VoiceTranscribe: 'mika:voice-transcribe',
+  VoiceSmartTurn: 'voice:smart-turn',
   VoiceSilenceCommand: 'mika:voice-silence-command',
   LlmModels: 'mika:llm-models',
   SettingsDeclarations: 'mika:settings-declarations',

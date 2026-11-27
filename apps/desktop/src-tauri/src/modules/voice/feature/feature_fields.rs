@@ -99,7 +99,7 @@ fn field_json(field: &FieldSchema) -> Value {
     Value::Object(out)
 }
 
-/// Os 55 campos do namespace `voice` (`config/schemas/voice.rs`), sem agrupar — igual ao que
+/// Os 65 campos do namespace `voice` (`config/schemas/voice.rs`), sem agrupar — igual ao que
 /// `declare_fields` devolveria, se pudesse ser chamado daqui. `None` se o namespace não existir.
 pub(super) fn declare_fields(schema: &SchemaRegistry) -> Option<Vec<Value>> {
     let declaration = schema.declarations().into_iter().find(|entry| entry.namespace == NAMESPACE)?;
@@ -138,7 +138,7 @@ pub(super) fn build_group(spec: &GroupSpec, by_key: &mut HashMap<String, Value>)
 }
 
 /// `VOICE_SETTINGS.groups` (`voice.schema.ts`), na mesma ordem: runtime, elevenlabs, supertonic,
-/// piper, azure, google, openai. 47 campos ao todo (17+8+3+3+5+7+4) — `kokoro` saiu do grupo
+/// piper, azure, google, openai. 52 campos ao todo (17+9+4+3+7+7+5) — `kokoro` saiu do grupo
 /// próprio (provedor cortado, `dispatch.rs::CUT_PROVIDERS`) sem sair do enum `ttsProvider`.
 pub(super) const VOICE_GROUPS: &[GroupSpec] = &[
     GroupSpec {
@@ -225,7 +225,7 @@ pub(super) const VOICE_GROUPS: &[GroupSpec] = &[
     },
 ];
 
-/// `STT_SETTINGS.groups[0]` (`voice.schema.ts`) — `VoiceAsrGroupSchema` inteiro, 8 campos, sem
+/// `STT_SETTINGS.groups[0]` (`voice.schema.ts`) — `VoiceAsrGroupSchema` inteiro, 13 campos, sem
 /// `visibleWhen`.
 pub(super) const STT_GROUP: GroupSpec = GroupSpec {
     title: "settings.voiceStt.group.asr",
@@ -238,6 +238,7 @@ pub(super) const STT_GROUP: GroupSpec = GroupSpec {
         "asrProvider",
         "asrLanguage",
         "whisperModel",
+        "smartTurnEnabled",
         "groqApiKey",
         "openaiApiKey",
         "groqSttModel",

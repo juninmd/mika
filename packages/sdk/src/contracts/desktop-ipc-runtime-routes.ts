@@ -15,6 +15,8 @@ import {
   desktopSettingsSetRequestSchema,
   desktopSettingsSetResponseSchema,
   desktopSettingsUiPrefsResponseSchema,
+  desktopSmartTurnRequestSchema,
+  desktopSmartTurnResponseSchema,
   desktopTranscribeRequestSchema,
   desktopTranscribeResponseSchema,
   emptyPayloadSchema,
@@ -83,6 +85,12 @@ export const DESKTOP_RUNTIME_CORE_ROUTES = {
     namespace: 'runtime',
     requestSchema: desktopTranscribeRequestSchema,
     responseSchema: desktopTranscribeResponseSchema,
+  },
+  voiceSmartTurn: {
+    channel: DESKTOP_INVOKE_CHANNELS.VoiceSmartTurn,
+    namespace: 'runtime',
+    requestSchema: desktopSmartTurnRequestSchema,
+    responseSchema: desktopSmartTurnResponseSchema,
   },
   llmModels: {
     channel: DESKTOP_INVOKE_CHANNELS.LlmModels,

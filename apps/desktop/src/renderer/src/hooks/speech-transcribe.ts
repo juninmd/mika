@@ -24,6 +24,9 @@ export type MediaRecorderFallbackOptions = {
   vadThreshold?: number
   vadSilenceMs?: number
   vadEndpointingEnabled?: boolean
+  /** Classificador local de fim de turno (opt-in `voice.smartTurnEnabled`). Sem ele, a decisão de
+   * fim continua puramente acústica. */
+  smartTurnEnabled?: boolean
   // Not used to pick the engine (the backend resolves that from its own config) — only to label
   // the durable milestone log with which one config asked for at capture time.
   asrProvider?: string
