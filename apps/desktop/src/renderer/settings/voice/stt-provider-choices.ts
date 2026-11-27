@@ -1,5 +1,5 @@
 import type { ProviderChoice } from '@mika/sdk-ui/settings'
-import { Activity, AudioLines, Brain, Cloud, Globe, HardDrive, Zap } from 'lucide-react'
+import { Activity, AudioLines, Brain, Cloud, Globe, HardDrive, Languages, Zap } from 'lucide-react'
 import { providerBadges } from '../../src/components/settings/provider-badges'
 import type { Translate } from '../../src/hooks/useI18n'
 
@@ -16,6 +16,13 @@ export function sttProviderChoices(t: Translate): ProviderChoice[] {
       desc: t('settings.stt.provider.nemotron.desc'),
       icon: AudioLines,
       badges: providerBadges(t, 'recommended', 'local', 'streaming'),
+    },
+    {
+      id: 'parakeet',
+      label: t('settings.stt.provider.parakeet'),
+      desc: t('settings.stt.provider.parakeet.desc'),
+      icon: Languages,
+      badges: providerBadges(t, 'local', 'neural'),
     },
     {
       id: 'electron',

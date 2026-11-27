@@ -11,8 +11,9 @@ na sessão de 2026-08-23.
 Os dois existem porque a decodificação mora no renderer (Chromium/WebView2 tem `decodeAudioData`); o
 backend só aceita PCM16 mono 16 kHz (AGENTS.md §2.5). Quem consome o WAV hoje são os testes Rust:
 `inference/vad.rs`, `voice/vad_bridge.rs`, `voice/vad_pipeline.rs` (VAD/barge-in) e os `#[ignore]` de
-`inference/whisper.rs` e `inference/nemotron/mod.rs` (precisam dos pesos baixados). Nenhum spec E2E
-nem script do repositório consome o `.webm`; ele é o registro do formato de origem.
+`inference/whisper.rs`, `inference/nemotron/mod.rs` e `inference/parakeet/mod.rs` (precisam dos pesos
+baixados). Nenhum spec E2E nem script do repositório consome o `.webm`; ele é o registro do formato
+de origem.
 
 ## Por que uma gravação real, e não um sintético
 
@@ -47,6 +48,7 @@ referência acima só é conferida pelos testes `#[ignore]` (pesos ONNX + tokeni
 ```
 cargo test --lib -p mika-desktop -- --ignored transcribe_matches_known_reference_wav
 MIKA_NEMOTRON_DIR=<pasta com nemotron-cache/> cargo test --lib -p mika-desktop -- --ignored nemotron
+MIKA_PARAKEET_DIR=<pasta com parakeet-cache/> cargo test --lib -p mika-desktop -- --ignored parakeet
 ```
 
 O antigo `pnpm homologate:voice` (Whisper via transformers.js, sidecar Node) e a extensão Python que

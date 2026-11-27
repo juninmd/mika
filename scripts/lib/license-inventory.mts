@@ -158,6 +158,16 @@ export const MANUAL_ASSETS: readonly ManualAsset[] = [
     textFile: 'openmdw-1.1.txt',
   },
   {
+    name: 'Parakeet TDT 0.6B v3 (conversão ONNX int8)',
+    role: 'Reconhecimento de fala local opcional (multilíngue)',
+    license: 'CC-BY-4.0',
+    holder: 'NVIDIA Corporation (modelo); istupakov (conversão ONNX)',
+    source: 'https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx',
+    delivery: 'on-demand',
+    note: 'Modelo original nvidia/parakeet-tdt-0.6b-v3 e a conversão ONNX sob CC-BY-4.0; a atribuição "Parakeet TDT 0.6B v3 © NVIDIA, CC-BY-4.0" aparece no card do provedor. Baixado de revisão fixa (8f23f0c) com SHA-256 por arquivo; nunca no instalador.',
+    textFile: 'cc-by-4.0.txt',
+  },
+  {
     name: 'Supertonic 3 (ONNX)',
     role: 'Voz local padrão (TTS)',
     license: 'BigScience OpenRAIL-M (modelo); MIT (código de exemplo)',

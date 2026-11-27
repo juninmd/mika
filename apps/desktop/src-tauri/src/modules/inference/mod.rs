@@ -21,6 +21,7 @@
 pub mod accel;
 pub mod embedder;
 pub mod nemotron;
+pub mod parakeet;
 pub mod session;
 pub mod vad;
 pub mod whisper;
@@ -38,7 +39,7 @@ fn uptime_ms() -> u64 {
     EPOCH.get_or_init(Instant::now).elapsed().as_millis() as u64
 }
 
-/// Último uso de um cache de modelo (Whisper, Nemotron, e5, Supertonic). Os pesos ficam em RAM (centenas de MB
+/// Último uso de um cache de modelo (Whisper, Nemotron, Parakeet, e5, Supertonic). Os pesos ficam em RAM (centenas de MB
 /// cada) o app inteiro; com a Mika ao lado de um jogo, modelo parado há minutos é memória roubada
 /// do jogo. [`evict_idle`] solta o que o governador de energia manda; a próxima chamada recarrega.
 pub struct Lease(AtomicU64);
@@ -84,6 +85,7 @@ pub fn evict_idle(max_idle: Duration) {
     for (name, evicted) in [
         ("Whisper", whisper::evict_if_idle(max_idle, now)),
         ("Nemotron", nemotron::evict_if_idle(max_idle, now)),
+        ("Parakeet", parakeet::evict_if_idle(max_idle, now)),
         ("e5", embedder::evict_if_idle(max_idle, now)),
         ("Supertonic", crate::modules::voice::tts::providers::supertonic::evict_if_idle(max_idle, now)),
     ] {

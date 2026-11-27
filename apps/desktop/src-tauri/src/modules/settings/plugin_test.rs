@@ -139,6 +139,7 @@ async fn test_stt_provider(store: &ConfigStore, combined: &Value) -> Value {
 
     match provider.as_str() {
         "nemotron" => named_ok("Nemotron local roda dentro do app. Na primeira vez, baixe o modelo (~790 MB) no card de reconhecimento de voz.".to_string()),
+        "parakeet" => named_ok("Parakeet local roda dentro do app e detecta o idioma sozinho. Na primeira vez, baixe o modelo (~670 MB) no card de reconhecimento de voz.".to_string()),
         "electron" | "local-whisper" => {
             let model = cfg_str(combined, store, "whisperModel")
                 .or_else(|| cfg_str(combined, store, "voice.whisperModel"))

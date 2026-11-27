@@ -98,6 +98,15 @@ async fn stt_nemotron_is_local_and_the_default_when_nothing_is_saved() {
         assert!(result["message"].as_str().unwrap().contains("Nemotron"));
     }
 }
+
+#[tokio::test]
+async fn stt_parakeet_is_local_and_names_the_download() {
+    let (store, _dir) = store();
+    let result = test_stt_provider(&store, &json!({ "asrProvider": "parakeet" })).await;
+    assert_eq!(result["ok"], json!(true));
+    let message = result["message"].as_str().unwrap();
+    assert!(message.contains("Parakeet") && message.contains("670 MB"), "{message}");
+}
 #[tokio::test]
 async fn stt_local_whisper_is_also_treated_as_local() {
     let (store, _dir) = store();

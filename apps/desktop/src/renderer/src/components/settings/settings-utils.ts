@@ -15,6 +15,7 @@ export function labelOf(options: readonly LabeledOption[], value: string): strin
 export function asrProviderOptions(t: Translate): LabeledOption[] {
   return [
     { label: t('settings.stt.provider.nemotron'), value: 'nemotron' },
+    { label: t('settings.stt.provider.parakeet'), value: 'parakeet' },
     { label: t('settings.stt.provider.localWhisper'), value: 'electron' },
     { label: t('settings.stt.provider.browser'), value: 'browser' },
     { label: t('settings.stt.provider.groqWhisper'), value: 'groq-whisper' },
