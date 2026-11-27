@@ -36,7 +36,7 @@ pub(super) async fn prepare_nemotron(store: &ConfigStore, data_dir: &Path) -> Wi
         if sha256_of(path.clone()).await.as_deref() == Some(expected) {
             continue;
         }
-        if let Err(e) = download_verified(store, &nemotron::asset_url(file), &path, expected).await {
+        if let Err(e) = download_verified(store, &nemotron::asset_url(file), &path, expected, PROVIDER_TAG).await {
             return WizardResult::fail(msg(&locale, "wizard.assetDownload.nemotronFailed", &[("file", file), ("detail", &e)]));
         }
     }
@@ -62,9 +62,9 @@ pub(super) async fn sha256_of(path: PathBuf) -> Option<String> {
     .flatten()
 }
 
-pub(super) async fn download_verified(store: &ConfigStore, url: &str, target: &Path, expected: &str) -> Result<(), String> {
+pub(super) async fn download_verified(store: &ConfigStore, url: &str, target: &Path, expected: &str, provider_tag: &str) -> Result<(), String> {
     let locale = app_locale(store);
-    privacy::assert_network_allowed(store, url, PROVIDER_TAG)?;
+    privacy::assert_network_allowed(store, url, provider_tag)?;
     if let Some(parent) = target.parent() {
         std::fs::create_dir_all(parent)
             .map_err(|e| msg(&locale, "wizard.assetDownload.createFailed", &[("path", &parent.display().to_string()), ("detail", &e.to_string())]))?;

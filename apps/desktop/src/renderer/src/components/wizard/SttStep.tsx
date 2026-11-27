@@ -1,5 +1,5 @@
 import { BentoGrid } from '@mika/sdk-ui/settings'
-import { Cloud, Ear, Globe, Monitor } from 'lucide-react'
+import { Cloud, Ear, Globe, Languages, Monitor } from 'lucide-react'
 import { sttProviderChoices } from '../../../settings/voice/stt-provider-choices'
 import { useI18n } from '../../hooks/useI18n'
 import { ErrorBanner, OptionCard, PrimaryButton, SecondaryButton, StepHeader } from './WizardPrimitives'
@@ -21,6 +21,7 @@ type SttStepProps = {
 // o ligar a escuta segue no passo de privacidade (microfone).
 const STT_ICONS: Record<string, React.ReactNode> = {
   nemotron: <Ear size={16} />,
+  parakeet: <Languages size={16} />,
   electron: <Monitor size={16} />,
   browser: <Globe size={16} />,
   'groq-whisper': <Cloud size={16} />,

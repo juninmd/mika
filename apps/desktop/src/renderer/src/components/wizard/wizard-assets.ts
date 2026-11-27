@@ -5,7 +5,7 @@ import type { SttSelection } from './wizard-stt'
 import type { TtsSelection } from './wizard-tts'
 
 export interface AssetTask {
-  id: 'vad' | 'nemotron' | 'local-embedding' | 'tts' | 'ollama-llm'
+  id: 'vad' | 'nemotron' | 'parakeet' | 'local-embedding' | 'tts' | 'ollama-llm'
   label: string
   detail: string
   status: 'pending' | 'running' | 'done' | 'skipped' | 'error'
@@ -26,7 +26,7 @@ export function buildInitialTasks(
   const list: AssetTask[] = []
 
   // Locks que ninguém usar são banda/espaço à toa: quem desativou a escuta (passo de privacidade)
-  // não baixa VAD nem STT; e entre provedores de escuta, só o nemotron tem modelo local próprio.
+  // não baixa VAD nem STT; e entre provedores de escuta, só Nemotron e Parakeet têm modelo local.
   if (listening) {
     list.push({
       id: 'vad',
@@ -34,11 +34,11 @@ export function buildInitialTasks(
       detail: copy.vadDetail,
       status: 'pending',
     })
-    if (stt === 'nemotron') {
+    if (stt === 'nemotron' || stt === 'parakeet') {
       list.push({
-        id: 'nemotron',
+        id: stt,
         label: copy.sttLabel,
-        detail: copy.sttDetail,
+        detail: stt === 'parakeet' ? copy.sttParakeetDetail : copy.sttDetail,
         status: 'pending',
       })
     }

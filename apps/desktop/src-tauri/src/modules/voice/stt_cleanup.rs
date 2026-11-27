@@ -1,4 +1,4 @@
-//! Corta as pontas sem som do trecho ANTES do STT local (Whisper e Nemotron) — o único funil por
+//! Corta as pontas sem som do trecho ANTES do STT local (Whisper, Nemotron e Parakeet) — o único funil por
 //! onde passa todo áudio que um motor local ouve (`transcribe::transcribe_local`).
 //!
 //! **Por quê.** O renderer recorta a fala pelo nível (`speech-transcribe.ts`) e manda junto o

@@ -5,8 +5,8 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "26667828dbb80a0d27485a026e87987a23110615+dirty",
-    "tree": "c7d81bf71982c76c",
+    "commit": "4cbb7b98c79d9289312927a8954c4d38e6b2d5d7+dirty",
+    "tree": "145ae8013353621d",
     "contract": "6a303d7b5c636319",
     "deps": {
       "@fontsource-variable/inter": "^5.3.0",
@@ -31,12 +31,12 @@
       "zod": "catalog:",
       "zustand": "^5.1.0"
     },
-    "lockfile": "f0c04416b62f016b"
+    "lockfile": "12dd644f878388bd"
   },
   "ambiente": {
     "plataforma": "linux",
-    "node": "v22.23.5",
-    "data": "2026-11-23"
+    "node": "v24.22.1",
+    "data": "2026-11-27"
   },
   "criterios": [
     {
@@ -47,7 +47,7 @@
     {
       "id": "vivo",
       "status": "ok",
-      "detail": "63 arquivo(s) fora do módulo o referenciam"
+      "detail": "64 arquivo(s) fora do módulo o referenciam"
     },
     {
       "id": "headless",

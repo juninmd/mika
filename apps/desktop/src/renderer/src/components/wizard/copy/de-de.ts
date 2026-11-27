@@ -202,6 +202,8 @@ export const deDE: WizardCopy = {
     vadDetail: 'Silero VAD für leichte, präzise neuronale Erkennung',
     sttLabel: 'Spracherkennung (STT)',
     sttDetail: 'Lokales Nemotron (~790 MB): versteht deine Sprache, ohne aus Rauschen Text zu erfinden',
+    sttParakeetDetail:
+      'Lokales Parakeet (~670 MB): mehrsprachig, mit Zeichensetzung und Groß-/Kleinschreibung, ohne aus Rauschen Text zu erfinden',
     ttsLabel: 'Mikas Stimme (TTS)',
     ttsSupertonic: 'Lokale Supertonic-Stimme (F3)',
     ttsCloud: 'Cloud-Anbieter ausgewählt',

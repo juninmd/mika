@@ -194,6 +194,8 @@ export const jaJP: WizardCopy = {
     vadDetail: '軽量で高精度なニューラル検出の Silero VAD',
     sttLabel: '音声認識（STT）',
     sttDetail: 'ローカル Nemotron（約790 MB）：雑音から文字をでっち上げずに音声を認識',
+    sttParakeetDetail:
+      'ローカル Parakeet（約670 MB）：多言語対応、句読点と大文字小文字も付き、雑音から文字をでっち上げません',
     ttsLabel: 'Mikaの声（TTS）',
     ttsSupertonic: 'ローカル Supertonic 音声（F3）',
     ttsCloud: 'クラウドプロバイダーを選択済み',

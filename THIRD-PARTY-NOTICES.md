@@ -9,7 +9,7 @@ atribuição dessas licenças. Nada aqui concede direitos sobre o Mika em si —
 Arquivo gerado por `scripts/generators/third-party-notices.mts` (`pnpm notices:gen`). Não edite à
 mão: a próxima geração apaga a edição.
 
-<!-- mika-notices-input-sha256: cbc0520d473a387c4ab0b9cc857b00b51c937fcbe80b3f6a7e3db9331ca8b932 -->
+<!-- mika-notices-input-sha256: 23c3e9628d08f843959f09a2a1d93105e5ee2823916170a611e2b9cbe21d799b -->
 
 ## 1. Assets, modelos e runtimes
 
@@ -113,6 +113,15 @@ Inventário conferido na fonte de cada item. Itens marcados "verificar" ou "NÃO
 - **Origem:** https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b
 - **Distribuição:** baixado sob demanda (ação do usuário)
 - **Nota:** Pendência jurídica: confirmar qual termo governa a conversão distribuída. Até lá, o texto da OpenMDW-1.1 (que exige reter a licença e os avisos de origem) é anexado e a NVIDIA Open Model License deve ser lida em https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/.
+
+### Parakeet TDT 0.6B v3 (conversão ONNX int8)
+
+- **Uso:** Reconhecimento de fala local opcional (multilíngue)
+- **Licença:** CC-BY-4.0
+- **Titular:** NVIDIA Corporation (modelo); istupakov (conversão ONNX)
+- **Origem:** https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx
+- **Distribuição:** baixado sob demanda (ação do usuário)
+- **Nota:** Modelo original nvidia/parakeet-tdt-0.6b-v3 e a conversão ONNX sob CC-BY-4.0; a atribuição "Parakeet TDT 0.6B v3 © NVIDIA, CC-BY-4.0" aparece no card do provedor. Baixado de revisão fixa (8f23f0c) com SHA-256 por arquivo; nunca no instalador.
 
 ### Supertonic 3 (ONNX)
 
@@ -19695,6 +19704,408 @@ SOFTWARE.
 
 ### Texto 336
 
+Aplica-se a: Parakeet TDT 0.6B v3 (conversão ONNX int8)
+
+```text
+Attribution 4.0 International
+
+=======================================================================
+
+Creative Commons Corporation ("Creative Commons") is not a law firm and
+does not provide legal services or legal advice. Distribution of
+Creative Commons public licenses does not create a lawyer-client or
+other relationship. Creative Commons makes its licenses and related
+information available on an "as-is" basis. Creative Commons gives no
+warranties regarding its licenses, any material licensed under their
+terms and conditions, or any related information. Creative Commons
+disclaims all liability for damages resulting from their use to the
+fullest extent possible.
+
+Using Creative Commons Public Licenses
+
+Creative Commons public licenses provide a standard set of terms and
+conditions that creators and other rights holders may use to share
+original works of authorship and other material subject to copyright
+and certain other rights specified in the public license below. The
+following considerations are for informational purposes only, are not
+exhaustive, and do not form part of our licenses.
+
+     Considerations for licensors: Our public licenses are
+     intended for use by those authorized to give the public
+     permission to use material in ways otherwise restricted by
+     copyright and certain other rights. Our licenses are
+     irrevocable. Licensors should read and understand the terms
+     and conditions of the license they choose before applying it.
+     Licensors should also secure all rights necessary before
+     applying our licenses so that the public can reuse the
+     material as expected. Licensors should clearly mark any
+     material not subject to the license. This includes other CC-
+     licensed material, or material used under an exception or
+     limitation to copyright. More considerations for licensors:
+    wiki.creativecommons.org/Considerations_for_licensors
+
+     Considerations for the public: By using one of our public
+     licenses, a licensor grants the public permission to use the
+     licensed material under specified terms and conditions. If
+     the licensor's permission is not necessary for any reason--for
+     example, because of any applicable exception or limitation to
+     copyright--then that use is not regulated by the license. Our
+     licenses grant only permissions under copyright and certain
+     other rights that a licensor has authority to grant. Use of
+     the licensed material may still be restricted for other
+     reasons, including because others have copyright or other
+     rights in the material. A licensor may make special requests,
+     such as asking that all changes be marked or described.
+     Although not required by our licenses, you are encouraged to
+     respect those requests where reasonable. More considerations
+     for the public:
+    wiki.creativecommons.org/Considerations_for_licensees
+
+=======================================================================
+
+Creative Commons Attribution 4.0 International Public License
+
+By exercising the Licensed Rights (defined below), You accept and agree
+to be bound by the terms and conditions of this Creative Commons
+Attribution 4.0 International Public License ("Public License"). To the
+extent this Public License may be interpreted as a contract, You are
+granted the Licensed Rights in consideration of Your acceptance of
+these terms and conditions, and the Licensor grants You such rights in
+consideration of benefits the Licensor receives from making the
+Licensed Material available under these terms and conditions.
+
+
+Section 1 -- Definitions.
+
+  a. Adapted Material means material subject to Copyright and Similar
+     Rights that is derived from or based upon the Licensed Material
+     and in which the Licensed Material is translated, altered,
+     arranged, transformed, or otherwise modified in a manner requiring
+     permission under the Copyright and Similar Rights held by the
+     Licensor. For purposes of this Public License, where the Licensed
+     Material is a musical work, performance, or sound recording,
+     Adapted Material is always produced where the Licensed Material is
+     synched in timed relation with a moving image.
+
+  b. Adapter's License means the license You apply to Your Copyright
+     and Similar Rights in Your contributions to Adapted Material in
+     accordance with the terms and conditions of this Public License.
+
+  c. Copyright and Similar Rights means copyright and/or similar rights
+     closely related to copyright including, without limitation,
+     performance, broadcast, sound recording, and Sui Generis Database
+     Rights, without regard to how the rights are labeled or
+     categorized. For purposes of this Public License, the rights
+     specified in Section 2(b)(1)-(2) are not Copyright and Similar
+     Rights.
+
+  d. Effective Technological Measures means those measures that, in the
+     absence of proper authority, may not be circumvented under laws
+     fulfilling obligations under Article 11 of the WIPO Copyright
+     Treaty adopted on December 20, 1996, and/or similar international
+     agreements.
+
+  e. Exceptions and Limitations means fair use, fair dealing, and/or
+     any other exception or limitation to Copyright and Similar Rights
+     that applies to Your use of the Licensed Material.
+
+  f. Licensed Material means the artistic or literary work, database,
+     or other material to which the Licensor applied this Public
+     License.
+
+  g. Licensed Rights means the rights granted to You subject to the
+     terms and conditions of this Public License, which are limited to
+     all Copyright and Similar Rights that apply to Your use of the
+     Licensed Material and that the Licensor has authority to license.
+
+  h. Licensor means the individual(s) or entity(ies) granting rights
+     under this Public License.
+
+  i. Share means to provide material to the public by any means or
+     process that requires permission under the Licensed Rights, such
+     as reproduction, public display, public performance, distribution,
+     dissemination, communication, or importation, and to make material
+     available to the public including in ways that members of the
+     public may access the material from a place and at a time
+     individually chosen by them.
+
+  j. Sui Generis Database Rights means rights other than copyright
+     resulting from Directive 96/9/EC of the European Parliament and of
+     the Council of 11 March 1996 on the legal protection of databases,
+     as amended and/or succeeded, as well as other essentially
+     equivalent rights anywhere in the world.
+
+  k. You means the individual or entity exercising the Licensed Rights
+     under this Public License. Your has a corresponding meaning.
+
+
+Section 2 -- Scope.
+
+  a. License grant.
+
+       1. Subject to the terms and conditions of this Public License,
+          the Licensor hereby grants You a worldwide, royalty-free,
+          non-sublicensable, non-exclusive, irrevocable license to
+          exercise the Licensed Rights in the Licensed Material to:
+
+            a. reproduce and Share the Licensed Material, in whole or
+               in part; and
+
+            b. produce, reproduce, and Share Adapted Material.
+
+       2. Exceptions and Limitations. For the avoidance of doubt, where
+          Exceptions and Limitations apply to Your use, this Public
+          License does not apply, and You do not need to comply with
+          its terms and conditions.
+
+       3. Term. The term of this Public License is specified in Section
+          6(a).
+
+       4. Media and formats; technical modifications allowed. The
+          Licensor authorizes You to exercise the Licensed Rights in
+          all media and formats whether now known or hereafter created,
+          and to make technical modifications necessary to do so. The
+          Licensor waives and/or agrees not to assert any right or
+          authority to forbid You from making technical modifications
+          necessary to exercise the Licensed Rights, including
+          technical modifications necessary to circumvent Effective
+          Technological Measures. For purposes of this Public License,
+          simply making modifications authorized by this Section 2(a)
+          (4) never produces Adapted Material.
+
+       5. Downstream recipients.
+
+            a. Offer from the Licensor -- Licensed Material. Every
+               recipient of the Licensed Material automatically
+               receives an offer from the Licensor to exercise the
+               Licensed Rights under the terms and conditions of this
+               Public License.
+
+            b. No downstream restrictions. You may not offer or impose
+               any additional or different terms or conditions on, or
+               apply any Effective Technological Measures to, the
+               Licensed Material if doing so restricts exercise of the
+               Licensed Rights by any recipient of the Licensed
+               Material.
+
+       6. No endorsement. Nothing in this Public License constitutes or
+          may be construed as permission to assert or imply that You
+          are, or that Your use of the Licensed Material is, connected
+          with, or sponsored, endorsed, or granted official status by,
+          the Licensor or others designated to receive attribution as
+          provided in Section 3(a)(1)(A)(i).
+
+  b. Other rights.
+
+       1. Moral rights, such as the right of integrity, are not
+          licensed under this Public License, nor are publicity,
+          privacy, and/or other similar personality rights; however, to
+          the extent possible, the Licensor waives and/or agrees not to
+          assert any such rights held by the Licensor to the limited
+          extent necessary to allow You to exercise the Licensed
+          Rights, but not otherwise.
+
+       2. Patent and trademark rights are not licensed under this
+          Public License.
+
+       3. To the extent possible, the Licensor waives any right to
+          collect royalties from You for the exercise of the Licensed
+          Rights, whether directly or through a collecting society
+          under any voluntary or waivable statutory or compulsory
+          licensing scheme. In all other cases the Licensor expressly
+          reserves any right to collect such royalties.
+
+
+Section 3 -- License Conditions.
+
+Your exercise of the Licensed Rights is expressly made subject to the
+following conditions.
+
+  a. Attribution.
+
+       1. If You Share the Licensed Material (including in modified
+          form), You must:
+
+            a. retain the following if it is supplied by the Licensor
+               with the Licensed Material:
+
+                 i. identification of the creator(s) of the Licensed
+                    Material and any others designated to receive
+                    attribution, in any reasonable manner requested by
+                    the Licensor (including by pseudonym if
+                    designated);
+
+                ii. a copyright notice;
+
+               iii. a notice that refers to this Public License;
+
+                iv. a notice that refers to the disclaimer of
+                    warranties;
+
+                 v. a URI or hyperlink to the Licensed Material to the
+                    extent reasonably practicable;
+
+            b. indicate if You modified the Licensed Material and
+               retain an indication of any previous modifications; and
+
+            c. indicate the Licensed Material is licensed under this
+               Public License, and include the text of, or the URI or
+               hyperlink to, this Public License.
+
+       2. You may satisfy the conditions in Section 3(a)(1) in any
+          reasonable manner based on the medium, means, and context in
+          which You Share the Licensed Material. For example, it may be
+          reasonable to satisfy the conditions by providing a URI or
+          hyperlink to a resource that includes the required
+          information.
+
+       3. If requested by the Licensor, You must remove any of the
+          information required by Section 3(a)(1)(A) to the extent
+          reasonably practicable.
+
+       4. If You Share Adapted Material You produce, the Adapter's
+          License You apply must not prevent recipients of the Adapted
+          Material from complying with this Public License.
+
+
+Section 4 -- Sui Generis Database Rights.
+
+Where the Licensed Rights include Sui Generis Database Rights that
+apply to Your use of the Licensed Material:
+
+  a. for the avoidance of doubt, Section 2(a)(1) grants You the right
+     to extract, reuse, reproduce, and Share all or a substantial
+     portion of the contents of the database;
+
+  b. if You include all or a substantial portion of the database
+     contents in a database in which You have Sui Generis Database
+     Rights, then the database in which You have Sui Generis Database
+     Rights (but not its individual contents) is Adapted Material; and
+
+  c. You must comply with the conditions in Section 3(a) if You Share
+     all or a substantial portion of the contents of the database.
+
+For the avoidance of doubt, this Section 4 supplements and does not
+replace Your obligations under this Public License where the Licensed
+Rights include other Copyright and Similar Rights.
+
+
+Section 5 -- Disclaimer of Warranties and Limitation of Liability.
+
+  a. UNLESS OTHERWISE SEPARATELY UNDERTAKEN BY THE LICENSOR, TO THE
+     EXTENT POSSIBLE, THE LICENSOR OFFERS THE LICENSED MATERIAL AS-IS
+     AND AS-AVAILABLE, AND MAKES NO REPRESENTATIONS OR WARRANTIES OF
+     ANY KIND CONCERNING THE LICENSED MATERIAL, WHETHER EXPRESS,
+     IMPLIED, STATUTORY, OR OTHER. THIS INCLUDES, WITHOUT LIMITATION,
+     WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR
+     PURPOSE, NON-INFRINGEMENT, ABSENCE OF LATENT OR OTHER DEFECTS,
+     ACCURACY, OR THE PRESENCE OR ABSENCE OF ERRORS, WHETHER OR NOT
+     KNOWN OR DISCOVERABLE. WHERE DISCLAIMERS OF WARRANTIES ARE NOT
+     ALLOWED IN FULL OR IN PART, THIS DISCLAIMER MAY NOT APPLY TO YOU.
+
+  b. TO THE EXTENT POSSIBLE, IN NO EVENT WILL THE LICENSOR BE LIABLE
+     TO YOU ON ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION,
+     NEGLIGENCE) OR OTHERWISE FOR ANY DIRECT, SPECIAL, INDIRECT,
+     INCIDENTAL, CONSEQUENTIAL, PUNITIVE, EXEMPLARY, OR OTHER LOSSES,
+     COSTS, EXPENSES, OR DAMAGES ARISING OUT OF THIS PUBLIC LICENSE OR
+     USE OF THE LICENSED MATERIAL, EVEN IF THE LICENSOR HAS BEEN
+     ADVISED OF THE POSSIBILITY OF SUCH LOSSES, COSTS, EXPENSES, OR
+     DAMAGES. WHERE A LIMITATION OF LIABILITY IS NOT ALLOWED IN FULL OR
+     IN PART, THIS LIMITATION MAY NOT APPLY TO YOU.
+
+  c. The disclaimer of warranties and limitation of liability provided
+     above shall be interpreted in a manner that, to the extent
+     possible, most closely approximates an absolute disclaimer and
+     waiver of all liability.
+
+
+Section 6 -- Term and Termination.
+
+  a. This Public License applies for the term of the Copyright and
+     Similar Rights licensed here. However, if You fail to comply with
+     this Public License, then Your rights under this Public License
+     terminate automatically.
+
+  b. Where Your right to use the Licensed Material has terminated under
+     Section 6(a), it reinstates:
+
+       1. automatically as of the date the violation is cured, provided
+          it is cured within 30 days of Your discovery of the
+          violation; or
+
+       2. upon express reinstatement by the Licensor.
+
+     For the avoidance of doubt, this Section 6(b) does not affect any
+     right the Licensor may have to seek remedies for Your violations
+     of this Public License.
+
+  c. For the avoidance of doubt, the Licensor may also offer the
+     Licensed Material under separate terms or conditions or stop
+     distributing the Licensed Material at any time; however, doing so
+     will not terminate this Public License.
+
+  d. Sections 1, 5, 6, 7, and 8 survive termination of this Public
+     License.
+
+
+Section 7 -- Other Terms and Conditions.
+
+  a. The Licensor shall not be bound by any additional or different
+     terms or conditions communicated by You unless expressly agreed.
+
+  b. Any arrangements, understandings, or agreements regarding the
+     Licensed Material not stated herein are separate from and
+     independent of the terms and conditions of this Public License.
+
+
+Section 8 -- Interpretation.
+
+  a. For the avoidance of doubt, this Public License does not, and
+     shall not be interpreted to, reduce, limit, restrict, or impose
+     conditions on any use of the Licensed Material that could lawfully
+     be made without permission under this Public License.
+
+  b. To the extent possible, if any provision of this Public License is
+     deemed unenforceable, it shall be automatically reformed to the
+     minimum extent necessary to make it enforceable. If the provision
+     cannot be reformed, it shall be severed from this Public License
+     without affecting the enforceability of the remaining terms and
+     conditions.
+
+  c. No term or condition of this Public License will be waived and no
+     failure to comply consented to unless expressly agreed to by the
+     Licensor.
+
+  d. Nothing in this Public License constitutes or may be interpreted
+     as a limitation upon, or waiver of, any privileges and immunities
+     that apply to the Licensor or You, including from the legal
+     processes of any jurisdiction or authority.
+
+
+=======================================================================
+
+Creative Commons is not a party to its public
+licenses. Notwithstanding, Creative Commons may elect to apply one of
+its public licenses to material it publishes and in those instances
+will be considered the “Licensor.” The text of the Creative Commons
+public licenses is dedicated to the public domain under the CC0 Public
+Domain Dedication. Except for the limited purpose of indicating that
+material is shared under a Creative Commons public license or as
+otherwise permitted by the Creative Commons policies published at
+creativecommons.org/policies, Creative Commons does not authorize the
+use of the trademark "Creative Commons" or any other trademark or logo
+of Creative Commons without its prior written consent including,
+without limitation, in connection with any unauthorized modifications
+to any of its public licenses or any other arrangements,
+understandings, or agreements concerning use of licensed material. For
+the avoidance of doubt, this paragraph does not form part of the
+public licenses.
+
+Creative Commons may be contacted at creativecommons.org.
+```
+
+### Texto 337
+
 Aplica-se a: parking 2.2.1
 
 ```text
@@ -19709,7 +20120,7 @@ option. All files in the project carrying such notice may not be
 copied, modified, or distributed except according to those terms.
 ```
 
-### Texto 337
+### Texto 338
 
 Aplica-se a: path-data-parser 0.1.0, points-on-curve 0.2.0
 
@@ -19737,7 +20148,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 338
+### Texto 339
 
 Aplica-se a: pbkdf2 0.13.0
 
@@ -19770,7 +20181,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 339
+### Texto 340
 
 Aplica-se a: pem-rfc7468 1.0.0
 
@@ -19802,7 +20213,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 340
+### Texto 341
 
 Aplica-se a: phf 0.13.1, phf 0.14.0, phf_generator 0.13.1, phf_generator 0.14.0, phf_macros 0.13.1, phf_macros 0.14.0, phf_shared 0.13.1, phf_shared 0.14.0
 
@@ -19829,7 +20240,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 341
+### Texto 342
 
 Aplica-se a: picomatch 2.3.2
 
@@ -19857,7 +20268,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 342
+### Texto 343
 
 Aplica-se a: pixi-live2d-display 0.4.0
 
@@ -19885,7 +20296,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 343
+### Texto 344
 
 Aplica-se a: plist 1.10.3
 
@@ -19911,7 +20322,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 344
+### Texto 345
 
 Aplica-se a: plotters 0.3.7, plotters-backend 0.3.7, plotters-svg 0.3.7
 
@@ -19919,7 +20330,7 @@ Aplica-se a: plotters 0.3.7, plotters-backend 0.3.7, plotters-svg 0.3.7
 ../LICENSE
 ```
 
-### Texto 345
+### Texto 346
 
 Aplica-se a: png 0.18.1
 
@@ -19951,7 +20362,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 346
+### Texto 347
 
 Aplica-se a: points-on-path 0.2.1
 
@@ -19979,7 +20390,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 347
+### Texto 348
 
 Aplica-se a: pollster 1.0.1
 
@@ -20011,7 +20422,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 348
+### Texto 349
 
 Aplica-se a: powerfmt 0.2.1
 
@@ -20219,7 +20630,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 349
+### Texto 350
 
 Aplica-se a: powerfmt 0.2.1
 
@@ -20245,7 +20656,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 350
+### Texto 351
 
 Aplica-se a: ppmd-rust 1.5.2
 
@@ -20371,7 +20782,7 @@ party to this document and has no duty or obligation with respect to
 this CC0 or use of the Work.
 ```
 
-### Texto 351
+### Texto 352
 
 Aplica-se a: ppmd-rust 1.5.2
 
@@ -20394,7 +20805,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 352
+### Texto 353
 
 Aplica-se a: ppv-lite86 0.2.21
 
@@ -20602,7 +21013,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 353
+### Texto 354
 
 Aplica-se a: ppv-lite86 0.2.21
 
@@ -20634,7 +21045,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 354
+### Texto 355
 
 Aplica-se a: precomputed-hash 0.1.1
 
@@ -20662,7 +21073,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 355
+### Texto 356
 
 Aplica-se a: primal-check 0.3.4
 
@@ -20694,7 +21105,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 356
+### Texto 357
 
 Aplica-se a: proc-macro-error 1.0.4, proc-macro-error-attr 1.0.4
 
@@ -20902,7 +21313,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 357
+### Texto 358
 
 Aplica-se a: proc-macro-error 1.0.4, proc-macro-error-attr 1.0.4
 
@@ -20930,7 +21341,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 358
+### Texto 359
 
 Aplica-se a: promise-polyfill 8.3.0
 
@@ -20957,7 +21368,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 359
+### Texto 360
 
 Aplica-se a: psl-types 2.0.11
 
@@ -20985,7 +21396,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 360
+### Texto 361
 
 Aplica-se a: publicsuffix 2.3.0
 
@@ -21013,7 +21424,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 361
+### Texto 362
 
 Aplica-se a: punycode 1.4.1
 
@@ -21040,7 +21451,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 362
+### Texto 363
 
 Aplica-se a: qs 6.17.1
 
@@ -21076,7 +21487,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 363
+### Texto 364
 
 Aplica-se a: queue-microtask 1.2.3, run-parallel 1.2.0
 
@@ -21103,7 +21514,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 364
+### Texto 365
 
 Aplica-se a: quick-error 2.0.1
 
@@ -21129,7 +21540,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 365
+### Texto 366
 
 Aplica-se a: quick-xml 0.41.0, quick-xml 0.42.0
 
@@ -21159,7 +21570,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 366
+### Texto 367
 
 Aplica-se a: quinn 0.11.12, quinn-proto 0.11.19, quinn-udp 0.5.16
 
@@ -21173,7 +21584,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 367
+### Texto 368
 
 Aplica-se a: radium 0.7.0
 
@@ -21201,7 +21612,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 368
+### Texto 369
 
 Aplica-se a: rand 0.10.3, rand 0.9.5, rand_chacha 0.10.0, rand_chacha 0.9.0
 
@@ -21384,7 +21795,7 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 END OF TERMS AND CONDITIONS
 ```
 
-### Texto 369
+### Texto 370
 
 Aplica-se a: rand 0.10.3, rand 0.9.5, rand_chacha 0.10.0, rand_chacha 0.9.0, rand_core 0.9.5
 
@@ -21417,7 +21828,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 370
+### Texto 371
 
 Aplica-se a: rand_core 0.10.1, rand_core 0.9.5, rand_pcg 0.10.2
 
@@ -21611,7 +22022,7 @@ APPENDIX: How to apply the Apache License to your work.
    identification within third-party archives.
 ```
 
-### Texto 371
+### Texto 372
 
 Aplica-se a: rand_core 0.10.1
 
@@ -21643,7 +22054,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 372
+### Texto 373
 
 Aplica-se a: rand_pcg 0.10.2
 
@@ -21676,7 +22087,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 373
+### Texto 374
 
 Aplica-se a: raw-window-handle 0.6.2
 
@@ -21704,7 +22115,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 374
+### Texto 375
 
 Aplica-se a: raw-window-handle 0.6.2
 
@@ -21722,7 +22133,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Texto 375
+### Texto 376
 
 Aplica-se a: rayon 1.12.0, rayon-core 1.13.0
 
@@ -21754,7 +22165,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 376
+### Texto 377
 
 Aplica-se a: rayon-cond 0.4.0
 
@@ -21786,7 +22197,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 377
+### Texto 378
 
 Aplica-se a: react 19.3.1, react-dom 19.3.1, scheduler 0.28.0
 
@@ -21814,7 +22225,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 378
+### Texto 379
 
 Aplica-se a: realfft 3.5.1
 
@@ -21842,7 +22253,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 379
+### Texto 380
 
 Aplica-se a: redox_syscall 0.5.18
 
@@ -21871,7 +22282,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 380
+### Texto 381
 
 Aplica-se a: redox_users 0.5.3
 
@@ -21899,7 +22310,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 381
+### Texto 382
 
 Aplica-se a: regress 0.12.0
 
@@ -22107,7 +22518,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 382
+### Texto 383
 
 Aplica-se a: regress 0.12.0
 
@@ -22135,7 +22546,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 383
+### Texto 384
 
 Aplica-se a: reqwest 0.13.5
 
@@ -22343,7 +22754,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 384
+### Texto 385
 
 Aplica-se a: reqwest 0.13.5
 
@@ -22369,7 +22780,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 385
+### Texto 386
 
 Aplica-se a: reusify 1.1.0
 
@@ -22397,7 +22808,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 386
+### Texto 387
 
 Aplica-se a: rfd 0.17.2
 
@@ -22425,7 +22836,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 387
+### Texto 388
 
 Aplica-se a: rig-core 0.46.0
 
@@ -22439,7 +22850,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 388
+### Texto 389
 
 Aplica-se a: ring 0.17.14
 
@@ -22455,7 +22866,7 @@ See src/polyfill/once_cell/LICENSE-APACHE and src/polyfill/once_cell/LICENSE-MIT
 for the license to code that was sourced from the once_cell project.
 ```
 
-### Texto 389
+### Texto 390
 
 Aplica-se a: ring 0.17.14
 
@@ -22733,7 +23144,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 390
+### Texto 391
 
 Aplica-se a: ring 0.17.14
 
@@ -22753,7 +23164,7 @@ OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### Texto 391
+### Texto 392
 
 Aplica-se a: rmcp 3.10.0, rmcp-macros 3.10.0
 
@@ -22976,7 +23387,7 @@ CC-BY-4.0. See https://creativecommons.org/licenses/by/4.0/legalcode for
 the full license text.
 ```
 
-### Texto 392
+### Texto 393
 
 Aplica-se a: robust-predicates 3.0.3
 
@@ -23007,7 +23418,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 ```
 
-### Texto 393
+### Texto 394
 
 Aplica-se a: roughjs 4.6.6
 
@@ -23035,7 +23446,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 394
+### Texto 395
 
 Aplica-se a: rustfft 6.4.1, strength_reduce 0.2.4
 
@@ -23061,7 +23472,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 395
+### Texto 396
 
 Aplica-se a: rustls-native-certs 0.8.5
 
@@ -23077,7 +23488,7 @@ respectively.  You may use this software under the terms of any
 of these licenses, at your option.
 ```
 
-### Texto 396
+### Texto 397
 
 Aplica-se a: rustls-pki-types 1.16.0
 
@@ -23285,7 +23696,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 397
+### Texto 398
 
 Aplica-se a: rustls-pki-types 1.16.0
 
@@ -23317,7 +23728,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 398
+### Texto 399
 
 Aplica-se a: rustls-platform-verifier 0.7.1
 
@@ -23345,7 +23756,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 399
+### Texto 400
 
 Aplica-se a: rustls-webpki 0.103.17
 
@@ -23371,7 +23782,7 @@ The files under third-party/chromium are licensed as described in
 third-party/chromium/LICENSE.
 ```
 
-### Texto 400
+### Texto 401
 
 Aplica-se a: rw 1.3.3
 
@@ -23404,7 +23815,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 401
+### Texto 402
 
 Aplica-se a: safe_arch 1.2.0
 
@@ -23420,7 +23831,7 @@ The above copyright notice and this permission notice (including the next paragr
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 402
+### Texto 403
 
 Aplica-se a: safe_arch 1.2.0
 
@@ -23438,7 +23849,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Texto 403
+### Texto 404
 
 Aplica-se a: safer-buffer 2.1.2
 
@@ -23466,7 +23877,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 404
+### Texto 405
 
 Aplica-se a: salsa20 0.11.0
 
@@ -23499,7 +23910,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 405
+### Texto 406
 
 Aplica-se a: same-file 1.0.6, winapi-util 0.1.11
 
@@ -23527,7 +23938,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 406
+### Texto 407
 
 Aplica-se a: schannel 0.1.30
 
@@ -23541,7 +23952,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 407
+### Texto 408
 
 Aplica-se a: schemars 0.8.22, schemars 0.9.0, schemars 1.2.3, schemars_derive 0.8.22, schemars_derive 1.2.3
 
@@ -23569,7 +23980,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 408
+### Texto 409
 
 Aplica-se a: scopeguard 1.2.0
 
@@ -23601,7 +24012,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 409
+### Texto 410
 
 Aplica-se a: scraper 0.29.0
 
@@ -23623,7 +24034,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### Texto 410
+### Texto 411
 
 Aplica-se a: scrypt 0.12.0
 
@@ -23655,7 +24066,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 411
+### Texto 412
 
 Aplica-se a: security-framework 3.7.0, security-framework-sys 2.17.0
 
@@ -23682,7 +24093,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 412
+### Texto 413
 
 Aplica-se a: semver 6.3.2
 
@@ -23704,7 +24115,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
 IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### Texto 413
+### Texto 414
 
 Aplica-se a: serde_urlencoded 0.7.1
 
@@ -23736,7 +24147,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 414
+### Texto 415
 
 Aplica-se a: serialize-to-javascript 0.1.2, serialize-to-javascript-impl 0.1.2
 
@@ -23764,7 +24175,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 415
+### Texto 416
 
 Aplica-se a: sha1 0.10.7, sha2 0.10.9
 
@@ -23798,7 +24209,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 416
+### Texto 417
 
 Aplica-se a: sha1 0.11.0, sha2 0.11.1
 
@@ -23833,7 +24244,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 417
+### Texto 418
 
 Aplica-se a: sharded-slab 0.1.7
 
@@ -23859,7 +24270,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 418
+### Texto 419
 
 Aplica-se a: side-channel 1.1.1, side-channel-weakmap 1.0.2
 
@@ -23887,7 +24298,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 419
+### Texto 420
 
 Aplica-se a: signal-hook-registry 1.4.8
 
@@ -23919,7 +24330,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 420
+### Texto 421
 
 Aplica-se a: Silero VAD (silero_vad.onnx)
 
@@ -23947,7 +24358,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 421
+### Texto 422
 
 Aplica-se a: simd-adler32 0.3.10
 
@@ -23975,7 +24386,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 422
+### Texto 423
 
 Aplica-se a: siphasher 1.0.4
 
@@ -23989,7 +24400,7 @@ http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
 option.
 ```
 
-### Texto 423
+### Texto 424
 
 Aplica-se a: slab 0.4.12
 
@@ -24021,7 +24432,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 424
+### Texto 425
 
 Aplica-se a: smallvec 1.16.5
 
@@ -24053,7 +24464,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 425
+### Texto 426
 
 Aplica-se a: smol-toml 1.9.1
 
@@ -24084,7 +24495,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 426
+### Texto 427
 
 Aplica-se a: softbuffer 0.4.8
 
@@ -24292,7 +24703,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 427
+### Texto 428
 
 Aplica-se a: softbuffer 0.4.8
 
@@ -24318,7 +24729,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 428
+### Texto 429
 
 Aplica-se a: sqlite-wasm-rs 0.6.3
 
@@ -24346,7 +24757,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 429
+### Texto 430
 
 Aplica-se a: sse-stream 0.2.6
 
@@ -24374,7 +24785,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 430
+### Texto 431
 
 Aplica-se a: stable_deref_trait 1.2.1
 
@@ -24406,7 +24817,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 431
+### Texto 432
 
 Aplica-se a: starship-battery 0.12.0
 
@@ -24428,7 +24839,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### Texto 432
+### Texto 433
 
 Aplica-se a: static_assertions 1.1.0
 
@@ -24456,7 +24867,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 433
+### Texto 434
 
 Aplica-se a: steamworks 0.13.1
 
@@ -24482,7 +24893,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 434
+### Texto 435
 
 Aplica-se a: strsim 0.11.1
 
@@ -24512,7 +24923,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 435
+### Texto 436
 
 Aplica-se a: strum 0.28.0, strum_macros 0.28.0
 
@@ -24540,7 +24951,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 436
+### Texto 437
 
 Aplica-se a: stylis 4.4.0
 
@@ -24568,7 +24979,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 437
+### Texto 438
 
 Aplica-se a: subtle 2.6.1
 
@@ -24604,7 +25015,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 438
+### Texto 439
 
 Aplica-se a: Supertonic 3 (ONNX)
 
@@ -24820,7 +25231,7 @@ relationships between assertions made in documents, indiscriminate and
 arbitrarily-targeted use).
 ```
 
-### Texto 439
+### Texto 440
 
 Aplica-se a: swift-rs 1.0.9
 
@@ -25028,7 +25439,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 440
+### Texto 441
 
 Aplica-se a: swift-rs 1.0.9
 
@@ -25054,7 +25465,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 441
+### Texto 442
 
 Aplica-se a: synstructure 0.14.0
 
@@ -25068,7 +25479,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 442
+### Texto 443
 
 Aplica-se a: sys-locale 0.3.2
 
@@ -25096,7 +25507,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 443
+### Texto 444
 
 Aplica-se a: sysinfo 0.39.6
 
@@ -25124,7 +25535,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 444
+### Texto 445
 
 Aplica-se a: system-configuration 0.7.0, system-configuration-sys 0.6.0
 
@@ -25156,7 +25567,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 445
+### Texto 446
 
 Aplica-se a: tailwind-merge 3.7.0
 
@@ -25184,7 +25595,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 446
+### Texto 447
 
 Aplica-se a: tao 0.37.2
 
@@ -25209,7 +25620,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tao.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 447
+### Texto 448
 
 Aplica-se a: tao-macros 0.1.4
 
@@ -25237,7 +25648,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 448
+### Texto 449
 
 Aplica-se a: tao-macros 0.1.4
 
@@ -25263,7 +25674,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tao.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 449
+### Texto 450
 
 Aplica-se a: tap 1.0.1
 
@@ -25291,7 +25702,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 450
+### Texto 451
 
 Aplica-se a: tar 0.4.46
 
@@ -25323,7 +25734,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 451
+### Texto 452
 
 Aplica-se a: @tauri-apps/api 2.12.4, tauri 2.12.5, tauri-codegen 2.7.4, tauri-macros 2.7.4, tauri-plugin-clipboard-manager 2.5.0, tauri-plugin-dialog 2.8.4, tauri-plugin-fs 2.7.1, tauri-plugin-global-shortcut 2.4.1, tauri-plugin-log 2.10.2, tauri-plugin-notification 2.8.1, tauri-plugin-shell 2.6.0, tauri-plugin-updater 2.14.1, tauri-runtime 2.12.2, tauri-runtime-wry 2.12.3, tauri-utils 2.10.2, tauri-winrt-notification 0.8.1
 
@@ -25351,7 +25762,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 452
+### Texto 453
 
 Aplica-se a: tauri-plugin-clipboard-manager 2.5.0, tauri-plugin-dialog 2.8.4, tauri-plugin-fs 2.7.1, tauri-plugin-global-shortcut 2.4.1, tauri-plugin-log 2.10.2, tauri-plugin-notification 2.8.1, tauri-plugin-shell 2.6.0, tauri-plugin-single-instance 2.5.5, tauri-plugin-updater 2.14.1
 
@@ -25378,7 +25789,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tauri.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 453
+### Texto 454
 
 Aplica-se a: tauri-plugin-single-instance 2.5.5
 
@@ -25406,7 +25817,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 454
+### Texto 455
 
 Aplica-se a: tauri-winrt-notification 0.8.1
 
@@ -25432,7 +25843,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/winrt-notification.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 455
+### Texto 456
 
 Aplica-se a: tempfile 3.27.0, xattr 1.7.0
 
@@ -25464,7 +25875,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 456
+### Texto 457
 
 Aplica-se a: temporal_rs 0.2.6, timezone_provider 0.2.6
 
@@ -25672,7 +26083,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 457
+### Texto 458
 
 Aplica-se a: temporal_rs 0.2.6, timezone_provider 0.2.6
 
@@ -25700,7 +26111,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 458
+### Texto 459
 
 Aplica-se a: tendril 0.5.1
 
@@ -25732,7 +26143,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 459
+### Texto 460
 
 Aplica-se a: three 0.187.0
 
@@ -25760,7 +26171,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 460
+### Texto 461
 
 Aplica-se a: tiff 0.11.3
 
@@ -25788,7 +26199,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 461
+### Texto 462
 
 Aplica-se a: time 0.3.55, time-core 0.1.9, time-macros 0.2.32
 
@@ -25814,7 +26225,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 462
+### Texto 463
 
 Aplica-se a: tinyexec 1.3.1
 
@@ -25842,7 +26253,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 463
+### Texto 464
 
 Aplica-se a: tinytemplate 1.2.1
 
@@ -25874,7 +26285,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 464
+### Texto 465
 
 Aplica-se a: to-regex-range 5.0.1
 
@@ -25902,7 +26313,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 465
+### Texto 466
 
 Aplica-se a: tokio 1.54.1, tokio-stream 0.1.19, tokio-util 0.7.20
 
@@ -25930,7 +26341,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 466
+### Texto 467
 
 Aplica-se a: tokio-macros 2.7.2
 
@@ -25959,7 +26370,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 467
+### Texto 468
 
 Aplica-se a: tokio-rustls 0.26.6
 
@@ -26167,7 +26578,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 468
+### Texto 469
 
 Aplica-se a: tokio-rustls 0.26.6
 
@@ -26199,7 +26610,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 469
+### Texto 470
 
 Aplica-se a: tokio-tungstenite 0.29.0
 
@@ -26226,7 +26637,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 470
+### Texto 471
 
 Aplica-se a: tower 0.5.3, tower-layer 0.3.3, tower-service 0.3.3
 
@@ -26258,7 +26669,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 471
+### Texto 472
 
 Aplica-se a: tower-http 0.6.11
 
@@ -26290,7 +26701,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 472
+### Texto 473
 
 Aplica-se a: tracing 0.1.44, tracing-attributes 0.1.31, tracing-core 0.1.36, tracing-log 0.2.0, tracing-subscriber 0.3.23
 
@@ -26322,7 +26733,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 473
+### Texto 474
 
 Aplica-se a: transpose 0.2.3
 
@@ -26530,7 +26941,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 474
+### Texto 475
 
 Aplica-se a: transpose 0.2.3
 
@@ -26562,7 +26973,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 475
+### Texto 476
 
 Aplica-se a: tray-icon 0.25.1
 
@@ -26588,7 +26999,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tray-icon.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 476
+### Texto 477
 
 Aplica-se a: tree_magic_mini 3.2.2
 
@@ -26616,7 +27027,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 477
+### Texto 478
 
 Aplica-se a: try-lock 0.2.5
 
@@ -26643,7 +27054,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 478
+### Texto 479
 
 Aplica-se a: ts-dedent 2.3.0
 
@@ -26671,7 +27082,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 479
+### Texto 480
 
 Aplica-se a: tslib 2.9.1
 
@@ -26690,7 +27101,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### Texto 480
+### Texto 481
 
 Aplica-se a: tungstenite 0.29.0
 
@@ -26717,7 +27128,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 481
+### Texto 482
 
 Aplica-se a: typenum 1.20.1
 
@@ -26725,7 +27136,7 @@ Aplica-se a: typenum 1.20.1
 MIT OR Apache-2.0
 ```
 
-### Texto 482
+### Texto 483
 
 Aplica-se a: typenum 1.20.1
 
@@ -26933,7 +27344,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### Texto 483
+### Texto 484
 
 Aplica-se a: typenum 1.20.1
 
@@ -26961,7 +27372,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 484
+### Texto 485
 
 Aplica-se a: uds_windows 1.2.1
 
@@ -26989,7 +27400,7 @@ MIT License
     SOFTWARE
 ```
 
-### Texto 485
+### Texto 486
 
 Aplica-se a: unicode_categories 0.1.1
 
@@ -27015,7 +27426,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 486
+### Texto 487
 
 Aplica-se a: unicode-ident 1.0.27
 
@@ -27061,7 +27472,7 @@ dealings in these Data Files or Software without prior written
 authorization of the copyright holder.
 ```
 
-### Texto 487
+### Texto 488
 
 Aplica-se a: unit-prefix 0.5.2
 
@@ -27089,7 +27500,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 488
+### Texto 489
 
 Aplica-se a: universal-hash 0.6.1
 
@@ -27121,7 +27532,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 489
+### Texto 490
 
 Aplica-se a: universalify 2.0.1
 
@@ -27148,7 +27559,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 490
+### Texto 491
 
 Aplica-se a: untrusted 0.9.0
 
@@ -27168,7 +27579,7 @@ Aplica-se a: untrusted 0.9.0
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### Texto 491
+### Texto 492
 
 Aplica-se a: uom 0.38.0
 
@@ -27376,7 +27787,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 492
+### Texto 493
 
 Aplica-se a: uom 0.38.0
 
@@ -27404,7 +27815,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 493
+### Texto 494
 
 Aplica-se a: ureq 3.5.2
 
@@ -27432,7 +27843,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 494
+### Texto 495
 
 Aplica-se a: ureq-proto 0.7.1
 
@@ -27446,7 +27857,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 495
+### Texto 496
 
 Aplica-se a: url 0.11.4
 
@@ -27474,7 +27885,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 496
+### Texto 497
 
 Aplica-se a: urlpattern 0.6.0
 
@@ -27502,7 +27913,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 497
+### Texto 498
 
 Aplica-se a: uuid 1.29.2
 
@@ -27535,7 +27946,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 498
+### Texto 499
 
 Aplica-se a: voracious_radix_sort 1.2.0
 
@@ -27563,7 +27974,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 499
+### Texto 500
 
 Aplica-se a: want 0.3.2
 
@@ -27589,7 +28000,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 500
+### Texto 501
 
 Aplica-se a: wayland-backend 0.3.17, wayland-client 0.31.15, wayland-protocols 0.32.13, wayland-protocols-wlr 0.3.12, wayland-scanner 0.31.11, wayland-server 0.31.14, wayland-sys 0.31.11
 
@@ -27615,7 +28026,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 501
+### Texto 502
 
 Aplica-se a: web-time 1.1.0
 
@@ -27823,7 +28234,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 502
+### Texto 503
 
 Aplica-se a: web-time 1.1.0
 
@@ -27851,7 +28262,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 503
+### Texto 504
 
 Aplica-se a: webkit2gtk 2.0.2
 
@@ -27878,7 +28289,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 504
+### Texto 505
 
 Aplica-se a: webkit2gtk-sys 2.0.2
 
@@ -27903,7 +28314,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 505
+### Texto 506
 
 Aplica-se a: webpki-root-certs 1.0.12, webpki-roots 0.26.11, webpki-roots 1.0.12
 
@@ -27971,7 +28382,7 @@ of Data, including for example machine learning models and models'
 insights.
 ```
 
-### Texto 506
+### Texto 507
 
 Aplica-se a: weezl 0.1.12
 
@@ -27999,7 +28410,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 507
+### Texto 508
 
 Aplica-se a: which 8.0.6
 
@@ -28025,7 +28436,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### Texto 508
+### Texto 509
 
 Aplica-se a: wide 1.7.1
 
@@ -28233,7 +28644,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 509
+### Texto 510
 
 Aplica-se a: wide 1.7.1
 
@@ -28261,7 +28672,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 510
+### Texto 511
 
 Aplica-se a: wide 1.7.1
 
@@ -28285,7 +28696,7 @@ misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Texto 511
+### Texto 512
 
 Aplica-se a: winapi 0.3.9
 
@@ -28311,7 +28722,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 512
+### Texto 513
 
 Aplica-se a: window-vibrancy 0.8.1
 
@@ -28339,7 +28750,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 513
+### Texto 514
 
 Aplica-se a: window-vibrancy 0.8.1
 
@@ -28365,7 +28776,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/window-vibrancy.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 514
+### Texto 515
 
 Aplica-se a: windows 0.61.3, windows 0.62.2, windows-collections 0.2.0, windows-collections 0.3.2, windows-core 0.61.2, windows-core 0.62.2, windows-future 0.2.1, windows-future 0.3.2, windows-implement 0.60.2, windows-interface 0.59.3, windows-link 0.1.3, windows-link 0.2.1, windows-numerics 0.2.0, windows-numerics 0.3.1, windows-registry 0.6.1, windows-result 0.3.4, windows-result 0.4.1, windows-strings 0.4.2, windows-strings 0.5.1, windows-sys 0.45.0, windows-sys 0.48.0, windows-sys 0.52.0, windows-sys 0.59.0, windows-sys 0.60.2, windows-sys 0.61.2, windows-targets 0.42.2, windows-targets 0.48.5, windows-targets 0.52.6, windows-targets 0.53.5, windows-threading 0.1.0, windows-threading 0.2.1, windows-version 0.1.7, windows_aarch64_gnullvm 0.42.2, windows_aarch64_gnullvm 0.48.5, windows_aarch64_gnullvm 0.52.6, windows_aarch64_gnullvm 0.53.1, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.48.5, windows_aarch64_msvc 0.52.6, windows_aarch64_msvc 0.53.1, windows_i686_gnu 0.42.2, windows_i686_gnu 0.48.5, windows_i686_gnu 0.52.6, windows_i686_gnu 0.53.1, windows_i686_gnullvm 0.52.6, windows_i686_gnullvm 0.53.1, windows_i686_msvc 0.42.2, windows_i686_msvc 0.48.5, windows_i686_msvc 0.52.6, windows_i686_msvc 0.53.1, windows_x86_64_gnu 0.42.2, windows_x86_64_gnu 0.48.5, windows_x86_64_gnu 0.52.6, windows_x86_64_gnu 0.53.1, windows_x86_64_gnullvm 0.42.2, windows_x86_64_gnullvm 0.48.5, windows_x86_64_gnullvm 0.52.6, windows_x86_64_gnullvm 0.53.1, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.48.5, windows_x86_64_msvc 0.52.6, windows_x86_64_msvc 0.53.1
 
@@ -28573,7 +28984,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 515
+### Texto 516
 
 Aplica-se a: @types/d3 7.4.3, @types/d3-array 3.2.2, @types/d3-axis 3.0.6, @types/d3-brush 3.0.6, @types/d3-chord 3.0.6, @types/d3-color 3.1.3, @types/d3-contour 3.0.6, @types/d3-delaunay 6.0.4, @types/d3-dispatch 3.0.7, @types/d3-drag 3.0.7, @types/d3-dsv 3.0.7, @types/d3-ease 3.0.2, @types/d3-fetch 3.0.7, @types/d3-force 3.0.10, @types/d3-format 3.0.4, @types/d3-geo 3.1.1, @types/d3-hierarchy 3.1.7, @types/d3-interpolate 3.0.4, @types/d3-path 3.1.1, @types/d3-polygon 3.0.2, @types/d3-quadtree 3.0.6, @types/d3-random 3.0.4, @types/d3-scale 4.0.9, @types/d3-scale-chromatic 3.1.0, @types/d3-selection 3.0.12, @types/d3-shape 3.2.0, @types/d3-time 3.0.4, @types/d3-time-format 4.0.3, @types/d3-timer 3.0.2, @types/d3-transition 3.0.9, @types/d3-zoom 3.0.9, @types/earcut 2.1.4, @types/geojson 7946.0.16, @types/offscreencanvas 2019.7.3, @types/react 19.3.0, @types/trusted-types 2.0.7, windows 0.61.3, windows 0.62.2, windows-collections 0.2.0, windows-collections 0.3.2, windows-core 0.61.2, windows-core 0.62.2, windows-future 0.2.1, windows-future 0.3.2, windows-implement 0.60.2, windows-interface 0.59.3, windows-link 0.1.3, windows-link 0.2.1, windows-numerics 0.2.0, windows-numerics 0.3.1, windows-registry 0.6.1, windows-result 0.3.4, windows-result 0.4.1, windows-strings 0.4.2, windows-strings 0.5.1, windows-sys 0.45.0, windows-sys 0.48.0, windows-sys 0.52.0, windows-sys 0.59.0, windows-sys 0.60.2, windows-sys 0.61.2, windows-targets 0.42.2, windows-targets 0.48.5, windows-targets 0.52.6, windows-targets 0.53.5, windows-threading 0.1.0, windows-threading 0.2.1, windows-version 0.1.7, windows_aarch64_gnullvm 0.42.2, windows_aarch64_gnullvm 0.48.5, windows_aarch64_gnullvm 0.52.6, windows_aarch64_gnullvm 0.53.1, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.48.5, windows_aarch64_msvc 0.52.6, windows_aarch64_msvc 0.53.1, windows_i686_gnu 0.42.2, windows_i686_gnu 0.48.5, windows_i686_gnu 0.52.6, windows_i686_gnu 0.53.1, windows_i686_gnullvm 0.52.6, windows_i686_gnullvm 0.53.1, windows_i686_msvc 0.42.2, windows_i686_msvc 0.48.5, windows_i686_msvc 0.52.6, windows_i686_msvc 0.53.1, windows_x86_64_gnu 0.42.2, windows_x86_64_gnu 0.48.5, windows_x86_64_gnu 0.52.6, windows_x86_64_gnu 0.53.1, windows_x86_64_gnullvm 0.42.2, windows_x86_64_gnullvm 0.48.5, windows_x86_64_gnullvm 0.52.6, windows_x86_64_gnullvm 0.53.1, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.48.5, windows_x86_64_msvc 0.52.6, windows_x86_64_msvc 0.53.1
 
@@ -28601,7 +29012,7 @@ MIT License
     SOFTWARE
 ```
 
-### Texto 516
+### Texto 517
 
 Aplica-se a: winnow 0.5.40, winnow 1.0.5
 
@@ -28626,7 +29037,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 517
+### Texto 518
 
 Aplica-se a: wl-clipboard-rs 0.9.5
 
@@ -28658,7 +29069,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 518
+### Texto 519
 
 Aplica-se a: wry 0.57.2
 
@@ -28686,7 +29097,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 519
+### Texto 520
 
 Aplica-se a: wry 0.57.2
 
@@ -28713,7 +29124,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/wry.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### Texto 520
+### Texto 521
 
 Aplica-se a: x11rb 0.13.2, x11rb-protocol 0.13.2
 
@@ -28745,7 +29156,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 521
+### Texto 522
 
 Aplica-se a: xcap 0.9.10
 
@@ -28953,7 +29364,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 522
+### Texto 523
 
 Aplica-se a: xcb 1.7.1
 
@@ -28986,7 +29397,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 523
+### Texto 524
 
 Aplica-se a: xkbcommon 0.9.0
 
@@ -29018,7 +29429,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 524
+### Texto 525
 
 Aplica-se a: xkeysym 0.2.1
 
@@ -29226,7 +29637,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 525
+### Texto 526
 
 Aplica-se a: xkeysym 0.2.1
 
@@ -29252,7 +29663,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 526
+### Texto 527
 
 Aplica-se a: xkeysym 0.2.1
 
@@ -29270,7 +29681,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Texto 527
+### Texto 528
 
 Aplica-se a: xsum 0.1.6
 
@@ -29301,7 +29712,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 528
+### Texto 529
 
 Aplica-se a: zbus 5.19.0, zbus 6.3.0, zbus_macros 5.19.0, zbus_macros 6.3.0, zbus_names 4.3.5, zbus_utils 6.1.0, zvariant 5.15.1, zvariant_derive 5.15.1
 
@@ -29333,7 +29744,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 529
+### Texto 530
 
 Aplica-se a: zcheapstr 1.2.0
 
@@ -29365,7 +29776,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 530
+### Texto 531
 
 Aplica-se a: zerocopy 0.8.63, zerocopy-derive 0.8.63
 
@@ -29573,7 +29984,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 531
+### Texto 532
 
 Aplica-se a: zerocopy 0.8.63, zerocopy-derive 0.8.63
 
@@ -29604,7 +30015,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 532
+### Texto 533
 
 Aplica-se a: zerocopy 0.8.63, zerocopy-derive 0.8.63
 
@@ -29636,7 +30047,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 533
+### Texto 534
 
 Aplica-se a: zeroize 1.9.1
 
@@ -29668,7 +30079,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### Texto 534
+### Texto 535
 
 Aplica-se a: zip 9.5.1
 
@@ -29696,7 +30107,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 535
+### Texto 536
 
 Aplica-se a: zlib-rs 0.6.8
 
@@ -29722,7 +30133,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Texto 536
+### Texto 537
 
 Aplica-se a: zod 4.6.7
 
@@ -29750,7 +30161,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 537
+### Texto 538
 
 Aplica-se a: zopfli 0.8.4
 
@@ -29958,7 +30369,7 @@ Apache License
    limitations under the License.
 ```
 
-### Texto 538
+### Texto 539
 
 Aplica-se a: zruntime 0.2.3
 
@@ -29996,7 +30407,7 @@ benchmark (`benches/broadcast.rs`) come from the async-broadcast crate
 Copyright (c) 2020 Yoshua Wuyts, Stjepan Glavina & Zeeshan Ali Khan
 ```
 
-### Texto 539
+### Texto 540
 
 Aplica-se a: zstd 0.14.4, zstd-safe 8.3.0, zstd-sys 2.1.3+zstd.1.5.7
 
@@ -30031,7 +30442,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 540
+### Texto 541
 
 Aplica-se a: zstd-sys 2.1.3+zstd.1.5.7
 
@@ -30067,7 +30478,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 541
+### Texto 542
 
 Aplica-se a: zstd-sys 2.1.3+zstd.1.5.7
 
@@ -30106,7 +30517,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Texto 542
+### Texto 543
 
 Aplica-se a: zune-core 0.5.3, zune-jpeg 0.5.15
 
@@ -30134,7 +30545,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### Texto 543
+### Texto 544
 
 Aplica-se a: zune-core 0.5.3, zune-jpeg 0.5.15
 
@@ -30160,7 +30571,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### Texto 544
+### Texto 545
 
 Aplica-se a: zustand 5.1.0
 

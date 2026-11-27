@@ -1,4 +1,4 @@
-//! Construtor ÚNICO de sessão ONNX do app (Silero, Whisper, Nemotron, Supertonic, e5). Antes cada
+//! Construtor ÚNICO de sessão ONNX do app (Silero, Whisper, Nemotron, Parakeet, Supertonic, e5). Antes cada
 //! um chamava `Session::builder(env)?.commit_from_file()` cru: CPU só, threads no padrão do ORT (todos
 //! os núcleos, com spin), e a GPU parada durante STT e TTS.
 //!
