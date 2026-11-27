@@ -3676,4 +3676,36 @@ export const ruRU: TranslationDict = {
   'shell.tray.pauseSenses': 'Приостановить микрофон и экран',
   'shell.tray.statusPaused': 'микрофон и экран приостановлены',
   'shell.tray.statusResumed': 'Микрофон и экран снова включены',
+  'settings.voiceTts.group.phonon': 'Phonon (локально)',
+  'settings.voiceTts.field.ttsProvider.option.phonon': 'Phonon',
+  'settings.voiceTts.field.phononModel.label': 'Модель Phonon',
+  'settings.voiceTts.field.phononModel.helperText':
+    'Загружается по запросу с Hugging Face; ничего не поставляется вместе с Mika.',
+  'settings.voiceTts.field.phononModel.option.pt': 'Phonon 40M PT — португальский (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.multilingual': 'Phonon 40M Multilingual — EN/FR/DE/ES/PT (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.en': 'Phonon 31M EN — английский (Apache-2.0)',
+  'settings.voiceTts.field.phononVoice.label': 'Голос',
+  'settings.voiceTts.field.phononVoice.option.default': 'По умолчанию (из чекпойнта)',
+  'settings.voiceTts.field.huggingFaceToken.label': 'Токен Hugging Face',
+  'settings.voiceTts.field.huggingFaceToken.helperText':
+    'Обязателен для моделей CC BY-NC. Примите условия на странице модели и вставьте токен с правом чтения.',
+  'settings.voiceTts.panel.phononHint':
+    'Локальный TTS в том же процессе (Rust, без Python). Модель скачивается при первой фразе и кэшируется; затем работает офлайн.',
+  'settings.voiceTts.panel.phononNonCommercial':
+    'Только НЕкоммерческое использование (CC BY-NC 4.0): модель загружается по запросу, никогда не поставляется с Mika и не может использоваться в платных или коммерческих проектах.',
+  'settings.voiceTts.panel.phononApache':
+    'Лицензия Apache-2.0: свободно для коммерческого использования. Загружается по запросу, не поставляется с Mika.',
+  'settings.voiceTts.panel.phononModelPage': 'Открыть страницу модели',
+  'settings.voiceTts.panel.phononOpenPageError': 'Не удалось открыть страницу модели в браузере.',
+  'voice.tts.phonon.emptyText': 'Phonon: пустой текст.',
+  'voice.tts.phonon.modelNotInCatalog': 'Phonon: модели «{{model}}» нет в каталоге.',
+  'voice.tts.phonon.voiceNotInCatalog': 'Phonon: голоса «{{voice}}» нет у этой модели.',
+  'voice.tts.phonon.gated':
+    'Phonon: для модели «{{model}}» требуется принятие условий. Примите условия на {{url}} и укажите токен Hugging Face в настройках голоса.',
+  'voice.tts.phonon.downloadFailed': 'Phonon: не удалось скачать {{file}} из «{{model}}»: {{detail}}',
+  'voice.tts.phonon.digestMismatch': 'Phonon: {{file}} не совпадает с измеренным хешем; загрузка отменена.',
+  'voice.tts.phonon.writeFailed': 'Phonon: не удалось записать {{path}}: {{detail}}',
+  'voice.tts.phonon.loadFailed': 'Phonon: не удалось загрузить модель: {{detail}}',
+  'voice.tts.phonon.synthesisFailed': 'Phonon: синтез не удался: {{detail}}',
+  'voice.tts.phonon.emptyAudio': 'Phonon: вернул пустое аудио.',
 }

@@ -3557,4 +3557,37 @@ export const jaJP: TranslationDict = {
   'shell.tray.pauseSenses': 'マイクと画面を一時停止',
   'shell.tray.statusPaused': 'マイクと画面は一時停止中',
   'shell.tray.statusResumed': 'マイクと画面を再開しました',
+  'settings.voiceTts.group.phonon': 'Phonon（ローカル）',
+  'settings.voiceTts.field.ttsProvider.option.phonon': 'Phonon',
+  'settings.voiceTts.field.phononModel.label': 'Phonon モデル',
+  'settings.voiceTts.field.phononModel.helperText':
+    'Hugging Face からオンデマンドでダウンロードします。Mika には同梱されません。',
+  'settings.voiceTts.field.phononModel.option.pt': 'Phonon 40M PT — ポルトガル語（CC BY-NC 4.0）',
+  'settings.voiceTts.field.phononModel.option.multilingual': 'Phonon 40M 多言語 — EN/FR/DE/ES/PT（CC BY-NC 4.0）',
+  'settings.voiceTts.field.phononModel.option.en': 'Phonon 31M EN — 英語（Apache-2.0）',
+  'settings.voiceTts.field.phononVoice.label': '声',
+  'settings.voiceTts.field.phononVoice.option.default': 'デフォルト（チェックポイント内）',
+  'settings.voiceTts.field.huggingFaceToken.label': 'Hugging Face トークン',
+  'settings.voiceTts.field.huggingFaceToken.helperText':
+    'CC BY-NC モデルには必須です。モデルページで利用条件に同意し、読み取り権限のあるトークンを貼り付けてください。',
+  'settings.voiceTts.panel.phononHint':
+    'ローカル（同一プロセス内）の TTS です（Rust、Python 不使用）。初回の発話時にモデルをダウンロードしてキャッシュし、以後はオフラインで動作します。',
+  'settings.voiceTts.panel.phononNonCommercial':
+    '非営利利用のみ（CC BY-NC 4.0）。このモデルはオンデマンドでダウンロードされ、Mika には同梱されず、有償・商用プロジェクトでは使用できません。',
+  'settings.voiceTts.panel.phononApache':
+    'Apache-2.0 ライセンス: 商用利用可。オンデマンドでダウンロードされ、Mika には同梱されません。',
+  'settings.voiceTts.panel.phononModelPage': 'モデルページを開く',
+  'settings.voiceTts.panel.phononOpenPageError': 'ブラウザでモデルページを開けませんでした。',
+  'voice.tts.phonon.emptyText': 'Phonon: テキストが空です。',
+  'voice.tts.phonon.modelNotInCatalog': 'Phonon: モデル「{{model}}」はカタログにありません。',
+  'voice.tts.phonon.voiceNotInCatalog': 'Phonon: このモデルに声「{{voice}}」はありません。',
+  'voice.tts.phonon.gated':
+    'Phonon: モデル「{{model}}」は承認が必要です。{{url}} で条件に同意し、音声設定で Hugging Face トークンを入力してください。',
+  'voice.tts.phonon.downloadFailed': 'Phonon: 「{{model}}」から {{file}} をダウンロードできませんでした: {{detail}}',
+  'voice.tts.phonon.digestMismatch':
+    'Phonon: {{file}} が計測済みハッシュと一致しないため、ダウンロードを破棄しました。',
+  'voice.tts.phonon.writeFailed': 'Phonon: {{path}} に書き込めませんでした: {{detail}}',
+  'voice.tts.phonon.loadFailed': 'Phonon: モデルを読み込めませんでした: {{detail}}',
+  'voice.tts.phonon.synthesisFailed': 'Phonon: 合成に失敗しました: {{detail}}',
+  'voice.tts.phonon.emptyAudio': 'Phonon: 空の音声を返しました。',
 }

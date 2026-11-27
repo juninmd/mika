@@ -1447,6 +1447,7 @@ export type TranslationDict = {
   'settings.voiceTts.group.runtime': string
   'settings.voiceTts.group.elevenlabs': string
   'settings.voiceTts.group.supertonic': string
+  'settings.voiceTts.group.phonon': string
   'settings.voiceTts.group.piper': string
   'settings.voiceTts.group.azure': string
   'settings.voiceTts.group.google': string
@@ -1456,6 +1457,7 @@ export type TranslationDict = {
   'settings.voiceTts.field.ttsProvider.helperText': string
   'settings.voiceTts.field.ttsProvider.option.supertonic': string
   'settings.voiceTts.field.ttsProvider.option.piper': string
+  'settings.voiceTts.field.ttsProvider.option.phonon': string
   'settings.voiceTts.field.ttsProvider.option.elevenlabs': string
   'settings.voiceTts.field.ttsProvider.option.azure': string
   'settings.voiceTts.field.ttsProvider.option.google': string
@@ -1497,6 +1499,20 @@ export type TranslationDict = {
   'settings.voiceTts.field.supertonicRate.label': string
   'settings.voiceTts.field.supertonicRate.helperText': string
   'settings.voiceTts.field.supertonicSteps.label': string
+  'settings.voiceTts.field.phononModel.label': string
+  'settings.voiceTts.field.phononModel.helperText': string
+  'settings.voiceTts.field.phononModel.option.pt': string
+  'settings.voiceTts.field.phononModel.option.multilingual': string
+  'settings.voiceTts.field.phononModel.option.en': string
+  'settings.voiceTts.field.phononVoice.label': string
+  'settings.voiceTts.field.phononVoice.option.default': string
+  'settings.voiceTts.field.huggingFaceToken.label': string
+  'settings.voiceTts.field.huggingFaceToken.helperText': string
+  'settings.voiceTts.panel.phononHint': string
+  'settings.voiceTts.panel.phononNonCommercial': string
+  'settings.voiceTts.panel.phononApache': string
+  'settings.voiceTts.panel.phononModelPage': string
+  'settings.voiceTts.panel.phononOpenPageError': string
   'settings.voiceTts.field.supertonicLanguage.label': string
   'settings.voiceTts.language.ko': string
   'settings.voiceTts.language.fr': string
@@ -3267,6 +3283,16 @@ export type TranslationDict = {
   'voice.tts.piper.synthesisCancelled': string
   'voice.tts.piper.readFailed': string
   'voice.tts.piper.emptyAudio': string
+  'voice.tts.phonon.emptyText': string
+  'voice.tts.phonon.modelNotInCatalog': string
+  'voice.tts.phonon.voiceNotInCatalog': string
+  'voice.tts.phonon.gated': string
+  'voice.tts.phonon.downloadFailed': string
+  'voice.tts.phonon.digestMismatch': string
+  'voice.tts.phonon.writeFailed': string
+  'voice.tts.phonon.loadFailed': string
+  'voice.tts.phonon.synthesisFailed': string
+  'voice.tts.phonon.emptyAudio': string
   'voice.tts.google.authFailed': string
   'voice.tts.google.quota': string
   'voice.tts.google.badRequest': string

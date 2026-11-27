@@ -58,7 +58,7 @@ pub(super) fn spec(provider: &str) -> Option<Spec> {
         "ollama" | "unsloth" => local(Some(M::Tokens)),
         "elevenlabs" => paid(M::Characters, A::ElevenLabs),
         "azure-tts" | "google-tts" | "openai-tts" => paid(M::Characters, A::None),
-        "supertonic" | "piper" => local(None),
+        "supertonic" | "piper" | "phonon" => local(None),
         "groq-whisper" | "openai-whisper" => paid(M::Seconds, A::None),
         "nemotron" | "parakeet" | "electron" | "local-whisper" | "local" => local(None),
         "browser" | "system" => FREE,
@@ -80,7 +80,7 @@ mod tests {
         for id in ["google", "openrouter", "ollama", "openaiCompatible", "unsloth"] {
             assert!(llm.contains(&format!("id: '{id}'")) && spec(id).is_some(), "{id}");
         }
-        for id in ["elevenlabs", "azure-tts", "google-tts", "openai-tts", "piper", "supertonic", "system"] {
+        for id in ["elevenlabs", "azure-tts", "google-tts", "openai-tts", "piper", "phonon", "supertonic", "system"] {
             assert!(tts.contains(&format!("'{id}'")) && spec(id).is_some(), "{id}");
         }
         for id in ["nemotron", "parakeet", "electron", "browser", "groq-whisper", "openai-whisper"] {
@@ -100,7 +100,16 @@ mod tests {
 
     #[test]
     fn local_engines_never_claim_a_bill() {
-        for id in ["ollama", "unsloth", "supertonic", "piper", "nemotron", "parakeet", "electron"] {
+        for id in [
+            "ollama",
+            "unsloth",
+            "supertonic",
+            "piper",
+            "phonon",
+            "nemotron",
+            "parakeet",
+            "electron",
+        ] {
             let s = spec(id).unwrap();
             assert!(s.local && s.free && s.api == BalanceApi::None, "{id}");
         }

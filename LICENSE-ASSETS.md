@@ -77,6 +77,8 @@ Baixados na primeira vez que o usuário liga o recurso, de revisões fixas (nunc
 | granite-embedding-97m-multilingual-r2 | `onnx-community/granite-embedding-97m-multilingual-r2-ONNX` (base `ibm-granite/…`) | Apache-2.0 (IBM)                                                                                                                               | `granite-cache`              |
 | Silero VAD                           | `snakers4/silero-vad`, commit fixo                                     | MIT, Silero Team                                                                                                                                           | `vad-cache`                  |
 | Vozes Piper                          | `rhasspy/piper-voices`, revisão `6b9cfaa` (vozes retreinadas)          | Repositório MIT; **a licença do dataset varia por voz**                                                                                                    | Cache de voz do Piper        |
+| Phonon 40M PT / 40M Multilingual     | `gradium/phonon-40m-pt`, `gradium/phonon-40m-multilingual` (revisão fixa em `voice/tts/providers/phonon/catalog.rs`) | **CC BY-NC 4.0 — uso NÃO comercial**; gate do Hugging Face exige aceite dos termos e token do usuário                                                     | `supertonic/phonon/<modelo>` |
+| Phonon 31M EN                        | `gradium/phonon-31m-en` (revisão fixa em `voice/tts/providers/phonon/catalog.rs`)          | Apache-2.0                                                                                                                                                 | `supertonic/phonon/phonon-31m-en` |
 
 **Piper — aviso comercial.** O ecossistema de vozes Piper mistura datasets com licenças diferentes,
 e algumas vozes usam datasets **CC-BY-NC (uso não comercial)**, que **não podem ser oferecidas num
@@ -107,6 +109,16 @@ voz mostra um aviso e manda escolher um provedor de nuvem (Azure Speech, Google 
 
 O binário do Piper não é distribuído: o usuário o instala. Antes de ampliar a lista de vozes, leia o
 `MODEL_CARD` de cada uma **e** de onde ela foi ajustada.
+
+**Phonon — aviso comercial e gate.** O provedor `phonon` roda o crate `ptts` 0.7.1
+(MIT OR Apache-2.0, `https://github.com/gradium-ai/xn-ptts`) dentro do processo, em Rust puro, sem
+Python nem PyTorch. **Nenhum peso vai no instalador**: os checkpoints são baixados na primeira fala
+para `<dados>/supertonic/phonon/<modelo>/`, de revisão fixa e com SHA-256 (LFS) ou SHA-1 de blob git
+(JSON) conferidos. `phonon-40m-pt` e `phonon-40m-multilingual` são **CC BY-NC 4.0 — uso não
+comercial**; o repositório é *gated*, então a instalação exige aceitar os termos na página do modelo
+e informar um token do Hugging Face (`apiKeys.huggingFace`, cifrado no store). `phonon-31m-en` é
+Apache-2.0 e público. A UI avisa o usuário sobre a restrição não comercial sempre que um modelo
+CC BY-NC está selecionado.
 
 ## Modelo próprio (Live2D ou VRM)
 

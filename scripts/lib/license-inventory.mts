@@ -178,6 +178,15 @@ export const MANUAL_ASSETS: readonly ManualAsset[] = [
     textFile: 'openrail-m-bigscience.txt',
   },
   {
+    name: 'Phonon 40M PT / 40M Multilingual / 31M EN (ptts)',
+    role: 'Voz local alternativa (TTS) — in-process, Rust puro',
+    license: 'CC BY-NC 4.0 (40M PT e 40M Multilingual — uso NÃO comercial, gate do Hugging Face); Apache-2.0 (31M EN)',
+    holder: 'Gradium AI',
+    source: 'https://huggingface.co/gradium/phonon-40m-pt',
+    delivery: 'on-demand',
+    note: 'Baixado na primeira fala para <dados>/supertonic/phonon/<modelo>/, em revisão fixa, com SHA-256 (LFS) e SHA-1 de blob git (JSON) conferidos. Nada é embarcado no instalador. Os 40M exigem aceite dos termos na página do modelo e token do Hugging Face; o 31M EN é público. O crate ptts (MIT OR Apache-2.0) entra na lista Rust do cargo metadata.',
+  },
+  {
     name: 'Kokoro-82M v1.0 (ONNX)',
     role: 'Voz local alternativa (opção hoje fora da interface)',
     license: 'Apache-2.0',

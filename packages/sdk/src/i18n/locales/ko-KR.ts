@@ -3540,4 +3540,35 @@ export const koKR: TranslationDict = {
   'shell.tray.pauseSenses': '마이크와 화면 일시 중지',
   'shell.tray.statusPaused': '마이크와 화면 일시 중지됨',
   'shell.tray.statusResumed': '마이크와 화면이 다시 켜졌어요',
+  'settings.voiceTts.group.phonon': 'Phonon(로컬)',
+  'settings.voiceTts.field.ttsProvider.option.phonon': 'Phonon',
+  'settings.voiceTts.field.phononModel.label': 'Phonon 모델',
+  'settings.voiceTts.field.phononModel.helperText': 'Hugging Face에서 필요할 때 내려받으며 Mika에 포함되지 않습니다.',
+  'settings.voiceTts.field.phononModel.option.pt': 'Phonon 40M PT — 포르투갈어(CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.multilingual': 'Phonon 40M 다국어 — EN/FR/DE/ES/PT(CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.en': 'Phonon 31M EN — 영어(Apache-2.0)',
+  'settings.voiceTts.field.phononVoice.label': '목소리',
+  'settings.voiceTts.field.phononVoice.option.default': '기본(체크포인트)',
+  'settings.voiceTts.field.huggingFaceToken.label': 'Hugging Face 토큰',
+  'settings.voiceTts.field.huggingFaceToken.helperText':
+    'CC BY-NC 모델에는 필수입니다. 모델 페이지에서 약관에 동의하고 읽기 권한이 있는 토큰을 붙여넣으세요.',
+  'settings.voiceTts.panel.phononHint':
+    '로컬 인프로세스 TTS입니다(Rust, Python 없음). 첫 발화 때 모델을 내려받아 캐시하며 이후에는 오프라인으로 동작합니다.',
+  'settings.voiceTts.panel.phononNonCommercial':
+    '비상업적 용도 전용(CC BY-NC 4.0): 이 모델은 필요할 때 내려받으며 Mika에 절대 포함되지 않고, 유료 또는 상업 프로젝트에 사용할 수 없습니다.',
+  'settings.voiceTts.panel.phononApache':
+    'Apache-2.0 라이선스: 상업적 사용 가능. 필요할 때 내려받으며 Mika에 포함되지 않습니다.',
+  'settings.voiceTts.panel.phononModelPage': '모델 페이지 열기',
+  'settings.voiceTts.panel.phononOpenPageError': '브라우저에서 모델 페이지를 열 수 없습니다.',
+  'voice.tts.phonon.emptyText': 'Phonon: 텍스트가 비어 있습니다.',
+  'voice.tts.phonon.modelNotInCatalog': 'Phonon: 모델 "{{model}}"이(가) 카탈로그에 없습니다.',
+  'voice.tts.phonon.voiceNotInCatalog': 'Phonon: 이 모델에는 목소리 "{{voice}}"이(가) 없습니다.',
+  'voice.tts.phonon.gated':
+    'Phonon: 모델 "{{model}}"은(는) 승인이 필요합니다. {{url}}에서 약관에 동의하고 음성 설정에 Hugging Face 토큰을 입력하세요.',
+  'voice.tts.phonon.downloadFailed': 'Phonon: "{{model}}"에서 {{file}} 다운로드 실패: {{detail}}',
+  'voice.tts.phonon.digestMismatch': 'Phonon: {{file}}이(가) 측정된 해시와 일치하지 않아 다운로드를 폐기했습니다.',
+  'voice.tts.phonon.writeFailed': 'Phonon: {{path}}에 쓸 수 없습니다: {{detail}}',
+  'voice.tts.phonon.loadFailed': 'Phonon: 모델을 불러올 수 없습니다: {{detail}}',
+  'voice.tts.phonon.synthesisFailed': 'Phonon: 합성 실패: {{detail}}',
+  'voice.tts.phonon.emptyAudio': 'Phonon: 빈 오디오를 반환했습니다.',
 }

@@ -312,6 +312,14 @@ fn api_keys() -> Namespace {
             ),
             // `elevenLabs` não tem `.describe()` do lado TypeScript — sem UI mesmo.
             text("elevenLabs", ""),
+            // Token do Hugging Face para os checkpoints Phonon com gate (CC BY-NC). Mora no namespace
+            // de credenciais para herdar a cifra em repouso (`config/store.rs::API_KEYS_PREFIX`);
+            // a UI é o campo do painel de voz (`settings.voiceTts.field.huggingFaceToken.*`).
+            text("huggingFace", "").with_ui(
+                FieldUi::new("settings.voiceTts.field.huggingFaceToken.label")
+                    .control("password")
+                    .helper("settings.voiceTts.field.huggingFaceToken.helperText"),
+            ),
         ],
     }
 }

@@ -3658,4 +3658,36 @@ export const itIT: TranslationDict = {
   'shell.tray.pauseSenses': 'Metti in pausa microfono e schermo',
   'shell.tray.statusPaused': 'microfono e schermo in pausa',
   'shell.tray.statusResumed': 'Microfono e schermo di nuovo attivi',
+  'settings.voiceTts.group.phonon': 'Phonon (locale)',
+  'settings.voiceTts.field.ttsProvider.option.phonon': 'Phonon',
+  'settings.voiceTts.field.phononModel.label': 'Modello Phonon',
+  'settings.voiceTts.field.phononModel.helperText': 'Scaricato su richiesta da Hugging Face; nulla è incluso in Mika.',
+  'settings.voiceTts.field.phononModel.option.pt': 'Phonon 40M PT — portoghese (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.multilingual': 'Phonon 40M Multilingue — EN/FR/DE/ES/PT (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.en': 'Phonon 31M EN — inglese (Apache-2.0)',
+  'settings.voiceTts.field.phononVoice.label': 'Voce',
+  'settings.voiceTts.field.phononVoice.option.default': 'Predefinita (dal checkpoint)',
+  'settings.voiceTts.field.huggingFaceToken.label': 'Token di Hugging Face',
+  'settings.voiceTts.field.huggingFaceToken.helperText':
+    'Obbligatorio per i modelli CC BY-NC. Accetta i termini nella pagina del modello e incolla un token con accesso in lettura.',
+  'settings.voiceTts.panel.phononHint':
+    'TTS locale, nello stesso processo (Rust, senza Python). Il modello viene scaricato alla prima frase e messo in cache; poi funziona offline.',
+  'settings.voiceTts.panel.phononNonCommercial':
+    'Solo uso NON commerciale (CC BY-NC 4.0): questo modello viene scaricato su richiesta, non è mai distribuito con Mika e non può essere usato in progetti a pagamento o commerciali.',
+  'settings.voiceTts.panel.phononApache':
+    'Licenza Apache-2.0: libero per uso commerciale. Scaricato su richiesta, mai distribuito con Mika.',
+  'settings.voiceTts.panel.phononModelPage': 'Apri la pagina del modello',
+  'settings.voiceTts.panel.phononOpenPageError': 'Impossibile aprire la pagina del modello nel browser.',
+  'voice.tts.phonon.emptyText': 'Phonon: testo vuoto.',
+  'voice.tts.phonon.modelNotInCatalog': 'Phonon: il modello "{{model}}" non è nel catalogo.',
+  'voice.tts.phonon.voiceNotInCatalog': 'Phonon: la voce "{{voice}}" non esiste per questo modello.',
+  'voice.tts.phonon.gated':
+    'Phonon: il modello "{{model}}" richiede l\'accettazione. Accetta i termini su {{url}} e inserisci un token di Hugging Face nelle impostazioni voce.',
+  'voice.tts.phonon.downloadFailed': 'Phonon: download di {{file}} da "{{model}}" non riuscito: {{detail}}',
+  'voice.tts.phonon.digestMismatch':
+    "Phonon: {{file}} non corrisponde all'hash misurato; il download è stato scartato.",
+  'voice.tts.phonon.writeFailed': 'Phonon: impossibile scrivere {{path}}: {{detail}}',
+  'voice.tts.phonon.loadFailed': 'Phonon: impossibile caricare il modello: {{detail}}',
+  'voice.tts.phonon.synthesisFailed': 'Phonon: sintesi non riuscita: {{detail}}',
+  'voice.tts.phonon.emptyAudio': 'Phonon: audio vuoto.',
 }

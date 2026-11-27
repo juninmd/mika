@@ -99,7 +99,7 @@ fn field_json(field: &FieldSchema) -> Value {
     Value::Object(out)
 }
 
-/// Os 55 campos do namespace `voice` (`config/schemas/voice.rs`), sem agrupar — igual ao que
+/// Os 66 campos do namespace `voice` (`config/schemas/voice.rs`), sem agrupar — igual ao que
 /// `declare_fields` devolveria, se pudesse ser chamado daqui. `None` se o namespace não existir.
 pub(super) fn declare_fields(schema: &SchemaRegistry) -> Option<Vec<Value>> {
     let declaration = schema.declarations().into_iter().find(|entry| entry.namespace == NAMESPACE)?;
@@ -138,8 +138,8 @@ pub(super) fn build_group(spec: &GroupSpec, by_key: &mut HashMap<String, Value>)
 }
 
 /// `VOICE_SETTINGS.groups` (`voice.schema.ts`), na mesma ordem: runtime, elevenlabs, supertonic,
-/// piper, azure, google, openai. 47 campos ao todo (17+8+3+3+5+7+4) — `kokoro` saiu do grupo
-/// próprio (provedor cortado, `dispatch.rs::CUT_PROVIDERS`) sem sair do enum `ttsProvider`.
+/// phonon, piper, azure, google, openai. 54 campos ao todo (17+8+3+4+2+3+5+7+4) — `kokoro` saiu do
+/// grupo próprio (provedor cortado, `dispatch.rs::CUT_PROVIDERS`) sem sair do enum `ttsProvider`.
 pub(super) const VOICE_GROUPS: &[GroupSpec] = &[
     GroupSpec {
         title: "settings.voiceTts.group.runtime",
@@ -189,6 +189,12 @@ pub(super) const VOICE_GROUPS: &[GroupSpec] = &[
         title: "settings.voiceTts.group.supertonic",
         keys: &["supertonicVoice", "supertonicLanguage", "supertonicRate", "supertonicSteps"],
         visible_when_equals: Some("supertonic"),
+        test_action_label: None,
+    },
+    GroupSpec {
+        title: "settings.voiceTts.group.phonon",
+        keys: &["phononModel", "phononVoice"],
+        visible_when_equals: Some("phonon"),
         test_action_label: None,
     },
     GroupSpec {
