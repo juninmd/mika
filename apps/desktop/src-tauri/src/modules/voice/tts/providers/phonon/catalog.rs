@@ -22,9 +22,12 @@ pub enum License {
 }
 
 impl License {
-    /// O aviso da UI é obrigatório para peso não comercial; não é decoração.
-    pub fn is_non_commercial(self) -> bool {
-        matches!(self, Self::CcByNc40)
+    /// Nome SPDX curto, usado no log de preparo do checkpoint e nos testes do catálogo.
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::CcByNc40 => "CC BY-NC 4.0",
+            Self::Apache20 => "Apache-2.0",
+        }
     }
 }
 
@@ -200,9 +203,10 @@ mod tests {
     #[test]
     fn only_the_apache_model_is_public() {
         for model in &MODELS {
-            assert_eq!(model.license.is_non_commercial(), model.gated, "{}", model.key);
+            assert_eq!(model.license == License::CcByNc40, model.gated, "{}", model.key);
             assert!(!model.languages.is_empty(), "{}", model.key);
             assert!(model.voices.contains(&"default"), "{}", model.key);
+            assert!(!model.license.label().is_empty(), "{}", model.key);
         }
         assert!(!model("phonon-31m-en").unwrap().gated);
         assert!(model("phonon-31m-en").unwrap().license == License::Apache20);

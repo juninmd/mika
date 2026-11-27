@@ -9,7 +9,7 @@ atribuição dessas licenças. Nada aqui concede direitos sobre o Mika em si —
 Arquivo gerado por `scripts/generators/third-party-notices.mts` (`pnpm notices:gen`). Não edite à
 mão: a próxima geração apaga a edição.
 
-<!-- mika-notices-input-sha256: 48ddb7a13f5f53f80c8dd1ac451109b90bf5d85bfd4edceebad7899c5eb43ed4 -->
+<!-- mika-notices-input-sha256: bc83f3ff53a5afc967e2421c295bde6debf9605dfb0b15dce155846b0a5a5906 -->
 
 ## 1. Assets, modelos e runtimes
 

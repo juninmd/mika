@@ -24,7 +24,7 @@ use crate::config::store::ConfigStore;
 use crate::modules::settings::tf;
 use crate::modules::voice::tts::abort_registry::CancelHandle;
 
-pub use catalog::{DEFAULT_MODEL, MODELS};
+pub use catalog::DEFAULT_MODEL;
 
 pub struct PhononOptions {
     pub model: String,

@@ -651,7 +651,7 @@ mod tests {
             .expect("phononModel")
             .options;
         let ui: std::collections::BTreeSet<&str> = options.iter().map(|option| option.value).collect();
-        let catalog: std::collections::BTreeSet<&str> = phonon::MODELS.iter().map(|model| model.key).collect();
+        let catalog: std::collections::BTreeSet<&str> = phonon::catalog::MODELS.iter().map(|model| model.key).collect();
         assert_eq!(ui, catalog);
 
         // O `PHONON_MODELS` do renderer é a terceira cópia: também tem de bater.

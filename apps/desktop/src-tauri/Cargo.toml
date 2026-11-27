@@ -202,7 +202,7 @@ sha2 = "0.11"
 # SHA-1 do blob git (`blob {len}\0` + bytes): é o `blobId` que a API do Hugging Face devolve para
 # arquivos pequenos que NÃO são LFS (`config.json`/`tokenizer.json`). Repos com gate não deixam medir
 # SHA-256 sem token; o blobId continua verificável. Mesmo papel de `sha2`: integridade, não cripto.
-sha1 = "0.10"
+sha1 = "0.11"
 keepawake = { version = "0.6", default-features = false }
 user-idle = "0.6"
 # Origem de permissão de mídia é comparada como URL, nunca por prefixo de string.

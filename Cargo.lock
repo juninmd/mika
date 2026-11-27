@@ -4265,7 +4265,7 @@ dependencies = [
  "scrypt",
  "serde",
  "serde_json",
- "sha1 0.10.7",
+ "sha1 0.11.0",
  "sha2 0.11.1",
  "starship-battery",
  "steamworks",

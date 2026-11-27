@@ -13,8 +13,8 @@
 
 use std::path::{Path, PathBuf};
 
-use sha1::{Digest as _, Sha1};
-use sha2::{Digest as _, Sha256};
+use sha1::{Digest, Sha1};
+use sha2::Sha256;
 
 use crate::config::locale::app_locale;
 use crate::config::store::ConfigStore;
@@ -87,6 +87,7 @@ pub async fn ensure_model(model: &PhononModel, cache_dir: &Path, store: &ConfigS
     if installed(cache_dir, model) {
         return Ok(dir);
     }
+    log::info!("Phonon TTS: preparando {} ({})", model.key, model.license.label());
     let token = hf_token(store);
     for file in &model.files {
         let target = dir.join(file.name);
