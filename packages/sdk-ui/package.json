@@ -18,7 +18,7 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "@juninmd/sonido": "^2.2.1",
+    "@juninmd/sonido": "^2.2.2",
     "@mika/sdk": "workspace:*",
     "clsx": "^2.1.1",
     "framer-motion": "^14.14.0",

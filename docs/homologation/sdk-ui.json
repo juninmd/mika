@@ -5,22 +5,23 @@
     "perfil": "library"
   },
   "artefato": {
-    "commit": "6bf9f30c779420e905c0bcd76d1a9c41c556844a+dirty",
-    "tree": "5d9c5dc44133b1fe",
+    "commit": "f29cc15d0f7251049659e653d2c15bfdad3da232+dirty",
+    "tree": "e2ecbc0d3758f266",
     "contract": "64a30184b8675597",
     "deps": {
+      "@juninmd/sonido": "^2.2.2",
       "@mika/sdk": "workspace:*",
       "clsx": "^2.1.1",
       "framer-motion": "^14.14.0",
       "lucide-react": "^1.73.0",
       "tailwind-merge": "^3.7.0"
     },
-    "lockfile": "f0c04416b62f016b"
+    "lockfile": "e0996adfb0556765"
   },
   "ambiente": {
-    "plataforma": "linux",
-    "node": "v22.23.4",
-    "data": "2026-11-15"
+    "plataforma": "win32",
+    "node": "v24.21.0",
+    "data": "2026-11-27"
   },
   "criterios": [
     {
@@ -31,7 +32,7 @@
     {
       "id": "vivo",
       "status": "ok",
-      "detail": "131 arquivo(s) fora do módulo o referenciam"
+      "detail": "137 arquivo(s) fora do módulo o referenciam"
     },
     {
       "id": "headless",

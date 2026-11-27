@@ -5,13 +5,14 @@
     "perfil": "adapter"
   },
   "artefato": {
-    "commit": "f92bd4066865f8f31f33c0df989cb253a6d4b8eb+dirty",
+    "commit": "f29cc15d0f7251049659e653d2c15bfdad3da232+dirty",
     "tree": "1d6d03f0133f6f81",
     "contract": "e3b0c44298fc1c14",
     "deps": {
       "@fontsource-variable/inter": "^5.3.0",
       "@fontsource/ibm-plex-mono": "^5.3.0",
       "@fontsource/space-grotesk": "^5.3.0",
+      "@juninmd/sonido": "^2.2.2",
       "@mika/sdk": "workspace:*",
       "@mika/sdk-ui": "workspace:*",
       "@pixi/unsafe-eval": "6.5.10",
@@ -31,12 +32,12 @@
       "zod": "catalog:",
       "zustand": "^5.1.0"
     },
-    "lockfile": "f0c04416b62f016b"
+    "lockfile": "e0996adfb0556765"
   },
   "ambiente": {
-    "plataforma": "linux",
-    "node": "v22.23.4",
-    "data": "2026-11-17"
+    "plataforma": "win32",
+    "node": "v24.21.0",
+    "data": "2026-11-27"
   },
   "criterios": [
     {
