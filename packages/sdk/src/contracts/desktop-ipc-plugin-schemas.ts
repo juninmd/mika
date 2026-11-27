@@ -93,7 +93,16 @@ export const desktopRendererLogRequestSchema = z.object({
 })
 
 export const desktopWizardPrepareAssetRequestSchema = z.object({
-  assetId: z.enum(['vad', 'whisper', 'nemotron', 'local-embedding', 'tts', 'ollama-llm', 'ollama-embedding']),
+  assetId: z.enum([
+    'vad',
+    'whisper',
+    'nemotron',
+    'parakeet',
+    'local-embedding',
+    'tts',
+    'ollama-llm',
+    'ollama-embedding',
+  ]),
   ttsProvider: z.string().optional(),
   ttsVoice: z.string().optional(),
   llmProvider: z.string().optional(),

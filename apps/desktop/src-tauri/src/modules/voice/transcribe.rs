@@ -35,7 +35,7 @@ use serde_json::{json, Value};
 use tauri::AppHandle;
 
 use crate::config::store::ConfigStore;
-use crate::modules::inference::{nemotron, whisper};
+use crate::modules::inference::{nemotron, parakeet, whisper};
 
 /// Espelha `VOICE_CONFIG_KEYS.ASR_LANGUAGE`/o campo `asrProvider` (`constants.ts`,
 /// `voice-stt-config.schema.ts`) — os dois únicos caminhos de config que este canal lê.
@@ -150,12 +150,12 @@ pub(crate) fn resolve_whisper_model(store: &ConfigStore) -> String {
         .unwrap_or_else(|| whisper::DEFAULT_WHISPER_MODEL_ID.to_string())
 }
 
-/// Os motores que rodam no próprio app (Whisper local e Nemotron). `groq-whisper`/
+/// Os motores que rodam no próprio app (Whisper local, Nemotron e Parakeet). `groq-whisper`/
 /// `openai-whisper` são checados ANTES desta função em [`transcribe_pcm`] (via
 /// `stt_cloud::CloudSttProvider::from_provider_id`); só chegam aqui `browser` e qualquer valor
 /// desconhecido, que [`unsupported_provider_response`] cobre.
 fn is_local_provider(provider: &str) -> bool {
-    matches!(provider, "electron" | "local-whisper" | "nemotron")
+    matches!(provider, "electron" | "local-whisper" | "nemotron" | "parakeet")
 }
 
 /// PCM16 LE → [`super::stt_cleanup::trim_silence`] → PCM16 LE. Outro rate passa intacto: quem
@@ -219,7 +219,7 @@ fn non_pcm_response(mime_type: &str) -> Value {
 /// Extrai `rate=N` de `audio/pcm;rate=16000`; sem o parâmetro (ou malformado), assume o único rate
 /// que o renderer já usa hoje. Não valida — `inference::whisper::transcribe` é quem recusa, alto e
 /// explícito, qualquer valor que não seja 16 kHz (contrato PCM16 mono 16 kHz, AGENTS.md §2).
-fn pcm_sample_rate(mime_type: &str) -> u32 {
+pub(super) fn pcm_sample_rate(mime_type: &str) -> u32 {
     mime_type
         .split(';')
         .find_map(|part| part.trim().strip_prefix("rate="))
@@ -247,9 +247,11 @@ fn resolve_language(store: &ConfigStore, requested: Option<String>) -> Option<St
 /// - `groq-whisper`/`openai-whisper` -> [`super::stt_cloud::transcribe`] (porte de
 ///   `runSttProvider`, casos `case 'groq-whisper'`/`case 'openai-whisper'`).
 /// - `electron`/`local-whisper` -> Whisper local via `inference::whisper` (inalterado).
+/// - `parakeet` -> Parakeet local via `inference::parakeet` (opt-in, multilíngue).
 /// - qualquer outro valor (`browser`, desconhecido) -> [`unsupported_provider_response`].
-/// On-device engine for `provider` (Nemotron, else Whisper), with caption annotations stripped.
-/// The single local entry point: the normal STT turn and the barge-in transcription both use it.
+/// On-device engine for `provider` (Nemotron, Parakeet, else Whisper), with caption annotations
+/// stripped. The single local entry point: the normal STT turn and the barge-in transcription both
+/// use it.
 pub(crate) async fn transcribe_local(
     provider: &str,
     whisper_model: &str,
@@ -261,6 +263,8 @@ pub(crate) async fn transcribe_local(
     let pcm = cleaned_pcm(pcm, sample_rate);
     let text = if provider == "nemotron" {
         nemotron::transcribe(data_dir, pcm, sample_rate, language).await?.map(|r| r.text)
+    } else if provider == "parakeet" {
+        parakeet::transcribe(data_dir, pcm, sample_rate, language).await?.map(|r| r.text)
     } else {
         whisper::transcribe(data_dir, pcm, sample_rate, language, whisper_model.to_string()).await?.map(|r| r.text)
     };
@@ -298,8 +302,8 @@ pub(crate) async fn transcribe_pcm(store: &ConfigStore, data_dir: PathBuf, req: 
     }
 }
 
-/// Boot hook: with the mic on and a local engine selected (Nemotron or Whisper), loads the model
-/// in the background so the first utterance does not wait for it.
+/// Boot hook: with the mic on and a local engine selected (Nemotron, Parakeet or Whisper), loads the
+/// model in the background so the first utterance does not wait for it.
 pub fn prewarm_local_stt(app: &AppHandle) {
     let (Ok(store), Ok(data_dir)) = (crate::state::config_store(app), crate::state::app_data_dir(app)) else {
         return;
@@ -309,6 +313,7 @@ pub fn prewarm_local_stt(app: &AppHandle) {
     }
     match resolve_provider(&store).as_str() {
         "nemotron" => drop(tauri::async_runtime::spawn_blocking(move || nemotron::prewarm(&data_dir))),
+        "parakeet" => drop(tauri::async_runtime::spawn_blocking(move || parakeet::prewarm(&data_dir))),
         "electron" | "local-whisper" => {
             let model_id = resolve_whisper_model(&store);
             drop(tauri::async_runtime::spawn_blocking(move || whisper::prewarm(&data_dir, &model_id)));

@@ -23,7 +23,7 @@
 //! - **`mika.voice`**: `testVoiceConnection` roteia por `testType==='stt'` (setado quando
 //!   `tabId==='stt'`) ou por `voice.ttsProvider`. Só dois caminhos são reais em Rust sem rede: STT
 //!   `electron`/`local-whisper` (mensagem fixa, sem I/O) e `browser` (mensagem fixa), mais TTS
-//!   `supertonic` (`voice/tts/dispatch.rs::generate_with_provider`, gera áudio de verdade) e o
+//!   `supertonic`/`phonon` (`voice/tts/dispatch.rs::generate_with_provider`, gera áudio de verdade) e o
 //!   pseudo-provedor `system` (TS devolve `ok:true` sem gerar áudio — reproduzido aqui do MESMO jeito,
 //!   não é mock, é o comportamento real documentado em `voice-test.ts`). **STT `groq`/`openai`
 //!   deixou de degradar em 2026-09-22**: `voice/stt_cloud.rs::validate_credentials` faz o mesmo GET
@@ -139,6 +139,7 @@ async fn test_stt_provider(store: &ConfigStore, combined: &Value) -> Value {
 
     match provider.as_str() {
         "nemotron" => named_ok("Nemotron local roda dentro do app. Na primeira vez, baixe o modelo (~790 MB) no card de reconhecimento de voz.".to_string()),
+        "parakeet" => named_ok("Parakeet local roda dentro do app e detecta o idioma sozinho. Na primeira vez, baixe o modelo (~670 MB) no card de reconhecimento de voz.".to_string()),
         "electron" | "local-whisper" => {
             let model = cfg_str(combined, store, "whisperModel")
                 .or_else(|| cfg_str(combined, store, "voice.whisperModel"))
@@ -170,6 +171,12 @@ async fn test_tts_connection(store: &ConfigStore, cache_dir: &Path, combined: &V
     if let Some(voice) = cfg_str(combined, store, "voice.supertonicVoice").or_else(|| cfg_str(combined, store, "supertonicVoice")) {
         state.supertonic_voice = voice;
     }
+    if let Some(model) = cfg_str(combined, store, "voice.phononModel") {
+        state.phonon_model = model;
+    }
+    if let Some(voice) = cfg_str(combined, store, "voice.phononVoice") {
+        state.phonon_voice = voice;
+    }
 
     let guard = abort_registry::global().register_active();
     let cancel = guard.handle();
@@ -182,7 +189,7 @@ async fn test_tts_connection(store: &ConfigStore, cache_dir: &Path, combined: &V
         Ok(None) => named_fail("provedor não gerou áudio".to_string()),
         Ok(Some(audio)) => json!({
             "ok": true,
-            "message": "Voz local (Supertonic) gerada com sucesso — tudo rodando na sua máquina!",
+            "message": format!("Voz local ({provider}) gerada com sucesso — tudo rodando na sua máquina!"),
             "audio": base64::engine::general_purpose::STANDARD.encode(&audio.audio),
         }),
         Err(err) if provider == "supertonic" => named_fail(format!("A síntese local (Supertonic) falhou: {err}")),

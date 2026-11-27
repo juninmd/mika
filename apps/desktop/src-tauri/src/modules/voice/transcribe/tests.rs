@@ -66,6 +66,7 @@ fn is_local_provider_accepts_only_the_on_device_engines() {
     assert!(is_local_provider("electron"));
     assert!(is_local_provider("local-whisper"));
     assert!(is_local_provider("nemotron"));
+    assert!(is_local_provider("parakeet"));
     assert!(!is_local_provider("browser"));
     assert!(!is_local_provider("groq-whisper"));
     assert!(!is_local_provider("openai-whisper"));
@@ -219,6 +220,17 @@ async fn transcribe_local_routes_nemotron_to_nemotron_not_whisper() {
     assert!(error.contains("Nemotron"), "esperava o erro do Nemotron, veio: {error}");
     let error = transcribe_local("local-whisper", whisper::DEFAULT_WHISPER_MODEL_ID, missing, pcm, 16_000, None).await.unwrap_err();
     assert!(!error.contains("Nemotron"), "Whisper não deve cair no Nemotron: {error}");
+}
+
+/// Same dispatch guarantee for the opt-in engine: `parakeet` must reach its own download error,
+/// never fall through to Whisper.
+#[tokio::test]
+async fn transcribe_local_routes_parakeet_to_parakeet_not_whisper() {
+    let missing = std::env::temp_dir().join("mika-transcribe-local-no-parakeet");
+    let pcm = vec![0u8; 16_000 * 2];
+    let error = transcribe_local("parakeet", whisper::DEFAULT_WHISPER_MODEL_ID, missing, pcm, 16_000, None).await.unwrap_err();
+    assert!(error.contains("Parakeet"), "esperava o erro do Parakeet, veio: {error}");
+    assert!(!error.contains("Whisper"), "Parakeet não deve cair no Whisper: {error}");
 }
 
 #[test]

@@ -36,6 +36,7 @@ export type CaptureOptions = {
   vadThreshold?: number
   vadSilenceMs?: number
   vadEndpointingEnabled?: boolean
+  smartTurnEnabled?: boolean
   asrProvider?: string
   livePartials?: boolean
 }

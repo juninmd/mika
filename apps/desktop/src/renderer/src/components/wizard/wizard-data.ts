@@ -25,7 +25,7 @@ export const DEFAULT_WIZARD_PROVIDER_ID: LLMProviderId = DEFAULT_LLM_PROVIDER_ID
 export type ProviderId = LLMProviderId
 export type TtsId = 'none' | 'supertonic' | 'elevenlabs'
 /** Valores de `voice.asrProvider` que o passo de escuta oferece (schema Rust `stt_fields`). */
-export type SttId = 'nemotron' | 'electron' | 'browser' | 'groq-whisper' | 'openai-whisper'
+export type SttId = 'nemotron' | 'parakeet' | 'electron' | 'browser' | 'groq-whisper' | 'openai-whisper'
 export type LlmProvider = (typeof LLM_PROVIDERS)[number]
 
 // Placar estático da tela: alimenta o `GlassSelect` só até a lista viva do Ollama (`useModelCatalog`)

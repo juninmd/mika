@@ -3,6 +3,7 @@ import { subscribeLiveTranscript } from '../../lib/live-transcript-bus'
 import { startMediaRecorderTranscription } from '../useSpeechRecognition.media'
 
 const transcribeAudio = vi.fn()
+const classifyTurnEnd = vi.fn()
 const getElectronApiMock = vi.hoisted(() => vi.fn())
 
 vi.mock('../../lib/shell-api', () => ({ getElectronApi: getElectronApiMock }))
@@ -42,8 +43,12 @@ describe('startMediaRecorderTranscription', () => {
     vi.restoreAllMocks()
     transcribeAudio.mockReset()
     transcribeAudio.mockResolvedValue({ success: true, data: { text: '' } })
+    classifyTurnEnd.mockReset()
+    classifyTurnEnd.mockResolvedValue({ complete: true, probability: 0.9, latencyMs: 12, reason: 'probability' })
     getElectronApiMock.mockReset()
-    getElectronApiMock.mockReturnValue({ runtime: { transcribeAudio, log: vi.fn(async () => {}) } })
+    getElectronApiMock.mockReturnValue({
+      runtime: { transcribeAudio, classifyTurnEnd, log: vi.fn(async () => {}) },
+    })
 
     Object.defineProperty(globalThis, 'MediaRecorder', {
       value: MockMediaRecorder,
@@ -307,6 +312,72 @@ describe('startMediaRecorderTranscription', () => {
       expect(onTranscript).toHaveBeenCalledWith('mika abre o youtube', expect.anything())
       unsubscribe()
       session.stop()
+    })
+
+    it('com Smart Turn ligado, incompleto espera até o teto de 3 s', async () => {
+      transcribeAudio.mockResolvedValue({ success: true, data: { text: 'oi mika' } })
+      classifyTurnEnd.mockResolvedValue({ complete: false, probability: 0.2, latencyMs: 10, reason: 'probability' })
+      const onTranscript = vi.fn()
+      const session = await startMediaRecorderTranscription({
+        lang: 'pt-BR',
+        vadSilenceMs: 300,
+        smartTurnEnabled: true,
+        onTranscript,
+      })
+      await vi.waitFor(() => expect(workletPort).not.toBeNull())
+      await silence(50)
+      await speak(200)
+
+      await silence(400)
+      expect(classifyTurnEnd).toHaveBeenCalledTimes(1)
+      expect(onTranscript).not.toHaveBeenCalled()
+      expect(classifyTurnEnd.mock.calls[0]?.[0]).toEqual({
+        audio: expect.any(Uint8Array),
+        mimeType: 'audio/pcm;rate=16000',
+      })
+      expect(classifyTurnEnd.mock.calls[0]?.[0].audio.byteLength).toBeLessThanOrEqual(256_000)
+
+      // Teto de segurança: 3 s de pausa encerram mesmo com a classificação dizendo "incompleto".
+      await silence(2_700)
+      expect(onTranscript).toHaveBeenCalledTimes(1)
+      expect(classifyTurnEnd).toHaveBeenCalledTimes(1)
+      session.stop()
+    })
+
+    it('com Smart Turn ligado, completo encerra na pausa e erro cai no VAD', async () => {
+      transcribeAudio.mockResolvedValue({ success: true, data: { text: 'oi' } })
+      const onTranscript = vi.fn()
+      const session = await startMediaRecorderTranscription({
+        lang: 'pt-BR',
+        vadSilenceMs: 300,
+        smartTurnEnabled: true,
+        onTranscript,
+      })
+      await vi.waitFor(() => expect(workletPort).not.toBeNull())
+      await silence(50)
+      await speak(200)
+      await silence(350)
+
+      expect(classifyTurnEnd).toHaveBeenCalledTimes(1)
+      expect(onTranscript).toHaveBeenCalledTimes(1)
+      session.stop()
+
+      classifyTurnEnd.mockRejectedValue(new Error('smart-turn down'))
+      workletPort = null
+      const onErrorTranscript = vi.fn()
+      const second = await startMediaRecorderTranscription({
+        lang: 'pt-BR',
+        vadSilenceMs: 300,
+        smartTurnEnabled: true,
+        onTranscript: onErrorTranscript,
+      })
+      await vi.waitFor(() => expect(workletPort).not.toBeNull())
+      await silence(50)
+      await speak(200)
+      await silence(350)
+
+      expect(onErrorTranscript).toHaveBeenCalledTimes(1)
+      second.stop()
     })
   })
 })

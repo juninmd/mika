@@ -1757,6 +1757,7 @@ export const ruRU: TranslationDict = {
   'settings.voiceStt.field.asrProvider.label': 'Провайдер слуха (STT)',
   'settings.voiceStt.field.asrProvider.option.electron': 'Локальный Whisper (внутри приложения)',
   'settings.voiceStt.field.asrProvider.option.nemotron': 'Локальный Nemotron (рекомендуется, без галлюцинаций)',
+  'settings.voiceStt.field.asrProvider.option.parakeet': 'Локальная Parakeet v3 (многоязычная)',
   'settings.voiceStt.field.asrProvider.option.browser': 'Браузер (Web Speech)',
   'settings.voiceStt.field.asrProvider.option.groq': 'Groq Whisper (сверхбыстрый)',
   'settings.voiceStt.field.asrProvider.option.openai': 'OpenAI Whisper',
@@ -1768,6 +1769,9 @@ export const ruRU: TranslationDict = {
   'settings.voiceStt.field.whisperModel.option.small': 'Small (~250 МБ, чуть точнее и примерно в 3 раза медленнее)',
   'settings.voiceStt.field.whisperModel.helperText':
     'Работает внутри приложения (ONNX), без Python. Модель скачивается при первой транскрибации и кэшируется. По нашим замерам: Base транскрибирует примерно за 1/3 длительности речи; Small чуть точнее, но работает дольше самой речи.',
+  'settings.voiceStt.field.smartTurnEnabled.label': 'Умное завершение хода (Smart Turn)',
+  'settings.voiceStt.field.smartTurnEnabled.helperText':
+    'Прежде чем завершить речь на паузе, локальная модель (Smart Turn v3, ~8,7 МБ, скачивается при первом использовании) проверяет, закончилась ли фраза. Если она звучит незаконченной, Mika ждёт до 3 с.',
   'settings.voiceStt.field.groqApiKey.label': 'API-ключ Groq',
   'settings.voiceStt.field.openaiApiKey.label': 'API-ключ OpenAI',
   'settings.voiceStt.panel.testing': 'Проверяю...',
@@ -1797,6 +1801,12 @@ export const ruRU: TranslationDict = {
   'settings.voiceStt.panel.nemotronDownload': 'Скачать/проверить модель (~790 МБ)',
   'settings.voiceStt.panel.nemotronDownloading': 'Скачиваю модель…',
   'settings.voiceStt.panel.nemotronReady': 'Модель Nemotron готова',
+  'settings.voiceStt.panel.parakeetHint':
+    'Работает на твоём ПК бесплатно. Многоязычная: определяет язык сама. При первом запуске скачай модель.',
+  'settings.voiceStt.panel.parakeetDownload': 'Скачать/проверить модель (~670 МБ)',
+  'settings.voiceStt.panel.parakeetDownloading': 'Скачивание модели…',
+  'settings.voiceStt.panel.parakeetReady': 'Модель Parakeet готова',
+  'settings.voiceStt.panel.parakeetAttribution': 'Parakeet TDT 0.6B v3 © NVIDIA, CC-BY-4.0',
   'settings.voiceStt.panel.whisperDownloadHint': 'Скачивает и проверяет файлы для выбранного выше размера Whisper.',
   'settings.voiceStt.providerSection.description':
     'Что превращает твой голос в текст. Выбери карточку, чтобы увидеть подробности.',
@@ -2728,8 +2738,10 @@ export const ruRU: TranslationDict = {
   'settings.performance.accel.model.whisperEncoder': 'Whisper (энкодер)',
   'settings.performance.accel.model.whisperDecoder': 'Whisper (декодер)',
   'settings.performance.accel.model.nemotron': 'Nemotron',
+  'settings.performance.accel.model.parakeet': 'Parakeet',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
+  'settings.performance.accel.model.smartTurn': 'Smart Turn',
   'settings.performance.accel.model.e5': 'Эмбеддинги granite',
   'settings.performance.accel.reason.userCpu': 'CPU выбран в настройках',
   'settings.performance.accel.reason.tinyModel': 'крошечная модель: отправка на GPU обходится дороже самих вычислений',
@@ -3195,6 +3207,9 @@ export const ruRU: TranslationDict = {
   'settings.stt.provider.nemotron': 'Локальный Nemotron (рекомендуется, без галлюцинаций)',
   'settings.stt.provider.nemotron.desc':
     'NVIDIA Nemotron на твоём ПК: транскрибирует, пока ты говоришь, аудио не покидает компьютер.',
+  'settings.stt.provider.parakeet': 'Parakeet v3 (локальная, многоязычная)',
+  'settings.stt.provider.parakeet.desc':
+    'NVIDIA Parakeet на твоём ПК: транскрибирует с пунктуацией и регистром, определяет язык сама, аудио не покидает компьютер.',
   'settings.stt.provider.localWhisper.desc':
     'Whisper (OpenAI), работающий локально; размеры tiny, base и small, с ускорением на GPU.',
   'settings.stt.provider.browser.desc': 'Распознавание веб-движком; зависит от сети и службы браузера.',
@@ -3497,6 +3512,8 @@ export const ruRU: TranslationDict = {
   'wizard.assetDownload.nemotronFailed': 'Nemotron: {{file}}: {{detail}}',
   'wizard.assetDownload.embeddingFailed': 'Локальные эмбеддинги: {{file}}: {{detail}}',
   'wizard.assetDownload.nemotronReady': 'Распознавание речи Nemotron готово',
+  'wizard.assetDownload.parakeetFailed': 'Parakeet: {{file}}: {{detail}}',
+  'wizard.assetDownload.parakeetReady': 'Распознавание речи Parakeet готово',
   'wizard.assetDownload.embeddingReady': 'Локальные эмбеддинги готовы',
   'settings.voiceTts.coverage.title': 'Голос не поддерживает язык интерфейса',
   'settings.voiceTts.coverage.unsupported':
@@ -3662,4 +3679,36 @@ export const ruRU: TranslationDict = {
   'shell.tray.pauseSenses': 'Приостановить микрофон и экран',
   'shell.tray.statusPaused': 'микрофон и экран приостановлены',
   'shell.tray.statusResumed': 'Микрофон и экран снова включены',
+  'settings.voiceTts.group.phonon': 'Phonon (локально)',
+  'settings.voiceTts.field.ttsProvider.option.phonon': 'Phonon',
+  'settings.voiceTts.field.phononModel.label': 'Модель Phonon',
+  'settings.voiceTts.field.phononModel.helperText':
+    'Загружается по запросу с Hugging Face; ничего не поставляется вместе с Mika.',
+  'settings.voiceTts.field.phononModel.option.pt': 'Phonon 40M PT — португальский (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.multilingual': 'Phonon 40M Multilingual — EN/FR/DE/ES/PT (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.en': 'Phonon 31M EN — английский (Apache-2.0)',
+  'settings.voiceTts.field.phononVoice.label': 'Голос',
+  'settings.voiceTts.field.phononVoice.option.default': 'По умолчанию (из чекпойнта)',
+  'settings.voiceTts.field.huggingFaceToken.label': 'Токен Hugging Face',
+  'settings.voiceTts.field.huggingFaceToken.helperText':
+    'Обязателен для моделей CC BY-NC. Примите условия на странице модели и вставьте токен с правом чтения.',
+  'settings.voiceTts.panel.phononHint':
+    'Локальный TTS в том же процессе (Rust, без Python). Модель скачивается при первой фразе и кэшируется; затем работает офлайн.',
+  'settings.voiceTts.panel.phononNonCommercial':
+    'Только НЕкоммерческое использование (CC BY-NC 4.0): модель загружается по запросу, никогда не поставляется с Mika и не может использоваться в платных или коммерческих проектах.',
+  'settings.voiceTts.panel.phononApache':
+    'Лицензия Apache-2.0: свободно для коммерческого использования. Загружается по запросу, не поставляется с Mika.',
+  'settings.voiceTts.panel.phononModelPage': 'Открыть страницу модели',
+  'settings.voiceTts.panel.phononOpenPageError': 'Не удалось открыть страницу модели в браузере.',
+  'voice.tts.phonon.emptyText': 'Phonon: пустой текст.',
+  'voice.tts.phonon.modelNotInCatalog': 'Phonon: модели «{{model}}» нет в каталоге.',
+  'voice.tts.phonon.voiceNotInCatalog': 'Phonon: голоса «{{voice}}» нет у этой модели.',
+  'voice.tts.phonon.gated':
+    'Phonon: для модели «{{model}}» требуется принятие условий. Примите условия на {{url}} и укажите токен Hugging Face в настройках голоса.',
+  'voice.tts.phonon.downloadFailed': 'Phonon: не удалось скачать {{file}} из «{{model}}»: {{detail}}',
+  'voice.tts.phonon.digestMismatch': 'Phonon: {{file}} не совпадает с измеренным хешем; загрузка отменена.',
+  'voice.tts.phonon.writeFailed': 'Phonon: не удалось записать {{path}}: {{detail}}',
+  'voice.tts.phonon.loadFailed': 'Phonon: не удалось загрузить модель: {{detail}}',
+  'voice.tts.phonon.synthesisFailed': 'Phonon: синтез не удался: {{detail}}',
+  'voice.tts.phonon.emptyAudio': 'Phonon: вернул пустое аудио.',
 }

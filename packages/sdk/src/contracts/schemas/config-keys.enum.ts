@@ -91,6 +91,7 @@ export enum ConfigKey {
   VoiceVadSilenceMs = 'voice.vadSilenceMs',
   VoiceVadEndpointingEnabled = 'voice.vadEndpointingEnabled',
   VoiceVadIgnoreTyping = 'voice.vadIgnoreTyping',
+  VoiceSmartTurnEnabled = 'voice.smartTurnEnabled',
   VoiceTtsIgnoreBrackets = 'voice.ttsIgnoreBrackets',
   VoiceTtsIgnoreParentheses = 'voice.ttsIgnoreParentheses',
   VoiceTtsIgnoreAsterisks = 'voice.ttsIgnoreAsterisks',

@@ -21,6 +21,7 @@ interface UseSpeechRecognitionOptions {
   vadThreshold?: number
   vadSilenceMs?: number
   vadEndpointingEnabled?: boolean
+  smartTurnEnabled?: boolean
 
   offlineMode?: boolean
   /** Stream partial transcripts to the live-transcript bus while the user speaks. */
@@ -39,6 +40,7 @@ export function useSpeechRecognition({
   vadThreshold,
   vadSilenceMs,
   vadEndpointingEnabled,
+  smartTurnEnabled,
   offlineMode = false,
   livePartials = false,
   onTranscript,
@@ -63,6 +65,7 @@ export function useSpeechRecognition({
     vadThreshold,
     vadSilenceMs,
     vadEndpointingEnabled,
+    smartTurnEnabled,
     offlineMode,
     livePartials,
   })
@@ -73,6 +76,7 @@ export function useSpeechRecognition({
     vadThreshold,
     vadSilenceMs,
     vadEndpointingEnabled,
+    smartTurnEnabled,
     offlineMode,
     livePartials,
   }
@@ -130,6 +134,7 @@ export function useSpeechRecognition({
       vadThreshold: captureVadThreshold,
       vadSilenceMs: captureVadSilenceMs,
       vadEndpointingEnabled: captureVadEndpointingEnabled,
+      smartTurnEnabled: captureSmartTurnEnabled,
       livePartials: capturePartials,
     } = optionsRef.current
     const prefersBrowser = provider === 'browser'
@@ -154,6 +159,7 @@ export function useSpeechRecognition({
           vadThreshold: captureVadThreshold,
           vadSilenceMs: captureVadSilenceMs,
           vadEndpointingEnabled: captureVadEndpointingEnabled,
+          smartTurnEnabled: captureSmartTurnEnabled,
           asrProvider: provider,
           livePartials: capturePartials,
         }) === true

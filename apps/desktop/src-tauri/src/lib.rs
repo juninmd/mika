@@ -131,7 +131,8 @@ pub fn run() {
             bridge::mika_invoke,
             bridge::mika_send,
             bridge::mika_send_pcm,
-            bridge::mika_transcribe_pcm
+            bridge::mika_transcribe_pcm,
+            bridge::mika_smart_turn_pcm
         ])
         .setup(|app| {
             let handle = app.handle().clone();

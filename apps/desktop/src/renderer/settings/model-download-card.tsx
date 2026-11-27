@@ -8,7 +8,7 @@ type State = { phase: 'idle' | 'running' | 'ready' } | { phase: 'error'; message
 type Key = keyof TranslationDict
 
 type Props = {
-  assetId: 'nemotron' | 'local-embedding' | 'vad' | 'whisper'
+  assetId: 'nemotron' | 'parakeet' | 'local-embedding' | 'vad' | 'whisper'
   labels: { hint: Key; ready: Key; download: Key; downloading: Key }
   t: (key: Key) => string
   /** Called after the backend confirmed the files, so a parent can refresh what it shows. */

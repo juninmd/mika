@@ -1785,6 +1785,7 @@ export const frFR: TranslationDict = {
   'settings.voiceStt.field.asrProvider.label': "Fournisseur d'écoute (STT)",
   'settings.voiceStt.field.asrProvider.option.electron': "Whisper local (dans l'application)",
   'settings.voiceStt.field.asrProvider.option.nemotron': 'Nemotron local (recommandé, sans hallucinations)',
+  'settings.voiceStt.field.asrProvider.option.parakeet': 'Parakeet v3 local (multilingue)',
   'settings.voiceStt.field.asrProvider.option.browser': 'Navigateur (Web Speech)',
   'settings.voiceStt.field.asrProvider.option.groq': 'Groq Whisper (ultra rapide)',
   'settings.voiceStt.field.asrProvider.option.openai': 'OpenAI Whisper',
@@ -1796,6 +1797,9 @@ export const frFR: TranslationDict = {
   'settings.voiceStt.field.whisperModel.option.small': 'Small (~250 Mo, un peu plus précis et ~3x plus lent)',
   'settings.voiceStt.field.whisperModel.helperText':
     "Fonctionne dans l'application (ONNX), sans Python. Le modèle est téléchargé lors de la première transcription et mis en cache. Mesuré ici : Base transcrit en ~1/3 du temps de la parole ; Small est un peu plus précis mais prend plus de temps que la parole elle-même.",
+  'settings.voiceStt.field.smartTurnEnabled.label': 'Fin de tour intelligente (Smart Turn)',
+  'settings.voiceStt.field.smartTurnEnabled.helperText':
+    "Avant de terminer votre parole sur une pause, un modèle local (Smart Turn v3, ~8,7 Mo, téléchargé la première fois) vérifie si la phrase est terminée. Si elle semble incomplète, Mika attend jusqu'à 3 s.",
   'settings.voiceStt.field.groqApiKey.label': 'Groq API Key',
   'settings.voiceStt.field.openaiApiKey.label': 'OpenAI API Key',
   'settings.voiceStt.panel.testing': 'Test en cours...',
@@ -1825,6 +1829,12 @@ export const frFR: TranslationDict = {
   'settings.voiceStt.panel.nemotronDownload': 'Télécharger/vérifier le modèle (~790 Mo)',
   'settings.voiceStt.panel.nemotronDownloading': 'Téléchargement du modèle…',
   'settings.voiceStt.panel.nemotronReady': 'Modèle Nemotron prêt',
+  'settings.voiceStt.panel.parakeetHint':
+    'Fonctionne sur votre PC sans coût. Multilingue : détecte la langue toute seule. Au premier usage, téléchargez le modèle.',
+  'settings.voiceStt.panel.parakeetDownload': 'Télécharger/vérifier le modèle (~670 Mo)',
+  'settings.voiceStt.panel.parakeetDownloading': 'Téléchargement du modèle…',
+  'settings.voiceStt.panel.parakeetReady': 'Modèle Parakeet prêt',
+  'settings.voiceStt.panel.parakeetAttribution': 'Parakeet TDT 0.6B v3 © NVIDIA, CC-BY-4.0',
   'settings.voiceStt.panel.whisperDownloadHint':
     'Télécharge et vérifie les fichiers de la taille de Whisper choisie ci-dessus.',
   'settings.voiceStt.providerSection.description':
@@ -2750,8 +2760,10 @@ export const frFR: TranslationDict = {
   'settings.performance.accel.model.whisperEncoder': 'Whisper (encodeur)',
   'settings.performance.accel.model.whisperDecoder': 'Whisper (décodeur)',
   'settings.performance.accel.model.nemotron': 'Nemotron',
+  'settings.performance.accel.model.parakeet': 'Parakeet',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
+  'settings.performance.accel.model.smartTurn': 'Smart Turn',
   'settings.performance.accel.model.e5': 'Embeddings granite',
   'settings.performance.accel.reason.userCpu': 'CPU choisi dans les Paramètres',
   'settings.performance.accel.reason.tinyModel': "petit modèle : l'envoyer au GPU coûte plus que le calculer",
@@ -3221,6 +3233,9 @@ export const frFR: TranslationDict = {
   'settings.stt.provider.nemotron': 'Nemotron local (recommandé, sans hallucinations)',
   'settings.stt.provider.nemotron.desc':
     'NVIDIA Nemotron sur votre PC : transcrit pendant que vous parlez, sans envoyer d’audio.',
+  'settings.stt.provider.parakeet': 'Parakeet v3 (local, multilingue)',
+  'settings.stt.provider.parakeet.desc':
+    'NVIDIA Parakeet sur votre PC : transcrit avec ponctuation et majuscules, détecte la langue toute seule, sans envoyer d’audio.',
   'settings.stt.provider.localWhisper.desc':
     'Whisper (OpenAI) en local ; tailles tiny, base et small, accéléré par GPU.',
   'settings.stt.provider.browser.desc': 'Reconnaissance du moteur web ; dépend du réseau et du service du navigateur.',
@@ -3648,6 +3663,8 @@ export const frFR: TranslationDict = {
   'wizard.assetDownload.nemotronFailed': 'Nemotron : {{file}} : {{detail}}',
   'wizard.assetDownload.embeddingFailed': 'Embedding local : {{file}} : {{detail}}',
   'wizard.assetDownload.nemotronReady': 'Reconnaissance vocale Nemotron prête',
+  'wizard.assetDownload.parakeetFailed': 'Parakeet : {{file}} : {{detail}}',
+  'wizard.assetDownload.parakeetReady': 'Reconnaissance vocale Parakeet prête',
   'wizard.assetDownload.embeddingReady': 'Embedding local prêt',
   'settings.voiceTts.coverage.title': "La voix ne couvre pas la langue de l'interface",
   'settings.voiceTts.coverage.unsupported':
@@ -3694,4 +3711,37 @@ export const frFR: TranslationDict = {
   'shell.tray.pauseSenses': 'Suspendre micro et écran',
   'shell.tray.statusPaused': 'micro et écran suspendus',
   'shell.tray.statusResumed': 'Micro et écran réactivés',
+  'settings.voiceTts.group.phonon': 'Phonon (local)',
+  'settings.voiceTts.field.ttsProvider.option.phonon': 'Phonon',
+  'settings.voiceTts.field.phononModel.label': 'Modèle Phonon',
+  'settings.voiceTts.field.phononModel.helperText':
+    "Téléchargé à la demande depuis Hugging Face ; rien n'est fourni avec Mika.",
+  'settings.voiceTts.field.phononModel.option.pt': 'Phonon 40M PT — portugais (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.multilingual': 'Phonon 40M Multilingue — EN/FR/DE/ES/PT (CC BY-NC 4.0)',
+  'settings.voiceTts.field.phononModel.option.en': 'Phonon 31M EN — anglais (Apache-2.0)',
+  'settings.voiceTts.field.phononVoice.label': 'Voix',
+  'settings.voiceTts.field.phononVoice.option.default': 'Par défaut (du checkpoint)',
+  'settings.voiceTts.field.huggingFaceToken.label': 'Jeton Hugging Face',
+  'settings.voiceTts.field.huggingFaceToken.helperText':
+    'Obligatoire pour les modèles CC BY-NC. Acceptez les conditions sur la page du modèle et collez un jeton avec accès en lecture.',
+  'settings.voiceTts.panel.phononHint':
+    'TTS local, dans le processus (Rust, sans Python). Le modèle est téléchargé à la première phrase et mis en cache ; ensuite il fonctionne hors ligne.',
+  'settings.voiceTts.panel.phononNonCommercial':
+    'Usage NON commercial uniquement (CC BY-NC 4.0) : ce modèle est téléchargé à la demande, jamais livré avec Mika, et ne peut pas servir à des projets payants ou commerciaux.',
+  'settings.voiceTts.panel.phononApache':
+    'Licence Apache-2.0 : usage commercial libre. Téléchargé à la demande, jamais livré avec Mika.',
+  'settings.voiceTts.panel.phononModelPage': 'Ouvrir la page du modèle',
+  'settings.voiceTts.panel.phononOpenPageError': "Impossible d'ouvrir la page du modèle dans le navigateur.",
+  'voice.tts.phonon.emptyText': 'Phonon : texte vide.',
+  'voice.tts.phonon.modelNotInCatalog': "Phonon : le modèle « {{model}} » n'est pas dans le catalogue.",
+  'voice.tts.phonon.voiceNotInCatalog': "Phonon : la voix « {{voice}} » n'existe pas pour ce modèle.",
+  'voice.tts.phonon.gated':
+    'Phonon : le modèle « {{model}} » est soumis à acceptation. Acceptez les conditions sur {{url}} et renseignez un jeton Hugging Face dans les réglages de voix.',
+  'voice.tts.phonon.downloadFailed': 'Phonon : échec du téléchargement de {{file}} depuis « {{model}} » : {{detail}}',
+  'voice.tts.phonon.digestMismatch':
+    'Phonon : {{file}} ne correspond pas au hachage mesuré ; le téléchargement a été écarté.',
+  'voice.tts.phonon.writeFailed': "Phonon : impossible d'écrire {{path}} : {{detail}}",
+  'voice.tts.phonon.loadFailed': 'Phonon : impossible de charger le modèle : {{detail}}',
+  'voice.tts.phonon.synthesisFailed': 'Phonon : la synthèse a échoué : {{detail}}',
+  'voice.tts.phonon.emptyAudio': 'Phonon : audio vide renvoyé.',
 }

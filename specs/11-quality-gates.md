@@ -141,7 +141,7 @@ sempre" — e a pessoa vê o "Testar conexão" girando sem fim. Stream de LLM, s
 `apps/desktop/src-tauri/src/modules/features/privacy/mod.rs`), mantendo o mesmo nome do invariante
 original. **[Medido]** `edge-tts` não existe mais como backend de TTS — nenhum provedor de voz o
 usa (a lista de provedores hoje é `system`/`elevenlabs`/`openai-tts`/`azure-tts`/`google-tts`/
-`piper`/`kokoro`/`supertonic`, ver `config/schemas/voice.rs`). O nome sobrevive só como entrada do
+`piper`/`phonon`/`kokoro`/`supertonic`, ver `config/schemas/voice.rs`). O nome sobrevive só como entrada do
 denylist de executáveis de rede (`network_executables()` em
 `apps/desktop/src-tauri/src/modules/features/desktop/launch.rs`), a MESMA lista que bloqueia
 `curl`/`wget`/`npm` quando o modo offline está ligado — ou seja, se algo tentasse invocar `edge-tts`

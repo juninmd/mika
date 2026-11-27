@@ -1,6 +1,7 @@
 import type { TranslationDict } from '@mika/sdk/i18n'
 import { choiceOption, type ProviderChoice } from '@mika/sdk-ui/settings'
 import {
+  AudioLines,
   AudioWaveform,
   Cloud,
   Cpu,
@@ -17,7 +18,15 @@ import {
 import { type BadgeKind, providerBadges } from '../../src/components/settings/provider-badges'
 import type { Translate } from '../../src/hooks/useI18n'
 
-export type TTSProvider = 'elevenlabs' | 'azure-tts' | 'google-tts' | 'openai-tts' | 'piper' | 'supertonic' | 'system'
+export type TTSProvider =
+  | 'elevenlabs'
+  | 'azure-tts'
+  | 'google-tts'
+  | 'openai-tts'
+  | 'piper'
+  | 'phonon'
+  | 'supertonic'
+  | 'system'
 
 type TKey = keyof TranslationDict
 
@@ -55,6 +64,12 @@ export const PROVIDERS: { id: TTSProvider; name: string; tagKey?: TKey; desc: st
     desc: 'Local, 44 kHz, o mais natural em pt-BR',
   },
   { id: 'piper', name: 'Piper', tagKey: 'settings.voiceTts.voiceTag.local', desc: 'Offline, sem enviar nada' },
+  {
+    id: 'phonon',
+    name: 'Phonon',
+    tagKey: 'settings.voiceTts.voiceTag.local',
+    desc: 'Local em Rust, baixa sob demanda',
+  },
   { id: 'elevenlabs', name: 'ElevenLabs', desc: 'Vozes premium com emoção' },
   { id: 'azure-tts', name: 'Azure Speech', desc: 'Vozes Microsoft cognitivas' },
   { id: 'google-tts', name: 'Google Cloud', desc: 'Vozes Google AI' },
@@ -65,6 +80,7 @@ export const PROVIDERS: { id: TTSProvider; name: string; tagKey?: TKey; desc: st
 const LOOK: Record<TTSProvider, { icon: ProviderChoice['icon']; badges: BadgeKind[] }> = {
   supertonic: { icon: Sparkles, badges: ['recommended', 'local', 'gpu'] },
   piper: { icon: Feather, badges: ['local'] },
+  phonon: { icon: AudioLines, badges: ['local'] },
   elevenlabs: { icon: AudioWaveform, badges: ['cloud', 'apiKey'] },
   'azure-tts': { icon: Cloud, badges: ['cloud', 'apiKey'] },
   'google-tts': { icon: Mic2, badges: ['cloud', 'apiKey'] },
@@ -120,6 +136,49 @@ export function supertonicLanguages(t: Translate) {
 
 export function supertonicVoices(t: Translate) {
   return voiceOptions(SUPERTONIC_VOICE_DATA, t)
+}
+
+// --- Phonon (ptts, TTS local em Rust puro) ------------------------------------------------------
+// A lista é FECHADA e espelha `modules/voice/tts/providers/phonon/catalog.rs`: só estes três ids
+// baixam. O rótulo carrega idioma e licença porque a diferença importa para uso comercial.
+export type PhononModel = 'phonon-40m-pt' | 'phonon-40m-multilingual' | 'phonon-31m-en'
+
+export const PHONON_MODELS: readonly PhononModel[] = ['phonon-40m-pt', 'phonon-40m-multilingual', 'phonon-31m-en']
+const PHONON_NON_COMMERCIAL: readonly PhononModel[] = ['phonon-40m-pt', 'phonon-40m-multilingual']
+const PHONON_MODEL_LANGUAGES: Record<PhononModel, readonly string[]> = {
+  'phonon-40m-pt': ['pt'],
+  'phonon-40m-multilingual': ['en', 'fr', 'de', 'es', 'pt'],
+  'phonon-31m-en': ['en'],
+}
+const PHONON_MODEL_LABELS: Record<PhononModel, TKey> = {
+  'phonon-40m-pt': 'settings.voiceTts.field.phononModel.option.pt',
+  'phonon-40m-multilingual': 'settings.voiceTts.field.phononModel.option.multilingual',
+  'phonon-31m-en': 'settings.voiceTts.field.phononModel.option.en',
+}
+
+/** Modelo CC BY-NC: a UI deve avisar que o uso é NÃO comercial. */
+export function phononIsNonCommercial(model: string): boolean {
+  return PHONON_NON_COMMERCIAL.includes(model as PhononModel)
+}
+
+/** Idiomas que o checkpoint escolhido fala (`pt` para o 40M PT, etc.). */
+export function phononModelLanguages(model: string): readonly string[] {
+  return PHONON_MODEL_LANGUAGES[model as PhononModel] ?? PHONON_MODEL_LANGUAGES['phonon-40m-pt']
+}
+
+export function phononModels(t: Translate) {
+  return PHONON_MODELS.map((model) => choiceOption(t(PHONON_MODEL_LABELS[model]), model))
+}
+
+/** Todo checkpoint publicado traz `default-voice.safetensors`; o `ptts` o registra como `default`. */
+export function phononVoices(t: Translate) {
+  return [choiceOption(t('settings.voiceTts.field.phononVoice.option.default'), 'default')]
+}
+
+/** Base dos links de modelo; o id do repo é anexado. Host na allowlist de `open-external`. */
+const PHONON_MODEL_URL = 'https://huggingface.co/gradium'
+export function phononModelPage(model: string): string {
+  return `${PHONON_MODEL_URL}/${model}`
 }
 
 /** Nomes de voz da documentação oficial da Azure (Neural) — o valor é o identificador que a API recebe. */

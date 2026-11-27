@@ -76,6 +76,7 @@ export function useAppShell() {
     vadThreshold,
     vadSilenceMs,
     vadEndpointingEnabled,
+    smartTurnEnabled,
     vadEngine,
     vadIgnoreTyping,
     offlineMode,
@@ -121,6 +122,7 @@ export function useAppShell() {
     vadThreshold,
     vadSilenceMs,
     vadEndpointingEnabled,
+    smartTurnEnabled,
     offlineMode,
     micEnabled,
   }

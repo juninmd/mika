@@ -13,13 +13,15 @@ export function TtsLanguageNotice({
   locale,
   provider,
   piperVoice,
+  phononModel,
 }: {
   t: Translate
   locale: string
   provider: TTSProvider
   piperVoice: string
+  phononModel: string
 }) {
-  const key = ttsCoverageNotice(provider, locale, piperVoice)
+  const key = ttsCoverageNotice(provider, locale, piperVoice, phononModel)
   if (!key) return null
   const providerName = PROVIDERS.find((p) => p.id === provider)?.name ?? provider
   return (

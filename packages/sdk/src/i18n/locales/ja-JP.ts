@@ -1699,6 +1699,7 @@ export const jaJP: TranslationDict = {
   'settings.voiceStt.field.asrProvider.label': '聞き取りプロバイダー(STT)',
   'settings.voiceStt.field.asrProvider.option.electron': 'ローカル Whisper(アプリ内)',
   'settings.voiceStt.field.asrProvider.option.nemotron': 'ローカル Nemotron（推奨・幻聴なし）',
+  'settings.voiceStt.field.asrProvider.option.parakeet': 'ローカル Parakeet v3（多言語）',
   'settings.voiceStt.field.asrProvider.option.browser': 'ブラウザ(Web Speech)',
   'settings.voiceStt.field.asrProvider.option.groq': 'Groq Whisper(超高速)',
   'settings.voiceStt.field.asrProvider.option.openai': 'OpenAI Whisper',
@@ -1710,6 +1711,9 @@ export const jaJP: TranslationDict = {
   'settings.voiceStt.field.whisperModel.option.small': 'Small(約250MB、やや高精度で約3倍遅い)',
   'settings.voiceStt.field.whisperModel.helperText':
     'アプリ内(ONNX)で動作し、Python は不要です。モデルは最初の文字起こし時にダウンロードされキャッシュされます。実測:Base は発話時間の約1/3で文字起こしし、Small はやや精度が高いものの発話自体より時間がかかります。',
+  'settings.voiceStt.field.smartTurnEnabled.label': 'スマートな発話終了（Smart Turn）',
+  'settings.voiceStt.field.smartTurnEnabled.helperText':
+    '発話を無音で終える前に、ローカルモデル（Smart Turn v3、約8.7 MB、初回にダウンロード）が文が終わったか確認します。未完成に聞こえる場合、Mika は最大3秒待ちます。',
   'settings.voiceStt.field.groqApiKey.label': 'Groq API Key',
   'settings.voiceStt.field.openaiApiKey.label': 'OpenAI API Key',
   'settings.voiceStt.panel.testing': 'テスト中...',
@@ -1739,6 +1743,12 @@ export const jaJP: TranslationDict = {
   'settings.voiceStt.panel.nemotronDownload': 'モデルをダウンロード/確認（約790 MB）',
   'settings.voiceStt.panel.nemotronDownloading': 'モデルをダウンロード中…',
   'settings.voiceStt.panel.nemotronReady': 'Nemotron モデルの準備完了',
+  'settings.voiceStt.panel.parakeetHint':
+    'PC 上で無料で動作します。多言語対応で、言語は自動検出します。初回はモデルをダウンロードしてください。',
+  'settings.voiceStt.panel.parakeetDownload': 'モデルをダウンロード/確認（約670 MB）',
+  'settings.voiceStt.panel.parakeetDownloading': 'モデルをダウンロード中…',
+  'settings.voiceStt.panel.parakeetReady': 'Parakeet モデルの準備ができました',
+  'settings.voiceStt.panel.parakeetAttribution': 'Parakeet TDT 0.6B v3 © NVIDIA, CC-BY-4.0',
   'settings.voiceStt.panel.whisperDownloadHint': '上で選んだ Whisper サイズのファイルをダウンロードして検証します。',
   'settings.voiceStt.providerSection.description': '声をテキストに変換するエンジン。カードを選ぶと詳細が表示されます。',
   'settings.voiceStt.panel.nemotronHint': 'PC 上で無料で動作します。初回はモデルをダウンロードしてください。',
@@ -2627,8 +2637,10 @@ export const jaJP: TranslationDict = {
   'settings.performance.accel.model.whisperEncoder': 'Whisper（エンコーダー）',
   'settings.performance.accel.model.whisperDecoder': 'Whisper（デコーダー）',
   'settings.performance.accel.model.nemotron': 'Nemotron',
+  'settings.performance.accel.model.parakeet': 'Parakeet',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
+  'settings.performance.accel.model.smartTurn': 'Smart Turn',
   'settings.performance.accel.model.e5': 'granite 埋め込み',
   'settings.performance.accel.reason.userCpu': '設定で CPU を選択',
   'settings.performance.accel.reason.tinyModel': '極小モデル：GPU に送るコストが計算より大きい',
@@ -3088,6 +3100,9 @@ export const jaJP: TranslationDict = {
   'settings.stt.provider.localWhisper': 'ローカルWhisper（アプリ内蔵）',
   'settings.stt.provider.nemotron': 'ローカル Nemotron（推奨・幻聴なし）',
   'settings.stt.provider.nemotron.desc': 'PC 上の NVIDIA Nemotron：話しながら文字起こし、音声は外部に送信しません。',
+  'settings.stt.provider.parakeet': 'Parakeet v3（ローカル・多言語）',
+  'settings.stt.provider.parakeet.desc':
+    'PC 上の NVIDIA Parakeet：句読点と大文字小文字を付けて文字起こしし、言語を自動検出します。音声は外部に送信しません。',
   'settings.stt.provider.localWhisper.desc': 'ローカルで動く Whisper（OpenAI）。tiny / base / small、GPU 高速化対応。',
   'settings.stt.provider.browser.desc': 'Web エンジンの認識。ネットワークとブラウザーのサービスに依存します。',
   'settings.stt.provider.groqWhisper.desc': 'Groq クラウドの Whisper large-v3：非常に高速、キーが必要。',
@@ -3501,6 +3516,8 @@ export const jaJP: TranslationDict = {
   'wizard.assetDownload.nemotronFailed': 'Nemotron: {{file}}: {{detail}}',
   'wizard.assetDownload.embeddingFailed': 'ローカル埋め込み: {{file}}: {{detail}}',
   'wizard.assetDownload.nemotronReady': 'Nemotron 音声認識の準備ができました',
+  'wizard.assetDownload.parakeetFailed': 'Parakeet：{{file}}：{{detail}}',
+  'wizard.assetDownload.parakeetReady': 'Parakeet 音声認識の準備ができました',
   'wizard.assetDownload.embeddingReady': 'ローカル埋め込みの準備ができました',
   'settings.voiceTts.coverage.title': '音声がインターフェース言語に対応していません',
   'settings.voiceTts.coverage.unsupported':
@@ -3543,4 +3560,37 @@ export const jaJP: TranslationDict = {
   'shell.tray.pauseSenses': 'マイクと画面を一時停止',
   'shell.tray.statusPaused': 'マイクと画面は一時停止中',
   'shell.tray.statusResumed': 'マイクと画面を再開しました',
+  'settings.voiceTts.group.phonon': 'Phonon（ローカル）',
+  'settings.voiceTts.field.ttsProvider.option.phonon': 'Phonon',
+  'settings.voiceTts.field.phononModel.label': 'Phonon モデル',
+  'settings.voiceTts.field.phononModel.helperText':
+    'Hugging Face からオンデマンドでダウンロードします。Mika には同梱されません。',
+  'settings.voiceTts.field.phononModel.option.pt': 'Phonon 40M PT — ポルトガル語（CC BY-NC 4.0）',
+  'settings.voiceTts.field.phononModel.option.multilingual': 'Phonon 40M 多言語 — EN/FR/DE/ES/PT（CC BY-NC 4.0）',
+  'settings.voiceTts.field.phononModel.option.en': 'Phonon 31M EN — 英語（Apache-2.0）',
+  'settings.voiceTts.field.phononVoice.label': '声',
+  'settings.voiceTts.field.phononVoice.option.default': 'デフォルト（チェックポイント内）',
+  'settings.voiceTts.field.huggingFaceToken.label': 'Hugging Face トークン',
+  'settings.voiceTts.field.huggingFaceToken.helperText':
+    'CC BY-NC モデルには必須です。モデルページで利用条件に同意し、読み取り権限のあるトークンを貼り付けてください。',
+  'settings.voiceTts.panel.phononHint':
+    'ローカル（同一プロセス内）の TTS です（Rust、Python 不使用）。初回の発話時にモデルをダウンロードしてキャッシュし、以後はオフラインで動作します。',
+  'settings.voiceTts.panel.phononNonCommercial':
+    '非営利利用のみ（CC BY-NC 4.0）。このモデルはオンデマンドでダウンロードされ、Mika には同梱されず、有償・商用プロジェクトでは使用できません。',
+  'settings.voiceTts.panel.phononApache':
+    'Apache-2.0 ライセンス: 商用利用可。オンデマンドでダウンロードされ、Mika には同梱されません。',
+  'settings.voiceTts.panel.phononModelPage': 'モデルページを開く',
+  'settings.voiceTts.panel.phononOpenPageError': 'ブラウザでモデルページを開けませんでした。',
+  'voice.tts.phonon.emptyText': 'Phonon: テキストが空です。',
+  'voice.tts.phonon.modelNotInCatalog': 'Phonon: モデル「{{model}}」はカタログにありません。',
+  'voice.tts.phonon.voiceNotInCatalog': 'Phonon: このモデルに声「{{voice}}」はありません。',
+  'voice.tts.phonon.gated':
+    'Phonon: モデル「{{model}}」は承認が必要です。{{url}} で条件に同意し、音声設定で Hugging Face トークンを入力してください。',
+  'voice.tts.phonon.downloadFailed': 'Phonon: 「{{model}}」から {{file}} をダウンロードできませんでした: {{detail}}',
+  'voice.tts.phonon.digestMismatch':
+    'Phonon: {{file}} が計測済みハッシュと一致しないため、ダウンロードを破棄しました。',
+  'voice.tts.phonon.writeFailed': 'Phonon: {{path}} に書き込めませんでした: {{detail}}',
+  'voice.tts.phonon.loadFailed': 'Phonon: モデルを読み込めませんでした: {{detail}}',
+  'voice.tts.phonon.synthesisFailed': 'Phonon: 合成に失敗しました: {{detail}}',
+  'voice.tts.phonon.emptyAudio': 'Phonon: 空の音声を返しました。',
 }

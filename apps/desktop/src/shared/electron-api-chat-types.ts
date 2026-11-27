@@ -76,6 +76,17 @@ export type ChatRuntimeApi = {
     language?: string
   }) => Promise<{ success: boolean; data?: { text: string }; error?: string }>
   /**
+   * Fim de turno semântico (Smart Turn v3.2, opt-in `voice.smartTurnEnabled`): recebe o mesmo PCM16
+   * mono 16 kHz do transcribe e diz se a frase terminou. `probability` é `null` nos fallbacks; o
+   * chamador deve tratar `complete: true` como "pode encerrar" e `false` como "continue ouvindo".
+   */
+  classifyTurnEnd: (payload: { audio: Uint8Array; mimeType?: string }) => Promise<{
+    complete: boolean
+    probability: number | null
+    latencyMs: number
+    reason: 'probability' | 'shortAudio' | 'modelUnavailable' | 'classifierError' | 'disabled'
+  }>
+  /**
    * Silence-by-voice fast path (specs/08-gamer-companion.md, "Silêncio é feature"): checked BEFORE
    * a final transcript is sent as a chat turn. A matched command mutes/unmutes instantly on the
    * Rust side (same `MuteSpeech` bus event the shortcut and the `voice` tool publish) and the

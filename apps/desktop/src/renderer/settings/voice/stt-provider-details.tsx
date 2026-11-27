@@ -65,6 +65,23 @@ export function SttProviderDetails({
       />
     )
   }
+  if (providerId === 'parakeet') {
+    return (
+      <div className="grid gap-2">
+        <ModelDownloadCard
+          assetId="parakeet"
+          labels={{
+            hint: 'settings.voiceStt.panel.parakeetHint',
+            ready: 'settings.voiceStt.panel.parakeetReady',
+            download: 'settings.voiceStt.panel.parakeetDownload',
+            downloading: 'settings.voiceStt.panel.parakeetDownloading',
+          }}
+          t={t}
+        />
+        <p className="text-caption text-text-muted">{t('settings.voiceStt.panel.parakeetAttribution')}</p>
+      </div>
+    )
+  }
   if (providerId === 'browser') return <BrowserWarning t={t} selectAsrProvider={selectAsrProvider} />
   if (providerId === 'electron') {
     return (

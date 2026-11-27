@@ -16,6 +16,7 @@ type SttSettingsCardsProps = {
   vadSpeechThreshold: number
   vadEndpointingEnabled: boolean
   vadSilenceMs: number
+  smartTurnEnabled: boolean
   inputModeDraft: 'ptt' | 'continuous'
   setInputModeDraft: (value: 'ptt' | 'continuous') => void
   asrProviderDraft: string
@@ -36,6 +37,7 @@ export function SttSettingsCards({
   vadSpeechThreshold,
   vadEndpointingEnabled,
   vadSilenceMs,
+  smartTurnEnabled,
   inputModeDraft,
   setInputModeDraft,
   asrProviderDraft,
@@ -129,6 +131,7 @@ export function SttSettingsCards({
         vadSpeechThreshold={vadSpeechThreshold}
         vadEndpointingEnabled={vadEndpointingEnabled}
         vadSilenceMs={vadSilenceMs}
+        smartTurnEnabled={smartTurnEnabled}
         vadIgnoreTyping={configBool(cfg, 'voice.vadIgnoreTyping', true)}
         browserStt={browserStt}
         numSave={numSave}

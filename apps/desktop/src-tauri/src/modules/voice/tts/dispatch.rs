@@ -1,9 +1,10 @@
-//! Porte de `apps/desktop/src/main/services/voice/tts/tts-provider-dispatch.ts`. Supertonic, Piper
-//! e os 4 provedores remotos (ElevenLabs, OpenAI, Azure, Google) têm gerador real; Kokoro e
+//! Porte de `apps/desktop/src/main/services/voice/tts/tts-provider-dispatch.ts`. Supertonic, Piper,
+//! Phonon e os 4 provedores remotos (ElevenLabs, OpenAI, Azure, Google) têm gerador real; Kokoro e
 //! `system` são casos especiais, cada um por um motivo verificado, não por falta de tempo:
 //!
 //! | Provedor | Tratamento | Por quê |
 //! |---|---|---|
+//! | `phonon` | gerador real — `providers/phonon/` | TTS neural LOCAL em Rust puro (`ptts` 0.7.1, sem Python/PyTorch). Checkpoint do Hugging Face sob demanda, revisão fixa e hash conferido; os 40m são CC BY-NC (token + aceite dos termos), o 31m-en é Apache-2.0. |
 //! | Kokoro | CORTE NOMEADO — `Err` | fonemização depende de `espeak-ng` (pacote npm `espeak-ng`, WASM via Emscripten). `Cargo.toml` já documenta a decisão: `espeakng` (a única rota nativa) passa por `bindgen`/`clang-sys` e quebra o build da árvore inteira sem LLVM no ambiente — "quem for portar o TTS local decide entre exigir LLVM ou outro caminho" (comentário no `[dependencies]`). Nenhuma outra rota Rust verificada para IPA fiel ao espeak-ng nesta rodada. |
 //! | `system` | sucesso silencioso — `Ok(None)` | porte fiel do TS (`factory.ts`: `// 'system' or unknown: no runtime audio generation`, devolve `null`). Não é um corte: é a escolha do usuário de não ter voz nenhuma (`TTSProviderPanel.tsx`: "Sistema — Não gera áudio"). `Err` aqui faria `speak_chunk` (`speaker/chunk.rs`) logar um erro por FRASE para um usuário que pediu exatamente isto. |
 //!
@@ -24,6 +25,7 @@
 use crate::config::store::ConfigStore;
 use crate::events::{bus, EventKey};
 use crate::modules::voice::tts::abort_registry::CancelHandle;
+use crate::modules::voice::tts::providers::phonon::{self, PhononOptions};
 use crate::modules::voice::tts::providers::piper::{self, PiperOptions};
 use crate::modules::voice::tts::providers::remote::{generate_azure, generate_elevenlabs, generate_google, generate_openai};
 use crate::modules::voice::tts::providers::supertonic::{self, SupertonicOptions};
@@ -149,6 +151,15 @@ fn piper_options(state: &TtsState, cache_dir: &std::path::Path) -> PiperOptions 
     }
 }
 
+fn phonon_options(state: &TtsState, cache_dir: &std::path::Path) -> PhononOptions {
+    PhononOptions {
+        model: state.phonon_model.clone(),
+        voice: state.phonon_voice.clone(),
+        language: state.supertonic_language.clone(),
+        cache_dir: cache_dir.to_path_buf(),
+    }
+}
+
 /// Porte de `generateWithProvider`. `store` alcança o chokepoint de privacidade de rede
 /// (`crate::modules::privacy::assert_network_allowed`, mesmo ponto único que `createLoggedFetch`
 /// é do lado TS) antes de qualquer download de modelo/voz — ver `providers/supertonic/assets.rs`
@@ -173,6 +184,10 @@ pub async fn generate_with_provider(
         }
         "piper" => {
             let audio = piper::generate(text, &piper_options(state, cache_dir), store, cancel).await?;
+            Ok(Some(GeneratedAudio { audio, mime_type: "audio/wav" }))
+        }
+        "phonon" => {
+            let audio = phonon::generate(text, &phonon_options(state, cache_dir), store, cancel).await?;
             Ok(Some(GeneratedAudio { audio, mime_type: "audio/wav" }))
         }
         "elevenlabs" => generate_elevenlabs_with_fallback(state, text, cache_dir, store, cancel).await,
@@ -310,6 +325,20 @@ mod tests {
         let err = generate_with_provider(&state, "oi", std::path::Path::new("."), &store, &cancel()).await.unwrap_err();
         assert!(!err.contains("ainda não foi portado"), "piper ainda cai no branch de corte nomeado: {err}");
         assert!(err.contains("caminho configurado não existe"), "erro não é o do piper de verdade: {err}");
+    }
+
+    /// `phonon` é roteado ao gerador REAL (não ao branch de provedor desconhecido/cortado). Modelo
+    /// fora do catálogo falha no catálogo, antes de qualquer rede ou download.
+    #[tokio::test]
+    async fn phonon_reaches_its_real_generator_instead_of_the_cut_branch() {
+        let (store, _dir) = store();
+        let mut state = TtsState::default();
+        state.provider = "phonon".into();
+        state.phonon_model = "phonon-inventado".into();
+        let err = generate_with_provider(&state, "oi", std::path::Path::new("."), &store, &cancel()).await.unwrap_err();
+        assert!(!err.contains("desconhecido"), "phonon caiu no branch de provedor desconhecido: {err}");
+        assert!(!err.contains("ainda não foi portado"), "phonon caiu no branch de corte: {err}");
+        assert!(err.contains("phonon-inventado") && err.contains("Phonon"), "erro não é o do catálogo Phonon: {err}");
     }
 
     // --- idioma que o Supertonic não fala -------------------------------------------------------

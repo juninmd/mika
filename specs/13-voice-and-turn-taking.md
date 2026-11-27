@@ -27,6 +27,12 @@ e confirmado em log de produção); Whisper como alternativa local está preso n
 ~5,5% WER no FLEURS, atrás de Whisper large-v3 ~3,65% e Canary-1B-v2 ~4,39% — números do próprio
 fabricante, não medidos aqui).
 
+**SHOULD**: oferecer Parakeet TDT 0.6B v3 como alternativa local **opt-in** (id `parakeet`), baixada
+sob demanda (~670 MB, nunca no instalador). O motivo é qualidade: melhor WER multilíngue, pontuação e
+caixa preservadas, e detecção automática do idioma (o `asrLanguage` é ignorado nesse motor). Mantém
+o contrato PCM16 mono 16 kHz e o mesmo descarregamento ocioso dos outros modelos. Licença CC-BY-4.0,
+com atribuição obrigatória a NVIDIA e à conversão ONNX de istupakov.
+
 **MUST**: não existe pontuação de confiança do STT hoje em nenhum dos dois motores nem na nuvem —
 `is_implausible_transcript` é heurística (densidade de caracteres, frases-clichê), não confiança
 real do modelo. **SHOULD**: expor a confiança quando o motor a fornecer (Nemotron RNNT expõe score
@@ -36,6 +42,27 @@ de joiner) e usar como sinal adicional, não só a heurística.
 
 **MUST**: o backend aceita exclusivamente PCM16 mono 16 kHz. Decodificação de qualquer outro formato
 de áudio é responsabilidade do renderer, nunca do Rust.
+
+## Vozes locais de TTS
+
+**MUST**: a voz local padrão é o Supertonic 3, com Piper como alternativa por subprocesso e Phonon
+(`ptts`, Rust puro, in-process) como alternativa neural adicional. Os três são locais de verdade:
+nada do texto falado sai da máquina quando um deles está ativo.
+
+**MUST**: peso de modelo local é baixado SOB DEMANDA, de revisão fixa e com integridade conferida —
+nunca embarcado no instalador nem no build Steam. O check de licença e o `LICENSE-ASSETS.md` registram
+cada modelo e sua licença.
+
+**MUST** (Phonon): os modelos `phonon-40m-pt` e `phonon-40m-multilingual` são CC BY-NC 4.0 — uso
+**NÃO comercial** — e vivem atrás do gate do Hugging Face. A UI avisa a restrição, explica que o
+modelo é baixado sob demanda e nunca distribuído, e pede um token em `apiKeys.huggingFace` (cifrado
+como qualquer credencial). 401/403 viram erro nomeado que manda aceitar os termos na página do
+modelo — silêncio, áudio falso ou queda para outro provedor sem aviso são proibidos.
+`phonon-31m-en` é Apache-2.0 e não pede token.
+
+**MUST**: o seletor de modelo/voz de um provedor local só oferece o que o catálogo Rust daquele
+provedor realmente baixa e consegue falar. O aviso de idioma da aba de voz acompanha o modelo
+escolhido, não só o provedor.
 
 ## Pré-roll (não perder o começo da fala)
 
@@ -50,33 +77,52 @@ começo da frase não seja cortado pela latência de detecção de voz.
 
 ## Fim de turno (end-of-turn)
 
-**Estado em 2026-09-26**: fim de turno é puramente acústico e hoje tem **dois** mecanismos
-independentes, e é fácil confundir um pelo outro:
+**Estado em 2026-11-26**: a escuta normal tem um fim de turno **híbrido, opt-in**: o VAD continua
+sendo o piso acústico e o Smart Turn v3.2 decide se a pausa é o fim da frase. O barge-in segue com o
+próprio detector, independente:
 
-1. **Escuta normal** — `SILENCE_HANGOVER_MS`, uma constante hardcoded de **1200ms**
-   (`apps/desktop/src/renderer/src/hooks/speech-transcribe.ts:43`), consumida por
-   `useSpeechRecognition.media.ts:174`. Silêncio de amplitude por esse tanto encerra a utterance e
-   dispara `mika:voice-transcribe`.
-2. **Barge-in / interrupção** — `InterruptionDetector::check_silence_endpoint`
-   (`apps/desktop/src-tauri/src/modules/voice/interruption_detector.rs`), só ativo quando `self.speaking`
-   é verdadeiro (Mika está falando), com `silence_ms` configurável (default 1500ms,
-   `voice.vadSilenceMs`).
+1. **Escuta normal** — `SILENCE_HANGOVER_MS` (default `1200ms`,
+   `apps/desktop/src/renderer/src/hooks/speech-transcribe.ts:66`, alimentado por
+   `voice.vadSilenceMs`), consumido por `useSpeechRecognition.media.ts`. Com
+   `voice.smartTurnEnabled` **desligado** (default), o comportamento é exatamente o antigo: silêncio
+   por `vadSilenceMs` encerra a utterance e dispara `mika:voice-transcribe`.
+2. **Barge-in / interrupção** — `InterruptionDetector::check_silence_endpoint` (Rust), só ativo
+   quando `self.speaking` é verdadeiro, com `silence_ms` configurável (`voice.vadSilenceMs`).
+
+**Implementado (opt-in, 2026-11-26) — fim de turno semântico**: com `voice.smartTurnEnabled` ligado,
+quando o silêncio atinge o hangover o renderer NÃO encerra direto. Ele envia os últimos 8 s de PCM16
+mono 16 kHz (`256000` bytes, `lastSmartTurnWindow`) para `voice:smart-turn`
+(`modules/voice/smart_turn.rs` → `modules/inference/smart_turn.rs`, Smart Turn v3.2, BSD-2-Clause,
+~8,7 MB baixado e verificado por SHA-256 no primeiro uso). A decisão pura mora em
+`apps/desktop/src/renderer/src/hooks/speech-end-of-turn.ts`:
+
+- `complete = true` → encerra a utterance;
+- `complete = false` → continua escutando; a pausa só encerra no teto
+  `max(3000ms, vadSilenceMs)` (`SMART_TURN_MAX_SILENCE_MS`);
+- erro/timeout de `1500ms` ou modelo ausente → encerra pelo VAD (fallback; nunca prende o usuário);
+- voz volta depois da checagem → o resultado é descartado (`voiceAt` muda) e a próxima pausa faz uma
+  nova checagem, uma por pausa;
+- sem PCM capturado (tap do AudioWorklet indisponível) → comportamento puramente acústico antigo;
+- o teto de `MAX_UTTERANCE_MS` (45 s) continua valendo.
+
+O toggle fica em Configurações > Voz > Escuta, no card de calibração
+(`renderer/settings/voice/mic-calibration-card.tsx`), e é desabilitado quando o fim por silêncio
+está desligado ou o STT é do navegador — a mesma regra do slider de silêncio.
+
+Provas: `apps/desktop/src/renderer/src/hooks/__tests__/speech-end-of-turn.test.ts` (completo, incompleto, erro, voz retomada,
+toggle desligado, teto de 3 s e `MAX_UTTERANCE_MS`, corte dos últimos 8 s) e
+`e2e/specs/smart-turn-settings.spec.ts` (toggle desligado por padrão, liga, persiste
+`voice.smartTurnEnabled=true` e grava PNG + JSON).
 
 **MUST**: todo controle de UI que promete mudar o comportamento de escuta muda o comportamento de
 escuta.
 
 > **Por quê:** "Duração de Silêncio para Finalizar" (`voice.vadSilenceMs`/`voice.vadEndpointingEnabled`,
-> `apps/desktop/src-tauri/src/config/schemas/voice.rs:99`) só alimenta o mecanismo 2 (barge-in), que só
+> `apps/desktop/src-tauri/src/config/schemas/voice.rs:99`) só alimentava o mecanismo 2 (barge-in), que só
 > roda enquanto Mika fala. Para a escuta normal — o caso comum, frase do usuário sem Mika estar
-> falando — o corte é sempre o hardcoded 1200ms do mecanismo 1, e o controle na tela não tem efeito
+> falando — o corte era sempre o hardcoded 1200ms do mecanismo 1, e o controle na tela não tinha efeito
 > nenhum sobre ele. Mesma classe de defeito do seletor de Whisper acima: controle vivo na tela,
-> morto no runtime.
-
-**SHOULD (meta)**: fim de turno híbrido — o VAD acústico continua como piso de segurança (nunca
-espera para sempre), mas um classificador leve de fim-de-frase semântico adia o corte quando a
-frase parece incompleta (pergunta em aberto, conjunção pendente). Referência concreta:
-`pipecat-ai/smart-turn-v3` — modelo ONNX de 8M parâmetros sobre encoder Whisper-Tiny, BSD-2-Clause,
-~12ms de inferência em CPU, com português listado — não integrado hoje.
+> morto no runtime. Hoje o mesmo `vadSilenceMs` alimenta o hangover da escuta normal.
 
 ## Barge-in
 

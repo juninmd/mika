@@ -196,6 +196,7 @@ export interface WizardCopy {
     vadDetail: string
     sttLabel: string
     sttDetail: string
+    sttParakeetDetail: string
     ttsLabel: string
     ttsSupertonic: string
     ttsCloud: string

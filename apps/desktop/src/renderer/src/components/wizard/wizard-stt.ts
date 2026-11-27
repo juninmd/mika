@@ -3,7 +3,14 @@ import type { SttId } from './wizard-data'
 /** Valores canônicos de `voice.asrProvider` (`config/schemas/voice.rs::stt_fields`) que o wizard
  *  escolhe. A escuta ligar ou não é do toggle de microfone do passo de privacidade — aqui o ON
  *  é só "QUEM escuta". */
-export const STT_PROVIDER_IDS: readonly SttId[] = ['nemotron', 'electron', 'browser', 'groq-whisper', 'openai-whisper']
+export const STT_PROVIDER_IDS: readonly SttId[] = [
+  'nemotron',
+  'parakeet',
+  'electron',
+  'browser',
+  'groq-whisper',
+  'openai-whisper',
+]
 
 export type SttSelection = SttId | null
 
