@@ -9,7 +9,7 @@ atribuição dessas licenças. Nada aqui concede direitos sobre o Mika em si —
 Arquivo gerado por `scripts/generators/third-party-notices.mts` (`pnpm notices:gen`). Não edite à
 mão: a próxima geração apaga a edição.
 
-<!-- mika-notices-input-sha256: 08b12bf1841e6ab2270617750fb5d365f9f1e671a025d11231d544aacb1a082e -->
+<!-- mika-notices-input-sha256: e33ea529497a2d8b67ba05542c7bfee23362f456977258f36c9ef9e834904a1b -->
 
 ## 1. Assets, modelos e runtimes
 
@@ -1102,7 +1102,7 @@ Usados sem modificação e vinculados como bibliotecas. O código-fonte original
 | @fontsource/space-grotesk | 5.3.0 | OFL-1.1 |
 | @iconify/types | 2.0.0 | MIT |
 | @iconify/utils | 3.1.7 | MIT |
-| @juninmd/sonido | 2.2.1 | MIT |
+| @juninmd/sonido | 2.2.2 | MIT |
 | @mermaid-js/parser | 2.0.1 | MIT |
 | @nodelib/fs.scandir | 2.1.5 | MIT |
 | @nodelib/fs.stat | 2.0.5 | MIT |
@@ -1774,7 +1774,7 @@ SOFTWARE.
 
 ### Texto 8
 
-Aplica-se a: @juninmd/sonido 2.2.1
+Aplica-se a: @juninmd/sonido 2.2.2
 
 ```text
 MIT License

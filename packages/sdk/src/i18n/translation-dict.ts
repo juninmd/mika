@@ -160,7 +160,6 @@ export type TranslationDict = {
   'sdkUi.section.collapse': string
   'sdkUi.confirmButton.confirm': string
   'sdkUi.confirmButton.cancel': string
-  'sdkUi.confirmButton.confirmationPrefix': string
   'sdkUi.auroraField.saved': string
   'sdkUi.auroraField.modifiedUnsaved': string
   'sdkUi.auroraField.hidePassword': string

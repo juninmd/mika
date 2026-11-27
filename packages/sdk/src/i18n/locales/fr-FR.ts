@@ -142,7 +142,6 @@ export const frFR: TranslationDict = {
   'sdkUi.section.collapse': 'Réduire {{name}}',
   'sdkUi.confirmButton.confirm': 'Confirmer',
   'sdkUi.confirmButton.cancel': 'Annuler',
-  'sdkUi.confirmButton.confirmationPrefix': 'Confirmation',
   'sdkUi.auroraField.saved': 'Enregistré',
   'sdkUi.auroraField.modifiedUnsaved': 'Modifié, non enregistré',
   'sdkUi.auroraField.hidePassword': 'Masquer le mot de passe',

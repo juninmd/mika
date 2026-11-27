@@ -140,7 +140,6 @@ export const koKR: TranslationDict = {
   'sdkUi.section.collapse': '{{name}} 접기',
   'sdkUi.confirmButton.confirm': '확인',
   'sdkUi.confirmButton.cancel': '취소',
-  'sdkUi.confirmButton.confirmationPrefix': '확인',
   'sdkUi.auroraField.saved': '저장됨',
   'sdkUi.auroraField.modifiedUnsaved': '수정됨, 저장 안 됨',
   'sdkUi.auroraField.hidePassword': '비밀번호 숨기기',

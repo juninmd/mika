@@ -141,7 +141,6 @@ export const itIT: TranslationDict = {
   'sdkUi.section.collapse': 'Comprimi {{name}}',
   'sdkUi.confirmButton.confirm': 'Conferma',
   'sdkUi.confirmButton.cancel': 'Annulla',
-  'sdkUi.confirmButton.confirmationPrefix': 'Conferma',
   'sdkUi.auroraField.saved': 'Salvato',
   'sdkUi.auroraField.modifiedUnsaved': 'Modificato, non salvato',
   'sdkUi.auroraField.hidePassword': 'Nascondi password',
