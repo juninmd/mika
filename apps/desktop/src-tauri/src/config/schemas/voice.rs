@@ -477,13 +477,13 @@ fn stt_fields() -> Vec<FieldSchema> {
                     },
                 ]),
         ),
-        // AMBÍGUO: o enum Zod aceita 5 variantes (inclui `local-whisper`), mas as `options` do
-        // `m({...})` só listam 4 — o próprio TypeScript não oferece `local-whisper` na UI, embora o
-        // valor seja válido. Portado como está: `choice` valida as 5, `options` mostra as 4.
+        // AMBÍGUO: o enum Zod aceita `local-whisper`, mas as `options` do `m({...})` não o listam —
+        // o próprio TypeScript não oferece esse alias na UI, embora o valor seja válido. Portado
+        // como está: `choice` valida todos, `options` mostra os oferecidos (inclui `parakeet`).
         choice(
             "asrProvider",
             "nemotron",
-            &["nemotron", "browser", "electron", "groq-whisper", "openai-whisper", "local-whisper"],
+            &["nemotron", "parakeet", "browser", "electron", "groq-whisper", "openai-whisper", "local-whisper"],
         )
         .with_ui(
             FieldUi::new("settings.voiceStt.field.asrProvider.label")
@@ -492,6 +492,10 @@ fn stt_fields() -> Vec<FieldSchema> {
                     UiOption {
                         label: "settings.voiceStt.field.asrProvider.option.nemotron",
                         value: "nemotron",
+                    },
+                    UiOption {
+                        label: "settings.voiceStt.field.asrProvider.option.parakeet",
+                        value: "parakeet",
                     },
                     UiOption {
                         label: "settings.voiceStt.field.asrProvider.option.electron",
@@ -716,12 +720,20 @@ mod tests {
     /// `choice` tem de aceitá-lo mesmo que `options` não o liste.
     #[test]
     fn asr_provider_accepts_the_ui_less_variant() {
-        let registry_field = namespace()
-            .fields
-            .into_iter()
-            .find(|f| f.key == "asrProvider")
-            .expect("asrProvider ausente");
+        let ns = namespace();
+        let registry_field = ns.fields.iter().find(|f| f.key == "asrProvider").expect("asrProvider ausente");
 
         assert!(registry_field.validate("voice.asrProvider", &json!("local-whisper")).is_ok());
+    }
+
+    /// Parakeet is opt-in but a first-class local provider: it must validate and appear in the
+    /// selector, otherwise the card would be reachable only by a hand-edited config.
+    #[test]
+    fn parakeet_is_a_selector_choice_not_only_a_valid_value() {
+        let ns = namespace();
+        let field = ns.fields.iter().find(|f| f.key == "asrProvider").expect("asrProvider ausente");
+        assert!(field.validate("voice.asrProvider", &json!("parakeet")).is_ok());
+        let options = field.ui.as_ref().expect("ui do asrProvider").options;
+        assert!(options.iter().any(|option| option.value == "parakeet"), "Parakeet fora das opções do seletor");
     }
 }

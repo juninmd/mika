@@ -10,6 +10,8 @@ use crate::config::store::ConfigStore;
 use crate::modules::inference::embedder;
 use crate::modules::settings::tf;
 
+const PROVIDER_TAG: &str = "wizard:embedding";
+
 pub(super) async fn prepare_local_embedding(store: &ConfigStore, data_dir: &Path) -> WizardResult {
     // Boot, the wizard and the settings card can all ask at once; two writers on one `.part` corrupt it.
     static IN_FLIGHT: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
@@ -21,7 +23,7 @@ pub(super) async fn prepare_local_embedding(store: &ConfigStore, data_dir: &Path
         if sha256_of(path.clone()).await.as_deref() == Some(expected) {
             continue;
         }
-        if let Err(e) = download_verified(store, &embedder::url(remote), &path, expected).await {
+        if let Err(e) = download_verified(store, &embedder::url(remote), &path, expected, PROVIDER_TAG).await {
             return WizardResult::fail(tf("wizard.assetDownload.embeddingFailed", &locale, &[("file", file), ("detail", &e)]));
         }
     }

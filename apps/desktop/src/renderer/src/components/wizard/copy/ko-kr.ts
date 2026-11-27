@@ -195,6 +195,7 @@ export const koKR: WizardCopy = {
     vadDetail: '가볍고 정확한 신경망 감지를 위한 Silero VAD',
     sttLabel: '음성 인식 (STT)',
     sttDetail: '로컬 Nemotron (~790 MB): 잡음에서 글자를 지어내지 않고 음성을 이해합니다',
+    sttParakeetDetail: '로컬 Parakeet (~670 MB): 다국어 지원, 문장 부호와 대소문자 포함, 잡음에서 글자를 지어내지 않음',
     ttsLabel: 'Mika의 목소리 (TTS)',
     ttsSupertonic: '로컬 Supertonic 음성 (F3)',
     ttsCloud: '클라우드 제공자 선택됨',

@@ -20,6 +20,7 @@ const copy = {
   vadDetail: 'detector de fala',
   sttLabel: 'STT',
   sttDetail: 'modelo de escuta',
+  sttParakeetDetail: 'modelo de escuta multilíngue',
   ttsLabel: 'TTS',
   ttsSupertonic: 'voz local',
   ttsCloud: 'voz nuvem',
@@ -62,6 +63,20 @@ describe('buildInitialTasks — escuta condicionada', () => {
       'nemotron',
     )
     expect(taskIds(tasks)).toEqual(['vad', 'nemotron', 'tts', 'local-embedding'])
+  })
+
+  it('com escuta no parakeet: a fila baixa o parakeet, nunca o nemotron', () => {
+    const tasks = buildInitialTasks(
+      copy as unknown as AssetsCopy,
+      false,
+      true,
+      'qwen3.5:4b',
+      'supertonic',
+      true,
+      'parakeet',
+    )
+    expect(taskIds(tasks)).toEqual(['vad', 'parakeet', 'tts', 'local-embedding'])
+    expect(tasks.find((task) => task.id === 'parakeet')?.detail).toBe(copy.sttParakeetDetail)
   })
 
   it('com escuta em provedor de nuvem (groq-whisper): só vad — o modelo de spoken não é local', () => {

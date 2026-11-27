@@ -1613,6 +1613,7 @@ export type TranslationDict = {
   'settings.voiceStt.field.asrProvider.label': string
   'settings.voiceStt.field.asrProvider.option.electron': string
   'settings.voiceStt.field.asrProvider.option.nemotron': string
+  'settings.voiceStt.field.asrProvider.option.parakeet': string
   'settings.voiceStt.field.asrProvider.option.browser': string
   'settings.voiceStt.field.asrProvider.option.groq': string
   'settings.voiceStt.field.asrProvider.option.openai': string
@@ -1651,6 +1652,11 @@ export type TranslationDict = {
   'settings.voiceStt.panel.whisperDownloadHint': string
   'settings.voiceStt.providerSection.description': string
   'settings.voiceStt.panel.nemotronHint': string
+  'settings.voiceStt.panel.parakeetHint': string
+  'settings.voiceStt.panel.parakeetDownload': string
+  'settings.voiceStt.panel.parakeetDownloading': string
+  'settings.voiceStt.panel.parakeetReady': string
+  'settings.voiceStt.panel.parakeetAttribution': string
   'settings.voiceStt.panel.whisperModel.option.tiny': string
   'settings.voiceStt.panel.whisperModel.option.base': string
   'settings.voiceStt.panel.whisperModel.option.small': string
@@ -2467,6 +2473,7 @@ export type TranslationDict = {
   'settings.performance.accel.model.whisperEncoder': string
   'settings.performance.accel.model.whisperDecoder': string
   'settings.performance.accel.model.nemotron': string
+  'settings.performance.accel.model.parakeet': string
   'settings.performance.accel.model.supertonic': string
   'settings.performance.accel.model.silero': string
   'settings.performance.accel.model.e5': string
@@ -2898,6 +2905,8 @@ export type TranslationDict = {
   'settings.stt.provider.localWhisper': string
   'settings.stt.provider.nemotron': string
   'settings.stt.provider.nemotron.desc': string
+  'settings.stt.provider.parakeet': string
+  'settings.stt.provider.parakeet.desc': string
   'settings.stt.provider.localWhisper.desc': string
   'settings.stt.provider.browser.desc': string
   'settings.stt.provider.groqWhisper.desc': string
@@ -3298,6 +3307,8 @@ export type TranslationDict = {
   'wizard.assetDownload.nemotronFailed': string
   'wizard.assetDownload.embeddingFailed': string
   'wizard.assetDownload.nemotronReady': string
+  'wizard.assetDownload.parakeetFailed': string
+  'wizard.assetDownload.parakeetReady': string
   'wizard.assetDownload.embeddingReady': string
   'settings.voiceTts.coverage.title': string
   'settings.voiceTts.coverage.unsupported': string

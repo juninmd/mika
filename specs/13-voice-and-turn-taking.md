@@ -27,6 +27,12 @@ e confirmado em log de produção); Whisper como alternativa local está preso n
 ~5,5% WER no FLEURS, atrás de Whisper large-v3 ~3,65% e Canary-1B-v2 ~4,39% — números do próprio
 fabricante, não medidos aqui).
 
+**SHOULD**: oferecer Parakeet TDT 0.6B v3 como alternativa local **opt-in** (id `parakeet`), baixada
+sob demanda (~670 MB, nunca no instalador). O motivo é qualidade: melhor WER multilíngue, pontuação e
+caixa preservadas, e detecção automática do idioma (o `asrLanguage` é ignorado nesse motor). Mantém
+o contrato PCM16 mono 16 kHz e o mesmo descarregamento ocioso dos outros modelos. Licença CC-BY-4.0,
+com atribuição obrigatória a NVIDIA e à conversão ONNX de istupakov.
+
 **MUST**: não existe pontuação de confiança do STT hoje em nenhum dos dois motores nem na nuvem —
 `is_implausible_transcript` é heurística (densidade de caracteres, frases-clichê), não confiança
 real do modelo. **SHOULD**: expor a confiança quando o motor a fornecer (Nemotron RNNT expõe score

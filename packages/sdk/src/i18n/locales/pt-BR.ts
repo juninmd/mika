@@ -1737,6 +1737,7 @@ export const ptBR: TranslationDict = {
   'settings.voiceStt.field.asrProvider.label': 'Provedor de Escuta (STT)',
   'settings.voiceStt.field.asrProvider.option.electron': 'Whisper local (dentro do app)',
   'settings.voiceStt.field.asrProvider.option.nemotron': 'Nemotron local (recomendado, sem alucinação)',
+  'settings.voiceStt.field.asrProvider.option.parakeet': 'Parakeet v3 local (multilíngue)',
   'settings.voiceStt.field.asrProvider.option.browser': 'Navegador (Web Speech)',
   'settings.voiceStt.field.asrProvider.option.groq': 'Groq Whisper (ultra rápido)',
   'settings.voiceStt.field.asrProvider.option.openai': 'OpenAI Whisper',
@@ -1777,6 +1778,12 @@ export const ptBR: TranslationDict = {
   'settings.voiceStt.panel.nemotronDownload': 'Baixar/verificar modelo (~790 MB)',
   'settings.voiceStt.panel.nemotronDownloading': 'Baixando o modelo…',
   'settings.voiceStt.panel.nemotronReady': 'Modelo Nemotron pronto',
+  'settings.voiceStt.panel.parakeetHint':
+    'Roda no seu PC, sem custo. Multilíngue: detecta o idioma sozinho. Na primeira vez, baixe o modelo.',
+  'settings.voiceStt.panel.parakeetDownload': 'Baixar/verificar modelo (~670 MB)',
+  'settings.voiceStt.panel.parakeetDownloading': 'Baixando o modelo…',
+  'settings.voiceStt.panel.parakeetReady': 'Modelo Parakeet pronto',
+  'settings.voiceStt.panel.parakeetAttribution': 'Parakeet TDT 0.6B v3 © NVIDIA, CC-BY-4.0',
   'settings.voiceStt.panel.whisperDownloadHint': 'Baixa e verifica os arquivos do tamanho de Whisper escolhido acima.',
   'settings.voiceStt.providerSection.description':
     'Quem transforma sua voz em texto. Selecione um card para ver os detalhes dele.',
@@ -2689,6 +2696,7 @@ export const ptBR: TranslationDict = {
   'settings.performance.accel.model.whisperEncoder': 'Whisper (codificador)',
   'settings.performance.accel.model.whisperDecoder': 'Whisper (decodificador)',
   'settings.performance.accel.model.nemotron': 'Nemotron',
+  'settings.performance.accel.model.parakeet': 'Parakeet',
   'settings.performance.accel.model.supertonic': 'Supertonic',
   'settings.performance.accel.model.silero': 'Silero VAD',
   'settings.performance.accel.model.e5': 'Embeddings granite',
@@ -3152,6 +3160,9 @@ export const ptBR: TranslationDict = {
   'settings.stt.provider.localWhisper': 'Whisper local (dentro do app)',
   'settings.stt.provider.nemotron': 'Nemotron local (recomendado, sem alucinação)',
   'settings.stt.provider.nemotron.desc': 'NVIDIA Nemotron no seu PC: transcreve enquanto você fala, sem enviar áudio.',
+  'settings.stt.provider.parakeet': 'Parakeet v3 (local, multilíngue)',
+  'settings.stt.provider.parakeet.desc':
+    'NVIDIA Parakeet no seu PC: transcreve com pontuação e caixa, detecta o idioma sozinho e não envia áudio.',
   'settings.stt.provider.localWhisper.desc':
     'Whisper (OpenAI) rodando local; tamanhos tiny, base e small, com aceleração por GPU.',
   'settings.stt.provider.browser.desc': 'Reconhecimento do motor web; depende de rede e do serviço do navegador.',
@@ -3571,6 +3582,8 @@ export const ptBR: TranslationDict = {
   'wizard.assetDownload.nemotronFailed': 'Nemotron: {{file}}: {{detail}}',
   'wizard.assetDownload.embeddingFailed': 'Embedding local: {{file}}: {{detail}}',
   'wizard.assetDownload.nemotronReady': 'Nemotron STT pronto',
+  'wizard.assetDownload.parakeetFailed': 'Parakeet: {{file}}: {{detail}}',
+  'wizard.assetDownload.parakeetReady': 'Parakeet STT pronto',
   'wizard.assetDownload.embeddingReady': 'Embedding local pronto',
   'settings.voiceTts.coverage.title': 'A voz não cobre o idioma da interface',
   'settings.voiceTts.coverage.unsupported':

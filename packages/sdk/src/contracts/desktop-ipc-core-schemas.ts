@@ -46,6 +46,7 @@ export const inferenceModelIdSchema = z.enum([
   'whisperEncoder',
   'whisperDecoder',
   'nemotron',
+  'parakeet',
   'supertonic',
   'silero',
   'e5',
